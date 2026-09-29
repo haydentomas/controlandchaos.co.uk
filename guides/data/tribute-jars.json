@@ -1,0 +1,59 @@
+{
+  "id": "tribute-jars",
+  "title": "[C&C] Smart Tribute Jars",
+  "badge": "VENUE ESSENTIAL",
+  "icon": "🏺",
+  "price": "L$750",
+  "marketplace_url": "https://marketplace.secondlife.com",
+  "pill_text": "SMART TIP JAR & LEADERBOARD • SECOND LIFE 2026",
+  "description": "Gamified smart tip jar rewarding submissives with +XP and Gold Coins on tribute, custom tip buttons, particle celebrations, Discord webhook alerts, and split revenue.",
+  "features": [
+    {
+      "title": "Custom Fast-Pay Buttons",
+      "desc": "Presets for fast payment (e.g. L$100, L$500, L$1,000, L$5,000)."
+    },
+    {
+      "title": "Discord Webhook Pings",
+      "desc": "Instant rich embed notifications in Discord whenever a tribute is paid."
+    },
+    {
+      "title": "Particle Pyrotechnics",
+      "desc": "Golden champagne coin showers on high-value donations."
+    },
+    {
+      "title": "Split Revenue Shares",
+      "desc": "Built-in automatic split payment to partner, sim owner, or co-domme."
+    }
+  ],
+  "sections": [
+    {
+      "title": "1. Rezzing & Sim Setup",
+      "section_id": "setup",
+      "content": "Rezz the **[C&C] Smart Tribute Jar** at your skybox, club, or sim parcel. Click the jar to grant debit permissions so it can process payouts and splits."
+    },
+    {
+      "title": "2. Webhook & XP Integration",
+      "section_id": "integration",
+      "content": "Enter your Discord webhook URL in `config.notecard`. All tributes will immediately trigger live notifications with donor avatar name, amount, and message."
+    }
+  ],
+  "chat_commands": [
+    {
+      "command": "/55 jar menu",
+      "role": "Owner",
+      "desc": "Opens the jar configuration menu."
+    },
+    {
+      "command": "/55 jar reset",
+      "role": "Owner",
+      "desc": "Clears daily tribute session totals."
+    }
+  ],
+  "specs": {
+    "attachment": "Rezzable In-World Prim Mesh",
+    "scripts": "Mono Low-Lag Tip Engine",
+    "permissions": "Copy / Mod / No-Transfer",
+    "compatibility": "Discord Webhook, C&C Experience Cloud",
+    "contents": "Gold Velvet Jar Mesh, Particle Scripts, Notecard Config"
+  }
+}

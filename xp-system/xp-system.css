@@ -1,0 +1,476 @@
+/* ==========================================================================
+   XP ECONOMY, FACTIONS & SIM RULES SHOWCASE STYLESHEET
+   Control & Chaos // Second Life Gamified FinDom Ecosystem
+   ========================================================================== */
+
+.xp-page-main {
+  padding: 120px 0 80px 0;
+}
+
+.xp-hero-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.xp-hero-badge {
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.xp-page-title {
+  font-size: clamp(34px, 5vw, 56px);
+  margin: 8px 0 16px 0;
+}
+
+.xp-hero-subtitle {
+  max-width: 780px;
+  margin: 0 auto 24px auto;
+  font-size: 16.5px;
+  color: var(--text-muted);
+}
+
+/* --- Quick Jump Anchor Ribbon --- */
+.quick-jump-ribbon {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 12px 0;
+  scrollbar-width: none;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--gold-border-subtle);
+}
+.quick-jump-ribbon::-webkit-scrollbar { display: none; }
+
+.jump-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: rgba(22, 19, 16, 0.9);
+  border: 1px solid var(--gold-border-subtle);
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.jump-btn:hover {
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+  background: rgba(212, 175, 55, 0.1);
+  transform: translateY(-2px);
+}
+
+/* --- Manifesto Hero Callout --- */
+.xp-section-anchor {
+  scroll-margin-top: 100px;
+  margin-bottom: 60px;
+}
+
+.manifesto-box {
+  background: linear-gradient(135deg, rgba(34, 26, 22, 0.95), rgba(18, 15, 13, 0.98));
+  border: 1px solid var(--gold-primary);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.6);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 60px;
+}
+.manifesto-box::after {
+  content: '👑';
+  position: absolute;
+  right: -20px;
+  bottom: -30px;
+  font-size: 160px;
+  opacity: 0.04;
+  pointer-events: none;
+}
+.manifesto-tagline-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.manifesto-tag {
+  margin: 0;
+  background: rgba(212,175,55,0.2);
+}
+.manifesto-comment {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gold-bright);
+}
+.manifesto-title {
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 3.5vw, 36px);
+  color: #fff;
+  margin: 0 0 16px 0;
+  font-weight: 800;
+}
+.manifesto-quote {
+  font-size: 16px;
+  color: var(--gold-bright);
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 18px;
+  border-left: 3px solid var(--gold-primary);
+  padding-left: 16px;
+}
+.manifesto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  color: var(--text-muted);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+@media (max-width: 768px) {
+  .manifesto-grid { grid-template-columns: 1fr; }
+  .manifesto-box { padding: 24px; }
+}
+
+/* --- Factions Track --- */
+.faction-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 60px;
+}
+@media (max-width: 840px) {
+  .faction-grid { grid-template-columns: 1fr; }
+}
+.faction-card {
+  background: linear-gradient(160deg, #221a1f 0%, #151210 100%);
+  border: 1px solid var(--gold-border);
+  border-radius: 18px;
+  padding: 30px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+.faction-card.dom { border-color: var(--gold-primary); }
+.faction-card.sub { border-color: rgba(236, 72, 153, 0.4); }
+.faction-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+}
+.faction-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-family: var(--font-mono);
+  margin-bottom: 12px;
+}
+.dom .faction-badge {
+  background: rgba(212, 175, 55, 0.2);
+  color: var(--gold-bright);
+  border: 1px solid var(--gold-border);
+}
+.sub .faction-badge {
+  background: rgba(236, 72, 153, 0.2);
+  color: #f472b6;
+  border: 1px solid rgba(236, 72, 153, 0.4);
+}
+.faction-card-title {
+  font-family: var(--font-heading);
+  font-size: 26px;
+  color: #fff;
+  margin: 4px 0 6px 0;
+}
+.faction-roles-dom {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gold-bright);
+  margin-bottom: 16px;
+}
+.faction-roles-sub {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #f472b6;
+  margin-bottom: 16px;
+}
+.faction-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.faction-perks-heading-dom {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--gold-bright);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.faction-perks-heading-sub {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: #f472b6;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.faction-perks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px 0;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+.faction-milestones-title {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.faction-milestones-title.dom { color: var(--gold-bright); }
+.faction-milestones-title.sub { color: #f472b6; }
+
+/* --- 10 Ways to Earn Grid --- */
+.earn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 60px;
+}
+.earn-card {
+  background: rgba(22, 19, 16, 0.85);
+  border: 1px solid var(--gold-border-subtle);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+.earn-card:hover {
+  border-color: var(--gold-bright);
+  background: rgba(30, 26, 22, 0.95);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.earn-payout-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-bright);
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid var(--gold-border-subtle);
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  width: fit-content;
+}
+.earn-card-title {
+  font-family: var(--font-heading);
+  font-size: 19px;
+  color: #fff;
+  margin: 0 0 8px 0;
+}
+.earn-card-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+/* --- Reward Exchange Grid --- */
+.reward-section-box {
+  background: linear-gradient(145deg, #221b16 0%, #151210 100%);
+  border: 1px solid var(--gold-border);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.7);
+}
+.reward-tier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+.reward-tier-card {
+  background: rgba(18, 15, 13, 0.85);
+  border: 1px solid var(--gold-border-subtle);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.reward-tier-card.highlight {
+  border-color: var(--gold-bright);
+  background: rgba(30, 22, 17, 0.9);
+}
+.reward-tier-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  color: #fff;
+  margin: 0 0 6px 0;
+}
+.reward-tier-title.gold {
+  color: var(--gold-bright);
+}
+.reward-item-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+.reward-item-list li strong {
+  color: #eee;
+}
+
+/* --- Venue Lookbook Grid --- */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 60px;
+}
+.gallery-card {
+  background: rgba(22, 19, 16, 0.9);
+  border: 1px solid var(--gold-border-subtle);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.gallery-card:hover {
+  border-color: var(--gold-bright);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+}
+.gallery-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #110e0c;
+}
+.gallery-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.gallery-card:hover .gallery-img-wrap img {
+  transform: scale(1.05);
+}
+.gallery-info {
+  padding: 18px 20px;
+}
+.gallery-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.gallery-venue-name {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  color: #fff;
+  margin: 0;
+}
+.gallery-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --- Sim Rules Grid --- */
+.rules-container-box {
+  background: linear-gradient(145deg, #1f1816 0%, #120f0d 100%);
+  border: 1px solid var(--gold-border);
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 60px;
+}
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+.rule-card {
+  background: rgba(26, 22, 19, 0.85);
+  border: 1px solid var(--gold-border-subtle);
+  border-radius: 12px;
+  padding: 22px;
+}
+.rule-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gold-bright);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.rule-title {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  color: #fff;
+  margin: 0 0 8px 0;
+}
+.rule-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* --- Quick Start Banner --- */
+.quickstart-banner {
+  background: linear-gradient(135deg, #2a1f18 0%, #15110e 100%);
+  border: 1px solid var(--gold-bright);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+}
+.quickstart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin: 32px 0;
+  text-align: left;
+}
+.quickstart-step {
+  background: rgba(22, 19, 16, 0.85);
+  border: 1px solid var(--gold-border-subtle);
+  border-radius: 12px;
+  padding: 20px;
+}
+.step-digit {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gold-primary);
+  color: #000;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.step-title {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  color: #fff;
+  margin: 0 0 6px 0;
+}
+.step-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}

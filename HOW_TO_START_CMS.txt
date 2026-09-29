@@ -1,0 +1,45 @@
+====================================================================
+           CONTROL & CHAOS — CMS & LOCAL SERVER CHEAT SHEET
+====================================================================
+
+You are using DECAP CMS (Flat-file Headless CMS).
+It saves all your changes directly into your local JSON files.
+
+--------------------------------------------------------------------
+QUICK START (2 TERMINAL WINDOWS REQUIRED)
+--------------------------------------------------------------------
+
+TERMINAL 1: Start the CMS File Proxy
+  1. cd j:\FinalGame\main
+  2. npx decap-server
+  (Keep this window open while editing!)
+
+TERMINAL 2: Start the Web Server
+  1. cd j:\FinalGame\main
+  2. npx serve .
+  (NOTE: It is "npx serve .", NOT "npm serve")
+
+--------------------------------------------------------------------
+OPEN IN YOUR WEB BROWSER
+--------------------------------------------------------------------
+
+👉 CMS Admin Dashboard:   http://localhost:3000/admin/
+👉 Main Website:          http://localhost:3000/
+
+--------------------------------------------------------------------
+WHAT YOU CAN EDIT IN THE CMS:
+--------------------------------------------------------------------
+1. 👑 Service Providers (Escorts & Dommes)
+   - Bios, Hourly Rates, SL Usernames, Photos, Boundaries & Limits
+2. 📰 News & Lore Articles
+3. 📅 Sim Events & Calender Listings
+4. 📦 Hardware Guides & Store Products
+5. ⚙️ Global Navigation Menu & Homepage Banners
+
+--------------------------------------------------------------------
+ALTERNATIVE 1-CLICK LAUNCHER
+--------------------------------------------------------------------
+You can also double-click:
+  j:\FinalGame\main\start-cms.bat
+which will launch both servers automatically in two popup windows!
+====================================================================

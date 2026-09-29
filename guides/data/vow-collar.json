@@ -1,0 +1,74 @@
+{
+  "id": "vow-collar",
+  "title": "[C&C] Vow Collar 2026 Suite",
+  "badge": "FLAGSHIP HARDWARE",
+  "icon": "⛓️",
+  "price": "L$2,499",
+  "marketplace_url": "https://marketplace.secondlife.com",
+  "pill_text": "BENTO COLLAR SUITE • SECOND LIFE 2026",
+  "description": "Complete retail package featuring Bento collar, multi-sub Domme HUD, direct in-collar debit with Air Taxes, multi-sim GPS radar, Experience auto-props (Ballgag, Snout), and LinksetData storage.",
+  "features": [
+    {
+      "title": "Bento Mesh & Particle Leash",
+      "desc": "Fitted neck collar with high-precision physics, gold velvet textures, and multi-avatar particle leashing."
+    },
+    {
+      "title": "Direct Debit Air Taxes",
+      "desc": "Automated in-collar recurring payments directly to Mistress with LinksetData ledger records."
+    },
+    {
+      "title": "Experience Auto-Props",
+      "desc": "Instant attachment of Bento Ballgag and Snout of Shame without inventory approval prompts."
+    },
+    {
+      "title": "Multi-Sub Domme HUD",
+      "desc": "Radar tracking across regions, remote punishments, and group collar management."
+    }
+  ],
+  "sections": [
+    {
+      "title": "1. Package Contents & Architecture",
+      "section_id": "overview",
+      "content": "The **[C&C] Vow Collar Suite** is a modern, lag-free Second Life BDSM, FinDom, and RLV management system. Unlike older OpenCollar forks that rely on heavy HTTP polling or 50+ scripts, the Vow Collar runs entirely on optimized native LSL with **LinksetData persistence** and Second Life Experience auto-attach permissions."
+    },
+    {
+      "title": "2. Quick Start & Locking Protocols",
+      "section_id": "quick-start",
+      "content": "### Step 1: Wear the Collar & Accept Permissions\nRight-click > Add the collar. When prompted to accept Experience permissions for 'Control & Chaos', click **Yes**.\n\n### Step 2: Lock Ceremony & Passkey Setup\nTouch the collar or type `/22 menu`. Select **Lock Collar**. The wearer or Mistress sets a private 4-digit passkey.\n\n### Step 3: Direct Debit & Air Tax Activation\nIn the **FinDom > Air Tax** menu, the submissive grants debit permission. The Mistress can configure a daily or per-minute tax."
+    },
+    {
+      "title": "3. RLV Features & Stealth Props",
+      "section_id": "rlv",
+      "content": "The Vow Collar communicates directly with Firestorm / standard RLV viewers to enforce realistic discipline:\n- **Vision Blinding & Blindfolds**\n- **Chat Restriction & Force Gagging**\n- **Inventory & Detach Locks**\n- **Proximity Sit & Force Kneel on Pedestals**"
+    }
+  ],
+  "chat_commands": [
+    {
+      "command": "/22 menu",
+      "role": "Wearer / Domme",
+      "desc": "Opens the master collar settings dialog."
+    },
+    {
+      "command": "/22 lock [passkey]",
+      "role": "Domme / Owner",
+      "desc": "Enforces hardware lock with 4-digit passkey."
+    },
+    {
+      "command": "/22 tax [amount]",
+      "role": "Domme",
+      "desc": "Triggers immediate debit payment via collar."
+    },
+    {
+      "command": "/22 leash [target]",
+      "role": "Domme",
+      "desc": "Attaches particle beam leash to owner hand."
+    }
+  ],
+  "specs": {
+    "attachment": "Bento Neck + Domme Screen HUD",
+    "scripts": "Native Mono LSL with LinksetData",
+    "permissions": "Copy / Mod / No-Transfer",
+    "compatibility": "Firestorm RLV, Experience Tools, Lovense",
+    "contents": "Bento Collar, Domme HUD, Ballgag Prop, Snout Prop, User Manual"
+  }
+}

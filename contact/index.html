@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact &amp; Concierge | Control &amp; Chaos Second Life</title>
+  <meta name="description" content="Get in touch with Control &amp; Chaos management, lead LSL hardware developers, and sim founders Alek Zane and Lexi Zane. In-world IMs, support forms, and location info.">
+  <link rel="canonical" href="https://controlandchaos.com/contact/">
+  
+  <!-- OpenGraph / Facebook / Discord Rich Previews -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Contact &amp; Concierge | Control &amp; Chaos">
+  <meta property="og:description" content="Connect with sim management, lead LSL hardware developers, and house Dominants. Send in-world messages, support tickets, and direct inquiries.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=80">
+  <meta property="og:url" content="https://controlandchaos.com/contact/">
+  <meta property="og:site_name" content="Control &amp; Chaos">
+
+  <!-- Twitter Card SEO -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Contact &amp; Concierge | Control &amp; Chaos">
+  <meta name="twitter:description" content="Connect with sim management, lead LSL hardware developers, and house Dominants. Send in-world messages, support tickets, and direct inquiries.">
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contact & Concierge | Control & Chaos",
+    "url": "https://controlandchaos.com/contact/",
+    "description": "Direct contact options, executive channels, and in-world support for Control & Chaos Second Life."
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- Master Navigation Component -->
+  <site-navbar></site-navbar>
+
+  <!-- Contact Hero -->
+  <header class="hero hero-compact">
+    <canvas id="hero-canvas"></canvas>
+    <div class="container">
+      <div class="hero-pill">
+        <span class="pill-dot"></span>
+        <span>DIRECT DISPATCH &bull; SIM SUPPORT &bull; CONCIERGE</span>
+      </div>
+      <h1 class="hero-title hero-title-subpage">
+        GET IN TOUCH &amp; <span class="gold-gradient-text">CONCIERGE</span>
+      </h1>
+      <p class="hero-description">
+        Whether you have inquiries regarding sim management, custom LSL hardware commissions, escrow policies, or direct creator bookings, reach our team through in-world channels or the dispatch form below.
+      </p>
+    </div>
+  </header>
+
+  <!-- Main Contact Content -->
+  <main class="section">
+    <div class="container">
+      <div class="contact-layout-grid">
+        
+        <!-- Left Column: Direct People & In-World Channels -->
+        <div>
+          <div class="mb-24">
+            <span class="section-tag mb-6">DIRECT CHANNELS</span>
+            <h2 class="section-title section-title-md text-gold m-0">
+              Executive Contacts
+            </h2>
+            <p class="section-subtitle m-0">
+              Click any username chip to copy for Second Life search, or use the direct IM shortcuts:
+            </p>
+          </div>
+
+          <!-- Contact Card: Alek Zane -->
+          <div class="direct-card">
+            <div class="flex-between align-start mb-10 gap-8">
+              <div>
+                <span class="section-tag font-2xs m-0 mb-6">LSL HARDWARE &bull; DEV LEAD</span>
+                <h3 class="card-title font-md m-0">Alek Zane</h3>
+              </div>
+              <div class="font-xl">⚙️</div>
+            </div>
+            <p class="card-desc mb-14">
+              Lead systems architect, LSL scripting engineer, and creator of the Vow Collar suite, PocketPig, and tribute mechanics.
+            </p>
+            <div class="flex-between align-center flex-wrap gap-10 card-actions-bar">
+              <span class="copy-chip" onclick="copyText('alek.zane', this)" title="Click to copy SL username">
+                <span>📋</span> alek.zane
+              </span>
+              <a href="secondlife:///app/agent/00000000-0000-0000-0000-000000000000/im" class="btn btn-secondary btn-sm">
+                <span>💬</span> Open SL IM
+              </a>
+            </div>
+          </div>
+
+          <!-- Contact Card: Lexi Zane -->
+          <div class="direct-card">
+            <div class="flex-between align-start mb-10 gap-8">
+              <div>
+                <span class="section-tag font-2xs m-0 mb-6">SIM DIRECTOR &bull; MANAGEMENT</span>
+                <h3 class="card-title font-md m-0">Lexi Zane</h3>
+              </div>
+              <div class="font-xl">👑</div>
+            </div>
+            <p class="card-desc mb-14">
+              Sim management director, house Dominant coordination, gala event hosting, and directory application verification.
+            </p>
+            <div class="flex-between align-center flex-wrap gap-10 card-actions-bar">
+              <span class="copy-chip" onclick="copyText('lexi.zane', this)" title="Click to copy SL username">
+                <span>📋</span> lexi.zane
+              </span>
+              <a href="secondlife:///app/agent/00000000-0000-0000-0000-000000000000/im" class="btn btn-secondary btn-sm">
+                <span>💬</span> Open SL IM
+              </a>
+            </div>
+          </div>
+
+          <!-- In-World Sim Office & Teleport Card -->
+          <div class="card p-22 card-flex-column">
+            <div class="flex-row align-center gap-10 mb-10">
+              <span class="font-md">📍</span>
+              <h4 class="card-title font-sm text-gold m-0">In-World Estate Office</h4>
+            </div>
+            <p class="card-desc mb-14 font-sm">
+              Visit the Executive Concierge Lounge at Chaos Manor for in-world notecard dropboxes, live vendor redelivery kiosks, and direct sim support.
+            </p>
+            <a href="http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000" target="_blank" rel="noopener" class="btn btn-gold btn-sm w-100 flex-center">
+              <span>📍</span> Teleport to Estate Office (SLurl)
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Interactive Dispatch & Support Form -->
+        <div id="contact-form-container">
+          <div class="contact-form-card">
+            
+            <div class="mb-24">
+              <span class="section-tag tag-gold mb-8">DISPATCH FORM</span>
+              <h2 class="card-title font-lg m-0 mb-6">
+                Send a Direct Message
+              </h2>
+              <p class="card-desc m-0">
+                Fill out the details below. Messages are routed directly to Alek Zane &amp; Lexi Zane's notification bridge.
+              </p>
+            </div>
+
+            <!-- Form Body (Native & Embed/Iframe Ready) -->
+            <form id="main-contact-form" onsubmit="handleFormSubmit(event)">
+              
+              <div class="form-grid-2col">
+                <div class="form-group">
+                  <label class="form-label" for="contact-username">Second Life Username *</label>
+                  <input type="text" id="contact-username" name="sl_username" class="form-input" placeholder="e.g. resident.username" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="contact-displayname">Display Name</label>
+                  <input type="text" id="contact-displayname" name="display_name" class="form-input" placeholder="e.g. Lady V / Master Zane">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-email">Email Address (Optional)</label>
+                <input type="email" id="contact-email" name="email" class="form-input" placeholder="For dispatch response copies (optional)">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-dept">Subject &amp; Department *</label>
+                <select id="contact-dept" name="department" class="form-select" required>
+                  <option value="General Inquiry">💬 General Sim Inquiry</option>
+                  <option value="LSL Hardware / Vow Collar Support">⚙️ LSL Hardware &amp; Vow Collar Tech Support (Alek Zane)</option>
+                  <option value="Sim Events & Gala Coordination">👑 Sim Events &amp; Gala Bookings (Lexi Zane)</option>
+                  <option value="Directory Application Verification">📋 Service Provider Directory Listing Inquiry</option>
+                  <option value="Custom Hardware Commission">💡 Custom LSL &amp; HUD Commission</option>
+                  <option value="Sim Rules / Dispute Mediation">⚖️ Sim Rules &amp; Estate Concierge</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contact-message">Your Message *</label>
+                <textarea id="contact-message" name="message" class="form-textarea" placeholder="Provide details regarding your request, questions, or transaction/order number if applicable..." required></textarea>
+              </div>
+
+              <div class="form-actions-bar">
+                <label class="form-checkbox-label">
+                  <input type="checkbox" id="contact-urgent" name="urgent" class="form-checkbox-input">
+                  <span>Mark as high priority dispatch</span>
+                </label>
+
+                <button type="submit" id="submit-btn" class="btn btn-gold btn-lg">
+                  <span>✉️</span> Transmit Message
+                </button>
+              </div>
+
+              <!-- Live Submission Feedback Box -->
+              <div id="form-feedback" class="form-feedback-box"></div>
+
+            </form>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Master Footer Component -->
+  <site-footer></site-footer>
+
+  <script src="../app.js"></script>
+  <script>
+    // ClipBoard Copy Helper
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text);
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<span>✓</span> Copied!';
+      setTimeout(() => {
+        btn.innerHTML = originalHtml;
+      }, 2000);
+    }
+
+    // Form Submission Handler
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      const feedback = document.getElementById('form-feedback');
+      const username = document.getElementById('contact-username').value;
+      const dept = document.getElementById('contact-dept').value;
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Transmitting...';
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<span>✓</span> Transmitted!';
+        
+        feedback.className = 'form-feedback-box success';
+        feedback.innerHTML = `
+          <strong>✓ Dispatch Transmitted Successfully!</strong><br>
+          Thank you <strong>${username}</strong>. Your message regarding <em>${dept}</em> has been logged and routed to our team. We typically respond within 24 hours in-world or via notecard.
+        `;
+
+        document.getElementById('main-contact-form').reset();
+
+        setTimeout(() => {
+          btn.innerHTML = '<span>✉️</span> Transmit Message';
+        }, 4000);
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

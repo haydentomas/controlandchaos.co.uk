@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": "vow-launch",
+      "title": "Vow Collar 2026 Standalone Edition Release",
+      "category": "Product Launch",
+      "date": "October 2026",
+      "author": "Architect of Chaos",
+      "summary": "The definitive BDSM, FinDom, and RLV management collar has completed QA testing and is now entering in-world release.",
+      "content": "We are proud to announce the official release of the [Control & Chaos] Vow Collar Standalone Edition. Engineered with ultra-fast LinksetData, Experience stealth auto-attaching props, direct in-collar debit with recurring Air Taxes, and a zero-lag native llDialog Domme HUD, this is the most advanced smart collar available in Second Life."
+    },
+    {
+      "id": "cage-break-xp",
+      "title": "Cage Break Arena: Double XP Weekend Event",
+      "category": "Sim Event",
+      "date": "October 2026",
+      "author": "Architect of Chaos",
+      "summary": "Join us this Friday through Sunday for high-stakes prisoner rescue battles with double XP and bonus Gold Coin rewards.",
+      "content": "The sirens are blaring at Chaos Manor! This weekend, the Cage Break arena is awarding 2x XP for all lock picking, guard defense, and prisoner rescues. The winning faction each hour will also activate a 30-minute sim-wide XP boost. Bring your best energy!"
+    },
+    {
+      "id": "profile-picks",
+      "title": "New Weekly Loyalty Streak Rewards",
+      "category": "Economy Update",
+      "date": "September 2026",
+      "author": "Architect of Chaos",
+      "summary": "Keep Control & Chaos in your public Second Life profile picks to earn compounding weekly streak bonuses at the Main Terminal.",
+      "content": "We have updated the Main Terminal's profile pick verification engine. By keeping 'Control & Chaos' in your SL Profile Picks, you can now verify every 7 days to earn escalating XP bonuses and rare Gold Coin bundles. Don't let your streak reset!"
+    },
+    {
+      "id": "patch-v2-1",
+      "title": "Patch Notes: Cloud KVP Memory Optimization",
+      "category": "Patch Notes",
+      "date": "September 2026",
+      "author": "Architect of Chaos",
+      "summary": "Performance enhancements across all sim terminals and venue bridges to eliminate script delay during peak club hours.",
+      "content": "All terminal scripts, tribute adapters, and titler endpoints have been upgraded to LinksetData memory caching with asynchronous Experience KVP backing. Memory audits report over 25KB free per module with zero region lag."
+    }
+  ]
+}

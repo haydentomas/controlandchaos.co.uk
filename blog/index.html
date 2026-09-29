@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News, Events &amp; Patch Notes | Control &amp; Chaos</title>
+  <meta name="description" content="Latest announcements, tournament schedules, Cage Break events, and development patch notes from Control &amp; Chaos.">
+  <link rel="canonical" href="https://controlandchaos.com/blog/">
+  
+  <!-- OpenGraph / Facebook / Discord Rich Previews -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="News, Events &amp; Patch Notes | Control &amp; Chaos">
+  <meta property="og:description" content="Official dispatches, sim tournament schedules, collar firmware updates, and community spotlights.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80">
+  <meta property="og:url" content="https://controlandchaos.com/blog/">
+  <meta property="og:site_name" content="Control &amp; Chaos">
+
+  <!-- Twitter Card SEO -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="News, Events &amp; Patch Notes | Control &amp; Chaos">
+  <meta name="twitter:description" content="Official dispatches, sim tournament schedules, collar firmware updates, and community spotlights.">
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Control & Chaos News & Dispatches",
+    "url": "https://controlandchaos.com/blog/",
+    "description": "Latest announcements and development updates from Control & Chaos."
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- Master Navigation Component -->
+  <site-navbar></site-navbar>
+
+  <!-- News Hero -->
+  <header class="hero" style="min-height: 50vh; padding: 120px 0 50px;">
+    <canvas id="hero-canvas"></canvas>
+    <div class="container">
+      <div class="hero-pill">
+        <span class="pill-dot"></span>
+        <span>COMMUNITY FEED &bull; TOURNAMENTS &bull; CHANGELOG</span>
+      </div>
+      <h1 class="hero-title" style="font-size: 46px;">
+        DISPATCHES FROM <span class="gold-gradient-text">CHAOS MANOR</span>
+      </h1>
+      <p class="hero-description">
+        Read the latest updates on sim tournaments, double XP weekends, economy balance patches, and new hardware releases.
+      </p>
+    </div>
+  </header>
+
+  <!-- Blog / Posts Section -->
+  <section class="section">
+    <div class="container">
+      
+      <!-- Filters -->
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 36px; flex-wrap: wrap;">
+        <input type="text" id="blog-search" placeholder="Search news and patch notes..." style="flex: 1; min-width: 260px; padding: 10px 16px; background: #191613; border: 1px solid var(--gold-border); border-radius: 20px; color: var(--text-primary); font-family: var(--font-sans); font-size: 13px; outline: none;">
+        
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="blog-cats">
+          <button class="btn btn-gold btn-sm active-cat" data-cat="all">All</button>
+          <button class="btn btn-secondary btn-sm" data-cat="Product Launch">Products</button>
+          <button class="btn btn-secondary btn-sm" data-cat="Sim Event">Events</button>
+          <button class="btn btn-secondary btn-sm" data-cat="Economy Update">Economy</button>
+          <button class="btn btn-secondary btn-sm" data-cat="Patch Notes">Patches</button>
+        </div>
+      </div>
+
+      <!-- Posts Grid -->
+      <div class="grid-2" id="articles-container">
+        <!-- Rendered dynamically from posts.json or fallback list -->
+      </div>
+
+      <!-- Load More Button -->
+      <div id="load-more-container" style="text-align: center; margin-top: 40px; display: none;">
+        <button id="load-more-btn" class="btn btn-gold">
+          <span>📜</span> Load More Posts
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Master Footer Component -->
+  <site-footer></site-footer>
+
+  <script src="../app.js"></script>
+  <script>
+    // Blog page specific loader
+    document.addEventListener('DOMContentLoaded', async () => {
+      const container = document.getElementById('articles-container');
+      const searchInput = document.getElementById('blog-search');
+      const catButtons = document.querySelectorAll('#blog-cats button');
+      let allPosts = [];
+      let activeCat = 'all';
+
+      async function fetchJson(relPaths) {
+        for (const p of relPaths) {
+          try {
+            const url = p.includes('?') ? p : `${p}?v=${Date.now()}`;
+            const r = await fetch(url, { cache: 'no-store' });
+            if (r.ok) return await r.json();
+          } catch(e) {}
+        }
+        return null;
+      }
+
+      try {
+        const slugs = await fetchJson(['manifest.json', '/blog/manifest.json', './manifest.json']);
+        if (slugs && Array.isArray(slugs)) {
+          const promises = slugs.map(async slug => {
+            return await fetchJson([`data/${slug}.json`, `/blog/data/${slug}.json`, `./data/${slug}.json`]);
+          });
+          const loaded = await Promise.all(promises);
+          allPosts = loaded.filter(x => x !== null);
+        } else {
+          const legacy = await fetchJson(['posts.json', '/blog/posts.json', './posts.json']);
+          if (legacy) {
+            allPosts = Array.isArray(legacy) ? legacy : (legacy.items || []);
+          }
+        }
+      } catch(e) {}
+
+      if (!allPosts || allPosts.length === 0) {
+        allPosts = [
+          {
+            id: "vow-launch",
+            title: "Vow Collar 2026 Standalone Edition Release",
+            category: "Product Launch",
+            date: "October 2026",
+            author: "Architect of Chaos",
+            summary: "The definitive BDSM, FinDom, and RLV management collar has completed QA testing and is now entering in-world release.",
+            content: "We are proud to announce the official release of the [Control & Chaos] Vow Collar Standalone Edition. Engineered with ultra-fast LinksetData, Experience stealth auto-attaching props, direct in-collar debit with recurring Air Taxes, and a zero-lag native llDialog Domme HUD, this is the most advanced smart collar available in Second Life."
+          },
+          {
+            id: "cage-break-xp",
+            title: "Cage Break Arena: Double XP Weekend Event",
+            category: "Sim Event",
+            date: "October 2026",
+            author: "Architect of Chaos",
+            summary: "Join us this Friday through Sunday for high-stakes prisoner rescue battles with double XP and bonus Gold Coin rewards.",
+            content: "The sirens are blaring at Chaos Manor! This weekend, the Cage Break arena is awarding 2x XP for all lock picking, guard defense, and prisoner rescues. The winning faction each hour will also activate a 30-minute sim-wide XP boost. Bring your best energy!"
+          }
+        ];
+      }
+
+      const POSTS_PER_PAGE = 6;
+      let visibleLimit = POSTS_PER_PAGE;
+      const loadMoreContainer = document.getElementById('load-more-container');
+      const loadMoreBtn = document.getElementById('load-more-btn');
+
+      function render() {
+        const query = searchInput.value.toLowerCase().trim();
+        container.innerHTML = '';
+
+        const filtered = allPosts.filter(p => {
+          const catMatch = (activeCat === 'all' || p.category === activeCat);
+          const searchMatch = (!query || (p.title + ' ' + p.summary + ' ' + p.content).toLowerCase().includes(query));
+          return catMatch && searchMatch;
+        });
+
+        if (filtered.length === 0) {
+          container.innerHTML = '<div style="color:var(--text-muted); font-size:15px; grid-column: span 2; text-align:center; padding:40px;">No articles found matching your criteria.</div>';
+          if (loadMoreContainer) loadMoreContainer.style.display = 'none';
+          return;
+        }
+
+        const visiblePosts = filtered.slice(0, visibleLimit);
+
+        visiblePosts.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.id = p.id;
+          const isDirectBlog = window.location.pathname.endsWith('/blog') && !window.location.pathname.endsWith('/blog/');
+          const postUrl = isDirectBlog ? `blog/${p.id}/` : `${p.id}/`;
+
+          const imgHtml = p.featured_image ? `
+            <a href="${postUrl}" style="display:block; width:100%; height:200px; border-radius:12px; overflow:hidden; margin-bottom:16px; border:1px solid rgba(212,175,55,0.25);">
+              <img src="${p.featured_image}" alt="${p.title}" style="width:100%; height:100%; object-fit:cover; transition:transform 0.3s ease;">
+            </a>
+          ` : '';
+
+          card.innerHTML = `
+            ${imgHtml}
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span class="section-tag" style="margin:0; font-size:9.5px; padding:2px 8px;">${p.category}</span>
+              <span style="font-family:var(--font-mono); font-size:11px; color:var(--gold-muted);">${p.date} &bull; ${p.author}</span>
+            </div>
+            <h3 class="card-title" style="font-size:20px; margin-bottom:10px; line-height:1.4;">
+              <a href="${postUrl}" style="color:#fff; text-decoration:none;">${p.title}</a>
+            </h3>
+            <p style="font-size:14px; color:#b0b0c5; line-height:1.6; margin-bottom:18px; flex:1;">${p.summary || ''}</p>
+            <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:14px; margin-top:auto;">
+              <a href="${postUrl}" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center;">
+                Read Full Post &rarr;
+              </a>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        // Load More button visibility
+        if (loadMoreContainer && loadMoreBtn) {
+          if (filtered.length > visibleLimit) {
+            const remaining = filtered.length - visibleLimit;
+            loadMoreContainer.style.display = 'block';
+            loadMoreBtn.innerHTML = `<span>📜</span> Load More Posts (${remaining} remaining)`;
+          } else {
+            loadMoreContainer.style.display = 'none';
+          }
+        }
+      }
+
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+          visibleLimit += POSTS_PER_PAGE;
+          if (typeof SoundFX !== 'undefined') SoundFX.click();
+          render();
+        });
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          visibleLimit = POSTS_PER_PAGE;
+          render();
+        });
+      }
+
+      catButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          catButtons.forEach(b => {
+            b.classList.remove('btn-gold');
+            b.classList.add('btn-secondary');
+          });
+          btn.classList.remove('btn-secondary');
+          btn.classList.add('btn-gold');
+          activeCat = btn.getAttribute('data-cat');
+          visibleLimit = POSTS_PER_PAGE;
+          render();
+        });
+      });
+
+      render();
+    });
+  </script>
+</body>
+</html>

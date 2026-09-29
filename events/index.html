@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sim Events &amp; Calendar | Control &amp; Chaos Second Life</title>
+  <meta name="description" content="Official events schedule for Control &amp; Chaos Second Life: Cage Break tournaments, black-tie FinDom galas, double XP days, and dominance masterclasses.">
+  <link rel="canonical" href="https://controlandchaos.com/events/">
+  
+  <!-- OpenGraph / Facebook / Discord Rich Previews -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Sim Events &amp; Calendar | Control &amp; Chaos">
+  <meta property="og:description" content="Stay updated on weekly Cage Break arena tournaments, high-society FinDom galas, workshop masterclasses, and Double XP weekends in Second Life.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80">
+  <meta property="og:url" content="https://controlandchaos.com/events/">
+  <meta property="og:site_name" content="Control &amp; Chaos">
+
+  <!-- Twitter Card SEO -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sim Events &amp; Calendar | Control &amp; Chaos">
+  <meta name="twitter:description" content="Stay updated on weekly Cage Break arena tournaments, high-society FinDom galas, workshop masterclasses, and Double XP weekends in Second Life.">
+  <meta property="twitter:image" content="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Sim Events & Calendar | Control & Chaos",
+    "url": "https://controlandchaos.com/events/",
+    "description": "Live tournament schedules, galas, double XP days, and masterclasses at Control & Chaos in Second Life."
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <!-- Master Navigation Component -->
+  <site-navbar></site-navbar>
+
+  <!-- Events Hero -->
+  <header class="hero hero-compact">
+    <canvas id="hero-canvas"></canvas>
+    <div class="container">
+      <div class="hero-pill">
+        <span class="pill-dot"></span>
+        <span>TOURNAMENTS &bull; LUXURY GALAS &bull; DOUBLE XP</span>
+      </div>
+      <h1 class="hero-title hero-title-subpage">
+        SIM EVENTS &amp; <span class="gold-gradient-text">CALENDAR</span>
+      </h1>
+      <p class="hero-description">
+        Stay updated on weekly Cage Break arena tournaments, high-society FinDom galas, workshop masterclasses, and Double XP weekends. Add events directly to your personal Google Calendar.
+      </p>
+    </div>
+  </header>
+
+  <!-- Events List Section -->
+  <section class="section">
+    <div class="container">
+      
+      <!-- Filter Tabs -->
+      <div class="flex-between align-center gap-16 mb-36 flex-wrap">
+        <div class="flex-row gap-8 flex-wrap" id="event-filters">
+          <button class="btn btn-gold btn-sm" data-filter="all">All Events</button>
+          <button class="btn btn-secondary btn-sm" data-filter="Tournament">Tournaments</button>
+          <button class="btn btn-secondary btn-sm" data-filter="Gala">Galas &amp; Balls</button>
+          <button class="btn btn-secondary btn-sm" data-filter="Community">Double XP &amp; Tributes</button>
+          <button class="btn btn-secondary btn-sm" data-filter="Workshop">Workshops</button>
+        </div>
+        <div class="font-mono font-xs text-muted" id="events-count">
+          Showing 4 scheduled events
+        </div>
+      </div>
+
+      <!-- Events Grid -->
+      <div class="grid-2" id="events-container">
+        <!-- Rendered dynamically from events.json -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Google Calendar Embed & Subscription Card -->
+  <section class="section section-surface-dark" id="gcal-sync">
+    <div class="container">
+      <div class="card card-highlight-gold p-36">
+        <div class="flex-between align-center gap-24 flex-wrap">
+          <div class="callout-banner-content">
+            <span class="section-tag tag-gold mb-8">CALENDAR INTEGRATION</span>
+            <h2 class="card-title font-lg m-0 mb-10">Subscribe to Control &amp; Chaos on Google Calendar</h2>
+            <p class="card-desc m-0">
+              Never miss a double XP tournament or sim gala! Add our official event schedule directly to your Google Calendar, Apple Calendar, or Outlook for live reminders in your local timezone.
+            </p>
+          </div>
+          <div class="flex-row gap-12 flex-wrap">
+            <a href="https://calendar.google.com/calendar/render?cid=controlandchaos" target="_blank" rel="noopener" class="btn btn-gold">
+              <span>📅</span> Add to Google Calendar &rarr;
+            </a>
+            <a href="http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000" target="_blank" rel="noopener" class="btn btn-secondary">
+              <span>📍</span> Teleport to Sim
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Master Footer Component -->
+  <site-footer></site-footer>
+
+  <script src="../app.js"></script>
+  <script>
+    // Dynamic Events Loader & Google Calendar URL Builder
+    document.addEventListener('DOMContentLoaded', async () => {
+      const container = document.getElementById('events-container');
+      const filterButtons = document.querySelectorAll('#event-filters button');
+      const countEl = document.getElementById('events-count');
+
+      let allEvents = [];
+      let activeFilter = 'all';
+
+      async function fetchJson(relPaths) {
+        for (const p of relPaths) {
+          try {
+            const url = p.includes('?') ? p : `${p}?v=${Date.now()}`;
+            const r = await fetch(url, { cache: 'no-store' });
+            if (r.ok) return await r.json();
+          } catch(e) {}
+        }
+        return null;
+      }
+
+      try {
+        const slugs = await fetchJson(['manifest.json', '/events/manifest.json', './manifest.json']);
+        if (slugs && Array.isArray(slugs)) {
+          const promises = slugs.map(async slug => {
+            return await fetchJson([`data/${slug}.json`, `/events/data/${slug}.json`, `./data/${slug}.json`]);
+          });
+          const loaded = await Promise.all(promises);
+          allEvents = loaded.filter(x => x !== null);
+        } else {
+          const legacy = await fetchJson(['events.json', '/events/events.json', './events.json']);
+          if (legacy) {
+            allEvents = Array.isArray(legacy) ? legacy : (legacy.items || []);
+          }
+        }
+      } catch(e) {}
+
+      // Offline fallback if browser file:// blocks fetch
+      if (!allEvents || allEvents.length === 0) {
+        allEvents = [
+          {
+            id: "cage-break-weekly",
+            title: "⚡ Cage Break Championship & Double XP Rush",
+            category: "Tournament",
+            category_tag: "TOURNAMENT",
+            date_display: "Every Saturday • 1:00 PM SLT (PDT)",
+            location: "Chaos Manor Arena & Central Laser Cages",
+            slurl: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
+            description: "The premier sim combat and jailbreak tournament! Dominants defend the cages while submissives attempt daring laser lock hacks. Double XP, +500 Gold Coins, and champion title trophies awarded to top scorers."
+          },
+          {
+            id: "high-society-gala",
+            title: "👑 High Society FinDom Gala & Escort Showcase",
+            category: "Gala",
+            category_tag: "LUXURY GALA",
+            date_display: "Friday, Oct 9 • 6:00 PM SLT (PDT)",
+            location: "Chaos Manor Grand Ballroom & VIP Lounge",
+            slurl: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
+            description: "Formal black-tie ball showcasing our verified Service Providers and house Dominants. Live classical-electronic DJ set, champagne tribute fountains, and VIP escort auction."
+          },
+          {
+            id: "sunday-gold-rush",
+            title: "🪙 Sunday Gold Rush & Tribute Jar Bonanza",
+            category: "Community",
+            category_tag: "COMMUNITY EVENT",
+            date_display: "Every Sunday • 2:00 PM – 4:00 PM SLT",
+            location: "Main Arcade & Tribute Hub",
+            slurl: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
+            description: "All Tribute Jars across the sim award 1.5x Gold Coins and double XP multipliers. Community tipping contests, live leaderboard tracking, and mini-game bonuses."
+          },
+          {
+            id: "etiquette-workshop",
+            title: "📜 Dominance, RLV & FinDom Protocol Workshop",
+            category: "Workshop",
+            category_tag: "MASTERCLASS",
+            date_display: "Wednesday, Oct 14 • 4:00 PM SLT",
+            location: "The Velvet Chamber & Lecture Hall",
+            slurl: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
+            description: "Interactive masterclass led by Lady Seraphina Noir and Mistress Alexis Vane. Covering Vow Collar direct debit policies, consensual psychological boundaries, and Firestorm RLV tuning."
+          }
+        ];
+      }
+
+      function buildGCalUrl(ev) {
+        // Construct clean Google Calendar render URL
+        const title = encodeURIComponent(ev.gcal_title || ev.title);
+        const details = encodeURIComponent(ev.description || '');
+        const location = encodeURIComponent(ev.location || 'Control & Chaos, Second Life');
+        return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}`;
+      }
+
+      function renderEvents() {
+        container.innerHTML = '';
+        const filtered = allEvents.filter(ev => activeFilter === 'all' || ev.category === activeFilter);
+        
+        countEl.textContent = `Showing ${filtered.length} of ${allEvents.length} events`;
+
+        if (filtered.length === 0) {
+          container.innerHTML = '<div class="card text-center p-40 text-muted w-100">No events found in this category.</div>';
+          return;
+        }
+
+        filtered.forEach(ev => {
+          const card = document.createElement('div');
+          card.className = 'card card-flex-column';
+
+          card.innerHTML = `
+            <div class="flex-between align-start mb-12 gap-8">
+              <span class="section-tag font-2xs m-0">${ev.category_tag}</span>
+              <span class="font-mono font-xs text-gold">${ev.date_display}</span>
+            </div>
+
+            <h3 class="card-title font-md mb-10">${ev.title}</h3>
+
+            <div class="font-xs text-muted mb-12 flex-row align-center gap-6">
+              <span>📍</span> <span>${ev.location}</span>
+            </div>
+
+            <p class="card-desc card-body-grow mb-20">
+              ${ev.description}
+            </p>
+
+            <div class="card-actions-bar">
+              <a href="${buildGCalUrl(ev)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm card-body-grow">
+                <span>📅</span> Add to Google Calendar
+              </a>
+              <a href="${ev.slurl}" class="btn btn-secondary btn-sm">
+                <span>📍</span> Teleport (SLurl)
+              </a>
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+      }
+
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterButtons.forEach(b => {
+            b.classList.remove('btn-gold');
+            b.classList.add('btn-secondary');
+          });
+          btn.classList.remove('btn-secondary');
+          btn.classList.add('btn-gold');
+          activeFilter = btn.getAttribute('data-filter') || 'all';
+          renderEvents();
+        });
+      });
+
+      renderEvents();
+    });
+  </script>
+</body>
+</html>

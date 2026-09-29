@@ -1,0 +1,44 @@
+{
+  "brand_title": "CONTROL & CHAOS",
+  "brand_subtitle": "SECOND LIFE GAMIFIED ECOSYSTEM",
+  "inworld_slurl": "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
+  "inworld_button_text": "Visit Us InWorld",
+  "links": [
+    {
+      "label": "XP & Rules",
+      "url": "/xp-system/index.html",
+      "icon": "⚡",
+      "new_tab": false
+    },
+    {
+      "label": "Service Providers",
+      "url": "/directory/index.html",
+      "icon": "👑",
+      "new_tab": false
+    },
+    {
+      "label": "Store",
+      "url": "/products/index.html",
+      "icon": "🛍️",
+      "new_tab": false
+    },
+    {
+      "label": "User Guides",
+      "url": "/guides/index.html",
+      "icon": "📘",
+      "new_tab": false
+    },
+    {
+      "label": "Blog",
+      "url": "/blog/index.html",
+      "icon": "🏰",
+      "new_tab": false
+    },
+    {
+      "label": "Events",
+      "url": "/events/index.html",
+      "icon": "📅",
+      "new_tab": false
+    }
+  ]
+}

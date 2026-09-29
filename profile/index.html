@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profiles &amp; Rate Cards | Control &amp; Chaos</title>
+  <meta http-equiv="refresh" content="0; url=../directory/index.html">
+  <script>
+    // If URL has a query or hash, redirect intelligently, else go to directory
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id') || window.location.hash.replace('#', '');
+    if (id) {
+      window.location.replace(`${id}/`);
+    } else {
+      window.location.replace('../directory/index.html');
+    }
+  </script>
+</head>
+<body style="background: #12100e; color: #d8c290; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+  <p>Redirecting to Control &amp; Chaos FinDom &amp; Escort Directory...</p>
+</body>
+</html>

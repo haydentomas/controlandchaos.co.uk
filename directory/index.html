@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinDom &amp; Escort Directory | Control &amp; Chaos Second Life</title>
+  <meta name="description" content="Browse verified Second Life Financial Dominants, Luxury Escorts, Companions, and Devoted Submissives at Control &amp; Chaos. View complete rate cards, services, and booking info.">
+  <link rel="canonical" href="https://controlandchaos.com/directory/">
+  
+  <!-- OpenGraph / Facebook / Discord Rich Previews -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Service Providers &amp; Escort Directory | Control &amp; Chaos">
+  <meta property="og:description" content="Verified Second Life Dominants, luxury escorts, Lovense toy masters, and verified companions. Transparent rate cards &amp; in-world booking.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=80">
+  <meta property="og:url" content="https://controlandchaos.com/directory/">
+  <meta property="og:site_name" content="Control &amp; Chaos">
+
+  <!-- Twitter Card SEO -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Service Providers &amp; Escort Directory | Control &amp; Chaos">
+  <meta name="twitter:description" content="Verified Second Life Dominants, luxury escorts, Lovense toy masters, and verified companions. Transparent rate cards &amp; in-world booking.">
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Service Providers Directory | Control & Chaos",
+    "url": "https://controlandchaos.com/directory/",
+    "description": "Browse verified Second Life Financial Dominants, Luxury Escorts, and Companions."
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+  <!-- Master Navigation Component -->
+  <site-navbar></site-navbar>
+
+  <!-- Directory Hero -->
+  <header class="hero hero-compact">
+    <canvas id="hero-canvas"></canvas>
+    <div class="container">
+      <div class="hero-pill">
+        <span class="pill-dot"></span>
+        <span>VERIFIED PROFILES &bull; RATE CARDS &bull; DIRECT BOOKING</span>
+      </div>
+      <h1 class="hero-title hero-title-subpage">
+        FINDOM &amp; COMPANION <span class="gold-gradient-text">DIRECTORY</span>
+      </h1>
+      <p class="hero-description">
+        Connect with elite Financial Dominants, high-society Second Life escorts, and devoted submissives. Explore transparent service menus, RLV capabilities, and verified sim reputation.
+      </p>
+    </div>
+  </header>
+
+  <!-- Directory Content Section -->
+  <section class="section">
+    <div class="container">
+      
+      <!-- Search and Filter Controls -->
+      <div class="dir-search-box">
+        <input type="text" id="dir-search" placeholder="Search by SL Name, specialty, RLV, FinDom, tags..." class="dir-search-input">
+
+        <div class="dir-filters-bar">
+          <div class="dir-filter-btns" id="dir-filters">
+            <button class="btn btn-gold btn-sm" data-role="all">All Listings</button>
+            <button class="btn btn-secondary btn-sm" data-role="domme">Dominants / Dommes</button>
+            <button class="btn btn-secondary btn-sm" data-role="sub">Submissives / FinSubs</button>
+            <button class="btn btn-secondary btn-sm" data-tag="FinDom">FinDom</button>
+            <button class="btn btn-secondary btn-sm" data-tag="RLV">RLV Restraints</button>
+            <button class="btn btn-secondary btn-sm" data-tag="VIP">VIP Escort</button>
+          </div>
+
+          <div class="font-mono font-xs text-gold" id="results-count">
+            Showing all profiles
+          </div>
+        </div>
+      </div>
+
+      <!-- Profiles Grid -->
+      <div class="grid-3" id="profiles-container">
+        <!-- Rendered dynamically from profiles.json -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- "Get Listed in Directory" Monetization / Submission Section -->
+  <section class="section section-surface-dark" id="get-listed">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">For Dominants &amp; Companions</span>
+        <h2 class="section-title">Get Your Profile &amp; Rate Card Listed</h2>
+        <p class="section-subtitle">
+          Promote your services directly to the Control &amp; Chaos community with a dedicated luxury profile card and on-sim tribute integration.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card card-flex-column">
+          <div class="card-icon">📄</div>
+          <h3 class="card-title">Standard Listing</h3>
+          <div class="card-price-badge font-lg mb-12">L$1,000 <span class="font-xs text-muted">/ month</span></div>
+          <p class="card-desc card-body-grow">
+            Full searchable directory profile, custom service menu &amp; rates card, SL IM link, and verified rank badge.
+          </p>
+          <a href="../contact/index.html" class="btn btn-secondary btn-sm mt-auto">Request Listing &rarr;</a>
+        </div>
+
+        <div class="card card-highlight-gold card-flex-column">
+          <div class="card-icon">👑</div>
+          <span class="section-tag tag-gold mb-8 align-start">MOST POPULAR</span>
+          <h3 class="card-title">VIP Featured Listing</h3>
+          <div class="card-price-badge font-lg mb-12">L$2,500 <span class="font-xs text-muted">/ month</span></div>
+          <p class="card-desc card-body-grow">
+            Top of directory placement, featured badge on homepage, custom Tribute Jar rezzed in the VIP lounge at Chaos Manor, and Discord showcase shoutout.
+          </p>
+          <a href="../contact/index.html" class="btn btn-gold btn-sm mt-auto">Get VIP Listing &rarr;</a>
+        </div>
+
+        <div class="card card-flex-column">
+          <div class="card-icon">💎</div>
+          <h3 class="card-title">House Elite Partner</h3>
+          <div class="card-price-badge font-lg mb-12">L$5,000 <span class="font-xs text-muted">/ month</span></div>
+          <p class="card-desc card-body-grow">
+            Includes private skybox venue key, dedicated Vow Collar pairing portal, weekly Cage Break VIP guard slot, and full advertising rotation.
+          </p>
+          <a href="../contact/index.html" class="btn btn-secondary btn-sm mt-auto">Partner Inquiry &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Master Footer Component -->
+  <site-footer></site-footer>
+
+  <script src="/app.js"></script>
+  <script>
+    // Directory Page Interactive Controller
+    document.addEventListener('DOMContentLoaded', async () => {
+      const container = document.getElementById('profiles-container');
+      const searchInput = document.getElementById('dir-search');
+      const filterButtons = document.querySelectorAll('#dir-filters button');
+      const countEl = document.getElementById('results-count');
+
+      let allProfiles = [];
+      let activeRole = 'all';
+      let activeTag = '';
+
+      async function fetchJson(relPaths) {
+        for (const p of relPaths) {
+          try {
+            const url = p.includes('?') ? p : `${p}?v=${Date.now()}`;
+            const r = await fetch(url, { cache: 'no-store' });
+            if (r.ok) return await r.json();
+          } catch(e) {}
+        }
+        return null;
+      }
+
+      try {
+        const slugs = await fetchJson(['manifest.json', '/directory/manifest.json', './manifest.json']);
+        if (slugs && Array.isArray(slugs)) {
+          const profilePromises = slugs.map(async slug => {
+            return await fetchJson([
+              `profiles/${slug}.json`,
+              `/directory/profiles/${slug}.json`,
+              `./profiles/${slug}.json`
+            ]);
+          });
+          const loaded = await Promise.all(profilePromises);
+          allProfiles = loaded.filter(p => p !== null);
+        } else {
+          const legacy = await fetchJson(['profiles.json', '/directory/profiles.json', './profiles.json']);
+          if (legacy && Array.isArray(legacy)) allProfiles = legacy;
+        }
+      } catch(e) {
+        // Fallback to offline data
+      }
+
+      // If fetch was blocked by browser file:// protocol, use offline fallback dataset
+      if (!allProfiles || allProfiles.length === 0) {
+        allProfiles = [
+          {
+            id: "alexis-vane",
+            name: "Mistress Alexis Vane",
+            sl_username: "alexis.vane",
+            role: "Financial Domme & Luxury Companion",
+            role_type: "domme",
+            status: "Available / In-World",
+            tagline: "Unapologetic luxury, exquisite psychological draining, and high-society accompaniment.",
+            about: "Specializing in sophisticated financial domination, Lovense toy control, RLV restraint training, and high-society public accompaniment.",
+            location: "Chaos Manor VIP Lounge & Skybox",
+            slurl: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
+            rating: "5.0 ★★★★★ (48 Verified)",
+            starting_rate: "L$2,500 / hr",
+            tags: ["FinDom", "VIP Escort", "Lovense Toy Control", "Vow Collar Certified", "RLV Restraints"],
+            hardware_compat: { vow_collar: true, lovense: true, rlv: true, experience: true }
+          },
+          {
+            id: "seraphina-noir",
+            name: "Lady Seraphina Noir",
+            sl_username: "seraphina.noir",
+            role: "High-Status Sovereign & Protocol Master",
+            role_type: "domme",
+            status: "By Appointment Only",
+            tagline: "Rigorous psychological discipline, debt management, and exquisite ballroom presence.",
+            about: "High-status Sovereign offering deep psychological conditioning, Vow Collar passkey ownership, and bespoke arm candy for sim galas.",
+            location: "The Velvet Chamber",
+            slurl: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
+            rating: "5.0 ★★★★★ (62 Verified)",
+            starting_rate: "L$3,500 / hr",
+            tags: ["FinDom", "Protocol", "Vow Collar Certified", "High Society", "RLV Restraints"],
+            hardware_compat: { vow_collar: true, lovense: true, rlv: true, experience: true }
+          },
+          {
+            id: "damien-cross",
+            name: "Master Damien Cross",
+            sl_username: "damien.cross",
+            role: "Dominant Master & Behavioral Specialist",
+            role_type: "domme",
+            status: "Available",
+            tagline: "Refined male dominance, dark romance, and behavioral protocol calibration.",
+            about: "Experienced Master providing rigorous behavioral calibration, posture discipline, and dark-luxury accompaniment.",
+            location: "Chaos Manor Private Study",
+            slurl: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
+            rating: "4.9 ★★★★★ (39 Verified)",
+            starting_rate: "L$1,800 / hr",
+            tags: ["Male Dom", "Discipline", "Vow Collar Certified", "RLV Restraints"],
+            hardware_compat: { vow_collar: true, lovense: false, rlv: true, experience: true }
+          },
+          {
+            id: "kiki-resident",
+            name: "Kiki Resident",
+            sl_username: "kiki.resident",
+            role: "Bratty, Pay to Play Submissive",
+            role_type: "sub",
+            status: "Available",
+            tagline: "Demanding, playful, and fond of spoiling. High maintenance devotion.",
+            about: "Experienced in FinSub dynamics, task compliance, and public vanity obedience.",
+            location: "Chaos Manor Arcade",
+            slurl: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
+            rating: "4.8 ★★★★★ (25 Verified)",
+            starting_rate: "L$1,200 / hr",
+            tags: ["FinSub", "Brat", "Arcade Games", "Task Slave"],
+            hardware_compat: { vow_collar: true, lovense: true, rlv: true, experience: true }
+          },
+          {
+            id: "alek-zane",
+            name: "Alek Zane",
+            sl_username: "alek.zane",
+            role: "Devoted FinSub & Ballroom Escort",
+            role_type: "sub",
+            status: "Available",
+            tagline: "Attentive, impeccably tailored, and trained in complete collar devotion.",
+            about: "Trained in Vow Collar servitude and public date accompaniment. Available for formal galas, venue arm candy, and service.",
+            location: "Chaos Manor Ballroom",
+            slurl: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
+            rating: "4.9 ★★★★★ (31 Verified)",
+            starting_rate: "L$1,500 / hr",
+            tags: ["FinSub", "Ballroom Escort", "Vow Collar Certified", "RLV Restraints"],
+            hardware_compat: { vow_collar: true, lovense: false, rlv: true, experience: true }
+          }
+        ];
+      }
+
+      function renderProfiles() {
+        const query = (searchInput.value || '').toLowerCase().trim();
+        container.innerHTML = '';
+
+        const filtered = allProfiles.filter(p => {
+          const isDomme = (p.role_type === 'domme' || p.role_type === 'DOMINANT' || p.role_type === 'dom');
+          const isSub = (p.role_type === 'sub' || p.role_type === 'SUBMISSIVE' || p.role_type === 'submissive');
+          
+          let roleMatch = (activeRole === 'all');
+          if (activeRole === 'domme') roleMatch = isDomme;
+          if (activeRole === 'sub') roleMatch = isSub;
+
+          const tagMatch = (!activeTag || (p.tags && p.tags.some(t => t.toLowerCase().includes(activeTag.toLowerCase()))));
+          const textMatch = (!query || (
+            p.name + ' ' + 
+            p.sl_username + ' ' + 
+            p.role + ' ' + 
+            p.tagline + ' ' + 
+            p.about + ' ' + 
+            (p.tags || []).join(' ')
+          ).toLowerCase().includes(query));
+
+          return roleMatch && tagMatch && textMatch;
+        });
+
+        countEl.textContent = `Showing ${filtered.length} of ${allProfiles.length} verified listings`;
+
+        if (filtered.length === 0) {
+          container.innerHTML = '<div class="card text-center p-40 text-muted font-sm w-100">No profiles found matching your search. Try searching a different keyword or resetting filters.</div>';
+          return;
+        }
+
+        filtered.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'dom-rate-card';
+
+          const isDomme = (p.role_type === 'domme' || p.role_type === 'DOMINANT' || p.role_type === 'dom');
+
+          card.innerHTML = `
+            <div>
+              <div class="flex-between align-start mb-16">
+                <div class="flex-row gap-12 align-center">
+                  <div class="avatar-icon-circle">
+                    ${isDomme ? '👑' : '🩷'}
+                  </div>
+                  <div>
+                    <h3 class="dom-name font-md m-0">${p.name}</h3>
+                    <div class="font-mono font-xs text-gold">@${p.sl_username}</div>
+                  </div>
+                </div>
+                <span class="${isDomme ? 'dom-role-badge' : 'section-tag font-2xs m-0'}">
+                  ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
+                </span>
+              </div>
+
+              <div class="font-xs text-gold font-bold mb-10">
+                ${p.role || (isDomme ? 'Dominant' : 'Submissive')}
+              </div>
+
+              <p class="dom-quote">
+                "${p.tagline}"
+              </p>
+
+              <div class="flex-row flex-wrap gap-8 mb-20">
+                ${(p.tags || []).slice(0, 3).map(t => `<span class="tag-pill-badge">${t}</span>`).join('')}
+              </div>
+            </div>
+
+            <div class="dom-rate-footer">
+              <div>
+                <span class="font-2xs text-muted block">Rates From:</span>
+                <span class="dom-rate-price">${p.starting_rate || 'From L$2,000 / hr'}</span>
+              </div>
+              <a href="/profile/${p.id}/" class="dom-rate-pill">
+                RATE CARD &rarr;
+              </a>
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+      }
+
+      if (searchInput) searchInput.addEventListener('input', renderProfiles);
+
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterButtons.forEach(b => {
+            b.classList.remove('btn-gold');
+            b.classList.add('btn-secondary');
+          });
+          btn.classList.remove('btn-secondary');
+          btn.classList.add('btn-gold');
+
+          activeRole = btn.getAttribute('data-role') || 'all';
+          activeTag = btn.getAttribute('data-tag') || '';
+          renderProfiles();
+        });
+      });
+
+      renderProfiles();
+    });
+  </script>
+</body>
+</html>

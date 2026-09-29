@@ -1,0 +1,441 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Enable local backend proxy for direct file editing on localhost
+local_backend: true
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  # -------------------------------------------------------------
+  # 1. Service Providers & Companions Directory
+  # -------------------------------------------------------------
+  - name: "directory"
+    label: "👑 Service Providers"
+    folder: "directory/profiles"
+    create: true
+    extension: "json"
+    format: "json"
+    slug: "{{id}}"
+    summary: "{{name}} ({{role}})"
+    fields:
+      - { label: "Slug / ID", name: "id", widget: "string", hint: "Unique filename ID, e.g. alexis-vane" }
+      - { label: "Display Name", name: "name", widget: "string" }
+      - { label: "Second Life Username", name: "sl_username", widget: "string" }
+      - { label: "Avatar UUID", name: "avatar_uuid", widget: "string", required: false }
+      - { label: "Role / Title", name: "role", widget: "string" }
+      - label: "Role Type"
+        name: "role_type"
+        widget: "select"
+        options:
+          - { label: "Dominant / Domme", value: "domme" }
+          - { label: "Submissive / Escort / FinSub", value: "sub" }
+          - { label: "Switch / Performer", value: "switch" }
+      - { label: "Availability Status", name: "status", widget: "string", default: "Available / In-World" }
+      - { label: "Starting Rate", name: "starting_rate", widget: "string", default: "L$1,000 / hr" }
+      - { label: "Rating Summary", name: "rating", widget: "string", default: "5.0 ★★★★★ (Verified)", required: false }
+      - { label: "Tagline", name: "tagline", widget: "string" }
+      - { label: "About Bio", name: "about", widget: "text" }
+      - { label: "Location / Suite", name: "location", widget: "string", default: "Chaos Manor VIP Lounge" }
+      - { label: "SLurl Landmark Link", name: "slurl", widget: "string", default: "secondlife://Chaos%20Manor/128/142/23" }
+      
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+        field: { label: "Tag", name: "tag", widget: "string" }
+
+      - label: "Hardware Compatibility"
+        name: "hardware_compat"
+        widget: "object"
+        fields:
+          - { label: "Vow Collar Certified", name: "vow_collar", widget: "boolean", default: true }
+          - { label: "Lovense Toy Control", name: "lovense", widget: "boolean", default: true }
+          - { label: "RLV Restraints", name: "rlv", widget: "boolean", default: true }
+          - { label: "Experience Enabled", name: "experience", widget: "boolean", default: true }
+
+      - label: "Photo Gallery"
+        name: "gallery"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Photo Title", name: "title", widget: "string" }
+          - { label: "Category", name: "category", widget: "string", default: "VIP Escort" }
+          - { label: "Image (Upload or Web URL)", name: "image", widget: "image" }
+          - { label: "Icon Emoji", name: "icon", widget: "string", default: "👗", required: false }
+
+      - label: "Rate Categories & Services"
+        name: "rate_categories"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Category Name", name: "category_name", widget: "string" }
+          - { label: "Category Description", name: "category_desc", widget: "string", required: false }
+          - label: "Services"
+            name: "services"
+            widget: "list"
+            fields:
+              - { label: "Service Name", name: "name", widget: "string" }
+              - { label: "Price", name: "price", widget: "string" }
+              - { label: "Billing Unit", name: "unit", widget: "string", default: "per hour" }
+              - { label: "Service Description", name: "desc", widget: "text", required: false }
+
+      - label: "Hard Limits"
+        name: "hard_limits"
+        widget: "list"
+        required: false
+        field: { label: "Limit Rule", name: "limit", widget: "string" }
+
+      - label: "Booking Protocol Steps"
+        name: "booking_protocol"
+        widget: "list"
+        required: false
+        field: { label: "Step", name: "step", widget: "string" }
+
+      - label: "Client Reviews & Testimonials"
+        name: "reviews"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Client Name", name: "client", widget: "string" }
+          - { label: "Stars", name: "stars", widget: "string", default: "★★★★★" }
+          - { label: "Testimonial Comment", name: "comment", widget: "text" }
+
+  # -------------------------------------------------------------
+  # 2. Sim Events & Tournaments (Individual Event Cards)
+  # -------------------------------------------------------------
+  - name: "events"
+    label: "📅 Sim Events & Calendar"
+    folder: "events/data"
+    create: true
+    extension: "json"
+    format: "json"
+    slug: "{{id}}"
+    summary: "{{title}} ({{date_display}})"
+    fields:
+      - { label: "Event Slug / ID", name: "id", widget: "string", hint: "e.g. cage-break-weekly" }
+      - { label: "Event Title", name: "title", widget: "string" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options:
+          - "Tournament"
+          - "Gala"
+          - "Community"
+          - "Workshop"
+          - "Party"
+          - "XP Boost"
+      - { label: "Category Badge (Caps)", name: "category_tag", widget: "string", default: "SIM EVENT" }
+      - { label: "Date Display", name: "date_display", widget: "string", hint: "e.g. Every Saturday • 1:00 PM SLT" }
+      - { label: "Date (ISO Format)", name: "date_iso", widget: "string", default: "2026-10-03T13:00", required: false }
+      - { label: "Location", name: "location", widget: "string", default: "Chaos Manor Arena & Central Laser Cages" }
+      - { label: "SLurl Link", name: "slurl", widget: "string", default: "secondlife://Chaos%20Manor/128/128/23" }
+      - { label: "Event Description", name: "description", widget: "text" }
+      - { label: "Google Calendar Title", name: "gcal_title", widget: "string", required: false }
+      - { label: "Google Calendar Details", name: "gcal_details", widget: "text", required: false }
+      - { label: "Google Calendar Location", name: "gcal_location", widget: "string", required: false }
+
+  # -------------------------------------------------------------
+  # 3. Blog & Announcements (Individual Articles)
+  # -------------------------------------------------------------
+  - name: "blog"
+    label: "📢 Blog & News"
+    folder: "blog/data"
+    create: true
+    extension: "json"
+    format: "json"
+    slug: "{{id}}"
+    summary: "{{title}} ({{category}})"
+    fields:
+      - { label: "Slug / ID", name: "id", widget: "string", hint: "Unique filename ID, e.g. vow-launch" }
+      - { label: "Article Title", name: "title", widget: "string" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options:
+          - "Product Launch"
+          - "Sim Event"
+          - "Economy Update"
+          - "Patch Notes"
+          - "Community"
+      - { label: "Display Date", name: "date", widget: "string", default: "October 2026" }
+      - { label: "Author", name: "author", widget: "string", default: "Architect of Chaos" }
+      - { label: "Featured Image (Upload or URL)", name: "featured_image", widget: "image", required: false }
+      - { label: "Short Summary (Meta Description)", name: "summary", widget: "text" }
+      - { label: "Full Article Content", name: "content", widget: "markdown" }
+
+  # -------------------------------------------------------------
+  # 4. Product Guides & Hardware Manuals
+  # -------------------------------------------------------------
+  - name: "product_guides"
+    label: "📦 Product Guides & Manuals"
+    folder: "guides/data"
+    create: true
+    extension: "json"
+    format: "json"
+    slug: "{{id}}"
+    summary: "{{title}} ({{price}})"
+    fields:
+      - { label: "Product Slug / ID", name: "id", widget: "string", hint: "e.g. pocket-pig, vow-collar, footkiss, tribute-jars, xp-titlers" }
+      - { label: "Product Title", name: "title", widget: "string", default: "[C&C] PocketPig Companion" }
+      - { label: "Category / Badge", name: "badge", widget: "string", default: "COMPANION HUD" }
+      - { label: "Icon Emoji", name: "icon", widget: "string", default: "🐷" }
+      - { label: "Price", name: "price", widget: "string", default: "L$899" }
+      - { label: "Marketplace URL", name: "marketplace_url", widget: "string", default: "https://marketplace.secondlife.com" }
+      - { label: "Hero Pill Text", name: "pill_text", widget: "string", default: "INTERACTIVE COMPANION • SECOND LIFE 2026" }
+      - { label: "Short Subtitle / Description", name: "description", widget: "text" }
+      
+      - label: "Key Features"
+        name: "features"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Feature Name", name: "title", widget: "string" }
+          - { label: "Details", name: "desc", widget: "text" }
+
+      - label: "Documentation Sections"
+        name: "sections"
+        widget: "list"
+        fields:
+          - { label: "Section Number & Title", name: "title", widget: "string", hint: "e.g. 1. Overview & Concept" }
+          - { label: "Section ID (for anchor jump links)", name: "section_id", widget: "string", required: false, hint: "e.g. overview, quick-start, faq" }
+          - { label: "Content (Markdown)", name: "content", widget: "markdown" }
+
+      - label: "Chat Commands (/commands)"
+        name: "chat_commands"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Channel & Syntax", name: "command", widget: "string", hint: "e.g. /33 pig menu" }
+          - { label: "Role / Permission", name: "role", widget: "string", default: "Wearer / Domme" }
+          - { label: "Action & Description", name: "desc", widget: "text" }
+
+      - label: "Technical Specifications"
+        name: "specs"
+        widget: "object"
+        required: false
+        fields:
+          - { label: "Attachment Points", name: "attachment", widget: "string", default: "Screen HUD + Bento Snout" }
+          - { label: "Script Engine", name: "scripts", widget: "string", default: "Mono 64-bit Low-Lag LSL" }
+          - { label: "Permissions Required", name: "permissions", widget: "string", default: "Copy / Mod / No-Transfer" }
+          - { label: "Compatibility", name: "compatibility", widget: "string", default: "Vow Collar, Tribute Jars, Firestorm RLV" }
+          - { label: "Package Contents", name: "contents", widget: "string", default: "Screen HUD, Bento Snout Prop, Sound FX, User Manual" }
+
+  # -------------------------------------------------------------
+  # 5. XP Economy & Sim Showcase Page
+  # -------------------------------------------------------------
+  - name: "xp_page"
+    label: "🏆 XP Economy & Sim Rules"
+    files:
+      - label: "XP Economy & Sim Page Editor"
+        name: "xp_system_content"
+        file: "xp-system/data.json"
+        format: "json"
+        fields:
+          - label: "Hero Banner"
+            name: "hero"
+            widget: "object"
+            fields:
+              - { label: "Badge Tag", name: "badge", widget: "string" }
+              - { label: "Main Title", name: "title", widget: "string" }
+              - { label: "Subtitle", name: "subtitle", widget: "text" }
+
+          - label: "The Philosophy Manifesto"
+            name: "manifesto"
+            widget: "object"
+            fields:
+              - { label: "Badge Tag", name: "badge", widget: "string" }
+              - { label: "Manifesto Title", name: "title", widget: "string" }
+              - { label: "Highlight Quote", name: "quote", widget: "text" }
+              - { label: "Lead Statement", name: "lead", widget: "text" }
+              - label: "Paragraphs"
+                name: "paragraphs"
+                widget: "list"
+                field: { label: "Paragraph Text", name: "p", widget: "text" }
+
+          - label: "DOM & SUB Factions"
+            name: "factions"
+            widget: "object"
+            fields:
+              - label: "Dominant Track (DOM)"
+                name: "dom"
+                widget: "object"
+                fields:
+                  - { label: "Track Title", name: "title", widget: "string" }
+                  - { label: "Tagline", name: "tagline", widget: "string" }
+                  - { label: "Badge", name: "badge", widget: "string" }
+                  - { label: "Description", name: "desc", widget: "text" }
+                  - label: "Perks"
+                    name: "perks"
+                    widget: "list"
+                    field: { label: "Perk", name: "perk", widget: "string" }
+                  - label: "Milestones"
+                    name: "milestones"
+                    widget: "list"
+                    fields:
+                      - { label: "Level Range", name: "level", widget: "string" }
+                      - { label: "Tier Name", name: "tier", widget: "string" }
+                      - { label: "Title / Rank", name: "title", widget: "string" }
+                      - { label: "Key Benefit", name: "benefit", widget: "string" }
+
+              - label: "Submissive Track (SUB)"
+                name: "sub"
+                widget: "object"
+                fields:
+                  - { label: "Track Title", name: "title", widget: "string" }
+                  - { label: "Tagline", name: "tagline", widget: "string" }
+                  - { label: "Badge", name: "badge", widget: "string" }
+                  - { label: "Description", name: "desc", widget: "text" }
+                  - label: "Perks"
+                    name: "perks"
+                    widget: "list"
+                    field: { label: "Perk", name: "perk", widget: "string" }
+                  - label: "Milestones"
+                    name: "milestones"
+                    widget: "list"
+                    fields:
+                      - { label: "Level Range", name: "level", widget: "string" }
+                      - { label: "Tier Name", name: "tier", widget: "string" }
+                      - { label: "Title / Rank", name: "title", widget: "string" }
+                      - { label: "Key Benefit", name: "benefit", widget: "string" }
+
+          - label: "Active Registered Dominants"
+            name: "registered_doms"
+            widget: "object"
+            fields:
+              - { label: "Badge Tag", name: "badge", widget: "string", default: "ACTIVE IN-WORLD • REGISTERED DOMMES" }
+              - { label: "Section Title", name: "title", widget: "string", default: "Control & Chaos Registered Dominants" }
+              - { label: "Subtitle", name: "subtitle", widget: "text", default: "These verified Dominants are active players on the estate holding court and leading factions. Submissives are welcome to explore their rate cards, pay homage at their tribute jars, or contact them directly for sessions and service." }
+              - { label: "Directory Button Text", name: "cta_text", widget: "string", default: "Browse Full Directory" }
+              - { label: "Directory Link URL", name: "cta_url", widget: "string", default: "/directory/" }
+              - label: "Featured Dominants Rate Cards"
+                name: "doms"
+                widget: "list"
+                fields:
+                  - { label: "ID / Slug", name: "id", widget: "string", hint: "e.g. alexis-vane" }
+                  - { label: "Dominant Name", name: "name", widget: "string" }
+                  - { label: "SL Username", name: "sl_username", widget: "string" }
+                  - { label: "Role Badge Text", name: "role_type", widget: "string", default: "DOMINANT" }
+                  - { label: "Tagline Quote", name: "tagline", widget: "text" }
+                  - { label: "Starting Rate", name: "rate", widget: "string", default: "From L$2,500 / hr" }
+                  - { label: "Profile Page URL", name: "profile_url", widget: "string", hint: "e.g. /profile/alexis-vane/" }
+
+          - label: "Ways to Earn XP & Coins"
+            name: "ways_to_earn"
+            widget: "list"
+            fields:
+              - { label: "Icon Emoji", name: "icon", widget: "string" }
+              - { label: "Payout Badge", name: "badge", widget: "string" }
+              - { label: "Activity Title", name: "title", widget: "string" }
+              - { label: "Description & Rules", name: "desc", widget: "text" }
+
+          - label: "Gold Coin Reward Exchange"
+            name: "reward_shop"
+            widget: "object"
+            fields:
+              - { label: "Section Title", name: "title", widget: "string" }
+              - { label: "Subtitle", name: "subtitle", widget: "text" }
+              - label: "Reward Tiers"
+                name: "tiers"
+                widget: "list"
+                fields:
+                  - { label: "Tier Name", name: "name", widget: "string" }
+                  - { label: "Coin Cost Range", name: "cost", widget: "string" }
+                  - { label: "Icon Emoji", name: "icon", widget: "string" }
+                  - label: "Included Perks & Items"
+                    name: "items"
+                    widget: "list"
+                    field: { label: "Item", name: "item", widget: "string" }
+
+          - label: "Venue Lookbook Gallery"
+            name: "venue_gallery"
+            widget: "list"
+            fields:
+              - { label: "Venue Title", name: "title", widget: "string" }
+              - { label: "Category", name: "category", widget: "string" }
+              - { label: "Description", name: "desc", widget: "text" }
+              - { label: "Image (Upload or URL)", name: "image", widget: "image" }
+              - { label: "Icon Emoji", name: "icon", widget: "string", default: "✨" }
+
+          - label: "Frequently Asked Questions (FAQs)"
+            name: "faqs"
+            widget: "list"
+            fields:
+              - { label: "Question", name: "question", widget: "string" }
+              - { label: "Answer", name: "answer", widget: "text" }
+
+          - label: "Sim Code of Conduct Rules"
+            name: "sim_rules"
+            widget: "list"
+            fields:
+              - { label: "Badge Tag", name: "badge", widget: "string" }
+              - { label: "Rule Title", name: "title", widget: "string" }
+              - { label: "Rule Details", name: "desc", widget: "text" }
+
+          - label: "3-Step Quick Start"
+            name: "quick_start"
+            widget: "list"
+            fields:
+              - { label: "Step Number", name: "step", widget: "string" }
+              - { label: "Step Title", name: "title", widget: "string" }
+              - { label: "Step Instructions", name: "desc", widget: "text" }
+
+  # -------------------------------------------------------------
+  # 6. Site Settings & Global Components
+  # -------------------------------------------------------------
+  - name: "settings"
+    label: "⚙️ Site Settings & Global Components"
+    files:
+      - label: "Top Navigation Bar"
+        name: "nav_menu"
+        file: "settings/navigation.json"
+        format: "json"
+        fields:
+          - { label: "Brand Title", name: "brand_title", widget: "string", default: "CONTROL & CHAOS" }
+          - { label: "Brand Subtitle", name: "brand_subtitle", widget: "string", default: "SECOND LIFE GAMIFIED ECOSYSTEM" }
+          - { label: "InWorld SLurl Link", name: "inworld_slurl", widget: "string", default: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000" }
+          - { label: "InWorld Button Text", name: "inworld_button_text", widget: "string", default: "Visit Us InWorld" }
+          - label: "Navigation Links"
+            name: "links"
+            widget: "list"
+            fields:
+              - { label: "Label", name: "label", widget: "string" }
+              - { label: "URL / Path", name: "url", widget: "string" }
+              - { label: "Emoji / Icon (for mobile drawer)", name: "icon", widget: "string", default: "🔗", required: false }
+              - { label: "Open in New Tab", name: "new_tab", widget: "boolean", default: false }
+
+      - label: "Site Footer & Links"
+        name: "footer_settings"
+        file: "settings/footer.json"
+        format: "json"
+        fields:
+          - { label: "Brand Title", name: "brand_title", widget: "string", default: "CONTROL & CHAOS" }
+          - { label: "Footer Summary Text", name: "desc", widget: "text", default: "Second Life's premier gamified FinDom sim, escort directory, and hardware development house." }
+          - { label: "Copyright Line", name: "copyright", widget: "string", default: "© 2026 Control & Chaos. All rights reserved." }
+          - label: "Link Columns"
+            name: "columns"
+            widget: "list"
+            fields:
+              - { label: "Column Title", name: "title", widget: "string" }
+              - label: "Links"
+                name: "links"
+                widget: "list"
+                fields:
+                  - { label: "Link Label", name: "label", widget: "string" }
+                  - { label: "URL / Path", name: "url", widget: "string" }
+                  - { label: "Open in New Tab", name: "new_tab", widget: "boolean", default: false }
+
+      - label: "Homepage Hero & Global Announcements"
+        name: "homepage_content"
+        file: "settings/homepage.json"
+        format: "json"
+        fields:
+          - { label: "Announcement Pill Banner", name: "pill_text", widget: "string", default: "⚡ CHAOS MANOR V2 ECOSYSTEM LIVE" }
+          - { label: "Main Headline", name: "headline", widget: "string", default: "THE NEXUS OF LUXURY, DISCIPLINE & CODE" }
+          - { label: "Hero Subtitle", name: "subtitle", widget: "text", default: "Welcome to Second Life's premier luxury FinDom sanctuary, immersive hardware ecosystem, and competitive XP gaming arena." }
+          - { label: "Discord Community Link", name: "discord_url", widget: "string", required: false }
+          - { label: "Second Life Sim SLurl", name: "sim_slurl", widget: "string", default: "secondlife://Chaos%20Manor/128/128/23" }
+          - { label: "Marketplace Store URL", name: "marketplace_url", widget: "string", required: false }
+

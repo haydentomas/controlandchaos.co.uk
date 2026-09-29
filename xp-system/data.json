@@ -1,0 +1,335 @@
+{
+  "hero": {
+    "badge": "EXPERIENCE CLOUD • LEVEL 1 TO 50 PROGRESSION",
+    "title": "Gamified FinDom, Ranks & Sim Rules",
+    "subtitle": "Discover Second Life's premier interactive economy: 50 progressive ranks, Gold Coin rewards, arcade gaming, active daily quests, and registered Dominants holding court in luxury."
+  },
+  "manifesto": {
+    "badge": "OUR PHILOSOPHY",
+    "title": "Making FinDom & Submissive Culture Fun Again",
+    "lead": "For years, Second Life FinDom has too often felt one-dimensional—silent tip jars and transactional scripts with no world to explore. Control & Chaos was engineered to change that forever.",
+    "quote": "FinDom should be an exhilarating game of status, devotion, luxury roleplay, and collective celebration.",
+    "paragraphs": [
+      "We believe submission and dominance are interactive art forms. Our custom LSL Experience Cloud turns every interaction on the sim—from lively conversations in the Grand Ballroom to laser arena defense, arcade puzzle merge games, and sim-wide coin hunts—into tangible XP and Gold Coins.",
+      "Whether you are a Dominant looking to command devotion and build a loyal faction, or a Submissive striving to earn prestigious vanity titles and unlock exclusive privileges, Control & Chaos is your living playground."
+    ]
+  },
+  "factions": {
+    "dom": {
+      "title": "Dominant Track",
+      "tagline": "Empress • Mistress • Master",
+      "badge": "FACTION DOM",
+      "desc": "Command devotion, set custom tribute rules, host cage break defense squads, and level up to unlock estate-wide broadcasts and luxury throne privileges.",
+      "perks": [
+        "Sim-wide custom arrival announcements at Level 20+",
+        "Exclusive access to the VIP Empress Lounge & Private Suites",
+        "Personalized Tribute Jar skins & floating particle effects",
+        "Host live trivia battles, games, and earn bonus host XP",
+        "Directory listing eligibility with verified client rate cards"
+      ],
+      "milestones": [
+        { "level": "1 – 9", "tier": "Initiate", "title": "Novice Dom &bull; Rising Dominant", "benefit": "Estate registration &amp; base titler glow" },
+        { "level": "10 – 19", "tier": "Mistress", "title": "Recognized &bull; Commanding Presence", "benefit": "Access to private ballroom lounges" },
+        { "level": "20 – 34", "tier": "High Dom", "title": "Imperial Authority &bull; Revered Mistress", "benefit": "✨ VIP Arrival Audio &amp; Broadcast Announcement" },
+        { "level": "35 – 49", "tier": "Sovereign", "title": "Regal Dominant &bull; Supreme Ruler", "benefit": "Custom Particle Aura &amp; Gold Coin multipliers" },
+        { "level": "50", "tier": "SOVEREIGN MAX", "title": "👑 Sovereign of Chaos &bull; Prestige Ready", "benefit": "Permanent Estate Monument &amp; Prestige Title" }
+      ]
+    },
+    "sub": {
+      "title": "Submissive Track",
+      "tagline": "Devoted • Bound • Icon",
+      "badge": "FACTION SUB",
+      "desc": "Surrender willingly, serve registered Dominants, climb 50 devoted ranks, solve quests, stack Gold Coins, and proudly display your devotion in chat.",
+      "perks": [
+        "Earn XP passively through Social Sit radar in public lounges",
+        "Collect Gold Coins from Merge Game and Greedy Dice arcades",
+        "Unlock exclusive Collar Vanity attachments and RLV shaders",
+        "Daily quest XP bonuses and sim-wide hidden coin hunts",
+        "Prestige resets at Level 50 with permanent glowing badges"
+      ],
+      "milestones": [
+        { "level": "1 – 9", "tier": "Aspirant", "title": "Willing Pup &bull; Obedient Pet", "benefit": "Basic Titler &amp; Experience auto-sync" },
+        { "level": "10 – 19", "tier": "Devoted", "title": "Eager Devotion &bull; Deep Surrender", "benefit": "Unlocks daily bonus quest slot" },
+        { "level": "20 – 34", "tier": "Bound", "title": "Faithful Bound &bull; Owned Completely", "benefit": "✨ VIP Arrival FX &amp; Arcade Bonus Multipliers" },
+        { "level": "35 – 49", "tier": "Icon", "title": "Perfect Vessel &bull; Living Tribute", "benefit": "Gold Coin Exchange 20% discount" },
+        { "level": "50", "tier": "ICON MAX", "title": "💎 Icon of Devotion &bull; Prestige Ready", "benefit": "Diamond Collar Badge &amp; Prestige Reset Token" }
+      ]
+    }
+  },
+  "registered_doms": {
+    "badge": "ACTIVE IN-WORLD • REGISTERED DOMMES",
+    "title": "Control & Chaos Registered Dominants",
+    "subtitle": "These verified Dominants are active players on the estate holding court and leading factions. Submissives are welcome to explore their rate cards, pay homage at their tribute jars, or contact them directly for sessions and service.",
+    "cta_text": "Browse Full Directory",
+    "cta_url": "/directory/",
+    "doms": [
+      {
+        "id": "alexis-vane",
+        "name": "Mistress Alexis Vane",
+        "sl_username": "alek.zane",
+        "role_type": "DOMINANT",
+        "title": "Financial Domme & Luxury Companion",
+        "tagline": "Unapologetic luxury, exquisite psychological draining, and high-society accompaniment.",
+        "rate": "From L$2,500 / hr",
+        "profile_url": "/profile/alexis-vane/"
+      },
+      {
+        "id": "seraphina-noir",
+        "name": "Lady Seraphina Noir",
+        "sl_username": "seraphina.noir",
+        "role_type": "DOMINANT",
+        "title": "Sensory Deprivation & RLV Mistress",
+        "tagline": "Sensory deprivation, voice whisper hypnosis, and uncompromising posture discipline.",
+        "rate": "From L$2,000 / hr",
+        "profile_url": "/profile/seraphina-noir/"
+      },
+      {
+        "id": "damien-cross",
+        "name": "Master Damien Cross",
+        "sl_username": "damien.cross",
+        "role_type": "DOMINANT",
+        "title": "Master & Gentleman Dominant",
+        "tagline": "Refined male dominance, dark romance, and behavioral protocol calibration.",
+        "rate": "From L$1,800 / hr",
+        "profile_url": "/profile/damien-cross/"
+      }
+    ]
+  },
+  "ways_to_earn": [
+    {
+      "icon": "💬",
+      "badge": "+2 to +4 XP per 90s",
+      "title": "Roleplay & Conversation",
+      "desc": "Simply talking in local chat (3+ words, 15+ characters) awards +2 XP. Writing descriptive /me roleplay emotes awards +4 XP with an organic 90-second conversational cooldown."
+    },
+    {
+      "icon": "🛋️",
+      "badge": "+2 to +3 XP / 3–5 min",
+      "title": "Social Sit Radar",
+      "desc": "Earn passive XP while lounging in the Grand Ballroom, Bar, or Lounge. Solo sitting awards +2 XP every 3 minutes. Couple sitting with a partner awards +3 XP every 5 minutes (250 XP/day cap)."
+    },
+    {
+      "icon": "🎯",
+      "badge": "+25 XP • +10 Coins",
+      "title": "Rotating Daily Quests",
+      "desc": "Two fresh missions reset daily at midnight SLT at the main Terminal. Quests rotate through chat sessions, sitting, trivia answers, arcade games, and coin hunts for fast coin stacking."
+    },
+    {
+      "icon": "❓",
+      "badge": "+15 to +25 XP",
+      "title": "Live DOM vs SUB Trivia",
+      "desc": "Sim staff and event hosts launch live trivia rounds in local chat. First correct answer earns +15 XP, with +25 XP bonus twist rounds. Trivia scores are tallied by faction to crown weekly winners!"
+    },
+    {
+      "icon": "🎲",
+      "badge": "+25 XP • Gold Coins",
+      "title": "Greedy Dice Arcade",
+      "desc": "The beloved Second Life Greedy dice game is fully integrated into the sim reward system. Joining a game grants +5 XP, winning rounds awards coins, and winning a full match awards +25 XP + Gold Coins."
+    },
+    {
+      "icon": "🧩",
+      "badge": "Up to 250 XP/game",
+      "title": "Merge Game Arcade Cabinet",
+      "desc": "Test your puzzle reflexes on the Darkmoon Edition Merge arcade cabinets. Earn 1 XP for every 10 points scored (up to 250 XP per game) plus Gold Coins upon game completion (150 Coins/day cap)."
+    },
+    {
+      "icon": "🪙",
+      "badge": "+1 to +50 Coins ✨",
+      "title": "Sim-Wide Coin Hunt",
+      "desc": "Explore secret nooks, high rafters, dungeon cells, and rooftop gardens. Hidden gold coins, rare token chests, and mystery multipliers refresh every 3 hours across the parcel."
+    },
+    {
+      "icon": "🏺",
+      "badge": "Instant 1:1 XP Match",
+      "title": "Tribute Jars & FinDom Gifting",
+      "desc": "Every Linden Dollar (L$) paid into a registered Dominant's Tribute Jar instantly converts into matching XP for both the gifter and recipient, powering your leveling while honoring your Domme."
+    },
+    {
+      "icon": "🎧",
+      "badge": "+10 to +50 XP",
+      "title": "DJ & Staff Tip Jars",
+      "desc": "Show love to live sim performers, DJs, hosts, and stage dancers during scheduled events. Tipping awards instant XP bonuses and triggers celebratory ambient light beams across the ballroom."
+    },
+    {
+      "icon": "⭐",
+      "badge": "+100 XP / Week",
+      "title": "Profile 'Picks' Loyalty",
+      "desc": "Add Control & Chaos to your Second Life viewer profile Picks. Touch the Loyalty Board weekly to verify your profile link and collect +100 XP and +20 Gold Coins automatically."
+    },
+    {
+      "icon": "🤝",
+      "badge": "+50 XP per Citizen",
+      "title": "Citizen Referral Program",
+      "desc": "Invite friends or submissives to register on the sim. Once your referral reaches Level 5 in either faction, both of you are awarded +50 XP and a 10 Gold Coin referral bounty."
+    },
+    {
+      "icon": "⛓️",
+      "badge": "Weekly Event Prizes",
+      "title": "Cage Break Mini-Events",
+      "desc": "Compete in the Neon Laser Cage Arena every Saturday at 1:00 PM SLT. Submissives work to hack laser locks while Dominants guard the cells. Top performers win huge XP pots and rare items."
+    }
+  ],
+  "reward_shop": {
+    "title": "Gold Coin Reward Exchange",
+    "subtitle": "Convert your active gaming time and loyalty into exclusive Second Life rewards, vanity accessories, and VIP privileges at the main Terminal.",
+    "tiers": [
+      {
+        "name": "Tier 1: Digital Vanity",
+        "cost": "50 – 150 Coins",
+        "icon": "🎨",
+        "items": [
+          "Custom Chat Hover Title colors",
+          "Exclusive In-World Badge Icons",
+          "VIP Particle Footstep Trails (3-Day)"
+        ]
+      },
+      {
+        "name": "Tier 2: Social Perks",
+        "cost": "200 – 400 Coins",
+        "icon": "🥂",
+        "items": [
+          "Velvet Lounge 7-Day Access Pass",
+          "Reserved Ballroom Table for 24h",
+          "DJ Shoutout & Custom Song Dedication"
+        ]
+      },
+      {
+        "name": "Tier 3: Sim Power",
+        "cost": "500 – 1,000 Coins",
+        "icon": "⚡",
+        "items": [
+          "Custom Tip Jar holographic theme",
+          "Sim-wide arrival chime & banner",
+          "1-Week 1.25x XP Booster Token"
+        ]
+      },
+      {
+        "name": "Tier 4: RLV & Hardware",
+        "cost": "1,500+ Coins",
+        "icon": "👑",
+        "items": [
+          "Limited Edition Vow Collar Vanities",
+          "Exclusive PocketPig companion skins",
+          "Lifetime Hall of Fame Plaque"
+        ]
+      }
+    ]
+  },
+  "venue_gallery": [
+    {
+      "title": "Grand Ballroom & Social Hub",
+      "category": "Main Social Hub",
+      "desc": "The majestic centerpiece of Control & Chaos. Features couple dance spheres, social sit radar couches, and live DJ staging for nightly galas.",
+      "image": "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=1200&q=80",
+      "icon": "✨"
+    },
+    {
+      "title": "Neon Laser Arena & Cage Break",
+      "category": "Competitive Arena",
+      "desc": "High-octane cybernetic tournament arena equipped with laser restraint cells, hackable terminals, and competitive DOM vs SUB cage break battles.",
+      "image": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=80",
+      "icon": "⚡"
+    },
+    {
+      "title": "The Velvet Chamber",
+      "category": "Private VIP Lounge",
+      "desc": "An intimate sanctuary bathed in warm amber light and deep crimson velvet. Reserved for high-level Dominants, private consultations, and RLV sessions.",
+      "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80",
+      "icon": "🍸"
+    },
+    {
+      "title": "Retro Arcade & Gaming Parlor",
+      "category": "Arcade Parlor",
+      "desc": "Lined with Greedy dice tables, Darkmoon Merge cabinets, and trivia terminals where citizens compete for daily high scores and Gold Coins.",
+      "image": "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+      "icon": "🎲"
+    },
+    {
+      "title": "The Restraint Dungeon",
+      "category": "Dungeon & Training",
+      "desc": "Atmospheric subterranean dungeon equipped with Vow Collar sync pillars, posture enforcement crosses, and sensory deprivation chambers.",
+      "image": "https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=1200&q=80",
+      "icon": "⛓️"
+    },
+    {
+      "title": "Skyline Rooftop Terrace",
+      "category": "Rooftop Garden",
+      "desc": "Open-air panoramic observation deck overlooking the estate skyline. Features romantic couple swings, ambient fireplaces, and hidden coin spawns.",
+      "image": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
+      "icon": "🌆"
+    }
+  ],
+  "faqs": [
+    {
+      "question": "Is the Control & Chaos XP System free to join and play?",
+      "answer": "Yes, 100% free! You do not need to spend any Linden Dollars to register, chat, sit on radar furniture, play Greedy dice, solve the Merge puzzle games, answer trivia, or climb through all 50 levels. Tributes and shopping simply offer bonus XP acceleration."
+    },
+    {
+      "question": "How do I choose between DOM and SUB factions?",
+      "answer": "When you arrive at the sim, touch the Registration Terminal at the landing point. You will receive an Experience permission dialog and a menu to select either the Dominant (Empress/Master) or Submissive (Devoted/Bound) faction. You can request a faction change from sim staff if needed."
+    },
+    {
+      "question": "Do I need the Vow Collar or special mesh attachments to earn XP?",
+      "answer": "No mesh collar is required to earn XP or level up. The Second Life Experience script operates entirely cloud-side. However, wearing certified hardware like the Vow Collar or PocketPig HUD unlocks automatic posture syncing, collar vanity badges, and RLV remote integration."
+    },
+    {
+      "question": "How do Gold Coins work compared to XP?",
+      "answer": "XP is your permanent leveling score that determines your rank, title badge, and leaderboard standing (from Level 1 to Level 50). Gold Coins are the spendable currency you earn from quests, games, and coin hunts that can be exchanged at the terminal for items, vanity titles, and VIP lounge passes."
+    },
+    {
+      "question": "What are the daily Anti-AFK earning caps?",
+      "answer": "To keep the sim vibrant and prevent unattended bot farming, passive earnings have healthy daily maximums (e.g., 250 XP/day for Social Sit radar, 150 Gold Coins/day for the Merge Game). Active gameplay like trivia, roleplay, and quests have generous separate caps that reset daily at midnight SLT."
+    },
+    {
+      "question": "Can I lose my XP, levels, or rank if I leave the sim?",
+      "answer": "Never. All citizen statistics are securely stored in our cloud database via Second Life Experience KVP. Your rank, title, and Gold Coin balance will be waiting for you whenever you return to Control & Chaos or any affiliated estate parcel."
+    },
+    {
+      "question": "How do I become a Registered Dominant or get listed in the Directory?",
+      "answer": "Verified Dominants who actively host sessions or maintain tribute jars on the sim can apply for a dedicated profile in our Service Providers Directory. Visit our Contact Concierge page or apply directly at the In-World Estate Office to set up your rate card and custom suite."
+    },
+    {
+      "question": "Are RLV restraints and FinDom interactions strictly consensual?",
+      "answer": "Strictly and unconditionally consensual. All RLV devices respect viewer opt-in permissions and must feature immediate emergency release mechanisms. Our estate enforces a zero-tolerance policy against non-consensual griefing or harassment."
+    }
+  ],
+  "sim_rules": [
+    {
+      "badge": "CONSENT FIRST",
+      "title": "Consensual FinDom & D/s Etiquette",
+      "desc": "All financial domination, tipping, service dynamics, and dominance protocols must be mutually consensual. Unsolicited demands or harassment in local chat will result in an immediate estate ejection."
+    },
+    {
+      "badge": "SAFETY & RLV",
+      "title": "RLV Safety & Emergency Release",
+      "desc": "All RLV objects (cages, gags, collars, restraints) must respect user opt-in and allow wearer-triggered emergency release commands (/safeword or collar unlock) at all times."
+    },
+    {
+      "badge": "FAIR PLAY",
+      "title": "Anti-AFK & Anti-Bot Policy",
+      "desc": "Unattended macro bots, script spammers, and radar auto-clickers are strictly prohibited. Daily caps automatically protect the economy, and obvious automation scripts will be penalized."
+    },
+    {
+      "badge": "TRANSPARENCY",
+      "title": "Transparent Rates & Tributes",
+      "desc": "All registered Dominants, escorts, and entertainers must maintain clear rate cards and tribute expectations. All tip jars and gaming tables run on transparent LSL logic."
+    }
+  ],
+  "quick_start": [
+    {
+      "step": "1",
+      "title": "Teleport In-World",
+      "desc": "Arrive at Chaos Manor using the SLurl link. Accept the Experience permission prompt for seamless auto-tracking."
+    },
+    {
+      "step": "2",
+      "title": "Touch the Registration Terminal",
+      "desc": "Select your Faction (DOM or SUB) to receive your starter citizen titler HUD and view your initial daily quests."
+    },
+    {
+      "step": "3",
+      "title": "Play, Socialize & Level Up",
+      "desc": "Chat in the ballroom, lounge with friends, challenge players in the arcade, and watch your rank soar to Level 50!"
+    }
+  ]
+}

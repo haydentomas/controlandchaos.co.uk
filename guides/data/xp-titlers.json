@@ -1,0 +1,64 @@
+{
+  "id": "xp-titlers",
+  "title": "[C&C] Free XP Titlers",
+  "badge": "FREE STARTER",
+  "icon": "👑",
+  "price": "L$0 (FREE)",
+  "marketplace_url": "https://marketplace.secondlife.com",
+  "pill_text": "OVERHEAD TITLER • SECOND LIFE 2026",
+  "description": "Floating overhead titler synchronizing with your Experience Cloud level, active rank title (e.g. Initiate, Sovereign, Icon), Prestige star status, and weekly streak bonuses.",
+  "features": [
+    {
+      "title": "Live Cloud Rank Sync",
+      "desc": "Automatically displays your real-time level and rank without manual notecard edits."
+    },
+    {
+      "title": "Prestige Stars & Streaks",
+      "desc": "Visual badge markers for VIP and top-tier sim leaderboard players."
+    },
+    {
+      "title": "Color & Style Picker",
+      "desc": "12 velvet, obsidian, and champagne gold font styles."
+    },
+    {
+      "title": "100% Free for Sim Visitors",
+      "desc": "Claimable from the arrival terminal at Chaos Manor or on SL Marketplace."
+    }
+  ],
+  "sections": [
+    {
+      "title": "1. How to Claim & Wear",
+      "section_id": "overview",
+      "content": "Claim the **[C&C] Free XP Titler** from the arrival landing point at Chaos Manor or order free on SL Marketplace. Right-click > Attach to **Avatar Center 2**."
+    },
+    {
+      "title": "2. Customization Commands",
+      "section_id": "commands",
+      "content": "Type `/11 titler menu` to change text colors, toggle prestige star icons, or switch to stealth mode."
+    }
+  ],
+  "chat_commands": [
+    {
+      "command": "/11 titler menu",
+      "role": "Wearer",
+      "desc": "Opens customization dialog."
+    },
+    {
+      "command": "/11 titler hide",
+      "role": "Wearer",
+      "desc": "Temporarily hides overhead floating text."
+    },
+    {
+      "command": "/11 titler show",
+      "role": "Wearer",
+      "desc": "Restores floating title and stats."
+    }
+  ],
+  "specs": {
+    "attachment": "Avatar Center 2 / Skull",
+    "scripts": "Zero-Lag Lightweight Mono Script",
+    "permissions": "Copy / Mod / No-Transfer",
+    "compatibility": "Control & Chaos Experience Cloud",
+    "contents": "Titler Mesh, Setup Script, Style Palette"
+  }
+}

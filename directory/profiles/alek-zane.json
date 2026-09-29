@@ -1,0 +1,101 @@
+{
+  "id": "alek-zane",
+  "name": "Alek Zane",
+  "sl_username": "alek.zane",
+  "avatar_uuid": "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec",
+  "role": "Bratty, Pay to Play Submissive",
+  "role_type": "sub",
+  "tagline": "Calculated financial surrender, high-society gala accompaniment, and bespoke companion roleplay.",
+  "about": "A premier luxury companion offering bespoke immersion packages. From high-stakes financial drain sessions to immaculate formal event accompaniment, I provide unmatched sophistication, dark charm, and rigorous boundary respect.",
+  "location": "Chaos Manor Penthouse & VIP Skybox",
+  "slurl": "secondlife://Chaos%20Manor/128/128/23",
+  "rating": "5.0 ★★★★★ (35 Verified Tributes)",
+  "starting_rate": "L$3,000 / hr",
+  "tags": [
+    "FinDom",
+    "VIP Escort",
+    "High Society",
+    "RLV Restraints",
+    "Lovense Control",
+    "Air Tax Protocol"
+  ],
+  "hardware_compat": {
+    "vow_collar": true,
+    "lovense": true,
+    "rlv": true,
+    "experience": true
+  },
+  "gallery": [
+    {
+      "title": "Formal Gala & Black Tie Look",
+      "category": "VIP Escort",
+      "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
+      "icon": "🤵"
+    },
+    {
+      "title": "Private Skybox Lounge",
+      "category": "Companion Roleplay",
+      "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+      "icon": "🍸"
+    },
+    {
+      "title": "RLV Chamber Protocol",
+      "category": "Restraints",
+      "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
+      "icon": "⛓️"
+    },
+    {
+      "title": "Chaos Manor Grand Ballroom",
+      "category": "Venue Arm Candy",
+      "image": "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80",
+      "icon": "👑"
+    }
+  ],
+  "rate_categories": [
+    {
+      "category_name": "🪙 Financial Domination & Psychological Draining",
+      "category_desc": "Live wallet cleanouts, task enforcement, and recurring air taxes.",
+      "services": [
+        {
+          "name": "1-on-1 High-Stakes Drain Session",
+          "price": "L$3,500",
+          "unit": "per hour",
+          "desc": "Calculated psychological drain with live tribute milestones and titler badges."
+        },
+        {
+          "name": "Sim-Wide Public Surrender",
+          "price": "L$10,000+",
+          "unit": "per event",
+          "desc": "Full public tribute broadcast across the entire Chaos Manor region."
+        }
+      ]
+    },
+    {
+      "category_name": "🤵 Luxury Escort & Public Companion",
+      "category_desc": "Elite public date accompaniment, high-society galas, and VIP functions.",
+      "services": [
+        {
+          "name": "Gala & Formal Date Accompaniment",
+          "price": "L$4,500",
+          "unit": "2 hours",
+          "desc": "Bespoke companion for galas, high-society balls, and private dinners."
+        }
+      ]
+    }
+  ],
+  "hard_limits": [
+    "No non-consensual limits, zero OOC disrespect, strict safety words."
+  ],
+  "booking_protocol": [
+    "1. Send an in-world IM or notecard to alek.zane Resident with your desired package.",
+    "2. State your Second Life timezone and preferred venue.",
+    "3. Settle retainer via Tribute Jar at Chaos Manor before session starts."
+  ],
+  "reviews": [
+    {
+      "client": "Lady_Vesper Resident",
+      "stars": "★★★★★",
+      "comment": "Alek is consummate perfection. Charming, dangerous, and unforgettable."
+    }
+  ]
+}

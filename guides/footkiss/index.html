@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[C&amp;C] FootKiss &amp; Shoe Worship System User Guide | Control &amp; Chaos</title>
+  <meta name="description" content="Official user guide for the [C&amp;C] FootKiss &amp; Shoe Worship interactive system. Proximity kneeling, tribute-per-kiss settings, shoe shine animations, and Domme authorization.">
+  <link rel="canonical" href="https://controlandchaos.com/guides/footkiss/">
+  
+  <!-- OpenGraph / Facebook / Discord Rich Previews -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="[C&amp;C] FootKiss &amp; Shoe Worship User Guide">
+  <meta property="og:description" content="Automated proximity kneeling, shoe shine animation sequences, tribute-per-kiss tipping, and authorized worshipper lists.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=80">
+  <meta property="og:url" content="https://controlandchaos.com/guides/footkiss/">
+  <meta property="og:site_name" content="Control &amp; Chaos">
+
+  <!-- Twitter Card SEO -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="[C&amp;C] FootKiss &amp; Shoe Worship User Guide">
+  <meta name="twitter:description" content="Automated proximity kneeling, shoe shine animation sequences, tribute-per-kiss tipping, and authorized worshipper lists.">
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "[C&C] FootKiss & Shoe Worship System User Guide",
+    "description": "Official user guide for the [C&C] FootKiss & Shoe Worship interactive system.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Control & Chaos Second Life"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+  <!-- Master Navigation Component -->
+  <site-navbar></site-navbar>
+
+  <!-- Product Guide Hero -->
+  <header class="hero" style="min-height: 50vh; padding: 120px 0 40px; background: linear-gradient(180deg, #241416 0%, #12100e 100%);">
+    <canvas id="hero-canvas"></canvas>
+    <div class="container">
+      <div class="hero-pill">
+        <span class="pill-dot"></span>
+        <span>INTERACTIVE WORSHIP SUITE &bull; SECOND LIFE 2026</span>
+      </div>
+      <h1 class="hero-title" style="font-size: 42px;">
+        [C&amp;C] FOOTKISS &amp; SHOE WORSHIP <span class="gold-gradient-text">MANUAL</span>
+      </h1>
+      <p class="hero-description">
+        Learn how to configure heel/foot attachment scripts, proximity kiss animations, tribute-per-kiss charges, and public ballroom worship protocols.
+      </p>
+      <div style="display: flex; gap: 14px; margin-top: 24px; flex-wrap: wrap;">
+        <a href="https://marketplace.secondlife.com" target="_blank" rel="noopener" class="btn btn-gold">
+          <span>🛒</span> Buy on SL Marketplace (L$1,199) &rarr;
+        </a>
+        <a href="#quick-start" class="btn btn-secondary">
+          <span>⚡</span> Quick Start Guide
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Documentation Content -->
+  <main class="section">
+    <div class="container" style="display: grid; grid-template-columns: 1.5fr 0.9fr; gap: 40px;" id="profile-main-layout">
+      
+      <!-- Left Column -->
+      <div>
+        
+        <!-- 1. Overview -->
+        <div class="card" style="margin-bottom: 28px;">
+          <h2 class="card-title" style="font-size: 22px; margin-bottom: 12px;">1. Overview &amp; Experience Engine</h2>
+          <p style="font-size: 14.5px; color: var(--text-primary); line-height: 1.7; margin-bottom: 16px;">
+            The <strong>[C&amp;C] FootKiss &amp; Shoe Worship System</strong> allows Dominants to add interactive worship zones to their footwear or rezzable pedestals. Submissives who click the shoes or enter proximity are automatically guided into smooth kneeling and kissing animations while optionally paying a tribute fee per kiss.
+          </p>
+          <div style="background: rgba(20,18,16,0.85); border: 1px solid var(--gold-border-subtle); border-radius: 6px; padding: 16px;">
+            <strong style="color: var(--gold-bright); font-size: 14px; display: block; margin-bottom: 8px;">Key Capabilities:</strong>
+            <ul style="padding-left: 18px; font-size: 13.5px; color: var(--text-muted); line-height: 1.65;">
+              <li><strong>Zero Rez / Drop-In Script:</strong> Drop the script into any modifiable mesh heels, boots, or barefoot layers.</li>
+              <li><strong>Experience Proximity Automation:</strong> Submissives accept permissions once; animations trigger smoothly without cumbersome dialog boxes.</li>
+              <li><strong>Tribute-Per-Kiss Option:</strong> Set a mandatory tribute (e.g. L$50 - L$500 per kiss) or allow free worship.</li>
+              <li><strong>Shoe Shine &amp; Polish Props:</strong> Auto-attaches rag and polish tin props during extended sessions.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 2. Quick Setup -->
+        <div class="card" style="margin-bottom: 28px;" id="quick-start">
+          <h2 class="card-title" style="font-size: 22px; margin-bottom: 12px;">2. Quick Start Setup (For Dominants)</h2>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="background: rgba(20,18,16,0.8); border: 1px solid var(--gold-border-subtle); border-radius: 6px; padding: 14px;">
+              <strong style="color: var(--gold-bright); display: block; margin-bottom: 4px;">Step 1: Drop Script into Your Shoes</strong>
+              <p style="font-size: 13.5px; color: var(--text-muted); margin: 0;">Rez your mesh shoes on the ground or edit them while worn. Drag the <code>[C&amp;C] FootKiss_Engine</code> script into the shoe's Contents tab.</p>
+            </div>
+            <div style="background: rgba(20,18,16,0.8); border: 1px solid var(--gold-border-subtle); border-radius: 6px; padding: 14px;">
+              <strong style="color: var(--gold-bright); display: block; margin-bottom: 4px;">Step 2: Configure Tribute Rates &amp; Access</strong>
+              <p style="font-size: 13.5px; color: var(--text-muted); margin: 0;">Touch the shoe > Select <strong>Rates</strong> > Choose L$25, L$50, L$100, L$250, or Free. Select <strong>Access</strong> (Public, Submissive Only, Whitelist).</p>
+            </div>
+            <div style="background: rgba(20,18,16,0.8); border: 1px solid var(--gold-border-subtle); border-radius: 6px; padding: 14px;">
+              <strong style="color: var(--gold-bright); display: block; margin-bottom: 4px;">Step 3: Submissive Interaction</strong>
+              <p style="font-size: 13.5px; color: var(--text-muted); margin: 0;">When a submissive touches your heels or steps within 1.5 meters, they are positioned at your feet in an elegant worship pose.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Commands -->
+        <div class="card" style="margin-bottom: 28px;">
+          <h2 class="card-title" style="font-size: 22px; margin-bottom: 12px;">3. Chat &amp; Channel Commands</h2>
+          <div style="overflow-x: auto;">
+            <table class="table" style="font-size: 13px;">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Channel</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>/44 fk menu</code></td>
+                  <td>44</td>
+                  <td>Opens the FootKiss owner control menu.</td>
+                </tr>
+                <tr>
+                  <td><code>/44 rate [amount]</code></td>
+                  <td>44</td>
+                  <td>Sets required tribute fee per worship cycle.</td>
+                </tr>
+                <tr>
+                  <td><code>/44 release</code></td>
+                  <td>44</td>
+                  <td>Releases the kneeling worshipper immediately.</td>
+                </tr>
+                <tr>
+                  <td><code>/44 pose [1-6]</code></td>
+                  <td>44</td>
+                  <td>Changes kneeling &amp; kiss animation sequence.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4. FAQ -->
+        <div class="card">
+          <h2 class="card-title" style="font-size: 22px; margin-bottom: 12px;">4. FAQ &amp; Troubleshooting</h2>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <strong style="color: var(--gold-bright); font-size: 14.5px;">Q: Will this interfere with my normal AO?</strong>
+              <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 4px;">No. The script temporarily pauses submissive AOs during the active kiss and restores their AO state when dismissed.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column -->
+      <div>
+        
+        <!-- Marketplace Purchase Card -->
+        <div class="card" style="border-color: var(--gold-bright); background: linear-gradient(165deg, #2a221b 0%, #171411 100%); margin-bottom: 28px;">
+          <div class="guide-product-media">
+            <img src="/images/products/footkiss.png" alt="[C&C] FootKiss Suite">
+          </div>
+          <span class="section-tag" style="background: var(--gold-bright); color: var(--bg-dark); margin-bottom: 8px; align-self: flex-start;">PREMIUM RETAIL</span>
+          <h3 class="card-title" style="font-size: 20px;">[C&amp;C] FootKiss Suite</h3>
+          <div style="font-family: var(--font-heading); font-size: 28px; color: var(--gold-bright); margin: 8px 0 14px;">L$1,199</div>
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 18px;">
+            Includes Drop-in Shoe Scripts, Rezzable Velvet Worship Pedestal, 8 Bento Animations, and Automatic Tribute Split Engine.
+          </p>
+          <a href="https://marketplace.secondlife.com" target="_blank" rel="noopener" class="btn btn-gold" style="width: 100%;">
+            <span>🛒</span> Buy on SL Marketplace &rarr;
+          </a>
+        </div>
+
+        <!-- Technical Specs -->
+        <div class="card" style="margin-bottom: 28px;">
+          <h3 class="card-title" style="font-size: 18px; margin-bottom: 14px;">⚙️ Technical Specifications</h3>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+              <span style="color: var(--text-muted);">Compatibility:</span>
+              <span style="color: var(--gold-bright);">All Mesh Footwear &amp; Bodies</span>
+            </li>
+            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+              <span style="color: var(--text-muted);">Permissions:</span>
+              <span style="color: var(--gold-bright); font-family: var(--font-mono);">Copy / Mod / No-Transfer</span>
+            </li>
+            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+              <span style="color: var(--text-muted);">Script Weight:</span>
+              <span style="color: var(--gold-bright); font-family: var(--font-mono);">&lt; 0.003 ms</span>
+            </li>
+            <li style="display: flex; justify-content: space-between; padding-top: 2px;">
+              <span style="color: var(--text-muted);">XP Bonus:</span>
+              <span style="color: var(--gold-bright);">+20 XP per Worship Cycle</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Other Guides -->
+        <div class="card">
+          <h3 class="card-title" style="font-size: 18px; margin-bottom: 14px;">📘 Explore Other Manuals</h3>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="../vow-collar/index.html" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+              <span>⛓️</span> Vow Collar 2026 Manual
+            </a>
+            <a href="../pocket-pig/index.html" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+              <span>🐷</span> PocketPig Companion Manual
+            </a>
+            <a href="../tribute-jars/index.html" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+              <span>🏺</span> Smart Tribute Jars Manual
+            </a>
+            <a href="../xp-titlers/index.html" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+              <span>👑</span> Free XP Titlers Manual
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Master Footer Component -->
+  <site-footer></site-footer>
+
+  <script src="../../app.js"></script>
+  <script>
+    // Dynamic Guide Loader: Automatically synchronizes with Decap CMS JSON data
+    document.addEventListener('DOMContentLoaded', async () => {
+      const guideSlug = 'footkiss';
+      let data = null;
+
+      const candidateUrls = [
+        `/guides/data/${guideSlug}.json?v=${Date.now()}`,
+        `../data/${guideSlug}.json?v=${Date.now()}`,
+        `../../guides/data/${guideSlug}.json?v=${Date.now()}`,
+        `./data/${guideSlug}.json?v=${Date.now()}`,
+        `data/${guideSlug}.json?v=${Date.now()}`
+      ];
+
+      for (const url of candidateUrls) {
+        try {
+          const res = await fetch(url, { cache: 'no-store' });
+          if (res.ok) {
+            data = await res.json();
+            break;
+          }
+        } catch(e) {}
+      }
+
+      if (!data) return;
+
+      // Update Page Title & Description
+      if (data.title) document.title = `${data.title} User Guide | Control & Chaos`;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc && data.description) metaDesc.content = data.description;
+
+      // Update Hero Title & Badges
+      const pill = document.querySelector('.hero-pill span:last-child');
+      if (pill && data.pill_text) pill.textContent = data.pill_text;
+
+      const heroTitle = document.querySelector('.hero-title');
+      if (heroTitle && data.title) {
+        heroTitle.innerHTML = `${data.title} <span class="gold-gradient-text">USER MANUAL</span>`;
+      }
+
+      const heroDesc = document.querySelector('.hero-description');
+      if (heroDesc && data.description) heroDesc.textContent = data.description;
+
+      // Update Buy Links
+      const buyBtns = document.querySelectorAll('a[href*="marketplace.secondlife.com"]');
+      buyBtns.forEach(btn => {
+        if (data.marketplace_url) btn.href = data.marketplace_url;
+        if (btn.classList.contains('btn-gold') && data.price) {
+          btn.innerHTML = `<span>🛒</span> Buy on SL Marketplace (${data.price}) &rarr;`;
+        }
+      });
+
+      // Update Buy Box on Right Column
+      const buyBoxTitle = document.querySelector('#profile-main-layout .card h3.card-title');
+      if (buyBoxTitle && data.title) buyBoxTitle.textContent = `${data.title} Complete`;
+
+      const buyBoxPrice = document.querySelector('#profile-main-layout .card div[style*="font-size: 28px"]');
+      if (buyBoxPrice && data.price) buyBoxPrice.textContent = data.price;
+
+      const buyBoxIcon = document.querySelector('#profile-main-layout .card .card-icon');
+      if (buyBoxIcon && data.icon) buyBoxIcon.textContent = data.icon;
+
+      const buyBoxBadge = document.querySelector('#profile-main-layout .card .section-tag');
+      if (buyBoxBadge && data.badge) buyBoxBadge.textContent = data.badge;
+
+      // Markdown Parser & Formatter
+      function renderInline(str) {
+        return (str || '')
+          .replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--gold-bright);">$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code style="font-family:var(--font-mono); color:var(--gold-bright); background:rgba(0,0,0,0.5); padding:2px 6px; border-radius:4px; font-size:12px;">$1</code>');
+      }
+
+      function formatMd(text) {
+        if (!text) return '';
+        const blocks = text.split(/\n\s*\n/);
+        return blocks.map(block => {
+          let trimmed = block.trim();
+          if (!trimmed) return '';
+          if (trimmed.startsWith('### ')) {
+            return `<h4 style="font-size:16px; font-weight:700; color:var(--gold-bright); margin:16px 0 6px;">${renderInline(trimmed.slice(4))}</h4>`;
+          }
+          if (trimmed.startsWith('## ')) {
+            return `<h3 style="font-size:18px; font-weight:700; color:var(--gold-bright); margin:18px 0 8px;">${renderInline(trimmed.slice(3))}</h3>`;
+          }
+          if (trimmed.startsWith('# ')) {
+            return `<h2 style="font-size:20px; font-weight:800; color:var(--gold-bright); margin:20px 0 10px;">${renderInline(trimmed.slice(2))}</h2>`;
+          }
+          if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+            const items = trimmed.split('\n').map(l => l.replace(/^[-*]\s+/, '').trim()).filter(Boolean);
+            return `<ul style="padding-left:20px; margin:8px 0 12px; color:var(--text-muted); line-height:1.65;">` + 
+                   items.map(it => `<li>${renderInline(it)}</li>`).join('') + `</ul>`;
+          }
+          return `<p style="margin-bottom:12px; line-height:1.7; color:var(--text-primary);">${renderInline(trimmed).replace(/\n/g, '<br>')}</p>`;
+        }).join('');
+      }
+
+      // Dynamically Render Left Column Sections if defined in JSON
+      const leftCol = document.querySelector('#profile-main-layout > div:first-child');
+      if (leftCol && data.sections && data.sections.length > 0) {
+        leftCol.innerHTML = '';
+
+        data.sections.forEach((sec, idx) => {
+          const secCard = document.createElement('div');
+          secCard.className = 'card';
+          secCard.style.marginBottom = '28px';
+          if (sec.section_id) secCard.id = sec.section_id;
+
+          const contentHtml = formatMd(sec.content);
+
+          secCard.innerHTML = `
+            <h2 class="card-title" style="font-size: 22px; margin-bottom: 14px;">${sec.title}</h2>
+            <div style="font-size: 14.5px; color: var(--text-primary); line-height: 1.7;">
+              ${contentHtml}
+            </div>
+          `;
+
+          // If this is the Overview section and we have key features, render features box
+          if (idx === 0 && data.features && data.features.length > 0) {
+            const featBox = document.createElement('div');
+            featBox.style.cssText = 'background: rgba(20,18,16,0.85); border: 1px solid var(--gold-border-subtle); border-radius: 6px; padding: 16px; margin-top: 16px;';
+            featBox.innerHTML = `
+              <strong style="color: var(--gold-bright); font-size: 14px; display: block; margin-bottom: 8px;">Key Features:</strong>
+              <ul style="padding-left: 18px; font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin: 0;">
+                ${data.features.map(f => `<li><strong>${f.title}:</strong> ${f.desc}</li>`).join('')}
+              </ul>
+            `;
+            secCard.appendChild(featBox);
+          }
+
+          leftCol.appendChild(secCard);
+        });
+
+        // If we have chat commands in JSON, render the commands table
+        if (data.chat_commands && data.chat_commands.length > 0) {
+          const cmdCard = document.createElement('div');
+          cmdCard.className = 'card';
+          cmdCard.style.marginBottom = '28px';
+          cmdCard.id = 'commands';
+
+          cmdCard.innerHTML = `
+            <h2 class="card-title" style="font-size: 22px; margin-bottom: 14px;">💬 Chat &amp; Channel Commands</h2>
+            <div style="overflow-x: auto;">
+              <table class="table" style="font-size: 13px; width:100%;">
+                <thead>
+                  <tr>
+                    <th>Command</th>
+                    <th>Permission</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${data.chat_commands.map(c => `
+                    <tr>
+                      <td><code style="font-family:var(--font-mono); color:var(--gold-bright);">${c.command}</code></td>
+                      <td style="color:var(--gold-muted);">${c.role}</td>
+                      <td>${c.desc}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+          leftCol.appendChild(cmdCard);
+        }
+      }
+
+      // Update Specs List if provided in JSON
+      const specsList = document.querySelector('#profile-main-layout ul[style*="list-style: none"]');
+      if (specsList && data.specs) {
+        specsList.innerHTML = `
+          <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+            <span style="color: var(--text-muted);">Attachment:</span>
+            <span style="color: var(--gold-bright);">${data.specs.attachment || 'Screen HUD'}</span>
+          </li>
+          <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+            <span style="color: var(--text-muted);">Permissions:</span>
+            <span style="color: var(--gold-bright); font-family: var(--font-mono);">${data.specs.permissions || 'Copy / Mod'}</span>
+          </li>
+          <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+            <span style="color: var(--text-muted);">Compatibility:</span>
+            <span style="color: var(--gold-bright);">${data.specs.compatibility || 'Experience Cloud'}</span>
+          </li>
+          <li style="display: flex; justify-content: space-between; padding-top: 2px;">
+            <span style="color: var(--text-muted);">Contents:</span>
+            <span style="color: var(--gold-bright);">${data.specs.contents || 'Complete Pack'}</span>
+          </li>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

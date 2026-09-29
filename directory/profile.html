@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rate Card &amp; Profile | Control &amp; Chaos Second Life</title>
+  <meta name="description" content="View verified Second Life FinDom rates, escort companion packages, Lovense toy control, and RLV services.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+  <site-navbar></site-navbar>
+
+  <!-- Profile Hero & Cover Header -->
+  <header class="hero" style="min-height: 55vh; padding: 120px 0 40px; background: linear-gradient(180deg, #1f1519 0%, #12100e 100%);">
+    <canvas id="hero-canvas"></canvas>
+    <div class="container" id="profile-hero-content">
+      <!-- Injected dynamically via JS based on URL param ?id=... -->
+    </div>
+  </header>
+
+  <!-- Main Profile Body Content -->
+  <main class="section" style="padding: 60px 0;">
+    <div class="container">
+      
+      <!-- Top Action Bar & Hardware Support Badges -->
+      <div id="profile-toolbar" style="margin-bottom: 40px;">
+        <!-- Injected dynamically -->
+      </div>
+
+      <!-- Two-Column Layout: Left (About, Rate Categories, Booking Calc) | Right (Gallery, Limits, Protocol, Reviews) -->
+      <div style="display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 40px;" id="profile-main-layout">
+        
+        <!-- Left Column: Bio & Categorized Rate Cards -->
+        <div>
+          
+          <!-- Bio Box -->
+          <div class="card" style="margin-bottom: 30px;" id="profile-about-card">
+            <h3 class="card-title" style="font-size: 22px;">About &amp; Philosophy</h3>
+            <p id="profile-about-text" style="font-size: 15px; color: var(--text-primary); line-height: 1.7; margin-top: 10px;"></p>
+          </div>
+
+          <!-- Rate Categories Container -->
+          <div id="rate-categories-container" style="display: flex; flex-direction: column; gap: 28px;">
+            <!-- Categorized Rate Tables injected dynamically -->
+          </div>
+
+          <!-- Interactive Booking & Tribute Calculator -->
+          <div class="card" style="margin-top: 30px; border-color: var(--gold-bright); background: linear-gradient(165deg, #26201b 0%, #171412 100%);" id="rate-calc-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+              <h3 class="card-title" style="margin:0; font-size:20px;">🧮 Interactive Booking &amp; Tribute Quote</h3>
+              <span class="section-tag" style="margin:0; font-size:10px;">INSTANT ESTIMATE</span>
+            </div>
+            <p style="font-size:14px; color:var(--text-muted); margin-bottom:16px;">
+              Select the services and session duration you wish to request:
+            </p>
+            <div id="calc-options-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:18px;">
+              <!-- Checkboxes for services injected here -->
+            </div>
+            <div style="border-top:1px solid var(--gold-border); padding-top:16px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:12px; color:var(--text-muted); display:block;">Estimated Total:</span>
+                <span id="calc-total-quote" style="font-family:var(--font-heading); font-size:24px; font-weight:900; color:var(--gold-bright);">L$0</span>
+              </div>
+              <a href="#" id="calc-book-cta" class="btn btn-gold btn-sm">
+                <span>💬</span> Book with this Quote
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Gallery, Limits, Booking Protocol & Reviews -->
+        <div>
+          
+          <!-- Visual Lookbook Gallery -->
+          <div class="card" style="margin-bottom: 30px;" id="profile-gallery-card">
+            <h3 class="card-title" style="font-size: 20px; margin-bottom: 16px;">📸 Visual Lookbook &amp; Styles</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="gallery-grid">
+              <!-- Gallery items injected here -->
+            </div>
+          </div>
+
+          <!-- Hard Limits & Boundaries -->
+          <div class="card" style="margin-bottom: 30px; border-color: rgba(139,30,45,0.4); background: rgba(30,15,18,0.4);">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+              <span style="font-size:20px;">🚫</span>
+              <h3 class="card-title" style="font-size:18px; color:#ffb8c2; margin:0;">Hard Limits &amp; Boundaries</h3>
+            </div>
+            <ul id="hard-limits-list" style="padding-left:18px; font-size:13.5px; color:var(--text-primary); line-height:1.65;">
+              <!-- Injected dynamically -->
+            </ul>
+          </div>
+
+          <!-- Booking Protocol -->
+          <div class="card" style="margin-bottom: 30px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+              <span style="font-size:20px;">📜</span>
+              <h3 class="card-title" style="font-size:18px; margin:0;">Booking Protocol</h3>
+            </div>
+            <div id="booking-protocol-steps" style="font-size:13.5px; color:var(--text-primary); line-height:1.7;">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Client Reviews -->
+          <div class="card">
+            <h3 class="card-title" style="font-size: 18px; margin-bottom: 14px;">⭐ Verified Client Reviews</h3>
+            <div id="reviews-container" style="display:flex; flex-direction:column; gap:12px;">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <site-footer></site-footer>
+
+  <script src="../app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const profileId = urlParams.get('id') || 'alexis-vane';
+
+      let profileData = null;
+
+      try {
+        const res = await fetch('profiles.json');
+        if (res.ok) {
+          const profiles = await res.json();
+          profileData = profiles.find(p => p.id === profileId) || profiles[0];
+        }
+      } catch(e) {}
+
+      if (!profileData) return;
+
+      document.title = `${profileData.name} — Rate Card & Services | Control & Chaos`;
+
+      const isDomme = profileData.role_type === 'domme';
+
+      // 1. Render Hero Header
+      const heroContainer = document.getElementById('profile-hero-content');
+      if (heroContainer) {
+        heroContainer.innerHTML = `
+          <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap;">
+            <div style="width:110px; height:110px; border-radius:50%; background:#12100e; border:3px solid var(--gold-bright); display:flex; align-items:center; justify-content:center; font-size:52px; box-shadow:0 0 25px var(--gold-glow); flex-shrink:0;">
+              ${isDomme ? '👑' : '🩷'}
+            </div>
+            <div style="flex:1; min-width:280px;">
+              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <h1 style="font-family:var(--font-heading); font-size:38px; font-weight:900; color:var(--gold-bright); margin:0;">${profileData.name}</h1>
+                <span class="role-badge" style="background:rgba(184,154,88,0.25); border:1px solid var(--gold-border); color:var(--gold-bright); font-size:11px;">
+                  VERIFIED ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
+                </span>
+                <span class="role-badge" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#6ee7b7; font-size:11px;">
+                  ● ${profileData.status}
+                </span>
+              </div>
+              <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:4px;">
+                Second Life Username: <strong>${profileData.sl_username}</strong> &bull; Level ${profileData.level} (${profileData.rank})
+              </div>
+              <p style="font-size:18px; color:var(--text-primary); margin-top:8px; font-style:italic; max-width:750px;">
+                "${profileData.tagline}"
+              </p>
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. Render Toolbar (SL IM Link, Teleport, Tribute Location)
+      const toolbar = document.getElementById('profile-toolbar');
+      if (toolbar) {
+        toolbar.innerHTML = `
+          <div style="background:rgba(28,25,22,0.9); border:1px solid var(--gold-border); border-radius:8px; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap;">
+              <div>
+                <span style="font-size:11px; color:var(--text-muted); display:block;">Location on Sim:</span>
+                <span style="font-family:var(--font-mono); font-size:13px; color:var(--gold-bright);">${profileData.location}</span>
+              </div>
+              <div style="border-left:1px solid var(--gold-border-subtle); padding-left:18px;">
+                <span style="font-size:11px; color:var(--text-muted); display:block;">Starting Rate:</span>
+                <span style="font-family:var(--font-heading); font-size:15px; font-weight:800; color:var(--gold-bright);">${profileData.starting_rate}</span>
+              </div>
+              <div style="border-left:1px solid var(--gold-border-subtle); padding-left:18px;">
+                <span style="font-size:11px; color:var(--text-muted); display:block;">Hardware &amp; RLV:</span>
+                <div style="display:flex; gap:6px; margin-top:2px;">
+                  ${profileData.hardware_compat?.vow_collar ? '<span title="Vow Collar Certified" style="font-size:14px;">⛓️</span>' : ''}
+                  ${profileData.hardware_compat?.lovense ? '<span title="Lovense Interactive Toys Synced" style="font-size:14px;">🔌</span>' : ''}
+                  ${profileData.hardware_compat?.rlv ? '<span title="Firestorm RLV Restraints Ready" style="font-size:14px;">🔒</span>' : ''}
+                  ${profileData.hardware_compat?.experience ? '<span title="Second Life Experience Stealth Props" style="font-size:14px;">⚡</span>' : ''}
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <a href="secondlife:///app/agent/${profileData.avatar_uuid}/im" class="btn btn-gold btn-sm">
+                💬 Message in SL IM
+              </a>
+              <a href="${profileData.slurl}" class="btn btn-secondary btn-sm">
+                📍 Teleport to Skybox
+              </a>
+            </div>
+          </div>
+        `;
+      }
+
+      // 3. Render About
+      const aboutText = document.getElementById('profile-about-text');
+      if (aboutText) aboutText.textContent = profileData.about;
+
+      // 4. Render Categorized Rate Cards
+      const ratesContainer = document.getElementById('rate-categories-container');
+      const calcOptions = document.getElementById('calc-options-container');
+      let calcSelections = {};
+
+      if (ratesContainer && profileData.rate_categories) {
+        ratesContainer.innerHTML = '';
+        if (calcOptions) calcOptions.innerHTML = '';
+
+        profileData.rate_categories.forEach((cat, cIdx) => {
+          const catBox = document.createElement('div');
+          catBox.className = 'card';
+          catBox.style.padding = '24px 22px';
+
+          catBox.innerHTML = `
+            <div style="border-bottom:1px solid var(--gold-border); padding-bottom:10px; margin-bottom:16px;">
+              <h3 style="font-family:var(--font-heading); font-size:20px; font-weight:800; color:var(--gold-bright); margin:0;">${cat.category_name}</h3>
+              <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">${cat.category_desc}</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              ${cat.services.map((s, sIdx) => `
+                <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:6px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; gap:16px;">
+                  <div>
+                    <div style="font-family:var(--font-heading); font-size:16px; font-weight:800; color:var(--text-primary);">${s.name}</div>
+                    <div style="font-size:13.5px; color:var(--text-muted); margin-top:3px; line-height:1.5;">${s.desc}</div>
+                  </div>
+                  <div style="text-align:right; flex-shrink:0;">
+                    <div style="font-family:var(--font-mono); font-size:16px; font-weight:800; color:var(--gold-bright);">${s.price}</div>
+                    <div style="font-size:11px; color:var(--gold-muted);">${s.unit}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+
+          ratesContainer.appendChild(catBox);
+
+          // Add to Quote Calculator
+          if (calcOptions) {
+            cat.services.forEach((s, sIdx) => {
+              const numPrice = parseInt((s.price || '0').replace(/[^0-9]/g, '')) || 0;
+              if (numPrice > 0) {
+                const optRow = document.createElement('label');
+                optRow.style.display = 'flex';
+                optRow.style.alignItems = 'center';
+                optRow.style.gap = '10px';
+                optRow.style.padding = '8px 12px';
+                optRow.style.background = 'rgba(20,18,16,0.6)';
+                optRow.style.borderRadius = '4px';
+                optRow.style.cursor = 'pointer';
+                optRow.style.fontSize = '13.5px';
+
+                optRow.innerHTML = `
+                  <input type="checkbox" class="quote-check" data-name="${s.name}" data-price="${numPrice}">
+                  <span style="flex:1;">${s.name}</span>
+                  <span style="font-family:var(--font-mono); color:var(--gold-bright); font-weight:700;">L$${numPrice.toLocaleString()}</span>
+                `;
+                calcOptions.appendChild(optRow);
+              }
+            });
+          }
+        });
+
+        // Bind Quote Calculator Logic
+        document.querySelectorAll('.quote-check').forEach(chk => {
+          chk.addEventListener('change', () => {
+            let total = 0;
+            let selectedList = [];
+            document.querySelectorAll('.quote-check:checked').forEach(c => {
+              total += parseInt(c.getAttribute('data-price'));
+              selectedList.push(c.getAttribute('data-name'));
+            });
+
+            document.getElementById('calc-total-quote').textContent = `L$${total.toLocaleString()}`;
+            
+            const cta = document.getElementById('calc-book-cta');
+            if (cta) {
+              cta.href = `secondlife:///app/agent/${profileData.avatar_uuid}/im`;
+            }
+          });
+        });
+      }
+
+      // 5. Render Gallery Lookbook
+      const galleryGrid = document.getElementById('gallery-grid');
+      if (galleryGrid && profileData.gallery) {
+        galleryGrid.innerHTML = '';
+        profileData.gallery.forEach(g => {
+          const item = document.createElement('div');
+          item.style.background = 'rgba(20,18,16,0.9)';
+          item.style.border = '1px solid var(--gold-border-subtle)';
+          item.style.borderRadius = '6px';
+          item.style.padding = '18px 12px';
+          item.style.textAlign = 'center';
+          item.innerHTML = `
+            <div style="font-size:32px; margin-bottom:8px;">${g.icon}</div>
+            <div style="font-family:var(--font-heading); font-size:13px; font-weight:700; color:var(--gold-bright);">${g.title}</div>
+            <span style="font-size:10px; color:var(--gold-muted); font-family:var(--font-mono);">${g.category}</span>
+          `;
+          galleryGrid.appendChild(item);
+        });
+      }
+
+      // 6. Render Hard Limits
+      const limitsList = document.getElementById('hard-limits-list');
+      if (limitsList && profileData.hard_limits) {
+        limitsList.innerHTML = profileData.hard_limits.map(l => `<li style="margin-bottom:6px;">${l}</li>`).join('');
+      }
+
+      // 7. Render Booking Protocol
+      const protocolBox = document.getElementById('booking-protocol-steps');
+      if (protocolBox && profileData.booking_protocol) {
+        protocolBox.innerHTML = profileData.booking_protocol.map(step => `
+          <div style="margin-bottom:8px; display:flex; gap:8px;">
+            <span style="color:var(--gold-primary);">◆</span>
+            <span>${step}</span>
+          </div>
+        `).join('');
+      }
+
+      // 8. Render Reviews
+      const reviewsContainer = document.getElementById('reviews-container');
+      if (reviewsContainer && profileData.reviews) {
+        reviewsContainer.innerHTML = profileData.reviews.map(r => `
+          <div style="background:rgba(20,18,16,0.8); border:1px solid var(--gold-border-subtle); border-radius:6px; padding:12px 14px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <strong style="font-size:13px; color:var(--gold-bright);">${r.client}</strong>
+              <span style="color:#f59e0b; font-size:12px;">${r.stars}</span>
+            </div>
+            <p style="font-size:13px; color:var(--text-muted); font-style:italic; line-height:1.45; margin:0;">
+              "${r.comment}"
+            </p>
+          </div>
+        `).join('');
+      }
+
+    });
+  </script>
+</body>
+</html>

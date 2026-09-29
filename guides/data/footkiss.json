@@ -1,0 +1,59 @@
+{
+  "id": "footkiss",
+  "title": "[C&C] FootKiss & Shoe Worship Suite",
+  "badge": "WORSHIP SYSTEM",
+  "icon": "👠",
+  "price": "L$1,199",
+  "marketplace_url": "https://marketplace.secondlife.com",
+  "pill_text": "INTERACTIVE WORSHIP SUITE • SECOND LIFE 2026",
+  "description": "Drop-in footwear script suite with proximity kneeling, kiss animations, configurable tribute-per-kiss charges, Bento shoe-shine props, and pedestal worship integration.",
+  "features": [
+    {
+      "title": "Proximity Sensor & Force Kneel",
+      "desc": "Detects nearby submissives and smoothly triggers kneeling postures."
+    },
+    {
+      "title": "Tribute-per-Kiss Fees",
+      "desc": "Configurable L$ charge each time a submissive touches or kisses the footwear."
+    },
+    {
+      "title": "Bento Shoe Shine Auto-Props",
+      "desc": "Auto-attaches polishing rag and brush props for realistic worship roleplay."
+    },
+    {
+      "title": "Sim XP Multiplier",
+      "desc": "Earns bonus Control & Chaos XP for both participants on successful worship."
+    }
+  ],
+  "sections": [
+    {
+      "title": "1. Overview & Setup",
+      "section_id": "overview",
+      "content": "The **[C&C] FootKiss & Shoe Worship** system can be dropped into any modifiable heels, boots, or shoes. It turns any pair of footwear into an automated FinDom revenue generator and worship station."
+    },
+    {
+      "title": "2. Configuration & Tribute Settings",
+      "section_id": "config",
+      "content": "### Step 1: Drop Scripts into Footwear\nDrag `C&C_FootKiss_Core.lsl` and animations into your modifiable shoes.\n\n### Step 2: Configure Price & Radius\nClick the shoe > **Config Menu** to set price per kiss (e.g. L$50, L$250) and trigger radius (1m - 5m)."
+    }
+  ],
+  "chat_commands": [
+    {
+      "command": "/44 kiss menu",
+      "role": "Owner",
+      "desc": "Opens the footwear worship configuration dialog."
+    },
+    {
+      "command": "/44 kiss enable",
+      "role": "Owner",
+      "desc": "Turns public touch worship active."
+    }
+  ],
+  "specs": {
+    "attachment": "Drop-in Script for Mod Footwear",
+    "scripts": "Mono 64-bit Low-Lag LSL",
+    "permissions": "Copy / Mod / No-Transfer",
+    "compatibility": "Bento Avatars & Experience Tools",
+    "contents": "Core Script, 4 Bento Animations, Shoe-Shine Rag Prop"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "items": [
+    {
+      "id": "cage-break-weekly",
+      "title": "⚡ Cage Break Championship & Double XP Rush",
+      "category": "Tournament",
+      "category_tag": "TOURNAMENT",
+      "date_display": "Every Saturday • 1:00 PM SLT (PDT)",
+      "date_iso": "2026-10-03T13:00",
+      "location": "Chaos Manor Arena & Central Laser Cages",
+      "slurl": "secondlife://Chaos%20Manor/128/128/23",
+      "description": "The premier sim combat and jailbreak tournament! Dominants defend the cages while submissives attempt daring laser lock hacks. Double XP, +500 Gold Coins, and champion title trophies awarded to top scorers.",
+      "gcal_title": "Control & Chaos: Cage Break Tournament (Double XP)",
+      "gcal_details": "Join us at Control & Chaos for the weekly Cage Break Championship! Free to participate. Location: secondlife://Chaos%20Manor/128/128/23",
+      "gcal_location": "secondlife://Chaos%20Manor/128/128/23"
+    },
+    {
+      "id": "high-society-gala",
+      "title": "👑 High Society FinDom Gala & Escort Showcase",
+      "category": "Gala",
+      "category_tag": "LUXURY GALA",
+      "date_display": "Friday, Oct 9 • 6:00 PM SLT (PDT)",
+      "date_iso": "2026-10-09T18:00",
+      "location": "Chaos Manor Grand Ballroom & VIP Lounge",
+      "slurl": "secondlife://Chaos%20Manor/160/140/35",
+      "description": "Formal black-tie ball showcasing our verified Service Providers and house Dominants. Live classical-electronic DJ set, champagne tribute fountains, and VIP escort auction.",
+      "gcal_title": "Control & Chaos: High Society FinDom Gala",
+      "gcal_details": "Formal black-tie gala at Chaos Manor Grand Ballroom. Second Life luxury accompaniment and tribute showcase.",
+      "gcal_location": "secondlife://Chaos%20Manor/160/140/35"
+    },
+    {
+      "id": "sunday-gold-rush",
+      "title": "🪙 Sunday Gold Rush & Tribute Jar Bonanza",
+      "category": "Community",
+      "category_tag": "COMMUNITY EVENT",
+      "date_display": "Every Sunday • 2:00 PM – 4:00 PM SLT",
+      "date_iso": "2026-10-04T14:00",
+      "location": "Main Arcade & Tribute Hub",
+      "slurl": "secondlife://Chaos%20Manor/128/50/23",
+      "description": "All Tribute Jars across the sim award 1.5x Gold Coins and double XP multipliers. Community tipping contests, live leaderboard tracking, and mini-game bonuses.",
+      "gcal_title": "Control & Chaos: Sunday Gold Rush (1.5x Bonus)",
+      "gcal_details": "Sim-wide tribute bonus hour at Control & Chaos.",
+      "gcal_location": "secondlife://Chaos%20Manor/128/50/23"
+    },
+    {
+      "id": "etiquette-workshop",
+      "title": "📜 Dominance, RLV & FinDom Protocol Workshop",
+      "category": "Workshop",
+      "category_tag": "MASTERCLASS",
+      "date_display": "Wednesday, Oct 14 • 4:00 PM SLT",
+      "date_iso": "2026-10-14T16:00",
+      "location": "The Velvet Chamber & Lecture Hall",
+      "slurl": "secondlife://Chaos%20Manor/64/180/23",
+      "description": "Interactive masterclass led by Lady Seraphina Noir and Mistress Alexis Vane. Covering Vow Collar direct debit policies, consensual psychological boundaries, and Firestorm RLV tuning.",
+      "gcal_title": "Control & Chaos: Dominance & RLV Protocol Workshop",
+      "gcal_details": "Educational workshop on RLV protocols, Vow Collar setup, and healthy FinDom immersion.",
+      "gcal_location": "secondlife://Chaos%20Manor/64/180/23"
+    }
+  ]
+}

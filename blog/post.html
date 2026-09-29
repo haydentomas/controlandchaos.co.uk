@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Dynamic SEO Title & Meta Tags -->
+  <title id="meta-title">Article | Control &amp; Chaos Second Life</title>
+  <meta name="description" id="meta-desc" content="Official dispatches, patch notes, and event announcements from Control &amp; Chaos Second Life.">
+  
+  <!-- OpenGraph / Facebook / Discord Rich Previews -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" id="og-title" content="Control &amp; Chaos News &amp; Dispatches">
+  <meta property="og:description" id="og-desc" content="Official dispatches, patch notes, and event announcements from Control &amp; Chaos Second Life.">
+  <meta property="og:image" id="og-image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80">
+  
+  <!-- Twitter Card SEO -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" id="tw-title" content="Control &amp; Chaos News &amp; Dispatches">
+  <meta name="twitter:description" id="tw-desc" content="Official dispatches, patch notes, and event announcements from Control &amp; Chaos Second Life.">
+  <meta name="twitter:image" id="tw-image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json" id="article-schema">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Control & Chaos News Dispatch",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Control & Chaos Second Life"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+
+  <style>
+    /* Bespoke Article Layout & Luxury Typography */
+    .article-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 40px;
+      align-items: start;
+    }
+    @media (max-width: 960px) {
+      .article-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .article-main {
+      background: var(--bg-card);
+      border: 1px solid var(--gold-border);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: var(--shadow-lg), 0 0 25px rgba(0, 0, 0, 0.6);
+    }
+    @media (max-width: 600px) {
+      .article-main {
+        padding: 24px 18px;
+      }
+    }
+
+    .featured-image-wrapper {
+      width: 100%;
+      height: 380px;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 30px;
+      border: 1px solid var(--gold-border);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+      background: var(--bg-dark);
+    }
+    @media (max-width: 600px) {
+      .featured-image-wrapper {
+        height: 220px;
+      }
+    }
+    .featured-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .article-body {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+    }
+    .article-body h2,
+    .article-body h3 {
+      color: var(--gold-bright);
+      font-family: var(--font-heading);
+      margin: 32px 0 14px;
+      letter-spacing: -0.3px;
+    }
+    .article-body h2 { font-size: 24px; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 8px; }
+    .article-body h3 { font-size: 20px; color: var(--gold-primary); }
+    .article-body p { margin-bottom: 20px; color: var(--text-primary); }
+    .article-body ul, .article-body ol {
+      margin: 0 0 24px 20px;
+      padding-left: 10px;
+    }
+    .article-body li {
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+    .article-body a {
+      color: var(--gold-bright);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+    .article-body a:hover {
+      color: #fff;
+    }
+    .article-body code {
+      background: var(--bg-card-inner);
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--gold-border-subtle);
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      color: var(--gold-bright);
+    }
+
+    /* Sidebar Widgets */
+    .sidebar-widget {
+      background: var(--bg-card);
+      border: 1px solid var(--gold-border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+    }
+    .widget-title {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gold-bright);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .recent-post-item {
+      display: block;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gold-border-subtle);
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+    .recent-post-item:last-child {
+      border-bottom: none;
+    }
+    .recent-post-item:hover {
+      transform: translateX(4px);
+    }
+    .recent-post-title {
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .recent-post-item:hover .recent-post-title {
+      color: var(--gold-bright);
+    }
+    .recent-post-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .share-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--gold-border-subtle);
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Master Navigation Component -->
+  <site-navbar></site-navbar>
+
+  <!-- Article Header / Hero -->
+  <header class="hero" style="min-height: 40vh; padding: 130px 0 30px;">
+    <canvas id="hero-canvas"></canvas>
+    <div class="container">
+      <div style="font-family: var(--font-mono); font-size: 12px; color: var(--gold-muted); margin-bottom: 12px;">
+        <a href="../index.html" style="color:var(--gold-muted);">Home</a> &bull; 
+        <a href="index.html" style="color:var(--gold-muted);">News &amp; Blog</a> &bull; 
+        <span id="breadcrumb-title" style="color:var(--text-primary);">Article</span>
+      </div>
+      
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
+        <span class="section-tag" id="article-badge" style="margin:0;">PRODUCT LAUNCH</span>
+        <span style="font-family:var(--font-mono); font-size:12px; color:var(--gold-bright);" id="article-date">October 2026</span>
+        <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);" id="article-author">&bull; By Architect of Chaos</span>
+        <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);" id="article-read-time">&bull; 2 min read</span>
+      </div>
+
+      <h1 class="hero-title" id="article-title" style="font-size: clamp(28px, 4vw, 44px); text-align: left; margin-bottom: 16px;">
+        Loading Article...
+      </h1>
+      <p class="hero-desc" id="article-summary" style="text-align: left; max-width: 800px; font-size: 16px; margin: 0; color: var(--text-muted); font-style: italic;">
+        Please wait while we retrieve this dispatch...
+      </p>
+    </div>
+  </header>
+
+  <!-- Main Article Section -->
+  <main class="section" style="padding: 40px 0 80px;">
+    <div class="container">
+      <div class="article-layout">
+        
+        <!-- Left: Full Article Main Body -->
+        <article class="article-main">
+          
+          <!-- Featured Image -->
+          <div class="featured-image-wrapper" id="featured-image-container" style="display: none;">
+            <img id="featured-image" src="" alt="Article Featured Image">
+          </div>
+
+          <!-- Body Text -->
+          <div class="article-body" id="article-content">
+            <!-- Rendered markdown/HTML injected via JS -->
+          </div>
+
+          <!-- Social Share Bar -->
+          <div class="share-bar">
+            <span style="font-size: 13px; color: var(--text-muted); align-self: center; font-family: var(--font-mono);">Share Post:</span>
+            <button id="copy-link-btn" class="btn btn-secondary btn-sm">
+              <span>📋</span> Copy Link
+            </button>
+            <a id="share-twitter-btn" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
+              <span>🐦</span> Share on X
+            </a>
+            <a href="index.html" class="btn btn-gold btn-sm" style="margin-left: auto;">
+              <span>&larr;</span> Back to All Articles
+            </a>
+          </div>
+        </article>
+
+        <!-- Right: Sidebar -->
+        <aside class="article-sidebar">
+          
+          <!-- Faction / Sim Card -->
+          <div class="sidebar-widget">
+            <div class="widget-title"><span>👑</span> Chaos Manor</div>
+            <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+              Second Life's premier luxury gamified sanctuary, competitive XP arenas, and certified escort directory.
+            </p>
+            <a href="http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width: 100%; justify-content: center;">
+              <span>📍</span> Visit Us InWorld
+            </a>
+          </div>
+
+          <!-- Recent Dispatches List -->
+          <div class="sidebar-widget">
+            <div class="widget-title"><span>📜</span> Recent Dispatches</div>
+            <div id="recent-articles-list">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Categories Widget -->
+          <div class="sidebar-widget">
+            <div class="widget-title"><span>🏷️</span> Topics</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <a href="index.html" class="btn btn-secondary btn-sm" style="font-size: 11px;">Product Launches</a>
+              <a href="index.html" class="btn btn-secondary btn-sm" style="font-size: 11px;">Sim Events</a>
+              <a href="index.html" class="btn btn-secondary btn-sm" style="font-size: 11px;">Economy Updates</a>
+              <a href="index.html" class="btn btn-secondary btn-sm" style="font-size: 11px;">Patch Notes</a>
+            </div>
+          </div>
+
+        </aside>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Master Footer Component -->
+  <site-footer></site-footer>
+
+  <script src="../app.js"></script>
+  <script>
+    // Markdown Parser Helper for dynamic rich text content
+    function parseSimpleMarkdown(md) {
+      if (!md) return '';
+      let html = md
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+        .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>')
+        .replace(/^\* (.*$)/gim, '<li>$1</li>')
+        .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+        .replace(/\n\n+/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+      
+      // Wrap list items in <ul>
+      html = html.replace(/(<li>.*<\/li>)/gim, '<ul>$1</ul>');
+      // Clean up adjacent <ul> tags
+      html = html.replace(/<\/ul>\s*<ul>/gim, '');
+      return `<p>${html}</p>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      let postId = urlParams.get('id') || window.location.hash.replace('#', '') || 'vow-launch';
+
+      let currentPost = null;
+      let allPosts = [];
+
+      async function fetchJson(paths) {
+        for (const p of paths) {
+          try {
+            const url = p.includes('?') ? p : `${p}?v=${Date.now()}`;
+            const r = await fetch(url, { cache: 'no-store' });
+            if (r.ok) return await r.json();
+          } catch(e) {}
+        }
+        return null;
+      }
+
+      // 1. Fetch current post
+      currentPost = await fetchJson([
+        `data/${postId}.json`,
+        `/blog/data/${postId}.json`,
+        `./data/${postId}.json`
+      ]);
+
+      // 2. Fetch all posts for sidebar
+      const slugs = await fetchJson(['manifest.json', '/blog/manifest.json', './manifest.json']);
+      if (slugs && Array.isArray(slugs)) {
+        const promises = slugs.map(s => fetchJson([`data/${s}.json`, `/blog/data/${s}.json`, `./data/${s}.json`]));
+        const loaded = await Promise.all(promises);
+        allPosts = loaded.filter(x => x !== null);
+      }
+
+      // Fallback post if offline/file://
+      if (!currentPost) {
+        currentPost = {
+          id: "vow-launch",
+          title: "Vow Collar 2026 Standalone Edition Release",
+          category: "Product Launch",
+          date: "October 2026",
+          author: "Architect of Chaos",
+          featured_image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+          summary: "The definitive BDSM, FinDom, and RLV management collar has completed QA testing and is now entering in-world release.",
+          content: "### The Next Era of Second Life Restraint & FinDom Technology\n\nWe are proud to announce the official release of the **[Control & Chaos] Vow Collar Standalone Edition**.\n\nEngineered from the ground up for zero script delay, the 2026 Vow Collar integrates deep into the Chaos Manor ecosystem while operating as an elite standalone collar for any region in Second Life."
+        };
+      }
+
+      // Populate Article Header & SEO
+      document.title = `${currentPost.title} | Control & Chaos`;
+      document.getElementById('meta-title').innerText = `${currentPost.title} | Control & Chaos`;
+      document.getElementById('meta-desc').setAttribute('content', currentPost.summary || currentPost.title);
+      
+      const ogTitle = document.getElementById('og-title');
+      if (ogTitle) ogTitle.setAttribute('content', currentPost.title);
+      const ogDesc = document.getElementById('og-desc');
+      if (ogDesc) ogDesc.setAttribute('content', currentPost.summary || '');
+      const ogImg = document.getElementById('og-image');
+      if (ogImg && currentPost.featured_image) ogImg.setAttribute('content', currentPost.featured_image);
+
+      document.getElementById('breadcrumb-title').textContent = currentPost.title;
+      document.getElementById('article-badge').textContent = (currentPost.category || 'DISPATCH').toUpperCase();
+      document.getElementById('article-date').textContent = currentPost.date || 'October 2026';
+      document.getElementById('article-author').textContent = `• By ${currentPost.author || 'Architect of Chaos'}`;
+      document.getElementById('article-title').textContent = currentPost.title;
+      document.getElementById('article-summary').textContent = currentPost.summary || '';
+
+      // Estimated read time
+      const wordCount = (currentPost.content || '').split(/\s+/).length;
+      const readMinutes = Math.max(1, Math.round(wordCount / 180));
+      document.getElementById('article-read-time').textContent = `• ${readMinutes} min read`;
+
+      // Featured Image
+      const imgContainer = document.getElementById('featured-image-container');
+      const imgEl = document.getElementById('featured-image');
+      if (currentPost.featured_image) {
+        imgEl.src = currentPost.featured_image;
+        imgEl.alt = currentPost.title;
+        imgContainer.style.display = 'block';
+      }
+
+      // Body Content
+      const contentEl = document.getElementById('article-content');
+      contentEl.innerHTML = parseSimpleMarkdown(currentPost.content);
+
+      // Social Share Link
+      const copyBtn = document.getElementById('copy-link-btn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(window.location.href);
+          copyBtn.innerHTML = '<span>✅</span> Copied!';
+          setTimeout(() => { copyBtn.innerHTML = '<span>📋</span> Copy Link'; }, 2000);
+        });
+      }
+      const twBtn = document.getElementById('share-twitter-btn');
+      if (twBtn) {
+        twBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(currentPost.title)}&url=${encodeURIComponent(window.location.href)}`;
+      }
+
+      // Populate Sidebar Recent Articles
+      const sidebarContainer = document.getElementById('recent-articles-list');
+      if (sidebarContainer && allPosts.length > 0) {
+        sidebarContainer.innerHTML = '';
+        const others = allPosts.filter(p => p.id !== currentPost.id).slice(0, 4);
+        const basePath = window.location.pathname.endsWith('/blog') ? 'blog/' : '';
+        others.forEach(p => {
+          const item = document.createElement('a');
+          item.href = `${basePath}post.html?id=${p.id}`;
+          item.className = 'recent-post-item';
+          item.innerHTML = `
+            <div class="recent-post-title">${p.title}</div>
+            <div class="recent-post-meta">${p.date} &bull; ${p.category}</div>
+          `;
+          sidebarContainer.appendChild(item);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

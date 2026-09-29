@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product User Guide &amp; Manual | Control &amp; Chaos Second Life</title>
+  <meta name="description" content="Official user manual and documentation for Control &amp; Chaos Second Life products.">
+  <link rel="canonical" href="https://controlandchaos.com/guides/">
+  
+  <!-- OpenGraph / Facebook / Discord Rich Previews -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Product User Guide | Control &amp; Chaos">
+  <meta property="og:description" content="Official user manual, setup instructions, channel commands, and troubleshooting for Control &amp; Chaos Second Life devices.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80">
+  <meta property="og:url" content="https://controlandchaos.com/guides/">
+  <meta property="og:site_name" content="Control &amp; Chaos">
+
+  <!-- Twitter Card SEO -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Product User Guide | Control &amp; Chaos">
+  <meta name="twitter:description" content="Official user manual, setup instructions, channel commands, and troubleshooting for Control &amp; Chaos Second Life devices.">
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Product User Guide & Manual",
+    "description": "Official user manual and documentation for Control & Chaos Second Life devices.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Control & Chaos Second Life"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+
+  <site-navbar></site-navbar>
+
+  <!-- Product Guide Hero -->
+  <header class="hero" style="min-height: 50vh; padding: 120px 0 40px; background: linear-gradient(180deg, #1f1519 0%, #12100e 100%);">
+    <canvas id="hero-canvas"></canvas>
+    <div class="container">
+      <div class="hero-pill">
+        <span class="pill-dot"></span>
+        <span>OFFICIAL PRODUCT MANUAL &bull; SECOND LIFE 2026</span>
+      </div>
+      <h1 class="hero-title" style="font-size: 42px;">
+        [PRODUCT NAME] <span class="gold-gradient-text">USER GUIDE</span>
+      </h1>
+      <p class="hero-description">
+        Comprehensive setup guide, permission protocols, command list, and troubleshooting instructions.
+      </p>
+      <div style="display: flex; gap: 14px; margin-top: 24px; flex-wrap: wrap;">
+        <a href="https://marketplace.secondlife.com" target="_blank" rel="noopener" class="btn btn-gold">
+          <span>🛒</span> Buy on SL Marketplace &rarr;
+        </a>
+        <a href="#quick-start" class="btn btn-secondary">
+          <span>⚡</span> Jump to Quick Start
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Documentation Content -->
+  <main class="section">
+    <div class="container" style="display: grid; grid-template-columns: 1.5fr 0.9fr; gap: 40px;" id="profile-main-layout">
+      
+      <!-- Left Column: Manual Content -->
+      <div>
+        
+        <!-- 1. Product Overview -->
+        <div class="card" style="margin-bottom: 28px;">
+          <h2 class="card-title" style="font-size: 22px; margin-bottom: 12px;">1. Overview &amp; What's in the Box</h2>
+          <p style="font-size: 14.5px; color: var(--text-primary); line-height: 1.7; margin-bottom: 16px;">
+            Describe the product, its purpose, target audience (Dom/Sub/Venue), and what items are included in the package.
+          </p>
+          <ul style="padding-left: 20px; font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+            <li><strong>Primary Object:</strong> Description of the main scripted item (e.g. Attachment / Rezzable).</li>
+            <li><strong>Companion HUD:</strong> Optional controller or management interface.</li>
+            <li><strong>Instruction Notecard:</strong> In-world documentation backup.</li>
+          </ul>
+        </div>
+
+        <!-- 2. Quick Start Setup -->
+        <div class="card" style="margin-bottom: 28px;" id="quick-start">
+          <h2 class="card-title" style="font-size: 22px; margin-bottom: 12px;">2. Quick Start &amp; Attachment</h2>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="background: rgba(20,18,16,0.8); border: 1px solid var(--gold-border-subtle); border-radius: 6px; padding: 14px;">
+              <strong style="color: var(--gold-bright); display: block; margin-bottom: 4px;">Step 1: Unboxing &amp; Attachment</strong>
+              <p style="font-size: 13.5px; color: var(--text-muted); margin: 0;">Add or wear the object to the recommended attachment point. If Experience permissions appear, click "Yes".</p>
+            </div>
+            <div style="background: rgba(20,18,16,0.8); border: 1px solid var(--gold-border-subtle); border-radius: 6px; padding: 14px;">
+              <strong style="color: var(--gold-bright); display: block; margin-bottom: 4px;">Step 2: Accessing the Menu</strong>
+              <p style="font-size: 13.5px; color: var(--text-muted); margin: 0;">Touch the object or type the channel command to open the native <code style="color:var(--gold-bright);">llDialog</code> popup.</p>
+            </div>
+            <div style="background: rgba(20,18,16,0.8); border: 1px solid var(--gold-border-subtle); border-radius: 6px; padding: 14px;">
+              <strong style="color: var(--gold-bright); display: block; margin-bottom: 4px;">Step 3: Configuration &amp; Pairing</strong>
+              <p style="font-size: 13.5px; color: var(--text-muted); margin: 0;">Configure access rights, safewords, debit limits, or owner passkeys according to your preferences.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Channel & Chat Commands -->
+        <div class="card" style="margin-bottom: 28px;">
+          <h2 class="card-title" style="font-size: 22px; margin-bottom: 12px;">3. Chat &amp; Channel Commands</h2>
+          <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
+            Quick command reference for fast in-world operation without opening menus:
+          </p>
+          <div style="overflow-x: auto;">
+            <table class="table" style="font-size: 13.5px;">
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Channel</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>/22 menu</code></td>
+                  <td>22</td>
+                  <td>Opens the primary configuration dialog.</td>
+                </tr>
+                <tr>
+                  <td><code>/22 lock [passkey]</code></td>
+                  <td>22</td>
+                  <td>Locks the settings with a secure private passphrase.</td>
+                </tr>
+                <tr>
+                  <td><code>/22 help</code></td>
+                  <td>22</td>
+                  <td>Gives the latest user manual notecard directly in-world.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4. Troubleshooting & FAQ -->
+        <div class="card">
+          <h2 class="card-title" style="font-size: 22px; margin-bottom: 12px;">4. Troubleshooting &amp; FAQ</h2>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <strong style="color: var(--gold-bright); font-size: 14.5px;">Q: The menu does not open when clicked?</strong>
+              <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 4px;">Ensure you are in a script-enabled region, or check if the device is currently locked to another owner.</p>
+            </div>
+            <div>
+              <strong style="color: var(--gold-bright); font-size: 14.5px;">Q: How do I reset the device to factory defaults?</strong>
+              <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 4px;">Right-click > Edit > More > Scripts > Reset Scripts in your Second Life viewer.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Specs & Marketplace Card -->
+      <div>
+        
+        <!-- Marketplace Purchase Card -->
+        <div class="card" style="border-color: var(--gold-bright); background: linear-gradient(165deg, #2a221b 0%, #171411 100%); margin-bottom: 28px;">
+          <div class="card-icon">🛒</div>
+          <span class="section-tag" style="background: var(--gold-bright); color: var(--bg-dark); margin-bottom: 8px; align-self: flex-start;">VERIFIED RELEASE</span>
+          <h3 class="card-title" style="font-size: 20px;">Get this on Marketplace</h3>
+          <div style="font-family: var(--font-heading); font-size: 26px; color: var(--gold-bright); margin: 8px 0 14px;">L$ [PRICE]</div>
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 18px;">
+            Instant direct delivery to your Second Life inventory. Includes lifetime free updates and 24/7 in-world support.
+          </p>
+          <a href="https://marketplace.secondlife.com" target="_blank" rel="noopener" class="btn btn-gold" style="width: 100%;">
+            <span>🛒</span> View on Marketplace &rarr;
+          </a>
+        </div>
+
+        <!-- Hardware & Script Specs -->
+        <div class="card" style="margin-bottom: 28px;">
+          <h3 class="card-title" style="font-size: 18px; margin-bottom: 14px;">⚙️ Technical Specifications</h3>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+              <span style="color: var(--text-muted);">Permissions:</span>
+              <span style="color: var(--gold-bright); font-family: var(--font-mono);">Copy / Mod / No-Transfer</span>
+            </li>
+            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+              <span style="color: var(--text-muted);">Script Memory:</span>
+              <span style="color: var(--gold-bright); font-family: var(--font-mono);">&lt; 0.005 ms (Lag-Free)</span>
+            </li>
+            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+              <span style="color: var(--text-muted);">Storage:</span>
+              <span style="color: var(--gold-bright); font-family: var(--font-mono);">LinksetData (No HTTP lag)</span>
+            </li>
+            <li style="display: flex; justify-content: space-between; padding-top: 2px;">
+              <span style="color: var(--text-muted);">Support:</span>
+              <span style="color: var(--gold-bright);">Chaos Manor In-World Hub</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Related Product Guides -->
+        <div class="card">
+          <h3 class="card-title" style="font-size: 18px; margin-bottom: 14px;">📘 Other Product Manuals</h3>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="../vow-collar/index.html" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+              <span>⛓️</span> Vow Collar 2026 Manual
+            </a>
+            <a href="../pocket-pig/index.html" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+              <span>🐷</span> PocketPig Companion Guide
+            </a>
+            <a href="../footkiss/index.html" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+              <span>👠</span> FootKiss Worship System
+            </a>
+            <a href="../tribute-jars/index.html" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+              <span>🏺</span> Smart Tribute Jars
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <site-footer></site-footer>
+
+  <script src="../../app.js"></script>
+  <script>
+    // Dynamic Guide Loader for Guide Template: Can render any guide via ?guide=slug
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const guideSlug = urlParams.get('guide') || 'pocket-pig';
+      let data = null;
+
+      const candidateUrls = [
+        `/guides/data/${guideSlug}.json?v=${Date.now()}`,
+        `../data/${guideSlug}.json?v=${Date.now()}`,
+        `../../guides/data/${guideSlug}.json?v=${Date.now()}`,
+        `./data/${guideSlug}.json?v=${Date.now()}`,
+        `data/${guideSlug}.json?v=${Date.now()}`
+      ];
+
+      for (const url of candidateUrls) {
+        try {
+          const res = await fetch(url, { cache: 'no-store' });
+          if (res.ok) {
+            data = await res.json();
+            break;
+          }
+        } catch(e) {}
+      }
+
+      if (!data) return;
+
+      // Update Page Title & Description
+      if (data.title) document.title = `${data.title} User Guide | Control & Chaos`;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc && data.description) metaDesc.content = data.description;
+
+      // Update Hero Title & Badges
+      const pill = document.querySelector('.hero-pill span:last-child');
+      if (pill && data.pill_text) pill.textContent = data.pill_text;
+
+      const heroTitle = document.querySelector('.hero-title');
+      if (heroTitle && data.title) {
+        heroTitle.innerHTML = `${data.title} <span class="gold-gradient-text">USER MANUAL</span>`;
+      }
+
+      const heroDesc = document.querySelector('.hero-description');
+      if (heroDesc && data.description) heroDesc.textContent = data.description;
+
+      // Update Buy Links
+      const buyBtns = document.querySelectorAll('a[href*="marketplace.secondlife.com"]');
+      buyBtns.forEach(btn => {
+        if (data.marketplace_url) btn.href = data.marketplace_url;
+        if (btn.classList.contains('btn-gold') && data.price) {
+          btn.innerHTML = `<span>🛒</span> Buy on SL Marketplace (${data.price}) &rarr;`;
+        }
+      });
+
+      // Update Buy Box on Right Column
+      const buyBoxTitle = document.querySelector('#profile-main-layout .card h3.card-title');
+      if (buyBoxTitle && data.title) buyBoxTitle.textContent = `${data.title} Complete`;
+
+      const buyBoxPrice = document.querySelector('#profile-main-layout .card div[style*="font-size: 28px"]');
+      if (buyBoxPrice && data.price) buyBoxPrice.textContent = data.price;
+
+      const buyBoxIcon = document.querySelector('#profile-main-layout .card .card-icon');
+      if (buyBoxIcon && data.icon) buyBoxIcon.textContent = data.icon;
+
+      const buyBoxBadge = document.querySelector('#profile-main-layout .card .section-tag');
+      if (buyBoxBadge && data.badge) buyBoxBadge.textContent = data.badge;
+
+      // Markdown Parser & Formatter
+      function renderInline(str) {
+        return (str || '')
+          .replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--gold-bright);">$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code style="font-family:var(--font-mono); color:var(--gold-bright); background:rgba(0,0,0,0.5); padding:2px 6px; border-radius:4px; font-size:12px;">$1</code>');
+      }
+
+      function formatMd(text) {
+        if (!text) return '';
+        const blocks = text.split(/\n\s*\n/);
+        return blocks.map(block => {
+          let trimmed = block.trim();
+          if (!trimmed) return '';
+          if (trimmed.startsWith('### ')) {
+            return `<h4 style="font-size:16px; font-weight:700; color:var(--gold-bright); margin:16px 0 6px;">${renderInline(trimmed.slice(4))}</h4>`;
+          }
+          if (trimmed.startsWith('## ')) {
+            return `<h3 style="font-size:18px; font-weight:700; color:var(--gold-bright); margin:18px 0 8px;">${renderInline(trimmed.slice(3))}</h3>`;
+          }
+          if (trimmed.startsWith('# ')) {
+            return `<h2 style="font-size:20px; font-weight:800; color:var(--gold-bright); margin:20px 0 10px;">${renderInline(trimmed.slice(2))}</h2>`;
+          }
+          if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+            const items = trimmed.split('\n').map(l => l.replace(/^[-*]\s+/, '').trim()).filter(Boolean);
+            return `<ul style="padding-left:20px; margin:8px 0 12px; color:var(--text-muted); line-height:1.65;">` + 
+                   items.map(it => `<li>${renderInline(it)}</li>`).join('') + `</ul>`;
+          }
+          return `<p style="margin-bottom:12px; line-height:1.7; color:var(--text-primary);">${renderInline(trimmed).replace(/\n/g, '<br>')}</p>`;
+        }).join('');
+      }
+
+      // Dynamically Render Left Column Sections if defined in JSON
+      const leftCol = document.querySelector('#profile-main-layout > div:first-child');
+      if (leftCol && data.sections && data.sections.length > 0) {
+        leftCol.innerHTML = '';
+
+        data.sections.forEach((sec, idx) => {
+          const secCard = document.createElement('div');
+          secCard.className = 'card';
+          secCard.style.marginBottom = '28px';
+          if (sec.section_id) secCard.id = sec.section_id;
+
+          const contentHtml = formatMd(sec.content);
+
+          secCard.innerHTML = `
+            <h2 class="card-title" style="font-size: 22px; margin-bottom: 14px;">${sec.title}</h2>
+            <div style="font-size: 14.5px; color: var(--text-primary); line-height: 1.7;">
+              ${contentHtml}
+            </div>
+          `;
+
+          // If this is the Overview section and we have key features, render features box
+          if (idx === 0 && data.features && data.features.length > 0) {
+            const featBox = document.createElement('div');
+            featBox.style.cssText = 'background: rgba(20,18,16,0.85); border: 1px solid var(--gold-border-subtle); border-radius: 6px; padding: 16px; margin-top: 16px;';
+            featBox.innerHTML = `
+              <strong style="color: var(--gold-bright); font-size: 14px; display: block; margin-bottom: 8px;">Key Features:</strong>
+              <ul style="padding-left: 18px; font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin: 0;">
+                ${data.features.map(f => `<li><strong>${f.title}:</strong> ${f.desc}</li>`).join('')}
+              </ul>
+            `;
+            secCard.appendChild(featBox);
+          }
+
+          leftCol.appendChild(secCard);
+        });
+
+        // If we have chat commands in JSON, render the commands table
+        if (data.chat_commands && data.chat_commands.length > 0) {
+          const cmdCard = document.createElement('div');
+          cmdCard.className = 'card';
+          cmdCard.style.marginBottom = '28px';
+          cmdCard.id = 'commands';
+
+          cmdCard.innerHTML = `
+            <h2 class="card-title" style="font-size: 22px; margin-bottom: 14px;">💬 Chat &amp; Channel Commands</h2>
+            <div style="overflow-x: auto;">
+              <table class="table" style="font-size: 13px; width:100%;">
+                <thead>
+                  <tr>
+                    <th>Command</th>
+                    <th>Permission</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${data.chat_commands.map(c => `
+                    <tr>
+                      <td><code style="font-family:var(--font-mono); color:var(--gold-bright);">${c.command}</code></td>
+                      <td style="color:var(--gold-muted);">${c.role}</td>
+                      <td>${c.desc}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+          leftCol.appendChild(cmdCard);
+        }
+      }
+
+      // Update Specs List if provided in JSON
+      const specsList = document.querySelector('#profile-main-layout ul[style*="list-style: none"]');
+      if (specsList && data.specs) {
+        specsList.innerHTML = `
+          <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+            <span style="color: var(--text-muted);">Attachment:</span>
+            <span style="color: var(--gold-bright);">${data.specs.attachment || 'Screen HUD'}</span>
+          </li>
+          <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+            <span style="color: var(--text-muted);">Permissions:</span>
+            <span style="color: var(--gold-bright); font-family: var(--font-mono);">${data.specs.permissions || 'Copy / Mod'}</span>
+          </li>
+          <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--gold-border-subtle); padding-bottom: 6px;">
+            <span style="color: var(--text-muted);">Compatibility:</span>
+            <span style="color: var(--gold-bright);">${data.specs.compatibility || 'Experience Cloud'}</span>
+          </li>
+          <li style="display: flex; justify-content: space-between; padding-top: 2px;">
+            <span style="color: var(--text-muted);">Contents:</span>
+            <span style="color: var(--gold-bright);">${data.specs.contents || 'Complete Pack'}</span>
+          </li>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

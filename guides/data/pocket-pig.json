@@ -1,0 +1,74 @@
+{
+  "badge": "COMPANION HUD",
+  "price": "L$899",
+  "sections": [
+    {
+      "title": "1. Overview & Concept",
+      "section_id": "overview",
+      "content": "The **[C&C] PocketPig** is an interactive gamified companion HUD and avatar accessory designed specifically for Financial Submissives (FinSubs) and Dominants. It tracks 'wallet hunger', forces auditory squealing when tributes are neglected, and broadcasts live coin tributes sim-wide."
+    },
+    {
+      "title": "2. Quick Start & Pairing Mistress",
+      "section_id": "quick-start",
+      "content": "### Step 1: Wear the PocketPig HUD\nAdd the HUD to any screen attachment point (Bottom Right recommended). Accept the Experience request for auto-animations.\n\n### Step 2: Assign Owner / Mistress\nClick the HUD > **Pair Mistress** > Click nearby Dominant avatar or enter their SL username. They receive an instant authorization request.\n\n### Step 3: Set Feed Interval & Squeal Volume\nMistress configures how frequently the submissive must tribute (e.g. L$100 every 15 minutes) and sets sound volume."
+    },
+    {
+      "title": "3. Frequently Asked Questions",
+      "section_id": "faq",
+      "content": "**Q: Does PocketPig award Control & Chaos XP?**\nYes! Every feed session awards +10 XP per L$100 to the submissive and +15 XP to the receiving Dominant on the sim leaderboard.\n\n**Q: Can it be worn without a Mistress?**\nYes, in 'Self-Discipline' mode where hunger feeds into the public Sim Tribute Pool at Control & Chaos. Go get it!"
+    }
+  ],
+  "chat_commands": [
+    {
+      "command": "/33 pig menu",
+      "role": "Wearer / Domme",
+      "desc": "Opens the interactive configuration dialog."
+    },
+    {
+      "command": "/33 feed [amount]",
+      "role": "Wearer",
+      "desc": "Direct tribute payment to Mistress. Resets hunger."
+    },
+    {
+      "command": "/33 squeal",
+      "role": "Domme",
+      "desc": "Forces immediate pig squeal sound & snout wiggle."
+    },
+    {
+      "command": "/33 lock",
+      "role": "Domme",
+      "desc": "Locks HUD onto screen (cannot detach without passkey)."
+    }
+  ],
+  "pill_text": "INTERACTIVE COMPANION • SECOND LIFE 2026",
+  "specs": {
+    "attachment": "Screen HUD + Bento Snout",
+    "scripts": "Mono 64-bit Low-Lag LSL",
+    "permissions": "Copy / Mod / No-Transfer",
+    "compatibility": "Automatic Cloud Sync & Vow Collar",
+    "contents": "12 High-Definition Squeals + Props"
+  },
+  "title": "[C&C] PocketPig Companion",
+  "icon": "🐷",
+  "id": "pocket-pig",
+  "marketplace_url": "https://marketplace.secondlife.com",
+  "description": "Learn how to configure the PocketPig companion HUD, trigger automated FinSub squeal penalties, manage tribute hunger levels, and pair with the Vow Collar.",
+  "features": [
+    {
+      "title": "Hunger & Drain Meter",
+      "desc": "Every minute without feeding Mistress increases hunger percentage. At 100%, the pig squeals and locks into crawl posture."
+    },
+    {
+      "title": "Tip-to-Feed Integration",
+      "desc": "Direct integration with Mistress's Tribute Jar or direct L$ payment instantly resets hunger."
+    },
+    {
+      "title": "Snout & Trotters Auto-Rezzing",
+      "desc": "Optional Bento props auto-attach via Experience permissions."
+    },
+    {
+      "title": "Vow Collar Link",
+      "desc": "Seamlessly syncs with the Vow Collar for compounded XP bonuses."
+    }
+  ]
+}

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control &amp; Chaos | Hub Admin Panel</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+
+  <style>
+    /* =========================================================
+       CONTROL & CHAOS — BESPOKE LUXURY ADMIN THEME
+       ========================================================= */
+    :root {
+      --gold: #d4af37;
+      --gold-bright: #ffd700;
+      --gold-muted: #bfa15f;
+      --gold-glow: rgba(212, 175, 55, 0.35);
+      --bg-dark: #09090d;
+      --bg-card: #121218;
+      --border-gold: rgba(212, 175, 55, 0.25);
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-dark) !important;
+      font-family: 'Outfit', -apple-system, sans-serif !important;
+      color: #eaeaf0;
+    }
+
+    /* Top Global Header Bar */
+    header[class*="AppHeader"],
+    header[class*="StyledHeader"] {
+      background: linear-gradient(180deg, #14141d 0%, #0c0c12 100%) !important;
+      border-bottom: 1px solid var(--border-gold) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    /* Left Sidebar Navigation */
+    aside[class*="SidebarContainer"],
+    nav[class*="SidebarNav"] {
+      background: #0d0d14 !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+    }
+
+    /* Collection Links in Sidebar */
+    a[class*="SidebarNavLink"] {
+      color: #a0a0b8 !important;
+      font-weight: 500 !important;
+      border-radius: 8px !important;
+      transition: all 0.2s ease !important;
+    }
+    a[class*="SidebarNavLink"]:hover,
+    a[class*="SidebarNavLink"][class*="active"] {
+      background: rgba(212, 175, 55, 0.12) !important;
+      color: var(--gold-bright) !important;
+      border-left: 3px solid var(--gold) !important;
+    }
+
+    /* Editor Cards & Accordions */
+    div[class*="EditorContainer"],
+    div[class*="CardContainer"] {
+      background: transparent !important;
+    }
+
+    /* Form Fields & Controls */
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      background: #15151f !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      color: #f0f0f5 !important;
+      border-radius: 8px !important;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+      font-size: 14px !important;
+      transition: border-color 0.2s, box-shadow 0.2s !important;
+    }
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--gold) !important;
+      box-shadow: 0 0 0 3px var(--gold-glow) !important;
+      outline: none !important;
+    }
+
+    /* Luxury Buttons */
+    button[class*="StyledButton"],
+    button[class*="PublishButton"],
+    button[class*="SaveButton"] {
+      background: linear-gradient(135deg, #d4af37 0%, #a88424 100%) !important;
+      color: #0b0b0f !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      border-radius: 8px !important;
+      border: none !important;
+      box-shadow: 0 4px 15px var(--gold-glow) !important;
+      transition: transform 0.2s, box-shadow 0.2s !important;
+    }
+    button[class*="StyledButton"]:hover,
+    button[class*="PublishButton"]:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5) !important;
+    }
+
+    /* Nested List Items / Accordions in Editor */
+    div[class*="ListControlItem"] {
+      background: #14141e !important;
+      border: 1px solid rgba(212, 175, 55, 0.15) !important;
+      border-radius: 10px !important;
+      margin-bottom: 12px !important;
+    }
+  </style>
+
+  <!-- Explicit Decap Config Links -->
+  <link rel="cms-config-url" type="text/yaml" href="config.yml">
+  <link rel="cms-config-url" type="text/yaml" href="/admin/config.yml">
+</head>
+<body>
+  <!-- Decap CMS Core Engine -->
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+  <script>
+    // Register Master Stylesheet for live preview rendering
+    CMS.registerPreviewStyle('../styles.css');
+
+    // Custom Live Luxury Preview for Service Providers
+    const DirectoryPreview = createClass({
+      render: function() {
+        const entry = this.props.entry;
+        const name = entry.getIn(['data', 'name']) || 'Provider Name';
+        const role = entry.getIn(['data', 'role']) || 'Financial Domme & Luxury Companion';
+        const roleType = (entry.getIn(['data', 'role_type']) || 'domme').toUpperCase();
+        const startingRate = entry.getIn(['data', 'starting_rate']) || 'L$2,500 / hr';
+        const rating = entry.getIn(['data', 'rating']) || '5.0 ★★★★★';
+        const tagline = entry.getIn(['data', 'tagline']) || 'Unapologetic luxury, exquisite psychological draining...';
+        const location = entry.getIn(['data', 'location']) || 'Chaos Manor Penthouse & VIP Skybox';
+        const gallery = entry.getIn(['data', 'gallery']);
+        const tags = entry.getIn(['data', 'tags']);
+        
+        let heroImg = null;
+        if (gallery && gallery.size > 0) {
+          const first = gallery.get(0);
+          const rawImg = first.get('image');
+          if (rawImg) {
+            heroImg = this.props.getAsset(rawImg).toString();
+          }
+        }
+
+        return h('div', {
+          style: {
+            padding: '30px 20px',
+            background: '#09090d',
+            color: '#eaeaf0',
+            minHeight: '100vh',
+            fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif"
+          }
+        }, [
+          h('div', {
+            style: {
+              textAlign: 'center',
+              marginBottom: '20px',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: '11px',
+              color: '#d4af37',
+              letterSpacing: '2px'
+            }
+          }, 'LIVE CARD PREVIEW'),
+
+          // Card Container
+          h('div', {
+            className: 'card',
+            style: {
+              background: 'rgba(18, 18, 24, 0.95)',
+              border: '1px solid rgba(212, 175, 55, 0.35)',
+              borderRadius: '16px',
+              padding: '24px',
+              maxWidth: '380px',
+              margin: '0 auto',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.7)'
+            }
+          }, [
+            // Photo if present
+            heroImg ? h('img', {
+              src: heroImg,
+              style: {
+                width: '100%',
+                height: '240px',
+                objectFit: 'cover',
+                borderRadius: '12px',
+                marginBottom: '16px',
+                border: '1px solid rgba(212, 175, 55, 0.2)'
+              }
+            }) : null,
+
+            // Header Row (Badge + Stars)
+            h('div', {
+              style: {
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '10px'
+              }
+            }, [
+              h('span', {
+                style: {
+                  background: 'rgba(212, 175, 55, 0.15)',
+                  color: '#ffd700',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  padding: '3px 10px',
+                  borderRadius: '20px',
+                  fontSize: '10px',
+                  fontWeight: '700',
+                  letterSpacing: '1px'
+                }
+              }, roleType),
+              h('span', {
+                style: {
+                  color: '#ffd700',
+                  fontSize: '11px',
+                  fontFamily: "'JetBrains Mono', monospace"
+                }
+              }, rating)
+            ]),
+
+            // Name & Role
+            h('h3', {
+              style: {
+                margin: '6px 0 4px',
+                fontSize: '20px',
+                color: '#fff',
+                fontWeight: '700'
+              }
+            }, name),
+            h('div', {
+              style: {
+                color: '#d4af37',
+                fontSize: '13px',
+                marginBottom: '10px',
+                fontWeight: '500'
+              }
+            }, role),
+
+            // Tagline Quote
+            h('p', {
+              style: {
+                color: '#a0a0b5',
+                fontSize: '12.5px',
+                fontStyle: 'italic',
+                lineHeight: '1.5',
+                marginBottom: '14px'
+              }
+            }, `"${tagline}"`),
+
+            // Location
+            h('div', {
+              style: {
+                fontSize: '11px',
+                color: '#707085',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }
+            }, `📍 ${location}`),
+
+            // Footer (Rate + Button)
+            h('div', {
+              style: {
+                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                paddingTop: '14px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }
+            }, [
+              h('div', null, [
+                h('div', { style: { fontSize: '10px', color: '#707085', textTransform: 'uppercase' } }, 'Rates From:'),
+                h('div', { style: { color: '#ffd700', fontSize: '16px', fontWeight: '700' } }, startingRate)
+              ]),
+              h('button', {
+                style: {
+                  background: 'linear-gradient(135deg, #d4af37 0%, #997c22 100%)',
+                  color: '#09090d',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  fontWeight: '700',
+                  fontSize: '11px',
+                  cursor: 'pointer'
+                }
+              }, 'Full Rate Card →')
+            ])
+          ])
+        ]);
+      }
+    });
+
+    CMS.registerPreviewTemplate('directory', DirectoryPreview);
+
+    // Custom Live Preview for Blog Posts
+    const BlogPreview = createClass({
+      render: function() {
+        const entry = this.props.entry;
+        const title = entry.getIn(['data', 'title']) || 'Article Title';
+        const category = entry.getIn(['data', 'category']) || 'Product Launch';
+        const author = entry.getIn(['data', 'author']) || 'Architect of Chaos';
+        const date = entry.getIn(['data', 'date']) || 'October 2026';
+        const summary = entry.getIn(['data', 'summary']) || 'Article summary text...';
+        const content = this.props.widgetFor('content');
+
+        const rawImg = entry.getIn(['data', 'featured_image']);
+        const featuredImg = rawImg ? this.props.getAsset(rawImg).toString() : null;
+
+        return h('div', {
+          style: {
+            padding: '30px',
+            background: '#09090d',
+            color: '#eaeaf0',
+            minHeight: '100vh',
+            fontFamily: "'Outfit', sans-serif"
+          }
+        }, [
+          h('div', {
+            style: {
+              maxWidth: '650px',
+              margin: '0 auto',
+              background: '#121218',
+              border: '1px solid rgba(212, 175, 55, 0.3)',
+              borderRadius: '16px',
+              padding: '30px',
+              boxShadow: '0 12px 40px rgba(0,0,0,0.6)'
+            }
+          }, [
+            featuredImg ? h('img', {
+              src: featuredImg,
+              style: { width: '100%', height: '240px', objectFit: 'cover', borderRadius: '12px', marginBottom: '20px', border: '1px solid rgba(212,175,55,0.25)' }
+            }) : null,
+            h('div', { style: { color: '#d4af37', fontSize: '12px', marginBottom: '8px' } }, `${date} • ${category} • By ${author}`),
+            h('h1', { style: { color: '#fff', fontSize: '26px', margin: '0 0 14px' } }, title),
+            h('p', { style: { color: '#b0b0c5', fontSize: '15px', fontStyle: 'italic', marginBottom: '20px' } }, summary),
+            h('div', { style: { borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px', lineHeight: '1.7', color: '#e0e0ea' } }, content)
+          ])
+        ]);
+      }
+    });
+
+    CMS.registerPreviewTemplate('blog', BlogPreview);
+
+    // Custom Live Preview for Sim Events
+    const EventPreview = createClass({
+      render: function() {
+        const entry = this.props.entry;
+        const title = entry.getIn(['data', 'title']) || 'Event Title';
+        const categoryTag = (entry.getIn(['data', 'category_tag']) || 'SIM EVENT').toUpperCase();
+        const dateDisplay = entry.getIn(['data', 'date_display']) || 'Every Saturday • 1:00 PM SLT';
+        const location = entry.getIn(['data', 'location']) || 'Chaos Manor Arena';
+        const description = entry.getIn(['data', 'description']) || 'Event description and rules...';
+
+        return h('div', {
+          style: {
+            padding: '30px 20px',
+            background: '#09090d',
+            color: '#eaeaf0',
+            minHeight: '100vh',
+            fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif"
+          }
+        }, [
+          h('div', {
+            style: {
+              textAlign: 'center',
+              marginBottom: '20px',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: '11px',
+              color: '#d4af37',
+              letterSpacing: '2px'
+            }
+          }, 'LIVE EVENT CARD PREVIEW'),
+
+          // Card Container
+          h('div', {
+            className: 'card',
+            style: {
+              background: 'rgba(18, 18, 24, 0.95)',
+              border: '1px solid rgba(212, 175, 55, 0.35)',
+              borderRadius: '16px',
+              padding: '24px',
+              maxWidth: '420px',
+              margin: '0 auto',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.7)',
+              display: 'flex',
+              flexDirection: 'column'
+            }
+          }, [
+            // Top Row
+            h('div', {
+              style: {
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: '12px',
+                gap: '8px'
+              }
+            }, [
+              h('span', {
+                style: {
+                  background: 'rgba(212, 175, 55, 0.15)',
+                  color: '#ffd700',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  padding: '3px 10px',
+                  borderRadius: '20px',
+                  fontSize: '10px',
+                  fontWeight: '700',
+                  letterSpacing: '1px'
+                }
+              }, categoryTag),
+              h('span', {
+                style: {
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: '12px',
+                  color: '#ffd700'
+                }
+              }, dateDisplay)
+            ]),
+
+            // Title
+            h('h3', {
+              style: {
+                fontSize: '20px',
+                color: '#fff',
+                fontWeight: '700',
+                margin: '0 0 10px'
+              }
+            }, title),
+
+            // Location
+            h('div', {
+              style: {
+                fontSize: '12px',
+                color: '#d4af37',
+                marginBottom: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }
+            }, `📍 ${location}`),
+
+            // Description
+            h('p', {
+              style: {
+                fontSize: '13.5px',
+                lineHeight: '1.6',
+                color: '#b0b0c5',
+                marginBottom: '20px',
+                flex: '1'
+              }
+            }, description),
+
+            // Action Buttons
+            h('div', {
+              style: {
+                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                paddingTop: '16px',
+                marginTop: 'auto',
+                display: 'flex',
+                gap: '10px',
+                flexWrap: 'wrap'
+              }
+            }, [
+              h('button', {
+                style: {
+                  background: 'linear-gradient(135deg, #d4af37 0%, #997c22 100%)',
+                  color: '#09090d',
+                  border: 'none',
+                  padding: '9px 16px',
+                  borderRadius: '8px',
+                  fontWeight: '700',
+                  fontSize: '11px',
+                  flex: '1',
+                  cursor: 'pointer'
+                }
+              }, '📅 Add to Google Calendar'),
+              h('button', {
+                style: {
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  color: '#eaeaf0',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  padding: '9px 14px',
+                  borderRadius: '8px',
+                  fontWeight: '600',
+                  fontSize: '11px',
+                  cursor: 'pointer'
+                }
+              }, '📍 Teleport (SLurl)')
+            ])
+          ])
+        ]);
+      }
+    });
+
+    CMS.registerPreviewTemplate('events', EventPreview);
+
+    // Custom Live Luxury Preview for Product Guides
+    const GuidePreview = createClass({
+      render: function() {
+        const entry = this.props.entry;
+        const title = entry.getIn(['data', 'title']) || '[C&C] Product Title';
+        const badge = (entry.getIn(['data', 'badge']) || 'COMPANION HUD').toUpperCase();
+        const icon = entry.getIn(['data', 'icon']) || '📦';
+        const price = entry.getIn(['data', 'price']) || 'L$899';
+        const desc = entry.getIn(['data', 'description']) || 'Product description and overview...';
+
+        return h('div', {
+          style: {
+            padding: '30px 20px',
+            background: '#09090d',
+            color: '#eaeaf0',
+            minHeight: '100vh',
+            fontFamily: "'Outfit', sans-serif"
+          }
+        }, [
+          h('div', {
+            style: {
+              textAlign: 'center',
+              marginBottom: '20px',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: '11px',
+              color: '#d4af37',
+              letterSpacing: '2px'
+            }
+          }, 'LIVE PRODUCT GUIDE CARD PREVIEW'),
+
+          h('div', {
+            className: 'card',
+            style: {
+              background: 'linear-gradient(165deg, #1f1a16 0%, #12100e 100%)',
+              border: '1px solid rgba(212, 175, 55, 0.4)',
+              borderRadius: '16px',
+              padding: '24px',
+              maxWidth: '380px',
+              margin: '0 auto',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.7)'
+            }
+          }, [
+            h('div', { style: { fontSize: '38px', marginBottom: '8px' } }, icon),
+            h('span', {
+              style: {
+                background: 'rgba(212, 175, 55, 0.15)',
+                color: '#ffd700',
+                border: '1px solid rgba(212, 175, 55, 0.3)',
+                padding: '3px 10px',
+                borderRadius: '20px',
+                fontSize: '10px',
+                fontWeight: '700',
+                letterSpacing: '1px',
+                display: 'inline-block',
+                marginBottom: '10px'
+              }
+            }, badge),
+            h('h3', { style: { fontSize: '20px', color: '#fff', margin: '4px 0 6px', fontWeight: '800' } }, title),
+            h('div', { style: { fontSize: '22px', color: '#ffd700', fontWeight: '900', marginBottom: '12px' } }, price),
+            h('p', { style: { fontSize: '13.5px', color: '#b0b0c5', lineHeight: '1.6', marginBottom: '16px' } }, desc),
+            h('button', {
+              style: {
+                background: 'linear-gradient(135deg, #d4af37 0%, #997c22 100%)',
+                color: '#09090d',
+                border: 'none',
+                padding: '10px 18px',
+                borderRadius: '8px',
+                fontWeight: '700',
+                fontSize: '12px',
+                width: '100%',
+                cursor: 'pointer'
+              }
+            }, '📘 View Product Guide Manual')
+          ])
+        ]);
+      }
+    });
+
+    CMS.registerPreviewTemplate('product_guides', GuidePreview);
+
+    // Custom Live Luxury Preview for XP Economy & Sim Showcase Page
+    const XPSystemPreview = createClass({
+      render: function() {
+        const entry = this.props.entry;
+        const hero = entry.getIn(['data', 'hero']) || {};
+        const heroTitle = hero.get ? (hero.get('title') || 'Gamified FinDom, Ranks & Sim Rules') : (hero.title || 'Gamified FinDom, Ranks & Sim Rules');
+        const heroSub = hero.get ? (hero.get('subtitle') || '') : (hero.subtitle || '');
+        const heroBadge = hero.get ? (hero.get('badge') || 'EXPERIENCE CLOUD') : (hero.badge || 'EXPERIENCE CLOUD');
+
+        const manifesto = entry.getIn(['data', 'manifesto']) || {};
+        const manifestoTitle = manifesto.get ? manifesto.get('title') : manifesto.title;
+        const manifestoQuote = manifesto.get ? manifesto.get('quote') : manifesto.quote;
+
+        const regDoms = entry.getIn(['data', 'registered_doms']) || {};
+        const domsList = regDoms.get ? (regDoms.get('doms') || []) : (regDoms.doms || []);
+
+        const earnList = entry.getIn(['data', 'ways_to_earn']) || [];
+        const galleryList = entry.getIn(['data', 'venue_gallery']) || [];
+        const faqList = entry.getIn(['data', 'faqs']) || [];
+
+        return h('div', {
+          style: {
+            padding: '30px 24px',
+            background: '#0a0908',
+            color: '#eaeaf0',
+            minHeight: '100vh',
+            fontFamily: "'Plus Jakarta Sans', sans-serif"
+          }
+        }, [
+          h('div', {
+            style: {
+              textAlign: 'center',
+              marginBottom: '24px',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: '11px',
+              color: '#d4af37',
+              letterSpacing: '2px',
+              borderBottom: '1px solid rgba(212, 175, 55, 0.2)',
+              paddingBottom: '12px'
+            }
+          }, 'LIVE XP SYSTEM & SIM SHOWCASE PREVIEW'),
+
+          // Hero
+          h('div', {
+            style: {
+              textAlign: 'center',
+              padding: '30px 20px',
+              background: 'radial-gradient(ellipse at top, rgba(212, 175, 55, 0.15), transparent 70%)',
+              borderBottom: '1px solid rgba(212, 175, 55, 0.2)',
+              marginBottom: '30px'
+            }
+          }, [
+            h('span', {
+              style: {
+                background: 'rgba(212, 175, 55, 0.12)',
+                color: '#ffd700',
+                border: '1px solid rgba(212, 175, 55, 0.3)',
+                padding: '4px 12px',
+                borderRadius: '20px',
+                fontSize: '11px',
+                fontWeight: '700',
+                letterSpacing: '1px'
+              }
+            }, heroBadge),
+            h('h1', { style: { fontFamily: "'Outfit', sans-serif", fontSize: '28px', color: '#fff', margin: '14px 0 8px', fontWeight: '800' } }, heroTitle),
+            h('p', { style: { color: '#a09c95', fontSize: '14px', maxWidth: '600px', margin: '0 auto', lineHeight: '1.6' } }, heroSub)
+          ]),
+
+          // Manifesto Callout
+          h('div', {
+            style: {
+              background: 'linear-gradient(135deg, rgba(34, 26, 22, 0.95), rgba(18, 15, 13, 0.98))',
+              border: '1px solid #d4af37',
+              borderRadius: '16px',
+              padding: '24px',
+              marginBottom: '30px'
+            }
+          }, [
+            h('span', { style: { color: '#d4af37', fontSize: '11px', fontWeight: '700', letterSpacing: '1px' } }, 'OUR PHILOSOPHY'),
+            h('h2', { style: { fontFamily: "'Outfit', sans-serif", color: '#fff', fontSize: '20px', margin: '6px 0 10px' } }, manifestoTitle || 'Making FinDom Fun Again'),
+            h('blockquote', { style: { color: '#ffd700', fontStyle: 'italic', margin: '0 0 10px', fontSize: '14px', borderLeft: '3px solid #d4af37', paddingLeft: '12px' } }, `"${manifestoQuote || ''}"`)
+          ]),
+
+          // Registered Doms Rate Cards
+          h('div', { style: { marginBottom: '30px' } }, [
+            h('div', { style: { textAlign: 'center', marginBottom: '18px' } }, [
+              h('span', { style: { background: 'rgba(212, 175, 55, 0.12)', color: '#ffd700', border: '1px solid rgba(212, 175, 55, 0.3)', padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', letterSpacing: '1px' } }, 'ACTIVE IN-WORLD • REGISTERED DOMMES'),
+              h('h3', { style: { fontFamily: "'Outfit', sans-serif", color: '#fff', fontSize: '20px', margin: '6px 0 4px', fontWeight: '800' } }, 'Control & Chaos Registered Dominants'),
+              h('p', { style: { color: '#a09c95', fontSize: '12.5px', margin: 0, lineHeight: '1.5' } }, 'These verified Dominants are active players on the estate. Submissives can view rate cards and contact them for sessions and service.')
+            ]),
+            h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' } },
+              (domsList.toJS ? domsList.toJS() : domsList).map(function(d, i) {
+                return h('div', {
+                  key: i,
+                  style: {
+                    background: 'linear-gradient(165deg, #181512 0%, #100e0c 100%)',
+                    border: '1px solid rgba(212, 175, 55, 0.3)',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    minHeight: '180px'
+                  }
+                }, [
+                  h('div', {}, [
+                    h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' } }, [
+                      h('span', { style: { background: 'rgba(139,30,45,0.45)', border: '1px solid rgba(244,114,182,0.3)', color: '#ffb8c2', fontSize: '9px', fontWeight: '700', padding: '2px 6px', borderRadius: '4px', fontFamily: 'monospace' } }, d.role_type || 'DOMINANT'),
+                      h('span', { style: { fontFamily: 'monospace', fontSize: '11px', color: '#ffd700' } }, `@${d.sl_username || ''}`)
+                    ]),
+                    h('strong', { style: { color: '#ffd700', fontSize: '15px', display: 'block', margin: '4px 0 6px' } }, d.name),
+                    h('p', { style: { color: '#a09c95', fontSize: '11.5px', margin: '0 0 10px', lineHeight: '1.4' } }, `"${d.tagline || ''}"`)
+                  ]),
+                  h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '10px', marginTop: 'auto' } }, [
+                    h('span', { style: { fontFamily: 'monospace', color: '#ffd700', fontSize: '12px', fontWeight: '700' } }, d.rate || 'From L$2,000 / hr'),
+                    h('span', { style: { background: '#f7e7b4', color: '#151310', fontSize: '9.5px', fontWeight: '800', padding: '4px 10px', borderRadius: '20px', letterSpacing: '0.5px' } }, 'RATE CARD →')
+                  ])
+                ]);
+              })
+            )
+          ]),
+
+          // Ways to Earn Preview
+          h('div', { style: { marginBottom: '30px' } }, [
+            h('h3', { style: { fontFamily: "'Outfit', sans-serif", color: '#ffd700', fontSize: '18px', margin: '0 0 14px' } }, '⚡ Ways to Play & Earn'),
+            h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' } },
+              (earnList.toJS ? earnList.toJS() : earnList).slice(0, 4).map(function(item, idx) {
+                return h('div', {
+                  key: idx,
+                  style: {
+                    background: '#151311',
+                    border: '1px solid rgba(212, 175, 55, 0.2)',
+                    borderRadius: '10px',
+                    padding: '12px'
+                  }
+                }, [
+                  h('div', { style: { fontSize: '20px', marginBottom: '4px' } }, item.icon),
+                  h('strong', { style: { color: '#fff', fontSize: '13px' } }, item.title),
+                  h('div', { style: { color: '#ffd700', fontSize: '10.5px', fontWeight: '700', margin: '2px 0 4px' } }, item.badge),
+                  h('p', { style: { color: '#8e8a82', fontSize: '11px', margin: 0, lineHeight: '1.4' } }, item.desc)
+                ]);
+              })
+            )
+          ]),
+
+          // Venue Lookbook Preview
+          h('div', { style: { marginBottom: '30px' } }, [
+            h('h3', { style: { fontFamily: "'Outfit', sans-serif", color: '#ffd700', fontSize: '18px', margin: '0 0 14px' } }, '📸 Venue & Atmosphere Gallery'),
+            h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' } },
+              (galleryList.toJS ? galleryList.toJS() : galleryList).slice(0, 3).map(function(g, gi) {
+                return h('div', {
+                  key: gi,
+                  style: {
+                    borderRadius: '10px',
+                    overflow: 'hidden',
+                    background: '#161311',
+                    border: '1px solid rgba(212,175,55,0.2)'
+                  }
+                }, [
+                  g.image ? h('img', { src: g.image, style: { width: '100%', height: '90px', objectFit: 'cover' } }) : null,
+                  h('div', { style: { padding: '8px 10px' } }, [
+                    h('strong', { style: { color: '#fff', fontSize: '12px', display: 'block' } }, `${g.icon || '✨'} ${g.title}`),
+                    h('span', { style: { color: '#d4af37', fontSize: '10px' } }, g.category)
+                  ])
+                ]);
+              })
+            )
+          ]),
+
+          // FAQs Preview
+          h('div', {}, [
+            h('h3', { style: { fontFamily: "'Outfit', sans-serif", color: '#ffd700', fontSize: '18px', margin: '0 0 14px' } }, '❓ Frequently Asked Questions'),
+            h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+              (faqList.toJS ? faqList.toJS() : faqList).slice(0, 3).map(function(f, fi) {
+                return h('div', {
+                  key: fi,
+                  style: {
+                    background: '#151311',
+                    border: '1px solid rgba(212,175,55,0.2)',
+                    borderRadius: '8px',
+                    padding: '10px 14px'
+                  }
+                }, [
+                  h('strong', { style: { color: '#fff', fontSize: '12.5px', display: 'block', marginBottom: '4px' } }, `Q: ${f.question}`),
+                  h('p', { style: { color: '#a09c95', fontSize: '11.5px', margin: 0, lineHeight: '1.4' } }, f.answer)
+                ]);
+              })
+            )
+          ])
+
+        ]);
+      }
+    });
+
+    CMS.registerPreviewTemplate('xp_page', XPSystemPreview);
+    CMS.registerPreviewTemplate('xp_system_content', XPSystemPreview);
+    CMS.registerPreviewTemplate('xp_system_page', XPSystemPreview);
+  </script>
+</body>
+</html>
