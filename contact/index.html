@@ -150,8 +150,10 @@
               </p>
             </div>
 
-            <!-- Form Body (Native & Embed/Iframe Ready) -->
-            <form id="main-contact-form" onsubmit="handleFormSubmit(event)">
+            <!-- Form Body with Netlify Forms Integration -->
+            <form name="contact" method="POST" data-netlify="true" netlify netlify-honeypot="bot-field" id="main-contact-form" onsubmit="handleFormSubmit(event)">
+              <input type="hidden" name="form-name" value="contact">
+              <p style="display:none;"><input name="bot-field"></p>
               
               <div class="form-grid-2col">
                 <div class="form-group">
@@ -212,7 +214,7 @@
   <!-- Master Footer Component -->
   <site-footer></site-footer>
 
-  <script src="../app.js"></script>
+  <script src="/app.js"></script>
   <script>
     // ClipBoard Copy Helper
     function copyText(text, btn) {
@@ -224,9 +226,10 @@
       }, 2000);
     }
 
-    // Form Submission Handler
+    // Form Submission Handler with Netlify Forms Integration
     function handleFormSubmit(e) {
       e.preventDefault();
+      const form = e.target;
       const btn = document.getElementById('submit-btn');
       const feedback = document.getElementById('form-feedback');
       const username = document.getElementById('contact-username').value;
@@ -235,22 +238,37 @@
       btn.disabled = true;
       btn.innerHTML = '<span>⏳</span> Transmitting...';
 
-      setTimeout(() => {
+      const formData = new FormData(form);
+
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formData).toString()
+      })
+      .then(() => {
         btn.disabled = false;
         btn.innerHTML = '<span>✓</span> Transmitted!';
         
         feedback.className = 'form-feedback-box success';
         feedback.innerHTML = `
           <strong>✓ Dispatch Transmitted Successfully!</strong><br>
-          Thank you <strong>${username}</strong>. Your message regarding <em>${dept}</em> has been logged and routed to our team. We typically respond within 24 hours in-world or via notecard.
+          Thank you <strong>${username}</strong>. Your message regarding <em>${dept}</em> has been logged in Netlify and routed to our team. We typically respond within 24 hours in-world or via notecard.
         `;
 
-        document.getElementById('main-contact-form').reset();
+        form.reset();
 
         setTimeout(() => {
           btn.innerHTML = '<span>✉️</span> Transmit Message';
         }, 4000);
-      }, 1000);
+      })
+      .catch((error) => {
+        btn.disabled = false;
+        btn.innerHTML = '<span>✉️</span> Transmit Message';
+        feedback.className = 'form-feedback-box';
+        feedback.style.borderColor = '#ef4444';
+        feedback.style.color = '#f87171';
+        feedback.innerHTML = `<strong>Error transmitting dispatch.</strong> Please contact us directly in Second Life at <code>Los Pengos (97, 181, 3000)</code>.`;
+      });
     }
   </script>
 </body>
