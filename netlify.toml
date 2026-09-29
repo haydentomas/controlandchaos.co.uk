@@ -1,11 +1,6 @@
 [build]
-  publish = "."
-
-[[plugins]]
-  package = "netlify-plugin-minify-html"
-
-  [plugins.inputs]
-    minifierOptions = { collapseWhitespace = true, removeComments = true, minifyCSS = true, minifyJS = true }
+  command = "npm run build"
+  publish = "dist"
 
 [[headers]]
   for = "/*"
