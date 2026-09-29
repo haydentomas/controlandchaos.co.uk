@@ -97,5 +97,34 @@
       "stars": "★★★★★",
       "comment": "Alek is consummate perfection. Charming, dangerous, and unforgettable."
     }
+  ],
+  "wishlist": [
+    {
+      "title": "Throne Tribute Wishlist",
+      "url": "https://throne.com/",
+      "note": "Formal menswear, collars, and sim furnishings"
+    },
+    {
+      "title": "Second Life Marketplace Wishlist",
+      "url": "https://marketplace.secondlife.com/",
+      "note": "Custom mesh head & hair styles"
+    }
+  ],
+  "social_links": [
+    {
+      "platform": "Discord",
+      "handle": "alek_zane#0001",
+      "url": "https://discord.gg/"
+    },
+    {
+      "platform": "Flickr",
+      "handle": "flickr.com/photos/alek-zane",
+      "url": "https://flickr.com/"
+    },
+    {
+      "platform": "Twitter / X",
+      "handle": "@AlekZaneSL",
+      "url": "https://x.com/"
+    }
   ]
 }

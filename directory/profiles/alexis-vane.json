@@ -67,6 +67,35 @@
       "comment": "The Vow Collar training and Air Tax setup was flawless. My wallet has never felt lighter or more devoted!"
     }
   ],
+  "wishlist": [
+    {
+      "title": "Throne Tribute Wishlist",
+      "url": "https://throne.com/",
+      "note": "Haute couture formal gowns, leather accessories & luxury furnishings"
+    },
+    {
+      "title": "Second Life Marketplace Wishlist",
+      "url": "https://marketplace.secondlife.com/",
+      "note": "Exclusive animations, jewelry & ballroom skybox decor"
+    }
+  ],
+  "social_links": [
+    {
+      "platform": "Discord",
+      "handle": "MistressAlexis#0001",
+      "url": "https://discord.gg/"
+    },
+    {
+      "platform": "Flickr",
+      "handle": "flickr.com/photos/alexis-vane",
+      "url": "https://flickr.com/"
+    },
+    {
+      "platform": "Twitter / X",
+      "handle": "@MistressAlexisSL",
+      "url": "https://x.com/"
+    }
+  ],
   "id": "alexis-vane",
   "rate_categories": [
     {

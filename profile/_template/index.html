@@ -135,6 +135,24 @@
             <h3 class="card-title" style="font-size: 18px; margin-bottom: 14px;">⭐ Verified Client Reviews</h3>
             <div id="reviews-container" style="display:flex; flex-direction:column; gap:12px;"></div>
           </div>
+
+          <!-- Wishlist Box (Conditionally Rendered) -->
+          <div class="card" id="profile-wishlist-card" style="display:none; margin-top:30px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+              <span style="font-size:20px;">🎁</span>
+              <h3 class="card-title" style="font-size:18px; margin:0;">Wishlist &amp; Tributes</h3>
+            </div>
+            <div id="wishlist-container" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+
+          <!-- Social Links Box (Conditionally Rendered) -->
+          <div class="card" id="profile-social-card" style="display:none; margin-top:30px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+              <span style="font-size:20px;">🌐</span>
+              <h3 class="card-title" style="font-size:18px; margin:0;">Socials &amp; Media</h3>
+            </div>
+            <div id="social-links-container" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
         </div>
 
       </div>
@@ -625,6 +643,92 @@
             </p>
           </div>
         `).join('');
+      }
+
+      // 9. Render Wishlist (Conditional)
+      const wishlistCard = document.getElementById('profile-wishlist-card');
+      const wishlistContainer = document.getElementById('wishlist-container');
+      const wishlistItems = Array.isArray(profileData.wishlist) ? profileData.wishlist.filter(w => w && (w.title || w.url || typeof w === 'string')) : [];
+
+      if (wishlistCard && wishlistContainer) {
+        if (wishlistItems.length > 0) {
+          wishlistContainer.innerHTML = wishlistItems.map(item => {
+            const title = typeof item === 'string' ? item : (item.title || 'Wishlist Item');
+            const url = typeof item === 'object' && item.url ? item.url : '';
+            const note = typeof item === 'object' && item.note ? item.note : '';
+            const isClickable = !!url && url !== '#';
+
+            return `
+              <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:8px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                <div style="flex:1;">
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="color:var(--gold-bright); font-size:14px;">🛍️</span>
+                    <strong style="font-family:var(--font-heading); font-size:14px; color:var(--text-primary);">${title}</strong>
+                  </div>
+                  ${note ? `<div style="font-size:12px; color:var(--text-muted); margin-top:3px; line-height:1.4;">${note}</div>` : ''}
+                </div>
+                ${isClickable ? `
+                  <a href="${url}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="font-size:11px; padding:6px 12px; flex-shrink:0;">
+                    View ↗
+                  </a>
+                ` : ''}
+              </div>
+            `;
+          }).join('');
+          wishlistCard.style.display = 'block';
+        } else {
+          wishlistCard.style.display = 'none';
+        }
+      }
+
+      // 10. Render Social Links (Conditional)
+      const socialCard = document.getElementById('profile-social-card');
+      const socialContainer = document.getElementById('social-links-container');
+      const socialItems = Array.isArray(profileData.social_links) ? profileData.social_links.filter(s => s && (s.platform || s.handle || s.url || typeof s === 'string')) : [];
+
+      if (socialCard && socialContainer) {
+        if (socialItems.length > 0) {
+          const platformIcons = {
+            'discord': '💬',
+            'flickr': '📸',
+            'twitter': '🐦',
+            'twitter / x': '🐦',
+            'x': '🐦',
+            'instagram': '📷',
+            'tiktok': '🎵',
+            'telegram': '✈️',
+            'website': '🔗',
+            'other': '🌐'
+          };
+
+          socialContainer.innerHTML = socialItems.map(item => {
+            const platform = typeof item === 'string' ? 'Social' : (item.platform || 'Social');
+            const handle = typeof item === 'string' ? item : (item.handle || item.url || platform);
+            const url = typeof item === 'object' && item.url ? item.url : '';
+            const key = platform.toLowerCase();
+            const icon = platformIcons[key] || (key.includes('flickr') ? '📸' : key.includes('discord') ? '💬' : key.includes('twitter') || key.includes('x') ? '🐦' : key.includes('insta') ? '📷' : '🌐');
+
+            return `
+              <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:8px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
+                  <span style="font-size:16px;">${icon}</span>
+                  <div style="overflow:hidden;">
+                    <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.8px; color:var(--gold-muted); font-family:var(--font-mono);">${platform}</div>
+                    <div style="font-family:var(--font-heading); font-size:13.5px; font-weight:700; color:var(--text-primary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${handle}</div>
+                  </div>
+                </div>
+                ${url ? `
+                  <a href="${url}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="font-size:11px; padding:6px 12px; flex-shrink:0;">
+                    Visit ↗
+                  </a>
+                ` : ''}
+              </div>
+            `;
+          }).join('');
+          socialCard.style.display = 'block';
+        } else {
+          socialCard.style.display = 'none';
+        }
       }
 
     });

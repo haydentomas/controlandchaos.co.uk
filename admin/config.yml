@@ -103,6 +103,35 @@ collections:
           - { label: "Stars", name: "stars", widget: "string", default: "★★★★★" }
           - { label: "Testimonial Comment", name: "comment", widget: "text" }
 
+      - label: "🎁 Wishlist & Tributes"
+        name: "wishlist"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Platform / Item Title", name: "title", widget: "string", hint: "e.g. Throne Wishlist, Amazon, SL Marketplace" }
+          - { label: "URL Link", name: "url", widget: "string", hint: "e.g. https://throne.com/username" }
+          - { label: "Note / Description", name: "note", widget: "string", required: false, hint: "e.g. In-world gifts, outfits, furnishings" }
+
+      - label: "🌐 Socials & External Links"
+        name: "social_links"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Platform"
+            name: "platform"
+            widget: "select"
+            options:
+              - "Discord"
+              - "Flickr"
+              - "Twitter / X"
+              - "Instagram"
+              - "TikTok"
+              - "Telegram"
+              - "Website"
+              - "Other"
+          - { label: "Handle / Display Text", name: "handle", widget: "string", hint: "e.g. @alexis_sl or AlexisVane#1234" }
+          - { label: "URL Link", name: "url", widget: "string", required: false, hint: "e.g. https://flickr.com/photos/..." }
+
   # -------------------------------------------------------------
   # 2. Sim Events & Tournaments (Individual Event Cards)
   # -------------------------------------------------------------
