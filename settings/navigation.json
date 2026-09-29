@@ -39,6 +39,12 @@
       "url": "/events/",
       "icon": "📅",
       "new_tab": false
+    },
+    {
+      "icon": "🔗",
+      "new_tab": false,
+      "label": "Contact",
+      "url": "/contact/"
     }
   ]
 }
