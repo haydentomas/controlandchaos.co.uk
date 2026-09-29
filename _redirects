@@ -1,0 +1,14 @@
+# Automatic 301 redirects from .html to clean directory URLs
+/index.html                     /                           301
+/directory/index.html           /directory/                 301
+/products/index.html            /products/                  301
+/xp-system/index.html           /xp-system/                 301
+/events/index.html              /events/                    301
+/contact/index.html             /contact/                   301
+/guides/index.html              /guides/                    301
+/guides/vow-collar/index.html   /guides/vow-collar/         301
+/guides/pocket-pig/index.html   /guides/pocket-pig/         301
+/guides/footkiss/index.html     /guides/footkiss/           301
+/guides/tribute-jars/index.html /guides/tribute-jars/       301
+/guides/xp-titlers/index.html   /guides/xp-titlers/         301
+/blog/index.html                /blog/                      301

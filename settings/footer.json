@@ -6,25 +6,25 @@
     {
       "title": "Store & Products",
       "links": [
-        { "label": "Product Catalogue", "url": "/products/index.html", "new_tab": false },
-        { "label": "All User Guides", "url": "/guides/index.html", "new_tab": false },
-        { "label": "Vow Collar Suite", "url": "/Shop/VowCollar/html/index.html", "new_tab": false }
+        { "label": "Product Catalogue", "url": "/products/", "new_tab": false },
+        { "label": "All User Guides", "url": "/guides/", "new_tab": false },
+        { "label": "Vow Collar Suite", "url": "/guides/vow-collar/", "new_tab": false }
       ]
     },
     {
       "title": "Ecosystem",
       "links": [
-        { "label": "Service Providers", "url": "/directory/index.html", "new_tab": false },
-        { "label": "XP System & Rules", "url": "/xp-system/index.html", "new_tab": false },
-        { "label": "Events Board", "url": "/events/index.html", "new_tab": false }
+        { "label": "Service Providers", "url": "/directory/", "new_tab": false },
+        { "label": "XP System & Rules", "url": "/xp-system/", "new_tab": false },
+        { "label": "Events Board", "url": "/events/", "new_tab": false }
       ]
     },
     {
       "title": "Community",
       "links": [
-        { "label": "Sim Game Rules", "url": "/xp-system/index.html#sim-rules", "new_tab": false },
-        { "label": "Get Listed", "url": "/directory/index.html#get-listed", "new_tab": false },
-        { "label": "Contact & Concierge", "url": "/contact/index.html", "new_tab": false }
+        { "label": "Sim Game Rules", "url": "/xp-system/#sim-rules", "new_tab": false },
+        { "label": "Get Listed", "url": "/directory/#get-listed", "new_tab": false },
+        { "label": "Contact & Concierge", "url": "/contact/", "new_tab": false }
       ]
     }
   ]

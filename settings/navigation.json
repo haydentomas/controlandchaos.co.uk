@@ -6,37 +6,37 @@
   "links": [
     {
       "label": "XP & Rules",
-      "url": "/xp-system/index.html",
+      "url": "/xp-system/",
       "icon": "⚡",
       "new_tab": false
     },
     {
       "label": "Service Providers",
-      "url": "/directory/index.html",
+      "url": "/directory/",
       "icon": "👑",
       "new_tab": false
     },
     {
       "label": "Store",
-      "url": "/products/index.html",
+      "url": "/products/",
       "icon": "🛍️",
       "new_tab": false
     },
     {
       "label": "User Guides",
-      "url": "/guides/index.html",
+      "url": "/guides/",
       "icon": "📘",
       "new_tab": false
     },
     {
       "label": "Blog",
-      "url": "/blog/index.html",
+      "url": "/blog/",
       "icon": "🏰",
       "new_tab": false
     },
     {
       "label": "Events",
-      "url": "/events/index.html",
+      "url": "/events/",
       "icon": "📅",
       "new_tab": false
     }
