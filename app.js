@@ -270,8 +270,11 @@ class SiteNavbar extends HTMLElement {
   }
 
   render(navData) {
-    const rootPrefix = calculateRootPrefix();
-    const currentPath = window.location.pathname.toLowerCase();
+    const resolveUrl = (u) => {
+      if (!u || u === '/' || u === '/index.html') return '/';
+      if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('secondlife://')) return u;
+      return u.startsWith('/') ? u : '/' + u;
+    };
 
     const data = navData || {
       brand_title: "CONTROL & CHAOS",
@@ -279,19 +282,13 @@ class SiteNavbar extends HTMLElement {
       inworld_slurl: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000",
       inworld_button_text: "Visit Us InWorld",
       links: [
-        { label: "Service Providers", url: "/directory/index.html", icon: "👑" },
-        { label: "Store", url: "/products/index.html", icon: "🛍️" },
-        { label: "User Guides", url: "/guides/index.html", icon: "📘" },
-        { label: "XP & Rules", url: "/xp-system/index.html", icon: "⚡" },
-        { label: "Blog", url: "/blog/index.html", icon: "🏰" },
-        { label: "Events", url: "/events/index.html", icon: "📅" }
+        { label: "Service Providers", url: "/directory/", icon: "👑" },
+        { label: "Store", url: "/products/", icon: "🛍️" },
+        { label: "User Guides", url: "/guides/", icon: "📘" },
+        { label: "XP & Rules", url: "/xp-system/", icon: "⚡" },
+        { label: "Blog", url: "/blog/", icon: "🏰" },
+        { label: "Events", url: "/events/", icon: "📅" }
       ]
-    };
-
-    const resolveUrl = (u) => {
-      if (!u) return '#';
-      if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('secondlife://')) return u;
-      return u.startsWith('/') ? rootPrefix + u.replace(/^\/+/, '') : u;
     };
 
     const navLinksHtml = (data.links || []).map(link => {
@@ -313,7 +310,7 @@ class SiteNavbar extends HTMLElement {
     this.innerHTML = `
       <nav class="navbar" id="navbar">
         <div class="container navbar-container">
-          <a href="${resolveUrl('/index.html')}" class="nav-brand">
+          <a href="/" class="nav-brand">
             <div class="brand-icon">👑</div>
             <div class="brand-text-group">
               <span class="brand-title">${data.brand_title || 'CONTROL &amp; CHAOS'}</span>
@@ -357,10 +354,8 @@ class SiteNavbar extends HTMLElement {
   }
 
   async syncData() {
-    const rootPrefix = calculateRootPrefix();
     const urls = [
-      `/settings/navigation.json?v=${Date.now()}`,
-      rootPrefix + `settings/navigation.json?v=${Date.now()}`
+      `/settings/navigation.json?v=${Date.now()}`
     ];
     for (const u of urls) {
       try {
@@ -382,11 +377,10 @@ class SiteFooter extends HTMLElement {
   }
 
   render(footerData) {
-    const rootPrefix = calculateRootPrefix();
     const resolveUrl = (u) => {
-      if (!u) return '#';
+      if (!u || u === '/' || u === '/index.html') return '/';
       if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('secondlife://')) return u;
-      return u.startsWith('/') ? rootPrefix + u.replace(/^\/+/, '') : u;
+      return u.startsWith('/') ? u : '/' + u;
     };
 
     const data = footerData || {
@@ -397,24 +391,25 @@ class SiteFooter extends HTMLElement {
         {
           title: "Store & Products",
           links: [
-            { label: "Product Catalogue", url: "/products/index.html" },
-            { label: "All User Guides", url: "/guides/index.html" },
-            { label: "Vow Collar Suite", url: "/Shop/VowCollar/html/index.html" }
+            { label: "Product Catalogue", url: "/products/" },
+            { label: "All User Guides", url: "/guides/" },
+            { label: "Vow Collar Suite", url: "/guides/vow-collar/" }
           ]
         },
         {
           title: "Ecosystem",
           links: [
-            { label: "Service Providers", url: "/directory/index.html" },
-            { label: "XP System & Rules", url: "/xp-system/index.html" },
-            { label: "Events Board", url: "/events/index.html" }
+            { label: "Service Providers", url: "/directory/" },
+            { label: "XP System & Rules", url: "/xp-system/" },
+            { label: "Events Board", url: "/events/" }
           ]
         },
         {
           title: "Community",
           links: [
-            { label: "Sim Game Rules", url: "/xp-system/index.html#sim-rules" },
-            { label: "Get Listed", url: "/directory/index.html#get-listed" }
+            { label: "Sim Game Rules", url: "/xp-system/#sim-rules" },
+            { label: "Get Listed", url: "/directory/#get-listed" },
+            { label: "Contact & Concierge", url: "/contact/" }
           ]
         }
       ]
