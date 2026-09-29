@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initParticleCanvas();
   initAudioSystem();
   initMobileNav();
-  initDynamicNavigation();
   initBlogFeed();
 });
 
@@ -270,6 +269,7 @@ class SiteNavbar extends HTMLElement {
   }
 
   render(navData) {
+    const currentPath = (window.location && window.location.pathname) ? window.location.pathname.toLowerCase() : '/';
     const resolveUrl = (u) => {
       if (!u || u === '/' || u === '/index.html') return '/';
       if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('secondlife://')) return u;
