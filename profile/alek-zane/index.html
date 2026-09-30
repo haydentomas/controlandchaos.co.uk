@@ -89,7 +89,7 @@
       object-fit: contain;
     }
 
-    /* Smart Bottom-Sticky Sidebar on Desktop */
+    /* Independent Scrollable Sticky Sidebar on Desktop */
     @media (min-width: 992px) {
       #profile-main-layout {
         align-items: start !important;
@@ -97,9 +97,26 @@
       .profile-sticky-sidebar {
         position: -webkit-sticky;
         position: sticky;
-        top: auto;
-        bottom: 30px;
+        top: 100px;
         align-self: start;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        padding-right: 6px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--gold-border) transparent;
+      }
+      .profile-sticky-sidebar::-webkit-scrollbar {
+        width: 5px;
+      }
+      .profile-sticky-sidebar::-webkit-scrollbar-thumb {
+        background: var(--gold-border-subtle);
+        border-radius: 4px;
+      }
+      .profile-sticky-sidebar::-webkit-scrollbar-thumb:hover {
+        background: var(--gold-bright);
+      }
+      .profile-sticky-sidebar::-webkit-scrollbar-track {
+        background: transparent;
       }
     }
   </style>
