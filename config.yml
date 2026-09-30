@@ -21,60 +21,41 @@ collections:
     slug: "{{id}}"
     summary: "{{name}} ({{role}})"
     fields:
-      - { label: "Slug / ID", name: "id", widget: "string", hint: "Unique filename ID, e.g. alexis-vane" }
-      - { label: "Display Name", name: "name", widget: "string" }
-      - { label: "Second Life Username", name: "sl_username", widget: "string" }
-      - { label: "Avatar UUID", name: "avatar_uuid", widget: "string", required: false }
-      - { label: "Role / Title", name: "role", widget: "string" }
-      - label: "Role Type"
+      # =========================================================
+      # 1. Hero Header Banner (Top of Page)
+      # =========================================================
+      - { label: "Display Name", name: "name", widget: "string", hint: "e.g. Alek Zane" }
+      - label: "Role Type (Badge)"
         name: "role_type"
         widget: "select"
         options:
           - { label: "Dominant / Domme", value: "domme" }
           - { label: "Submissive / Escort / FinSub", value: "sub" }
           - { label: "Switch / Performer", value: "switch" }
-      - { label: "Availability Status", name: "status", widget: "string", default: "Available / In-World" }
-      - { label: "Starting Rate", name: "starting_rate", widget: "string", default: "L$1,000 / hr" }
-      - { label: "Rating Summary", name: "rating", widget: "string", default: "5.0 ★★★★★ (Verified)", required: false }
-      - { label: "Tagline", name: "tagline", widget: "string" }
+      - { label: "Availability Status", name: "status", widget: "string", default: "Available for submission services (UK Time Zone)" }
+      - { label: "Second Life Username", name: "sl_username", widget: "string", hint: "e.g. alek.zane" }
+      - { label: "Avatar UUID (for direct SL IM)", name: "avatar_uuid", widget: "string", required: false, hint: "e.g. b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec" }
+      - { label: "Tagline Quote", name: "tagline", widget: "string", hint: "e.g. The versatile British sub you’ve been looking for." }
+      - { label: "Profile Slug / ID", name: "id", widget: "string", hint: "Unique filename identifier, e.g. alek-zane" }
+      - { label: "Role / Subtitle", name: "role", widget: "string", default: "Bratty, Pay to Play Submissive", required: false }
+
+      # =========================================================
+      # 2. Top Action Toolbar & Location
+      # =========================================================
+      - { label: "Location on Sim", name: "location", widget: "string", default: "Control & Chaos" }
+      - { label: "Starting Rate", name: "starting_rate", widget: "string", default: "L$3,000 / hr" }
+      - { label: "SLurl Landmark Link", name: "slurl", widget: "string", default: "https://maps.secondlife.com/secondlife/Los%20Pengos/85/167/3000" }
+      - { label: "Contact Email (Optional)", name: "contact_email", widget: "string", required: false, hint: "For off-world booking inquiries" }
+
+      # =========================================================
+      # 3. About & Philosophy Section (Left Column)
+      # =========================================================
       - { label: "About Section Title", name: "about_title", widget: "string", default: "About & Philosophy", required: false }
-      - { label: "About Bio", name: "about", widget: "text" }
-      - { label: "Location / Suite", name: "location", widget: "string", default: "Control & Chaos VIP Lounge" }
-      - { label: "SLurl Landmark Link", name: "slurl", widget: "string", default: "secondlife://Chaos%20Manor/128/142/23" }
-      - { label: "Contact Email (Optional)", name: "contact_email", widget: "string", required: false, hint: "Email address for off-world booking inquiries" }
-      
-      - label: "Tags"
-        name: "tags"
-        widget: "list"
-        required: false
-        field: { label: "Tag", name: "tag", widget: "string" }
+      - { label: "About Bio (Multi-paragraph)", name: "about", widget: "text" }
 
-      - { label: "⚡ Hardware & Features Section Title", name: "hardware_title", widget: "string", default: "Hardware & Tech Compatibility", required: false }
-      - label: "⚡ Hardware & Tech Compatibility (Repeater)"
-        name: "hardware_compat"
-        widget: "list"
-        required: false
-        hint: "Add hardware, devices, toys, and tech compatibility items"
-        fields:
-          - { label: "Feature / Device Name", name: "name", widget: "string", hint: "e.g. Lovense Toy Control, Firestorm RLV, Vow Collar Certified" }
-          - { label: "Icon Emoji", name: "icon", widget: "string", default: "⚡", hint: "e.g. 🔌, 🔒, ⛓️, ⚡, 🎙️, 👑" }
-          - { label: "Status Badge (Optional)", name: "badge_text", widget: "string", default: "Supported", required: false, hint: "e.g. Certified, Synced, Ready, Active" }
-
-      - label: "📸 Gallery Section Title"
-        name: "gallery_title"
-        widget: "string"
-        default: "Gallery"
-        required: false
-      - label: "📸 Photo Gallery Items"
-        name: "gallery"
-        widget: "list"
-        required: false
-        fields:
-          - { label: "Photo Title", name: "title", widget: "string" }
-          - { label: "Category", name: "category", widget: "string", default: "VIP Escort" }
-          - { label: "Image (Upload or Web URL)", name: "image", widget: "image" }
-          - { label: "Icon Emoji", name: "icon", widget: "string", default: "👗", required: false }
-
+      # =========================================================
+      # 4. Rate Categories & Menus (Left Column - Repeater)
+      # =========================================================
       - label: "💳 Rate Categories & Menus (Repeater)"
         name: "rate_categories"
         widget: "list"
@@ -92,6 +73,9 @@ collections:
               - { label: "Billing Unit", name: "unit", widget: "string", default: "per hour" }
               - { label: "Service Description", name: "desc", widget: "text", required: false }
 
+      # =========================================================
+      # 5. Custom Content Blocks (Left Column - Repeater)
+      # =========================================================
       - label: "📌 Custom Content Blocks (Repeater)"
         name: "custom_sections"
         widget: "list"
@@ -102,6 +86,41 @@ collections:
           - { label: "Icon Emoji", name: "icon", widget: "string", default: "📌", required: false }
           - { label: "Content (Markdown / Text)", name: "content", widget: "markdown" }
 
+      # =========================================================
+      # 6. Photo Gallery (Right Column)
+      # =========================================================
+      - label: "📸 Gallery Section Title"
+        name: "gallery_title"
+        widget: "string"
+        default: "Gallery"
+        required: false
+      - label: "📸 Photo Gallery Items"
+        name: "gallery"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Photo Title", name: "title", widget: "string" }
+          - { label: "Category", name: "category", widget: "string", default: "VIP Escort" }
+          - { label: "Image (Upload or Web URL)", name: "image", widget: "image" }
+          - { label: "Icon Emoji", name: "icon", widget: "string", default: "👗", required: false }
+
+      # =========================================================
+      # 7. Hardware & Tech Compatibility (Right Column - Repeater)
+      # =========================================================
+      - { label: "⚡ Hardware & Features Section Title", name: "hardware_title", widget: "string", default: "Hardware & Tech Compatibility", required: false }
+      - label: "⚡ Hardware & Tech Compatibility (Repeater)"
+        name: "hardware_compat"
+        widget: "list"
+        required: false
+        hint: "Add hardware, devices, toys, and tech compatibility items"
+        fields:
+          - { label: "Feature / Device Name", name: "name", widget: "string", hint: "e.g. Lovense Toy Control, Firestorm RLV, Vow Collar Certified" }
+          - { label: "Icon Emoji", name: "icon", widget: "string", default: "⚡", hint: "e.g. 🔌, 🔒, ⛓️, ⚡, 🎙️, 👑" }
+          - { label: "Status Badge (Optional)", name: "badge_text", widget: "string", default: "Supported", required: false, hint: "e.g. Certified, Synced, Ready, Active" }
+
+      # =========================================================
+      # 8. Hard Limits & Boundaries (Right Column)
+      # =========================================================
       - label: "🚫 Hard Limits Section Title"
         name: "limits_title"
         widget: "string"
@@ -113,6 +132,9 @@ collections:
         required: false
         field: { label: "Limit Rule", name: "limit", widget: "string" }
 
+      # =========================================================
+      # 9. How to Book (Right Column)
+      # =========================================================
       - label: "📜 How to Book Section Title"
         name: "booking_title"
         widget: "string"
@@ -124,6 +146,9 @@ collections:
         required: false
         field: { label: "Step", name: "step", widget: "string" }
 
+      # =========================================================
+      # 10. Client Reviews (Right Column)
+      # =========================================================
       - label: "⭐ Client Reviews Section Title"
         name: "reviews_title"
         widget: "string"
@@ -138,6 +163,9 @@ collections:
           - { label: "Stars", name: "stars", widget: "string", default: "★★★★★" }
           - { label: "Testimonial Comment", name: "comment", widget: "text" }
 
+      # =========================================================
+      # 11. Wishlist & Tributes (Right Column)
+      # =========================================================
       - label: "🎁 Wishlist Section Title"
         name: "wishlist_title"
         widget: "string"
@@ -152,6 +180,9 @@ collections:
           - { label: "URL Link", name: "url", widget: "string", hint: "e.g. https://throne.com/username" }
           - { label: "Note / Description", name: "note", widget: "string", required: false, hint: "e.g. In-world gifts, outfits, furnishings" }
 
+      # =========================================================
+      # 12. Socials & External Links (Right Column)
+      # =========================================================
       - label: "🌐 Socials Section Title"
         name: "social_title"
         widget: "string"
@@ -176,6 +207,16 @@ collections:
               - "Other"
           - { label: "Handle / Display Text", name: "handle", widget: "string", hint: "e.g. @alexis_sl or AlexisVane#1234" }
           - { label: "URL Link", name: "url", widget: "string", required: false, hint: "e.g. https://flickr.com/photos/..." }
+
+      # =========================================================
+      # 13. Search Tags & Rating
+      # =========================================================
+      - label: "Profile Search Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+        field: { label: "Tag", name: "tag", widget: "string" }
+      - { label: "Rating Summary", name: "rating", widget: "string", default: "5.0 ★★★★★", required: false }
 
   # -------------------------------------------------------------
   # 2. Sim Events & Tournaments (Individual Event Cards)
