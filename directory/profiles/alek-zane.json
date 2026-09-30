@@ -80,18 +80,21 @@
   "hardware_compat": [
     {
       "name": "Gush",
-      "icon": "Hush",
-      "badge_text": "Diamo"
+      "icon": "🌊",
+      "badge_text": "",
+      "desc": "Hands-free oscillating male vibe, interactive sync"
     },
     {
-      "name": "Firestorm RLV Restraints",
-      "icon": "🔒",
-      "badge_text": "Ready"
+      "icon": "💎",
+      "badge_text": "",
+      "name": "Diamo",
+      "desc": "Vibrating adjustable cock ring, app-controlled perineum stimulation"
     },
     {
-      "name": "Second Life Experience",
-      "icon": "⚡",
-      "badge_text": "Enabled"
+      "icon": "🚀",
+      "badge_text": "",
+      "name": "Max 2",
+      "desc": "Interactive male masturbator, air pump contraction & vibe sync"
     }
   ],
   "reviews": [

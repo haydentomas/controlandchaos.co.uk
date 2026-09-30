@@ -241,10 +241,9 @@
 
           <!-- Hardware & Tech Compatibility Card (Repeater & Dynamic Title) -->
           <div class="card" id="profile-hardware-card" style="margin-bottom: 30px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
-              <span style="font-size:20px;">⚡</span>
-              <h3 class="card-title" id="profile-hardware-title" style="font-size:18px; margin:0;">Hardware &amp; Tech Compatibility</h3>
-            </div>
+            <h3 class="card-title" id="profile-hardware-title" style="font-size:18px; margin:0 0 14px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:20px;">⚡</span> Hardware &amp; Tech Compatibility
+            </h3>
             <div id="hardware-features-container" style="display:flex; flex-direction:column; gap:10px;">
               <!-- Injected dynamically -->
             </div>
@@ -252,10 +251,9 @@
 
           <!-- Hard Limits & Boundaries -->
           <div class="card" style="margin-bottom: 30px; border-color: rgba(139,30,45,0.4); background: rgba(30,15,18,0.4);">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-              <span style="font-size:20px;">🚫</span>
-              <h3 class="card-title" id="profile-limits-title" style="font-size:18px; color:#ffb8c2; margin:0;">Hard Limits &amp; Boundaries</h3>
-            </div>
+            <h3 class="card-title" id="profile-limits-title" style="font-size:18px; color:#ffb8c2; margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:20px;">🚫</span> Hard Limits &amp; Boundaries
+            </h3>
             <ul id="hard-limits-list" style="padding-left:18px; font-size:13.5px; color:var(--text-primary); line-height:1.65;">
               <!-- Injected dynamically -->
             </ul>
@@ -263,10 +261,9 @@
 
           <!-- How to Book / Protocol -->
           <div class="card" style="margin-bottom: 30px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-              <span style="font-size:20px;">📜</span>
-              <h3 class="card-title" id="profile-booking-title" style="font-size:18px; margin:0;">How to Book</h3>
-            </div>
+            <h3 class="card-title" id="profile-booking-title" style="font-size:18px; margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:20px;">📜</span> How to Book
+            </h3>
             <div id="booking-protocol-steps" style="font-size:13.5px; color:var(--text-primary); line-height:1.7;">
               <!-- Injected dynamically -->
             </div>
@@ -282,19 +279,17 @@
 
           <!-- Wishlist Box (Conditionally Rendered) -->
           <div class="card" id="profile-wishlist-card" style="display:none; margin-top:30px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
-              <span style="font-size:20px;">🎁</span>
-              <h3 class="card-title" id="profile-wishlist-title" style="font-size:18px; margin:0;">Wishlist &amp; Tributes</h3>
-            </div>
+            <h3 class="card-title" id="profile-wishlist-title" style="font-size:18px; margin:0 0 14px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:20px;">🎁</span> Wishlist &amp; Tributes
+            </h3>
             <div id="wishlist-container" style="display:flex; flex-direction:column; gap:10px;"></div>
           </div>
 
           <!-- Social Links Box (Conditionally Rendered) -->
           <div class="card" id="profile-social-card" style="display:none; margin-top:30px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
-              <span style="font-size:20px;">🌐</span>
-              <h3 class="card-title" id="profile-social-title" style="font-size:18px; margin:0;">Socials &amp; Media</h3>
-            </div>
+            <h3 class="card-title" id="profile-social-title" style="font-size:18px; margin:0 0 14px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:20px;">🌐</span> Socials &amp; Media
+            </h3>
             <div id="social-links-container" style="display:flex; flex-direction:column; gap:10px;"></div>
           </div>
 
@@ -606,7 +601,9 @@
       // 6. Render Gallery / Visual Lookbook (Dynamic Title & Lightbox Support)
       const galleryTitleEl = document.getElementById('profile-gallery-title');
       if (galleryTitleEl) {
-        galleryTitleEl.textContent = `📸 ${profileData.gallery_title || 'Gallery'}`;
+        let rawTitle = (profileData.gallery_title || 'Gallery').trim();
+        const cleanTitle = rawTitle.replace(/^([\u{1F4F8}\u{1F4F7}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        galleryTitleEl.innerHTML = `<span style="font-size:20px; margin-right:8px;">📸</span> ${cleanTitle || 'Gallery'}`;
       }
 
       const galleryGrid = document.getElementById('gallery-grid');
@@ -652,9 +649,9 @@
       const hwContainer = document.getElementById('hardware-features-container');
 
       if (hwTitle) {
-        const rawTitle = (profileData.hardware_title || 'Hardware & Tech Compatibility').trim();
-        const startsWithEmoji = /^(\p{Extended_Pictographic}|\p{Emoji})/u.test(rawTitle);
-        hwTitle.textContent = startsWithEmoji ? rawTitle : `⚡ ${rawTitle}`;
+        let rawTitle = (profileData.hardware_title || 'Hardware & Tech Compatibility').trim();
+        const cleanTitle = rawTitle.replace(/^([\u26A1\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        hwTitle.innerHTML = `<span style="font-size:20px;">⚡</span> ${cleanTitle || 'Hardware & Tech Compatibility'}`;
       }
 
       if (hwCard && hwContainer) {
@@ -680,7 +677,9 @@
       // 8. Render Hard Limits (Dynamic Title)
       const limitsTitleEl = document.getElementById('profile-limits-title');
       if (limitsTitleEl) {
-        limitsTitleEl.textContent = profileData.limits_title || 'Hard Limits & Boundaries';
+        let rawTitle = (profileData.limits_title || 'Hard Limits & Boundaries').trim();
+        const cleanTitle = rawTitle.replace(/^([\u{1F6AB}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        limitsTitleEl.innerHTML = `<span style="font-size:20px;">🚫</span> ${cleanTitle || 'Hard Limits & Boundaries'}`;
       }
       const limitsList = document.getElementById('hard-limits-list');
       if (limitsList && profileData.hard_limits) {
@@ -690,7 +689,9 @@
       // 9. Render How to Book / Protocol (Dynamic Title)
       const bookingTitleEl = document.getElementById('profile-booking-title');
       if (bookingTitleEl) {
-        bookingTitleEl.textContent = profileData.booking_title || 'How to Book';
+        let rawTitle = (profileData.booking_title || 'How to Book').trim();
+        const cleanTitle = rawTitle.replace(/^([\u{1F4DC}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        bookingTitleEl.innerHTML = `<span style="font-size:20px;">📜</span> ${cleanTitle || 'How to Book'}`;
       }
       const protocolBox = document.getElementById('booking-protocol-steps');
       if (protocolBox && profileData.booking_protocol) {
@@ -705,7 +706,9 @@
       // 10. Render Reviews (Dynamic Title)
       const reviewsTitleEl = document.getElementById('profile-reviews-title');
       if (reviewsTitleEl) {
-        reviewsTitleEl.textContent = profileData.reviews_title || 'Verified Client Reviews';
+        let rawTitle = (profileData.reviews_title || 'Verified Client Reviews').trim();
+        const cleanTitle = rawTitle.replace(/^([\u2B50\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        reviewsTitleEl.innerHTML = `<span style="font-size:20px; margin-right:8px;">⭐</span> ${cleanTitle || 'Verified Client Reviews'}`;
       }
       const reviewsContainer = document.getElementById('reviews-container');
       if (reviewsContainer && profileData.reviews) {
@@ -725,7 +728,9 @@
       // 11. Render Wishlist (Dynamic Title & Conditional)
       const wishlistTitleEl = document.getElementById('profile-wishlist-title');
       if (wishlistTitleEl) {
-        wishlistTitleEl.textContent = profileData.wishlist_title || 'Wishlist & Tributes';
+        let rawTitle = (profileData.wishlist_title || 'Wishlist & Tributes').trim();
+        const cleanTitle = rawTitle.replace(/^([\u{1F381}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        wishlistTitleEl.innerHTML = `<span style="font-size:20px;">🎁</span> ${cleanTitle || 'Wishlist & Tributes'}`;
       }
       const wishlistCard = document.getElementById('profile-wishlist-card');
       const wishlistContainer = document.getElementById('wishlist-container');
@@ -765,7 +770,9 @@
       // 12. Render Social Links (Dynamic Title & Conditional)
       const socialTitleEl = document.getElementById('profile-social-title');
       if (socialTitleEl) {
-        socialTitleEl.textContent = profileData.social_title || 'Socials & Media';
+        let rawTitle = (profileData.social_title || 'Socials & Media').trim();
+        const cleanTitle = rawTitle.replace(/^([\u{1F310}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        socialTitleEl.innerHTML = `<span style="font-size:20px;">🌐</span> ${cleanTitle || 'Socials & Media'}`;
       }
       const socialCard = document.getElementById('profile-social-card');
       const socialContainer = document.getElementById('social-links-container');
