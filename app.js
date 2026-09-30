@@ -108,7 +108,7 @@ function initMobileNav() {
     toggle.setAttribute('aria-expanded', 'true');
   }
 
-  toggle.addEventListener('click', (e) => {
+  toggle.onclick = (e) => {
     e.stopPropagation();
     const isOpen = drawer.classList.contains('open');
     if (isOpen) {
@@ -116,28 +116,41 @@ function initMobileNav() {
     } else {
       openMenu();
     }
-  });
+  };
 
   // Close when clicking any mobile link
   drawer.querySelectorAll('.mobile-nav-link, .btn').forEach(link => {
-    link.addEventListener('click', () => {
+    link.onclick = () => {
       closeMenu();
+    };
+  });
+
+  if (!window._mobileNavGlobalListenersAttached) {
+    window._mobileNavGlobalListenersAttached = true;
+    document.addEventListener('click', (e) => {
+      const activeDrawer = document.getElementById('mobile-nav-drawer');
+      const activeToggle = document.getElementById('nav-toggle');
+      if (activeDrawer && activeDrawer.classList.contains('open')) {
+        if (!activeDrawer.contains(e.target) && !activeToggle.contains(e.target)) {
+          activeToggle.classList.remove('open');
+          activeDrawer.classList.remove('open');
+          activeToggle.setAttribute('aria-expanded', 'false');
+        }
+      }
     });
-  });
 
-  // Close when clicking outside
-  document.addEventListener('click', (e) => {
-    if (drawer.classList.contains('open') && !drawer.contains(e.target) && !toggle.contains(e.target)) {
-      closeMenu();
-    }
-  });
-
-  // Close on Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && drawer.classList.contains('open')) {
-      closeMenu();
-    }
-  });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const activeDrawer = document.getElementById('mobile-nav-drawer');
+        const activeToggle = document.getElementById('nav-toggle');
+        if (activeDrawer && activeDrawer.classList.contains('open')) {
+          activeToggle.classList.remove('open');
+          activeDrawer.classList.remove('open');
+          activeToggle.setAttribute('aria-expanded', 'false');
+        }
+      }
+    });
+  }
 }
 
 
@@ -307,15 +320,13 @@ class SiteNavbar extends HTMLElement {
       return `<li><a href="${href}" class="mobile-nav-link${isActive ? ' active' : ''}"${target}><span>${link.icon || '🔗'}</span> ${link.label}</a></li>`;
     }).join('\n');
 
+    const logoSrc = data.logo_image ? resolveUrl(data.logo_image) : resolveUrl('/images/logo.png');
+
     this.innerHTML = `
       <nav class="navbar" id="navbar">
         <div class="container navbar-container">
-          <a href="/" class="nav-brand">
-            <div class="brand-icon">👑</div>
-            <div class="brand-text-group">
-              <span class="brand-title">${data.brand_title || 'CONTROL &amp; CHAOS'}</span>
-              <span class="brand-subtitle">${data.brand_subtitle || 'SECOND LIFE GAMIFIED ECOSYSTEM'}</span>
-            </div>
+          <a href="/" class="nav-brand" aria-label="${data.brand_title || 'CONTROL &amp; CHAOS'}">
+            <img src="${logoSrc}" alt="${data.brand_title || 'CONTROL &amp; CHAOS'}" class="brand-logo-img">
           </a>
 
           <div class="nav-links-wrapper">
@@ -384,6 +395,7 @@ class SiteFooter extends HTMLElement {
     };
 
     const data = footerData || {
+      logo_image: "/images/logo.png",
       brand_title: "CONTROL & CHAOS",
       desc: "Second Life's premier gamified FinDom sim, escort directory, and hardware development house.",
       copyright: "© 2026 Control & Chaos. All rights reserved.",
@@ -415,6 +427,8 @@ class SiteFooter extends HTMLElement {
       ]
     };
 
+    const logoSrc = data.logo_image ? resolveUrl(data.logo_image) : resolveUrl('/images/logo.png');
+
     const columnsHtml = (data.columns || []).map(col => `
       <div class="footer-links-col">
         <div class="footer-col-title">${col.title}</div>
@@ -431,9 +445,10 @@ class SiteFooter extends HTMLElement {
         <div class="container">
           <div class="footer-grid">
             <div>
-              <div class="nav-brand" style="margin-bottom: 12px;">
-                <div class="brand-icon">👑</div>
-                <span class="brand-title">${data.brand_title || 'CONTROL &amp; CHAOS'}</span>
+              <div class="footer-brand-wrap" style="margin-bottom: 14px;">
+                <a href="/" class="nav-brand footer-nav-brand" aria-label="${data.brand_title || 'CONTROL &amp; CHAOS'}">
+                  <img src="${logoSrc}" alt="${data.brand_title || 'CONTROL &amp; CHAOS'}" class="footer-logo-img">
+                </a>
               </div>
               <p class="footer-desc">
                 ${data.desc || "Second Life's premier gamified FinDom sim, escort directory, and hardware development house."}

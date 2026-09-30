@@ -271,7 +271,7 @@ function generatePostHtml(post, allPosts) {
           
           <!-- Faction / Sim Card -->
           <div class="sidebar-widget">
-            <div class="widget-title"><span>👑</span> Chaos Manor</div>
+            <div class="widget-title"><span>👑</span> Control & Chaos</div>
             <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
               Second Life's premier luxury gamified sanctuary, competitive XP arenas, and certified escort directory.
             </p>

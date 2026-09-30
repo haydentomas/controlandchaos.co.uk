@@ -38,7 +38,7 @@ collections:
       - { label: "Rating Summary", name: "rating", widget: "string", default: "5.0 ★★★★★ (Verified)", required: false }
       - { label: "Tagline", name: "tagline", widget: "string" }
       - { label: "About Bio", name: "about", widget: "text" }
-      - { label: "Location / Suite", name: "location", widget: "string", default: "Chaos Manor VIP Lounge" }
+      - { label: "Location / Suite", name: "location", widget: "string", default: "Control & Chaos VIP Lounge" }
       - { label: "SLurl Landmark Link", name: "slurl", widget: "string", default: "secondlife://Chaos%20Manor/128/142/23" }
       
       - label: "Tags"
@@ -130,7 +130,7 @@ collections:
       - { label: "Category Badge (Caps)", name: "category_tag", widget: "string", default: "SIM EVENT" }
       - { label: "Date Display", name: "date_display", widget: "string", hint: "e.g. Every Saturday • 1:00 PM SLT" }
       - { label: "Date (ISO Format)", name: "date_iso", widget: "string", default: "2026-10-03T13:00", required: false }
-      - { label: "Location", name: "location", widget: "string", default: "Chaos Manor Arena & Central Laser Cages" }
+      - { label: "Location", name: "location", widget: "string", default: "Control & Chaos Arena & Central Laser Cages" }
       - { label: "SLurl Link", name: "slurl", widget: "string", default: "secondlife://Chaos%20Manor/128/128/23" }
       - { label: "Event Description", name: "description", widget: "text" }
       - { label: "Google Calendar Title", name: "gcal_title", widget: "string", required: false }
@@ -393,6 +393,7 @@ collections:
         file: "settings/navigation.json"
         format: "json"
         fields:
+          - { label: "Brand Logo Image", name: "logo_image", widget: "image", default: "/images/logo.png", required: false }
           - { label: "Brand Title", name: "brand_title", widget: "string", default: "CONTROL & CHAOS" }
           - { label: "Brand Subtitle", name: "brand_subtitle", widget: "string", default: "SECOND LIFE GAMIFIED ECOSYSTEM" }
           - { label: "InWorld SLurl Link", name: "inworld_slurl", widget: "string", default: "http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000" }
@@ -411,6 +412,7 @@ collections:
         file: "settings/footer.json"
         format: "json"
         fields:
+          - { label: "Brand Logo Image", name: "logo_image", widget: "image", default: "/images/logo.png", required: false }
           - { label: "Brand Title", name: "brand_title", widget: "string", default: "CONTROL & CHAOS" }
           - { label: "Footer Summary Text", name: "desc", widget: "text", default: "Second Life's premier gamified FinDom sim, escort directory, and hardware development house." }
           - { label: "Copyright Line", name: "copyright", widget: "string", default: "© 2026 Control & Chaos. All rights reserved." }
@@ -432,7 +434,7 @@ collections:
         file: "settings/homepage.json"
         format: "json"
         fields:
-          - { label: "Announcement Pill Banner", name: "pill_text", widget: "string", default: "⚡ CHAOS MANOR V2 ECOSYSTEM LIVE" }
+          - { label: "Announcement Pill Banner", name: "pill_text", widget: "string", default: "⚡ CONTROL & CHAOS V2 ECOSYSTEM LIVE" }
           - { label: "Main Headline", name: "headline", widget: "string", default: "THE NEXUS OF LUXURY, DISCIPLINE & CODE" }
           - { label: "Hero Subtitle", name: "subtitle", widget: "text", default: "Welcome to Second Life's premier luxury FinDom sanctuary, immersive hardware ecosystem, and competitive XP gaming arena." }
           - { label: "Discord Community Link", name: "discord_url", widget: "string", required: false }

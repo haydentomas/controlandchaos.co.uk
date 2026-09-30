@@ -268,7 +268,7 @@
             <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap;">
               <div>
                 <span style="font-size:11px; color:var(--text-muted); display:block;">Location on Sim:</span>
-                <span style="font-family:var(--font-mono); font-size:13px; color:var(--gold-bright);">${profileData.location || 'Chaos Manor'}</span>
+                <span style="font-family:var(--font-mono); font-size:13px; color:var(--gold-bright);">${profileData.location || 'Control & Chaos'}</span>
               </div>
               <div style="border-left:1px solid var(--gold-border-subtle); padding-left:18px;">
                 <span style="font-size:11px; color:var(--text-muted); display:block;">Starting Rate:</span>
@@ -445,7 +445,7 @@
               `=== [CONTROL & CHAOS BOOKING INQUIRY] ===`,
               `Recipient: ${profileData.name} (@${profileData.sl_username})`,
               `Role: ${profileData.role || 'Creator / Escort'}`,
-              `Sim Location: ${profileData.location || 'Chaos Manor'}`,
+              `Sim Location: ${profileData.location || 'Control & Chaos'}`,
               ``,
               `Requested Services / Rate Items:`,
               ...selectedServices.map(s => `  • ${s.name} (L$${typeof s.price === 'number' ? s.price.toLocaleString() : s.price})`),
