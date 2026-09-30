@@ -215,7 +215,7 @@
                 <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
                   Session Notes &amp; Details
                 </label>
-                <textarea name="message" rows="3" placeholder="Describe your scenario, Lovense/RLV preferences, or event..." style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px; resize:vertical;"></textarea>
+                <textarea name="message" id="form-message-input" rows="6" placeholder="Describe your scenario, Lovense/RLV preferences, or event..." style="width:100%; min-height:145px; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px; line-height:1.6; resize:vertical; font-family:inherit;"></textarea>
               </div>
 
               <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:4px;">
@@ -544,55 +544,94 @@
 
           ratesContainer.appendChild(catBox);
 
-          // Add to Quote Calculator
-          if (calcOptions) {
-            services.forEach((s) => {
-              const numPrice = parseInt((s.price || '0').replace(/[^0-9]/g, '')) || 0;
-              if (numPrice > 0) {
-                const optRow = document.createElement('label');
-                optRow.style.display = 'flex';
-                optRow.style.alignItems = 'center';
-                optRow.style.gap = '10px';
-                optRow.style.padding = '8px 12px';
-                optRow.style.background = 'rgba(20,18,16,0.6)';
-                optRow.style.borderRadius = '4px';
-                optRow.style.cursor = 'pointer';
-                optRow.style.fontSize = '13.5px';
-
-                optRow.innerHTML = `
-                  <input type="checkbox" class="quote-check" data-name="${s.name}" data-price="${numPrice}">
-                  <span style="flex:1;">${s.name}</span>
-                  <span style="font-family:var(--font-mono); color:var(--gold-bright); font-weight:700;">L$${numPrice.toLocaleString()}</span>
-                `;
-                calcOptions.appendChild(optRow);
-              }
-            });
+          // Add grouped items to Quote Calculator
+          if (calcOptions && services.length > 0) {
+            const validServices = services.filter(s => (parseInt((s.price || '0').replace(/[^0-9]/g, '')) || 0) > 0);
+            if (validServices.length > 0) {
+              const catGroup = document.createElement('div');
+              catGroup.style.marginBottom = '14px';
+              catGroup.innerHTML = `
+                <div style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--gold-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+                  <span style="color:var(--gold-bright);">◆</span>
+                  <span>${cat.category_name}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  ${validServices.map(s => {
+                    const numPrice = parseInt((s.price || '0').replace(/[^0-9]/g, '')) || 0;
+                    return `
+                      <label style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(20,18,16,0.7); border:1px solid var(--gold-border-subtle); border-radius:6px; cursor:pointer; font-size:13.5px; transition:border-color 0.2s, background 0.2s;">
+                        <input type="checkbox" class="quote-check" data-name="${s.name}" data-price="${numPrice}" data-category="${cat.category_name}" style="cursor:pointer; accent-color:var(--gold-bright); width:16px; height:16px;">
+                        <span style="flex:1; color:var(--text-primary); font-weight:500;">${s.name}</span>
+                        <span style="font-family:var(--font-mono); color:var(--gold-bright); font-weight:700; font-size:13.5px;">L$${numPrice.toLocaleString()}</span>
+                      </label>
+                    `;
+                  }).join('')}
+                </div>
+              `;
+              calcOptions.appendChild(catGroup);
+            }
           }
         });
 
-        // Bind Quote Calculator Logic & Form Auto-Sync
-        document.querySelectorAll('.quote-check').forEach(chk => {
-          chk.addEventListener('change', () => {
-            let total = 0;
-            let selectedList = [];
-            document.querySelectorAll('.quote-check:checked').forEach(c => {
-              total += parseInt(c.getAttribute('data-price'));
-              selectedList.push(c.getAttribute('data-name'));
-            });
+        // Sync quote calculation and prefill booking inquiry form
+        function updateQuoteAndForm() {
+          let total = 0;
+          let selectedItems = [];
+          document.querySelectorAll('.quote-check:checked').forEach(c => {
+            const price = parseInt(c.getAttribute('data-price')) || 0;
+            const name = c.getAttribute('data-name');
+            const cat = c.getAttribute('data-category') || '';
+            total += price;
+            selectedItems.push({ name, price, cat });
+          });
 
-            document.getElementById('calc-total-quote').textContent = `L$${total.toLocaleString()}`;
-            
-            // Sync with direct contact form
-            const quoteTotalInput = document.getElementById('form-quote-total');
-            const quoteServicesInput = document.getElementById('form-selected-services');
-            const serviceField = document.getElementById('form-service-input');
-            if (quoteTotalInput) quoteTotalInput.value = `L$${total.toLocaleString()}`;
-            if (quoteServicesInput) quoteServicesInput.value = selectedList.join(', ');
-            if (serviceField && selectedList.length > 0) {
-              serviceField.value = `${selectedList.join(' + ')} (Quote: L$${total.toLocaleString()})`;
+          const totalEl = document.getElementById('calc-total-quote');
+          if (totalEl) totalEl.textContent = `L$${total.toLocaleString()}`;
+
+          // Form fields
+          const quoteTotalInput = document.getElementById('form-quote-total');
+          const quoteServicesInput = document.getElementById('form-selected-services');
+          const serviceField = document.getElementById('form-service-input');
+          const messageField = document.getElementById('form-message-input');
+
+          if (quoteTotalInput) quoteTotalInput.value = `L$${total.toLocaleString()}`;
+          if (quoteServicesInput) quoteServicesInput.value = selectedItems.map(s => s.name).join(', ');
+
+          if (selectedItems.length > 0) {
+            if (serviceField) {
+              serviceField.value = `${selectedItems.map(s => s.name).join(' + ')} (Total: L$${total.toLocaleString()})`;
+            }
+            if (messageField) {
+              const servicesBreakdown = selectedItems.map(s => `  • ${s.name} (${s.cat ? `${s.cat} — ` : ''}L$${s.price.toLocaleString()})`).join('\n');
+              messageField.value = `Hello ${profileData.name},\n\nI would like to request a booking/session for the following services:\n${servicesBreakdown}\n\nEstimated Total: L$${total.toLocaleString()}\n\nSession Preferences & Notes:\n[Please specify any Lovense/RLV preferences, scenario ideas, or timing details here]`;
+            }
+          } else {
+            if (serviceField) serviceField.value = '';
+            if (messageField && messageField.value.startsWith(`Hello ${profileData.name}`)) {
+              messageField.value = '';
+            }
+          }
+        }
+
+        document.querySelectorAll('.quote-check').forEach(chk => {
+          chk.addEventListener('change', updateQuoteAndForm);
+        });
+
+        const bookCta = document.getElementById('calc-book-cta');
+        if (bookCta) {
+          bookCta.addEventListener('click', (e) => {
+            e.preventDefault();
+            updateQuoteAndForm();
+            const formSection = document.getElementById('booking-inquiry-section');
+            if (formSection) {
+              formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            const nameInput = document.querySelector('input[name="client_name"]');
+            if (nameInput) {
+              setTimeout(() => nameInput.focus(), 350);
             }
           });
-        });
+        }
       }
 
       // 5. Render Custom Sections (Repeater)
