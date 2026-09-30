@@ -116,10 +116,20 @@
     }
   </style>
 
-  <!-- Explicit Decap Config Links -->
-  <link rel="cms-config-url" type="text/yaml" href="config.yml">
-  <link rel="cms-config-url" type="text/yaml" href="/admin/config.yml">
+  <!-- Explicit Decap Config Links with Cache Busting -->
+  <link rel="cms-config-url" type="text/yaml" href="config.yml?v=20261001_hw">
+  <link rel="cms-config-url" type="text/yaml" href="/admin/config.yml?v=20261001_hw">
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script>
+    // Ensure CMS always loads the latest config without browser cache
+    document.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('link[rel="cms-config-url"]');
+      links.forEach(l => {
+        const u = l.getAttribute('href').split('?')[0];
+        l.href = `${u}?t=${Date.now()}`;
+      });
+    });
+  </script>
 </head>
 <body>
   <!-- Decap CMS Core Engine -->
