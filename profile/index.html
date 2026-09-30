@@ -89,7 +89,7 @@
       object-fit: contain;
     }
 
-    /* Sticky Sidebar on Desktop */
+    /* Smart Bottom-Sticky Sidebar on Desktop */
     @media (min-width: 992px) {
       #profile-main-layout {
         align-items: start !important;
@@ -97,7 +97,8 @@
       .profile-sticky-sidebar {
         position: -webkit-sticky;
         position: sticky;
-        top: 100px;
+        top: auto;
+        bottom: 30px;
         align-self: start;
       }
     }
