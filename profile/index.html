@@ -3,8 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rate Card &amp; Profile | Control &amp; Chaos Second Life</title>
-  <meta name="description" content="View verified Second Life FinDom rates, escort companion packages, Lovense toy control, and RLV services.">
+  <title id="page-title">Rate Card &amp; Profile | Control &amp; Chaos Second Life</title>
+  <meta name="description" id="meta-description" content="View verified Second Life FinDom rates, escort companion packages, Lovense toy control, and RLV services.">
+  <link rel="canonical" id="meta-canonical" href="https://controlandchaos.co.uk/">
+
+  <!-- OpenGraph / Discord / Facebook / iMessage Preview -->
+  <meta property="og:type" content="profile">
+  <meta property="og:site_name" content="Control &amp; Chaos">
+  <meta property="og:title" id="og-title" content="Rate Card &amp; Profile | Control &amp; Chaos">
+  <meta property="og:description" id="og-desc" content="View verified Second Life rates, packages, Lovense syncing, and direct bookings.">
+  <meta property="og:image" id="og-image" content="https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80">
+  <meta property="og:url" id="og-url" content="https://controlandchaos.co.uk/">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" id="twitter-title" content="Rate Card &amp; Profile | Control &amp; Chaos">
+  <meta name="twitter:description" id="twitter-desc" content="View verified Second Life rates, packages, Lovense syncing, and direct bookings.">
+  <meta name="twitter:image" id="twitter-image" content="https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json" id="jsonld-schema">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Service Provider",
+    "url": "https://controlandchaos.co.uk/",
+    "jobTitle": "Luxury Escort & Companion"
+  }
+  </script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -251,7 +277,7 @@
           </div>
 
           <!-- Hard Limits & Boundaries -->
-          <div class="card" style="margin-bottom: 30px; border-color: rgba(139,30,45,0.4); background: rgba(30,15,18,0.4);">
+          <div class="card" id="profile-limits-card" style="margin-bottom: 30px; border-color: rgba(139,30,45,0.4); background: rgba(30,15,18,0.4); display:none;">
             <h3 class="card-title" id="profile-limits-title" style="font-size:18px; color:#ffb8c2; margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
               <span style="font-size:20px;">🚫</span> Hard Limits &amp; Boundaries
             </h3>
@@ -261,7 +287,7 @@
           </div>
 
           <!-- How to Book / Protocol -->
-          <div class="card" style="margin-bottom: 30px;">
+          <div class="card" id="profile-booking-card" style="margin-bottom: 30px; display:none;">
             <h3 class="card-title" id="profile-booking-title" style="font-size:18px; margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
               <span style="font-size:20px;">📜</span> How to Book
             </h3>
@@ -271,7 +297,7 @@
           </div>
 
           <!-- Client Reviews -->
-          <div class="card">
+          <div class="card" id="profile-reviews-card" style="margin-bottom: 30px; display:none;">
             <h3 class="card-title" id="profile-reviews-title" style="font-size: 18px; margin-bottom: 14px;">⭐ Verified Client Reviews</h3>
             <div id="reviews-container" style="display:flex; flex-direction:column; gap:12px;">
               <!-- Injected dynamically -->
@@ -279,7 +305,7 @@
           </div>
 
           <!-- Wishlist Box (Conditionally Rendered) -->
-          <div class="card" id="profile-wishlist-card" style="display:none; margin-top:30px;">
+          <div class="card" id="profile-wishlist-card" style="margin-bottom: 30px; display:none;">
             <h3 class="card-title" id="profile-wishlist-title" style="font-size:18px; margin:0 0 14px 0; display:flex; align-items:center; gap:8px;">
               <span style="font-size:20px;">🎁</span> Wishlist &amp; Tributes
             </h3>
@@ -287,7 +313,7 @@
           </div>
 
           <!-- Social Links Box (Conditionally Rendered) -->
-          <div class="card" id="profile-social-card" style="display:none; margin-top:30px;">
+          <div class="card" id="profile-social-card" style="margin-bottom: 30px; display:none;">
             <h3 class="card-title" id="profile-social-title" style="font-size:18px; margin:0 0 14px 0; display:flex; align-items:center; gap:8px;">
               <span style="font-size:20px;">🌐</span> Socials &amp; Media
             </h3>
@@ -380,9 +406,56 @@
 
       if (!profileData) return;
 
-      document.title = `${profileData.name} — Rate Card & Services | Control & Chaos`;
-
       const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
+
+      // Populate SEO Metadata & Social Card Previews (Discord, Twitter/X, OpenGraph)
+      const defaultSeoTitle = `${profileData.name} — Luxury Rate Card & Services | Control & Chaos`;
+      const finalSeoTitle = profileData.seo_title || defaultSeoTitle;
+      const finalSeoDesc = profileData.seo_description || profileData.tagline || (profileData.about ? profileData.about.substring(0, 160).replace(/(\r\n|\n|\r)/gm, " ") + '...' : `Verified Second Life companion and escort rate card for ${profileData.name}. View interactive booking quotes, Lovense toy syncing, and direct IM.`);
+      
+      let finalSeoImg = profileData.seo_image || profileData.banner_image || profileData.avatar_image || '';
+      if (finalSeoImg && !finalSeoImg.startsWith('http') && !finalSeoImg.startsWith('//')) {
+        finalSeoImg = `https://controlandchaos.co.uk${finalSeoImg.startsWith('/') ? '' : '/'}${finalSeoImg}`;
+      }
+      if (!finalSeoImg) {
+        finalSeoImg = 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80';
+      }
+      const pageUrl = window.location.href;
+
+      document.title = finalSeoTitle;
+      const metaDesc = document.getElementById('meta-description');
+      if (metaDesc) metaDesc.setAttribute('content', finalSeoDesc);
+      const metaCanon = document.getElementById('meta-canonical');
+      if (metaCanon) metaCanon.setAttribute('href', pageUrl);
+
+      const ogTitle = document.getElementById('og-title');
+      if (ogTitle) ogTitle.setAttribute('content', finalSeoTitle);
+      const ogDesc = document.getElementById('og-desc');
+      if (ogDesc) ogDesc.setAttribute('content', finalSeoDesc);
+      const ogImg = document.getElementById('og-image');
+      if (ogImg) ogImg.setAttribute('content', finalSeoImg);
+      const ogUrl = document.getElementById('og-url');
+      if (ogUrl) ogUrl.setAttribute('content', pageUrl);
+
+      const twTitle = document.getElementById('twitter-title');
+      if (twTitle) twTitle.setAttribute('content', finalSeoTitle);
+      const twDesc = document.getElementById('twitter-desc');
+      if (twDesc) twDesc.setAttribute('content', finalSeoDesc);
+      const twImg = document.getElementById('twitter-image');
+      if (twImg) twImg.setAttribute('content', finalSeoImg);
+
+      const jsonLd = document.getElementById('jsonld-schema');
+      if (jsonLd) {
+        jsonLd.textContent = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": profileData.name,
+          "url": pageUrl,
+          "jobTitle": profileData.role || (isDomme ? "Dominant Companion" : "Submissive Companion"),
+          "description": finalSeoDesc,
+          "image": finalSeoImg
+        });
+      }
 
       // 1. Render Hero Header & Banner Overlay
       const heroHeader = document.getElementById('profile-hero-header');
@@ -737,55 +810,79 @@
         }
       }
 
-      // 8. Render Hard Limits (Dynamic Title)
+      // 8. Render Hard Limits (Dynamic Title & Conditional)
+      const limitsCard = document.getElementById('profile-limits-card');
       const limitsTitleEl = document.getElementById('profile-limits-title');
-      if (limitsTitleEl) {
-        let rawTitle = (profileData.limits_title || 'Hard Limits & Boundaries').trim();
-        const cleanTitle = rawTitle.replace(/^([\u{1F6AB}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
-        limitsTitleEl.innerHTML = `<span style="font-size:20px;">🚫</span> ${cleanTitle || 'Hard Limits & Boundaries'}`;
-      }
       const limitsList = document.getElementById('hard-limits-list');
-      if (limitsList && profileData.hard_limits) {
-        limitsList.innerHTML = profileData.hard_limits.map(l => `<li style="margin-bottom:6px;">${l}</li>`).join('');
+      const validLimits = Array.isArray(profileData.hard_limits) ? profileData.hard_limits.filter(l => l && (typeof l === 'string' ? l.trim() : (l.limit && l.limit.trim()))) : [];
+
+      if (limitsCard && limitsList) {
+        if (validLimits.length > 0) {
+          if (limitsTitleEl) {
+            let rawTitle = (profileData.limits_title || 'Hard Limits & Boundaries').trim();
+            const cleanTitle = rawTitle.replace(/^([\u{1F6AB}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+            limitsTitleEl.innerHTML = `<span style="font-size:20px;">🚫</span> ${cleanTitle || 'Hard Limits & Boundaries'}`;
+          }
+          limitsList.innerHTML = validLimits.map(l => `<li style="margin-bottom:6px;">${typeof l === 'string' ? l : l.limit}</li>`).join('');
+          limitsCard.style.display = 'block';
+        } else {
+          limitsCard.style.display = 'none';
+        }
       }
 
-      // 9. Render How to Book / Protocol (Dynamic Title)
+      // 9. Render How to Book / Protocol (Dynamic Title & Conditional)
+      const bookingCard = document.getElementById('profile-booking-card');
       const bookingTitleEl = document.getElementById('profile-booking-title');
-      if (bookingTitleEl) {
-        let rawTitle = (profileData.booking_title || 'How to Book').trim();
-        const cleanTitle = rawTitle.replace(/^([\u{1F4DC}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
-        bookingTitleEl.innerHTML = `<span style="font-size:20px;">📜</span> ${cleanTitle || 'How to Book'}`;
-      }
       const protocolBox = document.getElementById('booking-protocol-steps');
-      if (protocolBox && profileData.booking_protocol) {
-        protocolBox.innerHTML = profileData.booking_protocol.map(step => `
-          <div style="margin-bottom:8px; display:flex; gap:8px;">
-            <span style="color:var(--gold-primary);">◆</span>
-            <span>${step}</span>
-          </div>
-        `).join('');
+      const validSteps = Array.isArray(profileData.booking_protocol) ? profileData.booking_protocol.filter(s => s && (typeof s === 'string' ? s.trim() : (s.step && s.step.trim()))) : [];
+
+      if (bookingCard && protocolBox) {
+        if (validSteps.length > 0) {
+          if (bookingTitleEl) {
+            let rawTitle = (profileData.booking_title || 'How to Book').trim();
+            const cleanTitle = rawTitle.replace(/^([\u{1F4DC}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+            bookingTitleEl.innerHTML = `<span style="font-size:20px;">📜</span> ${cleanTitle || 'How to Book'}`;
+          }
+          protocolBox.innerHTML = validSteps.map(step => `
+            <div style="margin-bottom:8px; display:flex; gap:8px;">
+              <span style="color:var(--gold-primary);">◆</span>
+              <span>${typeof step === 'string' ? step : step.step}</span>
+            </div>
+          `).join('');
+          bookingCard.style.display = 'block';
+        } else {
+          bookingCard.style.display = 'none';
+        }
       }
 
-      // 10. Render Reviews (Dynamic Title)
+      // 10. Render Reviews (Dynamic Title & Conditional)
+      const reviewsCard = document.getElementById('profile-reviews-card');
       const reviewsTitleEl = document.getElementById('profile-reviews-title');
-      if (reviewsTitleEl) {
-        let rawTitle = (profileData.reviews_title || 'Verified Client Reviews').trim();
-        const cleanTitle = rawTitle.replace(/^([\u2B50\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
-        reviewsTitleEl.innerHTML = `<span style="font-size:20px; margin-right:8px;">⭐</span> ${cleanTitle || 'Verified Client Reviews'}`;
-      }
       const reviewsContainer = document.getElementById('reviews-container');
-      if (reviewsContainer && profileData.reviews) {
-        reviewsContainer.innerHTML = profileData.reviews.map(r => `
-          <div style="background:rgba(20,18,16,0.8); border:1px solid var(--gold-border-subtle); border-radius:6px; padding:12px 14px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-              <strong style="font-size:13px; color:var(--gold-bright);">${r.client}</strong>
-              <span style="color:#f59e0b; font-size:12px;">${r.stars}</span>
+      const validReviews = Array.isArray(profileData.reviews) ? profileData.reviews.filter(r => r && (r.client || r.comment)) : [];
+
+      if (reviewsCard && reviewsContainer) {
+        if (validReviews.length > 0) {
+          if (reviewsTitleEl) {
+            let rawTitle = (profileData.reviews_title || 'Verified Client Reviews').trim();
+            const cleanTitle = rawTitle.replace(/^([\u2B50\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+            reviewsTitleEl.innerHTML = `<span style="font-size:20px; margin-right:8px;">⭐</span> ${cleanTitle || 'Verified Client Reviews'}`;
+          }
+          reviewsContainer.innerHTML = validReviews.map(r => `
+            <div style="background:rgba(20,18,16,0.8); border:1px solid var(--gold-border-subtle); border-radius:6px; padding:12px 14px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <strong style="font-size:13px; color:var(--gold-bright);">${r.client || 'Verified Client'}</strong>
+                <span style="color:#f59e0b; font-size:12px;">${r.stars || '★★★★★'}</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-muted); font-style:italic; line-height:1.45; margin:0;">
+                "${r.comment || ''}"
+              </p>
             </div>
-            <p style="font-size:13px; color:var(--text-muted); font-style:italic; line-height:1.45; margin:0;">
-              "${r.comment}"
-            </p>
-          </div>
-        `).join('');
+          `).join('');
+          reviewsCard.style.display = 'block';
+        } else {
+          reviewsCard.style.display = 'none';
+        }
       }
 
       // 11. Render Wishlist (Dynamic Title & Conditional)

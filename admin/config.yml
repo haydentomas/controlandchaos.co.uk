@@ -221,6 +221,13 @@ collections:
         field: { label: "Tag", name: "tag", widget: "string" }
       - { label: "Rating Summary", name: "rating", widget: "string", default: "5.0 ★★★★★", required: false }
 
+      # =========================================================
+      # 14. SEO & Social Share Preview (Discord, Twitter, OpenGraph)
+      # =========================================================
+      - { label: "🔍 SEO & Social Card Title", name: "seo_title", widget: "string", required: false, hint: "Custom title for Discord, Twitter & social link preview cards (e.g. Alek Zane — Luxury Second Life Rate Card)" }
+      - { label: "🔍 SEO & Social Card Description", name: "seo_description", widget: "text", required: false, hint: "Short summary that appears on Discord/Twitter preview cards (e.g. View rates, Lovense toy controls, and book direct.)" }
+      - { label: "🔍 Social Share / OG Preview Image", name: "seo_image", widget: "image", required: false, hint: "Custom image for social media cards (defaults to your banner image or headshot photo)" }
+
   # -------------------------------------------------------------
   # 2. Sim Events & Tournaments (Individual Event Cards)
   # -------------------------------------------------------------
