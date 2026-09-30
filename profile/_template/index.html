@@ -88,37 +88,6 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.8);
       object-fit: contain;
     }
-
-    /* Independent Scrollable Sticky Sidebar on Desktop */
-    @media (min-width: 992px) {
-      #profile-main-layout {
-        align-items: start !important;
-      }
-      .profile-sticky-sidebar {
-        position: -webkit-sticky;
-        position: sticky;
-        top: 100px;
-        align-self: start;
-        max-height: calc(100vh - 120px);
-        overflow-y: auto;
-        padding-right: 6px;
-        scrollbar-width: thin;
-        scrollbar-color: var(--gold-border) transparent;
-      }
-      .profile-sticky-sidebar::-webkit-scrollbar {
-        width: 5px;
-      }
-      .profile-sticky-sidebar::-webkit-scrollbar-thumb {
-        background: var(--gold-border-subtle);
-        border-radius: 4px;
-      }
-      .profile-sticky-sidebar::-webkit-scrollbar-thumb:hover {
-        background: var(--gold-bright);
-      }
-      .profile-sticky-sidebar::-webkit-scrollbar-track {
-        background: transparent;
-      }
-    }
   </style>
 </head>
 <body>
@@ -261,7 +230,7 @@
         </div>
 
         <!-- Right Column: Gallery, Hardware, Limits, How to Book & Reviews -->
-        <div id="profile-sidebar" class="profile-sticky-sidebar">
+        <div id="profile-sidebar">
           
           <!-- Visual Lookbook / Photo Gallery -->
           <div class="card" style="margin-bottom: 30px;" id="profile-gallery-card">

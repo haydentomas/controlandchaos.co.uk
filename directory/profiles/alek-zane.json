@@ -15,23 +15,7 @@
     }
   ],
   "about_title": "About  Alek Zane",
-  "social_links": [
-    {
-      "platform": "Discord",
-      "handle": "alek_zane#0001",
-      "url": "https://discord.gg/"
-    },
-    {
-      "platform": "Flickr",
-      "handle": "flickr.com/photos/alek-zane",
-      "url": "https://flickr.com/"
-    },
-    {
-      "platform": "Twitter / X",
-      "handle": "@AlekZaneSL",
-      "url": "https://x.com/"
-    }
-  ],
+  "social_links": [],
   "banner_image": "https://www.pixelstalk.net/wp-content/uploads/images4/Cool-Wallpapers-HD.jpg",
   "name": "Alek Zane",
   "hard_limits": [
