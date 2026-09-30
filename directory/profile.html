@@ -169,6 +169,17 @@
             </div>
           </div>
 
+          <!-- Hardware & Tech Compatibility Card (Repeater & Dynamic Title) -->
+          <div class="card" id="profile-hardware-card" style="margin-bottom: 30px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+              <span style="font-size:20px;">⚡</span>
+              <h3 class="card-title" id="profile-hardware-title" style="font-size:18px; margin:0;">Hardware &amp; Tech Compatibility</h3>
+            </div>
+            <div id="hardware-features-container" style="display:flex; flex-direction:column; gap:10px;">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
           <!-- Hard Limits & Boundaries -->
           <div class="card" style="margin-bottom: 30px; border-color: rgba(139,30,45,0.4); background: rgba(30,15,18,0.4);">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
@@ -383,6 +394,32 @@
         `;
       }
 
+      // Helper to normalize hardware features array or legacy object
+      function normalizeHardwareFeatures(data) {
+        if (!data) return [];
+        if (Array.isArray(data.hardware_compat)) {
+          return data.hardware_compat.map(item => {
+            if (typeof item === 'string') return { name: item, icon: '⚡', badge_text: 'Supported' };
+            return {
+              name: item.name || item.title || 'Feature',
+              icon: item.icon || '⚡',
+              badge_text: item.badge_text || 'Supported'
+            };
+          });
+        }
+        if (data.hardware_compat && typeof data.hardware_compat === 'object') {
+          const list = [];
+          if (data.hardware_compat.vow_collar) list.push({ name: 'Vow Collar Certified', icon: '⛓️', badge_text: 'Certified' });
+          if (data.hardware_compat.lovense) list.push({ name: 'Lovense Toy Control', icon: '🔌', badge_text: 'Synced' });
+          if (data.hardware_compat.rlv) list.push({ name: 'Firestorm RLV Restraints', icon: '🔒', badge_text: 'Ready' });
+          if (data.hardware_compat.experience) list.push({ name: 'Experience Enabled', icon: '⚡', badge_text: 'Enabled' });
+          return list;
+        }
+        return [];
+      }
+
+      const hwList = normalizeHardwareFeatures(profileData);
+
       // 2. Render Toolbar (SL IM Link, Teleport, Tribute Location)
       const toolbar = document.getElementById('profile-toolbar');
       if (toolbar) {
@@ -397,15 +434,14 @@
                 <span style="font-size:11px; color:var(--text-muted); display:block;">Starting Rate:</span>
                 <span style="font-family:var(--font-heading); font-size:15px; font-weight:800; color:var(--gold-bright);">${profileData.starting_rate || 'L$1,000 / hr'}</span>
               </div>
+              ${hwList.length > 0 ? `
               <div style="border-left:1px solid var(--gold-border-subtle); padding-left:18px;">
-                <span style="font-size:11px; color:var(--text-muted); display:block;">Hardware &amp; RLV:</span>
-                <div style="display:flex; gap:6px; margin-top:2px;">
-                  ${profileData.hardware_compat?.vow_collar ? '<span title="Vow Collar Certified" style="font-size:14px;">⛓️</span>' : ''}
-                  ${profileData.hardware_compat?.lovense ? '<span title="Lovense Interactive Toys Synced" style="font-size:14px;">🔌</span>' : ''}
-                  ${profileData.hardware_compat?.rlv ? '<span title="Firestorm RLV Restraints Ready" style="font-size:14px;">🔒</span>' : ''}
-                  ${profileData.hardware_compat?.experience ? '<span title="Second Life Experience Stealth Props" style="font-size:14px;">⚡</span>' : ''}
+                <span style="font-size:11px; color:var(--text-muted); display:block;">${profileData.hardware_title || 'Hardware & Tech'}:</span>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:3px;">
+                  ${hwList.map(h => `<span class="role-badge" style="background:rgba(212,175,55,0.12); border:1px solid var(--gold-border-subtle); color:var(--gold-bright); font-size:10px; padding:2px 7px;" title="${h.name} (${h.badge_text || 'Supported'})">${h.icon} ${h.name}</span>`).join('')}
                 </div>
               </div>
+              ` : ''}
             </div>
 
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -584,7 +620,33 @@
         }
       }
 
-      // 7. Render Hard Limits (Dynamic Title)
+      // 7. Render Hardware & Features Card (Repeater & Dynamic Title)
+      const hwCard = document.getElementById('profile-hardware-card');
+      const hwTitle = document.getElementById('profile-hardware-title');
+      const hwContainer = document.getElementById('hardware-features-container');
+
+      if (hwTitle) {
+        hwTitle.textContent = profileData.hardware_title || 'Hardware & Tech Compatibility';
+      }
+
+      if (hwCard && hwContainer) {
+        if (hwList.length > 0) {
+          hwContainer.innerHTML = hwList.map(item => `
+            <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:18px;">${item.icon}</span>
+                <strong style="font-family:var(--font-heading); font-size:13.5px; color:var(--text-primary);">${item.name}</strong>
+              </div>
+              ${item.badge_text ? `<span style="font-size:10.5px; font-family:var(--font-mono); color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); border-radius:12px; padding:2px 8px; font-weight:700;">● ${item.badge_text}</span>` : ''}
+            </div>
+          `).join('');
+          hwCard.style.display = 'block';
+        } else {
+          hwCard.style.display = 'none';
+        }
+      }
+
+      // 8. Render Hard Limits (Dynamic Title)
       const limitsTitleEl = document.getElementById('profile-limits-title');
       if (limitsTitleEl) {
         limitsTitleEl.textContent = profileData.limits_title || 'Hard Limits & Boundaries';

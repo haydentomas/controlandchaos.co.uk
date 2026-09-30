@@ -49,14 +49,16 @@ collections:
         required: false
         field: { label: "Tag", name: "tag", widget: "string" }
 
-      - label: "Hardware Compatibility"
+      - { label: "⚡ Hardware & Features Section Title", name: "hardware_title", widget: "string", default: "Hardware & Tech Compatibility", required: false }
+      - label: "⚡ Hardware & Tech Compatibility (Repeater)"
         name: "hardware_compat"
-        widget: "object"
+        widget: "list"
+        required: false
+        hint: "Add hardware, devices, toys, and tech compatibility items"
         fields:
-          - { label: "Vow Collar Certified", name: "vow_collar", widget: "boolean", default: true }
-          - { label: "Lovense Toy Control", name: "lovense", widget: "boolean", default: true }
-          - { label: "RLV Restraints", name: "rlv", widget: "boolean", default: true }
-          - { label: "Experience Enabled", name: "experience", widget: "boolean", default: true }
+          - { label: "Feature / Device Name", name: "name", widget: "string", hint: "e.g. Lovense Toy Control, Firestorm RLV, Vow Collar Certified" }
+          - { label: "Icon Emoji", name: "icon", widget: "string", default: "⚡", hint: "e.g. 🔌, 🔒, ⛓️, ⚡, 🎙️, 👑" }
+          - { label: "Status Badge (Optional)", name: "badge_text", widget: "string", default: "Supported", required: false, hint: "e.g. Certified, Synced, Ready, Active" }
 
       - label: "📸 Gallery Section Title"
         name: "gallery_title"

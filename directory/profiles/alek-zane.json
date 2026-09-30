@@ -34,8 +34,8 @@
   "hard_limits": [
     "No non-consensual limits, zero OOC disrespect, strict safety words."
   ],
-  "about": "Alek is a top seeded pay to play submissive companion based in the UK. Well versed in many aspects of BDSM, Roleplay, Voice, Lovense, Pain Play. \n\nA British submissive, well worth your time. Your time with Alek will be engaging, discreet and entertaining. ",
-  "tagline": "Calculated financial surrender, high-society gala accompaniment, and bespoke companion roleplay.",
+  "about": "Looking for an engaging, responsive submissive who actually knows how to keep things interesting? I offer dedicated, high-energy submission services exclusively to female dominants. Expect a discreet, attentive companion with an authentic British voice, a bubbly spark, and just enough playful brat in me to keep your sessions dynamic, fun, and completely engaging.\n\nI run high-quality male and female mesh avatars to cater directly to your specific tastes, visual aesthetics, or scenario needs.",
+  "tagline": "The versatile British sub you’ve been looking for.",
   "gallery": [
     {
       "title": "Formal Gala & Black Tie Look",
@@ -67,19 +67,31 @@
   "role": "Bratty, Pay to Play Submissive",
   "slurl": "https://maps.secondlife.com/secondlife/Los%20Pengos/85/167/3000",
   "tags": [
-    "Submissive",
-    "VIP Escort",
-    "High Society",
-    "RLV Restraints",
+    "Female Dominance",
     "Lovense Control",
-    "Female Led"
+    "British Voice",
+    "Sensory / Wax Play",
+    "Brat",
+    "BDSM Roleplay"
   ],
-  "hardware_compat": {
-    "vow_collar": false,
-    "lovense": true,
-    "rlv": true,
-    "experience": true
-  },
+  "hardware_title": "Hardware & Tech Compatibility",
+  "hardware_compat": [
+    {
+      "name": "Lovense Toy Control",
+      "icon": "🔌",
+      "badge_text": "Synced"
+    },
+    {
+      "name": "Firestorm RLV Restraints",
+      "icon": "🔒",
+      "badge_text": "Ready"
+    },
+    {
+      "name": "Second Life Experience",
+      "icon": "⚡",
+      "badge_text": "Enabled"
+    }
+  ],
   "reviews": [
     {
       "client": "Lady_Vesper Resident",

@@ -49,12 +49,29 @@
     "Air Taxes",
     "High Society"
   ],
-  "hardware_compat": {
-    "vow_collar": false,
-    "lovense": true,
-    "rlv": true,
-    "experience": false
-  },
+  "hardware_title": "Hardware & Tech Compatibility",
+  "hardware_compat": [
+    {
+      "name": "Lovense Toy Control",
+      "icon": "🔌",
+      "badge_text": "Synced"
+    },
+    {
+      "name": "Firestorm RLV Restraints",
+      "icon": "🔒",
+      "badge_text": "Ready"
+    },
+    {
+      "name": "Vow Collar Certified",
+      "icon": "⛓️",
+      "badge_text": "Certified"
+    },
+    {
+      "name": "Second Life Experience",
+      "icon": "⚡",
+      "badge_text": "Enabled"
+    }
+  ],
   "reviews": [
     {
       "client": "Lord_Kael Resident",
