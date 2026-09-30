@@ -1,94 +1,13 @@
 /**
  * CONTROL & CHAOS — MASTER PORTAL ENGINE
- * Modern Luxury Web & Audio Experience
+ * Modern Luxury Web Experience
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   initParticleCanvas();
-  initAudioSystem();
   initMobileNav();
   initBlogFeed();
 });
-
-/* --- 1. Web Audio Synthesizer --- */
-let audioCtx = null;
-let soundEnabled = true;
-
-function getAudioContext() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-  return audioCtx;
-}
-
-const SoundFX = {
-  click() {
-    if (!soundEnabled) return;
-    try {
-      const ctx = getAudioContext();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.04);
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.05);
-    } catch(e) {}
-  },
-
-  goldChime() {
-    if (!soundEnabled) return;
-    try {
-      const ctx = getAudioContext();
-      const now = ctx.currentTime;
-      [1046.50, 1318.51, 1567.98].forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now + idx * 0.05);
-        gain.gain.setValueAtTime(0.12, now + idx * 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.2);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + idx * 0.05);
-        osc.stop(now + idx * 0.05 + 0.22);
-      });
-    } catch(e) {}
-  }
-};
-
-function initAudioSystem() {
-  const toggleBtns = document.querySelectorAll('#sound-toggle, #mobile-sound-toggle');
-  toggleBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      soundEnabled = !soundEnabled;
-      toggleBtns.forEach(b => {
-        b.innerHTML = soundEnabled 
-          ? '<span class="sound-icon">🔊</span> <span class="sound-label">Audio: ON</span>' 
-          : '<span class="sound-icon">🔇</span> <span class="sound-label">Audio: OFF</span>';
-      });
-      if (soundEnabled) SoundFX.click();
-    });
-  });
-
-  // Bind sound to all luxury buttons and cards
-  document.querySelectorAll('.btn, .card, .nav-link, .mobile-nav-link, .nav-toggle').forEach(el => {
-    el.addEventListener('click', () => {
-      if (el.classList.contains('btn-gold')) {
-        SoundFX.goldChime();
-      } else {
-        SoundFX.click();
-      }
-    });
-  });
-}
 
 /* --- Mobile Navigation Hamburger & Drawer --- */
 function initMobileNav() {
