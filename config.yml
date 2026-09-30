@@ -25,6 +25,8 @@ collections:
       # 1. Hero Header Banner (Top of Page)
       # =========================================================
       - { label: "Display Name", name: "name", widget: "string", hint: "e.g. Alek Zane" }
+      - { label: "Hero Banner / Cover Image (Optional)", name: "banner_image", widget: "image", required: false, hint: "Upload a wide luxury banner image (e.g. 1920x600 px) for the hero background" }
+      - { label: "Avatar / Profile Photo (Optional)", name: "avatar_image", widget: "image", required: false, hint: "Upload a square headshot/photo (replaces default icon)" }
       - label: "Role Type (Badge)"
         name: "role_type"
         widget: "select"

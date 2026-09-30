@@ -95,9 +95,10 @@
   <site-navbar></site-navbar>
 
   <!-- Profile Hero & Cover Header -->
-  <header class="hero" style="min-height: 55vh; padding: 120px 0 40px; background: linear-gradient(180deg, #1f1519 0%, #12100e 100%);">
-    <canvas id="hero-canvas"></canvas>
-    <div class="container" id="profile-hero-content">
+  <header class="hero" id="profile-hero-header" style="min-height: 55vh; padding: 120px 0 40px; background: linear-gradient(180deg, #1f1519 0%, #12100e 100%); position: relative; background-size: cover; background-position: center;">
+    <div id="profile-hero-overlay" style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,12,11,0.7) 0%, rgba(18,16,14,0.85) 60%, rgba(18,16,14,0.98) 100%); pointer-events: none; z-index: 1; display: none;"></div>
+    <canvas id="hero-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;"></canvas>
+    <div class="container" id="profile-hero-content" style="position: relative; z-index: 3;">
       <!-- Injected dynamically via JS based on URL param or path -->
     </div>
   </header>
@@ -383,28 +384,46 @@
 
       const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
 
-      // 1. Render Hero Header
+      // 1. Render Hero Header & Banner Overlay
+      const heroHeader = document.getElementById('profile-hero-header');
+      const heroOverlay = document.getElementById('profile-hero-overlay');
       const heroContainer = document.getElementById('profile-hero-content');
+
+      const bannerUrl = profileData.banner_image || profileData.cover_image || profileData.banner || '';
+      if (heroHeader && bannerUrl) {
+        heroHeader.style.backgroundImage = `url("${bannerUrl}")`;
+        heroHeader.style.backgroundPosition = 'center center';
+        heroHeader.style.backgroundSize = 'cover';
+        heroHeader.style.backgroundRepeat = 'no-repeat';
+        if (heroOverlay) heroOverlay.style.display = 'block';
+      } else if (heroHeader) {
+        heroHeader.style.background = 'linear-gradient(180deg, #1f1519 0%, #12100e 100%)';
+        if (heroOverlay) heroOverlay.style.display = 'none';
+      }
+
       if (heroContainer) {
+        const avatarImg = profileData.avatar_image || profileData.avatar || '';
+        const textShadowStyle = bannerUrl ? 'text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 4px 20px rgba(0,0,0,0.85);' : '';
+
         heroContainer.innerHTML = `
           <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap;">
-            <div style="width:110px; height:110px; border-radius:50%; background:#12100e; border:3px solid var(--gold-bright); display:flex; align-items:center; justify-content:center; font-size:52px; box-shadow:0 0 25px var(--gold-glow); flex-shrink:0;">
-              ${isDomme ? '👑' : '🩷'}
+            <div style="width:110px; height:110px; border-radius:50%; background:#12100e; border:3px solid var(--gold-bright); display:flex; align-items:center; justify-content:center; font-size:52px; box-shadow:0 0 25px var(--gold-glow), 0 4px 15px rgba(0,0,0,0.8); flex-shrink:0; overflow:hidden;">
+              ${avatarImg ? `<img src="${avatarImg}" alt="${profileData.name}" style="width:100%; height:100%; object-fit:cover;">` : (isDomme ? '👑' : '🩷')}
             </div>
-            <div style="flex:1; min-width:280px;">
+            <div style="flex:1; min-width:280px; ${textShadowStyle}">
               <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                <h1 style="font-family:var(--font-heading); font-size:38px; font-weight:900; color:var(--gold-bright); margin:0;">${profileData.name}</h1>
-                <span class="role-badge" style="background:${isDomme ? 'rgba(139,30,45,0.4)' : 'rgba(184,154,88,0.25)'}; border:1px solid ${isDomme ? 'var(--burgundy-light)' : 'var(--gold-border)'}; color:${isDomme ? '#ffb8c2' : 'var(--gold-bright)'}; font-size:11px;">
+                <h1 style="font-family:var(--font-heading); font-size:38px; font-weight:900; color:var(--gold-bright); margin:0; text-shadow:0 2px 10px rgba(0,0,0,0.9);">${profileData.name}</h1>
+                <span class="role-badge" style="background:${isDomme ? 'rgba(139,30,45,0.6)' : 'rgba(184,154,88,0.35)'}; border:1px solid ${isDomme ? 'var(--burgundy-light)' : 'var(--gold-border)'}; color:${isDomme ? '#ffb8c2' : 'var(--gold-bright)'}; font-size:11px; backdrop-filter:blur(4px);">
                   VERIFIED ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
                 </span>
-                <span class="role-badge" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#6ee7b7; font-size:11px;">
+                <span class="role-badge" style="background:rgba(16,185,129,0.3); border:1px solid #10b981; color:#6ee7b7; font-size:11px; backdrop-filter:blur(4px);">
                   ● ${profileData.status || 'Available'}
                 </span>
               </div>
-              <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:4px;">
+              <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:6px; text-shadow:0 1px 4px rgba(0,0,0,0.8);">
                 Second Life Username: <strong>${profileData.sl_username || profileData.id}</strong> ${profileData.level ? `&bull; Level ${profileData.level} (${profileData.rank || ''})` : ''}
               </div>
-              <p style="font-size:18px; color:var(--text-primary); margin-top:8px; font-style:italic; max-width:750px;">
+              <p style="font-size:18px; color:var(--text-primary); margin-top:10px; font-style:italic; max-width:750px; line-height:1.5; text-shadow:0 2px 8px rgba(0,0,0,0.9);">
                 "${profileData.tagline || ''}"
               </p>
             </div>
