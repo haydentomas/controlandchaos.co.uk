@@ -88,6 +88,19 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.8);
       object-fit: contain;
     }
+
+    /* Sticky Sidebar on Desktop */
+    @media (min-width: 992px) {
+      #profile-main-layout {
+        align-items: start !important;
+      }
+      .profile-sticky-sidebar {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 100px;
+        align-self: start;
+      }
+    }
   </style>
 </head>
 <body>
@@ -113,7 +126,7 @@
       </div>
 
       <!-- Two-Column Layout: Left (About, Rate Categories, Custom Blocks, Booking Calc) | Right (Gallery, Hardware, Limits, How to Book, Reviews, Socials) -->
-      <div style="display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 40px;" id="profile-main-layout">
+      <div style="display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 40px; align-items: start;" id="profile-main-layout">
         
         <!-- Left Column: Bio, Categorized Rate Cards & Custom Sections -->
         <div>
@@ -230,7 +243,7 @@
         </div>
 
         <!-- Right Column: Gallery, Hardware, Limits, How to Book & Reviews -->
-        <div>
+        <div id="profile-sidebar" class="profile-sticky-sidebar">
           
           <!-- Visual Lookbook / Photo Gallery -->
           <div class="card" style="margin-bottom: 30px;" id="profile-gallery-card">
