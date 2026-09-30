@@ -3,145 +3,218 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alek Zane — Devoted Submissive &amp; Pet Rate Card | Control &amp; Chaos</title>
-  <meta name="description" content="View Alek Zane's verified Second Life rate card, strict task submission, service contracts, and direct in-world IM booking.">
-  <link rel="canonical" href="https://controlandchaos.com/profile/alek-zane/">
+  <title>Rate Card &amp; Profile | Control &amp; Chaos Second Life</title>
+  <meta name="description" content="View verified Second Life FinDom rates, escort companion packages, Lovense toy control, and RLV services.">
   
-  <!-- OpenGraph / Facebook / Discord Rich Previews -->
-  <meta property="og:type" content="profile">
-  <meta property="og:title" content="Alek Zane | Verified Submissive Rate Card">
-  <meta property="og:description" content="Trained Submissive, PocketPig Pet &amp; Butler. View rates, task service contracts, collar locking protocols, and direct SL booking.">
-  <meta property="og:image" content="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1200&q=80">
-  <meta property="og:url" content="https://controlandchaos.com/profile/alek-zane/">
-  <meta property="og:site_name" content="Control &amp; Chaos">
-
-  <!-- Twitter Card SEO -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Alek Zane | Verified Submissive Rate Card">
-  <meta name="twitter:description" content="Trained Submissive, PocketPig Pet &amp; Butler. View rates, task service contracts, collar locking protocols, and direct SL booking.">
-  <meta name="twitter:image" content="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1200&q=80">
-
-  <!-- JSON-LD Structured Data Schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Alek Zane",
-    "url": "https://controlandchaos.com/profile/alek-zane/",
-    "jobTitle": "Devoted Submissive & Service Butler",
-    "description": "Verified Second Life Submissive & PocketPig Companion."
-  }
-  </script>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../styles.css">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .gallery-thumb-card {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--gold-border-subtle);
+      background: #12100e;
+      aspect-ratio: 4 / 3;
+      cursor: pointer;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .gallery-thumb-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--gold-bright);
+      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.25);
+    }
+    .gallery-thumb-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .gallery-thumb-card:hover .gallery-thumb-img {
+      transform: scale(1.06);
+    }
+    .gallery-thumb-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.85) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 10px 12px;
+    }
+    .gallery-fallback-card {
+      background: rgba(20,18,16,0.9);
+      border: 1px solid var(--gold-border-subtle);
+      border-radius: 8px;
+      padding: 18px 12px;
+      text-align: center;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+    .gallery-fallback-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold-bright);
+    }
+    /* Lightbox Modal */
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .lightbox-modal.active {
+      display: flex;
+    }
+    .lightbox-content {
+      max-width: 900px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 75vh;
+      border-radius: 8px;
+      border: 2px solid var(--gold-border);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      object-fit: contain;
+    }
+  </style>
 </head>
 <body>
 
   <site-navbar></site-navbar>
 
   <!-- Profile Hero & Cover Header -->
-  <header class="hero" style="min-height: 50vh; padding: 120px 0 40px; background: linear-gradient(180deg, #1f1519 0%, #12100e 100%);">
+  <header class="hero" style="min-height: 55vh; padding: 120px 0 40px; background: linear-gradient(180deg, #1f1519 0%, #12100e 100%);">
     <canvas id="hero-canvas"></canvas>
-    <div class="container" id="profile-hero-content"></div>
+    <div class="container" id="profile-hero-content">
+      <!-- Injected dynamically via JS based on URL param or path -->
+    </div>
   </header>
 
   <!-- Main Profile Body Content -->
-  <main class="section" style="padding: 50px 0 70px;">
+  <main class="section" style="padding: 60px 0;">
     <div class="container">
       
       <!-- Top Action Bar & Hardware Support Badges -->
-      <div id="profile-toolbar" style="margin-bottom: 40px;"></div>
+      <div id="profile-toolbar" style="margin-bottom: 40px;">
+        <!-- Injected dynamically -->
+      </div>
 
-      <!-- Two-Column Layout -->
+      <!-- Two-Column Layout: Left (About, Rate Categories, Custom Blocks, Booking Calc) | Right (Gallery, Hardware, Limits, How to Book, Reviews, Socials) -->
       <div style="display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 40px;" id="profile-main-layout">
         
-        <!-- Left Column -->
+        <!-- Left Column: Bio, Categorized Rate Cards & Custom Sections -->
         <div>
+          
           <!-- Bio Box -->
           <div class="card" style="margin-bottom: 30px;" id="profile-about-card">
-            <h3 class="card-title" style="font-size: 22px;">About &amp; Philosophy</h3>
-            <p id="profile-about-text" style="font-size: 15px; color: var(--text-primary); line-height: 1.7; margin-top: 10px;"></p>
+            <h3 class="card-title" id="profile-about-title" style="font-size: 22px;">About &amp; Philosophy</h3>
+            <p id="profile-about-text" style="font-size: 15px; color: var(--text-primary); line-height: 1.75; margin-top: 10px; white-space: pre-line;"></p>
           </div>
 
-          <!-- Rate Categories Container -->
-          <div id="rate-categories-container" style="display: flex; flex-direction: column; gap: 28px;"></div>
+          <!-- Rate Categories Container (Repeater) -->
+          <div id="rate-categories-container" style="display: flex; flex-direction: column; gap: 28px;">
+            <!-- Categorized Rate Tables injected dynamically -->
+          </div>
+
+          <!-- Custom Content Blocks Container (Repeater) -->
+          <div id="custom-sections-container" style="display: flex; flex-direction: column; gap: 28px; margin-top: 28px;">
+            <!-- Dynamic Custom Info Blocks injected here -->
+          </div>
 
           <!-- Interactive Booking & Tribute Calculator -->
           <div class="card" style="margin-top: 30px; border-color: var(--gold-bright); background: linear-gradient(165deg, #26201b 0%, #171412 100%);" id="rate-calc-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
-              <h3 class="card-title" style="margin:0; font-size:20px;">🧮 Instant Quote &amp; Booking Note</h3>
-              <span class="section-tag" style="margin:0; font-size:10px;">1-CLICK SL DISPATCH</span>
+              <h3 class="card-title" style="margin:0; font-size:20px;">🧮 Interactive Booking &amp; Tribute Quote</h3>
+              <span class="section-tag" style="margin:0; font-size:10px;">INSTANT ESTIMATE</span>
             </div>
             <p style="font-size:14px; color:var(--text-muted); margin-bottom:16px;">
-              Select the desired services below to generate a formatted Second Life booking note and launch an instant in-world IM:
+              Select the services and session duration you wish to request:
             </p>
-            <div id="calc-options-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:18px;"></div>
-            
-            <div style="border-top:1px solid var(--gold-border); padding-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div id="calc-options-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:18px;">
+              <!-- Checkboxes for services injected here -->
+            </div>
+            <div style="border-top:1px solid var(--gold-border); padding-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
               <div>
                 <span style="font-size:12px; color:var(--text-muted); display:block;">Estimated Total:</span>
-                <span id="calc-total-quote" style="font-family:var(--font-heading); font-size:26px; font-weight:900; color:var(--gold-bright);">L$0</span>
+                <span id="calc-total-quote" style="font-family:var(--font-heading); font-size:24px; font-weight:900; color:var(--gold-bright);">L$0</span>
               </div>
-              <button id="calc-book-cta" class="btn btn-gold" style="padding: 10px 20px;">
-                <span>📋</span> Copy Note &amp; Open SL IM
-              </button>
-            </div>
-
-            <!-- Live Note Preview & Dispatch Feedback -->
-            <div id="calc-note-feedback" style="display:none; margin-top:16px; padding:14px; background:rgba(12,10,8,0.92); border:1px dashed var(--gold-primary); border-radius:6px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
-                <span style="font-family:var(--font-heading); font-size:13px; font-weight:700; color:var(--gold-bright);">✓ Copied to Clipboard! Ready to paste into Second Life:</span>
-                <span style="font-size:11px; color:var(--gold-muted); font-family:var(--font-mono);">Press Ctrl+V</span>
-              </div>
-              <pre id="calc-note-preview" style="font-family:var(--font-mono); font-size:12px; color:var(--text-primary); background:rgba(0,0,0,0.6); padding:10px; border-radius:4px; margin:0 0 10px 0; white-space:pre-wrap; word-break:break-word; border:1px solid var(--gold-border-subtle);"></pre>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <a id="calc-open-im-link" href="#" class="btn btn-secondary btn-sm" style="font-size:11.5px;">💬 Click if SL IM didn't pop up</a>
-                <a id="calc-open-web-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="font-size:11.5px;">🌐 Open Web Profile</a>
-              </div>
+              <a href="#booking-inquiry-section" id="calc-book-cta" class="btn btn-gold btn-sm">
+                <span>💬</span> Book with this Quote
+              </a>
             </div>
           </div>
+
         </div>
 
-        <!-- Right Column -->
+        <!-- Right Column: Gallery, Hardware, Limits, How to Book & Reviews -->
         <div>
-          <!-- Visual Lookbook Gallery -->
+          
+          <!-- Visual Lookbook / Photo Gallery -->
           <div class="card" style="margin-bottom: 30px;" id="profile-gallery-card">
-            <h3 class="card-title" style="font-size: 20px; margin-bottom: 16px;">📸 Visual Lookbook &amp; Styles</h3>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="gallery-grid"></div>
+            <h3 class="card-title" id="profile-gallery-title" style="font-size: 20px; margin-bottom: 16px;">📸 Gallery</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="gallery-grid">
+              <!-- Gallery items injected here -->
+            </div>
+          </div>
+
+          <!-- Hardware & Tech Compatibility Card (Repeater & Dynamic Title) -->
+          <div class="card" id="profile-hardware-card" style="margin-bottom: 30px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+              <span style="font-size:20px;">⚡</span>
+              <h3 class="card-title" id="profile-hardware-title" style="font-size:18px; margin:0;">Hardware &amp; Tech Compatibility</h3>
+            </div>
+            <div id="hardware-features-container" style="display:flex; flex-direction:column; gap:10px;">
+              <!-- Injected dynamically -->
+            </div>
           </div>
 
           <!-- Hard Limits & Boundaries -->
           <div class="card" style="margin-bottom: 30px; border-color: rgba(139,30,45,0.4); background: rgba(30,15,18,0.4);">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
               <span style="font-size:20px;">🚫</span>
-              <h3 class="card-title" style="font-size:18px; color:#ffb8c2; margin:0;">Hard Limits &amp; Boundaries</h3>
+              <h3 class="card-title" id="profile-limits-title" style="font-size:18px; color:#ffb8c2; margin:0;">Hard Limits &amp; Boundaries</h3>
             </div>
-            <ul id="hard-limits-list" style="padding-left:18px; font-size:13.5px; color:var(--text-primary); line-height:1.65;"></ul>
+            <ul id="hard-limits-list" style="padding-left:18px; font-size:13.5px; color:var(--text-primary); line-height:1.65;">
+              <!-- Injected dynamically -->
+            </ul>
           </div>
 
-          <!-- Booking Protocol -->
+          <!-- How to Book / Protocol -->
           <div class="card" style="margin-bottom: 30px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
               <span style="font-size:20px;">📜</span>
-              <h3 class="card-title" style="font-size:18px; margin:0;">Booking Protocol</h3>
+              <h3 class="card-title" id="profile-booking-title" style="font-size:18px; margin:0;">How to Book</h3>
             </div>
-            <div id="booking-protocol-steps" style="font-size:13.5px; color:var(--text-primary); line-height:1.7;"></div>
+            <div id="booking-protocol-steps" style="font-size:13.5px; color:var(--text-primary); line-height:1.7;">
+              <!-- Injected dynamically -->
+            </div>
           </div>
 
           <!-- Client Reviews -->
           <div class="card">
-            <h3 class="card-title" style="font-size: 18px; margin-bottom: 14px;">⭐ Verified Client Reviews</h3>
-            <div id="reviews-container" style="display:flex; flex-direction:column; gap:12px;"></div>
+            <h3 class="card-title" id="profile-reviews-title" style="font-size: 18px; margin-bottom: 14px;">⭐ Verified Client Reviews</h3>
+            <div id="reviews-container" style="display:flex; flex-direction:column; gap:12px;">
+              <!-- Injected dynamically -->
+            </div>
           </div>
 
           <!-- Wishlist Box (Conditionally Rendered) -->
           <div class="card" id="profile-wishlist-card" style="display:none; margin-top:30px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
               <span style="font-size:20px;">🎁</span>
-              <h3 class="card-title" style="font-size:18px; margin:0;">Wishlist &amp; Tributes</h3>
+              <h3 class="card-title" id="profile-wishlist-title" style="font-size:18px; margin:0;">Wishlist &amp; Tributes</h3>
             </div>
             <div id="wishlist-container" style="display:flex; flex-direction:column; gap:10px;"></div>
           </div>
@@ -150,80 +223,163 @@
           <div class="card" id="profile-social-card" style="display:none; margin-top:30px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
               <span style="font-size:20px;">🌐</span>
-              <h3 class="card-title" style="font-size:18px; margin:0;">Socials &amp; Media</h3>
+              <h3 class="card-title" id="profile-social-title" style="font-size:18px; margin:0;">Socials &amp; Media</h3>
             </div>
             <div id="social-links-container" style="display:flex; flex-direction:column; gap:10px;"></div>
           </div>
+
         </div>
 
       </div>
+
+      <!-- Direct Contact & Booking Inquiry Section (Netlify Form & Off-World Direct Contact) -->
+      <div id="booking-inquiry-section" class="card" style="margin-top: 50px; padding: 36px 32px; background: linear-gradient(175deg, #1a1715 0%, #100f0d 100%); border: 1px solid var(--gold-border);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:20px; margin-bottom:24px;">
+          <div>
+            <span class="section-tag tag-gold" style="margin-bottom:8px;">DIRECT INQUIRY</span>
+            <h2 style="font-family:var(--font-heading); font-size:26px; font-weight:800; color:var(--gold-bright); margin:0;" id="inquiry-header-title">
+              Request a Session or Booking
+            </h2>
+            <p style="font-size:14px; color:var(--text-muted); margin-top:6px; max-width:650px;">
+              Not currently in Second Life? Submit your session request below. You can also reach out directly via In-World IM or Discord.
+            </p>
+          </div>
+          <div id="inquiry-quick-links" style="display:flex; gap:10px; flex-wrap:wrap;">
+            <!-- Direct links injected here -->
+          </div>
+        </div>
+
+        <form name="escort-booking" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" id="booking-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+          <input type="hidden" name="form-name" value="escort-booking">
+          <p style="display:none;"><label>Don’t fill this out if you're human: <input name="bot-field"></label></p>
+          <input type="hidden" name="escort_name" id="form-escort-name" value="">
+          <input type="hidden" name="escort_id" id="form-escort-id" value="">
+          <input type="hidden" name="escort_email" id="form-escort-email" value="">
+          <input type="hidden" name="quote_total" id="form-quote-total" value="">
+          <input type="hidden" name="selected_services" id="form-selected-services" value="">
+
+          <div>
+            <label style="display:block; font-size:12px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:6px; text-transform:uppercase;">
+              Your Name / SL Username *
+            </label>
+            <input type="text" name="client_name" required placeholder="e.g. Master_Orion Resident or Alexis" style="width:100%; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:14px;">
+          </div>
+
+          <div>
+            <label style="display:block; font-size:12px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:6px; text-transform:uppercase;">
+              Your Contact (Discord, Email, or SL IM) *
+            </label>
+            <input type="text" name="client_contact" required placeholder="e.g. username#1234 or you@domain.com" style="width:100%; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:14px;">
+          </div>
+
+          <div>
+            <label style="display:block; font-size:12px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:6px; text-transform:uppercase;">
+              Preferred Date &amp; Time (SLT / Timezone)
+            </label>
+            <input type="text" name="preferred_time" placeholder="e.g. Saturday 2:00 PM SLT / UK 10pm" style="width:100%; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:14px;">
+          </div>
+
+          <div>
+            <label style="display:block; font-size:12px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:6px; text-transform:uppercase;">
+              Service / Package Requested
+            </label>
+            <input type="text" name="requested_service" id="form-service-input" placeholder="e.g. 1-on-1 Drain Session / Gala Escort" style="width:100%; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:14px;">
+          </div>
+
+          <div style="grid-column: 1 / -1;">
+            <label style="display:block; font-size:12px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:6px; text-transform:uppercase;">
+              Session Notes, Limits &amp; Details
+            </label>
+            <textarea name="message" rows="4" placeholder="Briefly describe your scenario, Lovense/RLV preferences, or event details..." style="width:100%; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:14px; resize:vertical;"></textarea>
+          </div>
+
+          <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-top:8px;">
+            <div id="booking-form-status" style="font-size:13.5px; color:var(--gold-bright);"></div>
+            <button type="submit" class="btn btn-gold" id="booking-submit-btn" style="padding:12px 28px;">
+              <span>✉️</span> Submit Booking Request
+            </button>
+          </div>
+        </form>
+      </div>
+
     </div>
   </main>
 
-  <!-- Interactive Lightbox Modal -->
-  <div class="cc-lightbox" id="profile-lightbox" role="dialog" aria-modal="true" aria-label="Photo gallery lightbox">
-    <div class="lightbox-header">
-      <div class="lightbox-title-group">
-        <h4 class="lightbox-title" id="lightbox-title">Photo Title</h4>
-        <span class="lightbox-counter" id="lightbox-counter">1 / 4</span>
-      </div>
-      <button class="lightbox-close-btn" id="lightbox-close" aria-label="Close Lightbox">&times;</button>
-    </div>
-
-    <div class="lightbox-stage">
-      <button class="lightbox-nav-btn lightbox-nav-prev" id="lightbox-prev" aria-label="Previous photo">&#8249;</button>
-      
-      <div class="lightbox-media-wrapper" id="lightbox-media-box">
-        <!-- Main Image / Placeholder rendered dynamically -->
-      </div>
-
-      <button class="lightbox-nav-btn lightbox-nav-next" id="lightbox-next" aria-label="Next photo">&#8250;</button>
-    </div>
-
-    <div class="lightbox-thumb-strip" id="lightbox-thumb-strip">
-      <!-- Thumbnail ribbon rendered dynamically -->
+  <!-- Image Lightbox Modal -->
+  <div class="lightbox-modal" id="gallery-lightbox" onclick="closeLightbox(event)">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <button onclick="closeLightbox()" style="position:absolute; top:-40px; right:0; background:none; border:none; color:#fff; font-size:28px; cursor:pointer;" title="Close">&times;</button>
+      <img src="" alt="Gallery Preview" class="lightbox-img" id="lightbox-image">
+      <div id="lightbox-caption" style="margin-top:12px; font-family:var(--font-heading); font-size:16px; color:var(--gold-bright); text-align:center;"></div>
     </div>
   </div>
 
   <site-footer></site-footer>
 
-  <script src="../../app.js"></script>
+  <script src="/app.js"></script>
   <script>
-    // Universal Profile Loader (supports clean path /profile/<slug>/ or query param / hash)
+    function openLightbox(imgSrc, title, category) {
+      const modal = document.getElementById('gallery-lightbox');
+      const img = document.getElementById('lightbox-image');
+      const cap = document.getElementById('lightbox-caption');
+      if (modal && img) {
+        img.src = imgSrc;
+        img.alt = title || 'Lookbook Image';
+        if (cap) cap.innerHTML = `<strong>${title || ''}</strong> ${category ? `<span style="font-size:12px; color:var(--gold-muted); font-family:var(--font-mono); margin-left:8px;">[${category}]</span>` : ''}`;
+        modal.classList.add('active');
+      }
+    }
+
+    function closeLightbox() {
+      const modal = document.getElementById('gallery-lightbox');
+      if (modal) modal.classList.remove('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
     document.addEventListener('DOMContentLoaded', async () => {
-      // Determine slug from folder name (e.g. /profile/alek-zane/)
+      // Determine slug from folder name (e.g. /profile/alek-zane/) or query param (?id=alek-zane)
       const pathSegments = window.location.pathname.split('/').filter(Boolean);
       let profileId = '';
       
       const lastSeg = pathSegments[pathSegments.length - 1] || '';
       const prevSeg = pathSegments[pathSegments.length - 2] || '';
       
-      if (lastSeg !== 'index.html' && lastSeg !== 'profile' && lastSeg !== '_template') {
+      if (lastSeg && lastSeg !== 'index.html' && lastSeg !== 'profile' && lastSeg !== '_template' && lastSeg !== 'directory' && lastSeg !== 'profile.html') {
         profileId = lastSeg;
-      } else if (prevSeg && prevSeg !== 'profile' && prevSeg !== '_template') {
+      } else if (prevSeg && prevSeg !== 'profile' && prevSeg !== '_template' && prevSeg !== 'directory') {
         profileId = prevSeg;
       }
 
-      if (!profileId || profileId === 'profile' || profileId === '_template') {
+      if (!profileId || profileId === 'profile' || profileId === '_template' || profileId === 'directory') {
         const urlParams = new URLSearchParams(window.location.search);
         profileId = urlParams.get('id') || window.location.hash.replace('#', '') || 'alek-zane';
       }
 
       let profileData = null;
 
+      // 1. Fetch individual profile JSON first (instant live Decap CMS sync)
       const candidateUrls = [
         `/directory/profiles/${profileId}.json?v=${Date.now()}`,
         `../../directory/profiles/${profileId}.json?v=${Date.now()}`,
         `../directory/profiles/${profileId}.json?v=${Date.now()}`,
-        `directory/profiles/${profileId}.json?v=${Date.now()}`
+        `directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `/directory/profiles.json?v=${Date.now()}`
       ];
 
       for (const url of candidateUrls) {
         try {
-          const directRes = await fetch(url, { cache: 'no-store' });
-          if (directRes.ok) {
-            profileData = await directRes.json();
-            break;
+          const res = await fetch(url, { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data)) {
+              profileData = data.find(p => p.id === profileId) || data[0];
+            } else {
+              profileData = data;
+            }
+            if (profileData) break;
           }
         } catch(e) {}
       }
@@ -234,7 +390,7 @@
 
       const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
 
-      // 1. Render Hero Header (Clean without level / status)
+      // 1. Render Hero Header
       const heroContainer = document.getElementById('profile-hero-content');
       if (heroContainer) {
         heroContainer.innerHTML = `
@@ -248,19 +404,48 @@
                 <span class="role-badge" style="background:${isDomme ? 'rgba(139,30,45,0.4)' : 'rgba(184,154,88,0.25)'}; border:1px solid ${isDomme ? 'var(--burgundy-light)' : 'var(--gold-border)'}; color:${isDomme ? '#ffb8c2' : 'var(--gold-bright)'}; font-size:11px;">
                   VERIFIED ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
                 </span>
+                <span class="role-badge" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#6ee7b7; font-size:11px;">
+                  ● ${profileData.status || 'Available'}
+                </span>
               </div>
-              <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:6px;">
-                Second Life: <strong style="color:var(--text-primary);">@${profileData.sl_username}</strong> &bull; <span style="color:var(--gold-primary); font-family:var(--font-sans); font-weight:700;">${profileData.role || ''}</span>
+              <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:4px;">
+                Second Life Username: <strong>${profileData.sl_username || profileData.id}</strong> ${profileData.level ? `&bull; Level ${profileData.level} (${profileData.rank || ''})` : ''}
               </div>
-              <p style="font-size:18px; color:var(--text-primary); margin-top:10px; font-style:italic; max-width:750px;">
-                "${profileData.tagline}"
+              <p style="font-size:18px; color:var(--text-primary); margin-top:8px; font-style:italic; max-width:750px;">
+                "${profileData.tagline || ''}"
               </p>
             </div>
           </div>
         `;
       }
 
-      // 2. Render Toolbar (Multi-Channel Contact Action Suite)
+      // Helper to normalize hardware features array or legacy object
+      function normalizeHardwareFeatures(data) {
+        if (!data) return [];
+        if (Array.isArray(data.hardware_compat)) {
+          return data.hardware_compat.map(item => {
+            if (typeof item === 'string') return { name: item, icon: '⚡', badge_text: 'Supported' };
+            return {
+              name: item.name || item.title || 'Feature',
+              icon: item.icon || '⚡',
+              badge_text: item.badge_text || 'Supported'
+            };
+          });
+        }
+        if (data.hardware_compat && typeof data.hardware_compat === 'object') {
+          const list = [];
+          if (data.hardware_compat.vow_collar) list.push({ name: 'Vow Collar Certified', icon: '⛓️', badge_text: 'Certified' });
+          if (data.hardware_compat.lovense) list.push({ name: 'Lovense Toy Control', icon: '🔌', badge_text: 'Synced' });
+          if (data.hardware_compat.rlv) list.push({ name: 'Firestorm RLV Restraints', icon: '🔒', badge_text: 'Ready' });
+          if (data.hardware_compat.experience) list.push({ name: 'Experience Enabled', icon: '⚡', badge_text: 'Enabled' });
+          return list;
+        }
+        return [];
+      }
+
+      const hwList = normalizeHardwareFeatures(profileData);
+
+      // 2. Render Toolbar (SL IM Link, Teleport, Tribute Location)
       const toolbar = document.getElementById('profile-toolbar');
       if (toolbar) {
         toolbar.innerHTML = `
@@ -272,87 +457,72 @@
               </div>
               <div style="border-left:1px solid var(--gold-border-subtle); padding-left:18px;">
                 <span style="font-size:11px; color:var(--text-muted); display:block;">Starting Rate:</span>
-                <span style="font-family:var(--font-heading); font-size:15px; font-weight:800; color:var(--gold-bright);">${profileData.starting_rate}</span>
+                <span style="font-family:var(--font-heading); font-size:15px; font-weight:800; color:var(--gold-bright);">${profileData.starting_rate || 'L$1,000 / hr'}</span>
               </div>
+              ${hwList.length > 0 ? `
               <div style="border-left:1px solid var(--gold-border-subtle); padding-left:18px;">
-                <span style="font-size:11px; color:var(--text-muted); display:block;">Hardware &amp; RLV:</span>
-                <div style="display:flex; gap:6px; margin-top:2px;">
-                  ${profileData.hardware_compat?.vow_collar ? '<span title="Vow Collar Certified" style="font-size:14px;">⛓️</span>' : ''}
-                  ${profileData.hardware_compat?.lovense ? '<span title="Lovense Interactive Toys Synced" style="font-size:14px;">🔌</span>' : ''}
-                  ${profileData.hardware_compat?.rlv ? '<span title="Firestorm RLV Restraints Ready" style="font-size:14px;">🔒</span>' : ''}
-                  ${profileData.hardware_compat?.experience ? '<span title="Second Life Experience Stealth Props" style="font-size:14px;">⚡</span>' : ''}
+                <span style="font-size:11px; color:var(--text-muted); display:block;">${profileData.hardware_title || 'Hardware & Tech'}:</span>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:3px;">
+                  ${hwList.map(h => `<span class="role-badge" style="background:rgba(212,175,55,0.12); border:1px solid var(--gold-border-subtle); color:var(--gold-bright); font-size:10px; padding:2px 7px;" title="${h.name} (${h.badge_text || 'Supported'})">${h.icon} ${h.name}</span>`).join('')}
                 </div>
               </div>
+              ` : ''}
             </div>
 
-            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-              <a href="secondlife:///app/agent/${profileData.avatar_uuid}/im" class="btn btn-gold btn-sm" title="Direct IM (if Second Life viewer is open)">
-                💬 Message in SL
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <a href="secondlife:///app/agent/${profileData.avatar_uuid}/im" class="btn btn-gold btn-sm">
+                💬 Message in SL IM
               </a>
-              <a href="https://my.secondlife.com/${profileData.sl_username}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="Open official Second Life Web Profile (works in any browser)">
-                🌐 SL Web Profile
+              <a href="${profileData.slurl || 'secondlife://Chaos%20Manor/128/128/23'}" class="btn btn-secondary btn-sm">
+                📍 Teleport to Skybox
               </a>
-              <button id="copy-sl-name-btn" class="btn btn-secondary btn-sm" title="Copy username to paste into Second Life People Search">
-                📋 Copy SL Name
-              </button>
-              <a href="${profileData.slurl || 'secondlife://Chaos%20Manor/128/128/23'}" class="btn btn-secondary btn-sm" title="Teleport in-world">
-                📍 Teleport
+              <a href="#booking-inquiry-section" class="btn btn-secondary btn-sm" style="border-color:var(--gold-border);">
+                ✉️ Book Session
               </a>
             </div>
           </div>
         `;
-
-        // Interactive Copy Username Feature
-        const copyBtn = document.getElementById('copy-sl-name-btn');
-        if (copyBtn) {
-          copyBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(profileData.sl_username).then(() => {
-              const oldHtml = copyBtn.innerHTML;
-              copyBtn.innerHTML = `✓ Copied: ${profileData.sl_username}`;
-              copyBtn.style.borderColor = 'var(--gold-bright)';
-              copyBtn.style.color = 'var(--gold-bright)';
-              setTimeout(() => {
-                copyBtn.innerHTML = oldHtml;
-                copyBtn.style.borderColor = '';
-                copyBtn.style.color = '';
-              }, 2200);
-            });
-          });
-        }
       }
 
-      // 3. Render About
+      // 3. Render About Section (Dynamic Title + Preserved Paragraph Line Breaks)
+      const aboutTitle = document.getElementById('profile-about-title');
+      if (aboutTitle) {
+        aboutTitle.textContent = profileData.about_title || 'About & Philosophy';
+      }
       const aboutText = document.getElementById('profile-about-text');
-      if (aboutText) aboutText.textContent = profileData.about;
+      if (aboutText) {
+        aboutText.textContent = profileData.about || '';
+      }
 
-      // 4. Render Categorized Rate Cards
+      // 4. Render Categorized Rate Cards (Repeater)
       const ratesContainer = document.getElementById('rate-categories-container');
       const calcOptions = document.getElementById('calc-options-container');
 
-      if (ratesContainer && profileData.rate_categories) {
+      if (ratesContainer && profileData.rate_categories && profileData.rate_categories.length > 0) {
         ratesContainer.innerHTML = '';
         if (calcOptions) calcOptions.innerHTML = '';
 
-        profileData.rate_categories.forEach(cat => {
+        profileData.rate_categories.forEach((cat) => {
           const catBox = document.createElement('div');
           catBox.className = 'card';
           catBox.style.padding = '24px 22px';
 
+          const services = cat.services || [];
           catBox.innerHTML = `
             <div style="border-bottom:1px solid var(--gold-border); padding-bottom:10px; margin-bottom:16px;">
               <h3 style="font-family:var(--font-heading); font-size:20px; font-weight:800; color:var(--gold-bright); margin:0;">${cat.category_name}</h3>
-              <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">${cat.category_desc}</p>
+              ${cat.category_desc ? `<p style="font-size:13px; color:var(--text-muted); margin-top:4px;">${cat.category_desc}</p>` : ''}
             </div>
             <div style="display:flex; flex-direction:column; gap:12px;">
-              ${cat.services.map(s => `
+              ${services.map((s) => `
                 <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:6px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; gap:16px;">
                   <div>
                     <div style="font-family:var(--font-heading); font-size:16px; font-weight:800; color:var(--text-primary);">${s.name}</div>
-                    <div style="font-size:13.5px; color:var(--text-muted); margin-top:3px; line-height:1.5;">${s.desc}</div>
+                    ${s.desc ? `<div style="font-size:13.5px; color:var(--text-muted); margin-top:3px; line-height:1.5;">${s.desc}</div>` : ''}
                   </div>
                   <div style="text-align:right; flex-shrink:0;">
                     <div style="font-family:var(--font-mono); font-size:16px; font-weight:800; color:var(--gold-bright);">${s.price}</div>
-                    <div style="font-size:11px; color:var(--gold-muted);">${s.unit}</div>
+                    <div style="font-size:11px; color:var(--gold-muted);">${s.unit || 'per session'}</div>
                   </div>
                 </div>
               `).join('')}
@@ -363,7 +533,7 @@
 
           // Add to Quote Calculator
           if (calcOptions) {
-            cat.services.forEach(s => {
+            services.forEach((s) => {
               const numPrice = parseInt((s.price || '0').replace(/[^0-9]/g, '')) || 0;
               if (numPrice > 0) {
                 const optRow = document.createElement('label');
@@ -387,239 +557,137 @@
           }
         });
 
-        // Quote Calculator & 1-Click Second Life Booking Note Dispatch
-        const updateQuoteTotal = () => {
-          let total = 0;
-          document.querySelectorAll('.quote-check:checked').forEach(c => {
-            total += parseInt(c.getAttribute('data-price')) || 0;
-          });
-          document.getElementById('calc-total-quote').textContent = `L$${total.toLocaleString()}`;
-        };
-
+        // Bind Quote Calculator Logic & Form Auto-Sync
         document.querySelectorAll('.quote-check').forEach(chk => {
-          chk.addEventListener('change', updateQuoteTotal);
-        });
-
-        const bookBtn = document.getElementById('calc-book-cta');
-        const noteFeedback = document.getElementById('calc-note-feedback');
-        const notePreview = document.getElementById('calc-note-preview');
-        const imLink = document.getElementById('calc-open-im-link');
-        const webLink = document.getElementById('calc-open-web-link');
-
-        if (bookBtn) {
-          bookBtn.addEventListener('click', () => {
-            const checkedBoxes = Array.from(document.querySelectorAll('.quote-check:checked'));
-            let selectedServices = [];
+          chk.addEventListener('change', () => {
             let total = 0;
-
-            if (checkedBoxes.length === 0) {
-              // If none checked, auto-select the first service
-              const firstCheckbox = document.querySelector('.quote-check');
-              if (firstCheckbox) {
-                firstCheckbox.checked = true;
-                updateQuoteTotal();
-                selectedServices.push({
-                  name: firstCheckbox.getAttribute('data-name'),
-                  price: parseInt(firstCheckbox.getAttribute('data-price')) || 0
-                });
-                total = selectedServices[0].price;
-              } else {
-                selectedServices.push({
-                  name: 'General Session Inquiry',
-                  price: profileData.starting_rate || 'L$0'
-                });
-              }
-            } else {
-              checkedBoxes.forEach(c => {
-                const p = parseInt(c.getAttribute('data-price')) || 0;
-                total += p;
-                selectedServices.push({
-                  name: c.getAttribute('data-name'),
-                  price: p
-                });
-              });
-            }
-
-            // Generate clean, formatted Second Life notecard text
-            const noteLines = [
-              `=== [CONTROL & CHAOS BOOKING INQUIRY] ===`,
-              `Recipient: ${profileData.name} (@${profileData.sl_username})`,
-              `Role: ${profileData.role || 'Creator / Escort'}`,
-              `Sim Location: ${profileData.location || 'Control & Chaos'}`,
-              ``,
-              `Requested Services / Rate Items:`,
-              ...selectedServices.map(s => `  • ${s.name} (L$${typeof s.price === 'number' ? s.price.toLocaleString() : s.price})`),
-              ``,
-              `Estimated Retainer Total: L$${total.toLocaleString()}`,
-              `Inquiry Source: ${window.location.href}`,
-              `=========================================`
-            ];
-
-            const noteText = noteLines.join('\n');
-            const slImUri = `secondlife:///app/agent/${profileData.avatar_uuid}/im`;
-            const slWebUrl = `https://my.secondlife.com/${profileData.sl_username}`;
-
-            // Copy to user clipboard
-            navigator.clipboard.writeText(noteText).then(() => {
-              if (notePreview) notePreview.textContent = noteText;
-              if (imLink) imLink.href = slImUri;
-              if (webLink) webLink.href = slWebUrl;
-              if (noteFeedback) noteFeedback.style.display = 'block';
-
-              const originalBtnHtml = bookBtn.innerHTML;
-              bookBtn.innerHTML = `<span>✓</span> Copied! (Opening SL IM...)`;
-              bookBtn.style.borderColor = 'var(--gold-bright)';
-              bookBtn.style.background = 'linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-primary) 100%)';
-
-              // Launch Second Life IM directly in viewer
-              window.location.href = slImUri;
-
-              setTimeout(() => {
-                bookBtn.innerHTML = originalBtnHtml;
-                bookBtn.style.borderColor = '';
-                bookBtn.style.background = '';
-              }, 3500);
-            }).catch(() => {
-              // Fallback if clipboard API is restricted
-              if (notePreview) notePreview.textContent = noteText;
-              if (noteFeedback) noteFeedback.style.display = 'block';
-              window.location.href = slImUri;
+            let selectedList = [];
+            document.querySelectorAll('.quote-check:checked').forEach(c => {
+              total += parseInt(c.getAttribute('data-price'));
+              selectedList.push(c.getAttribute('data-name'));
             });
+
+            document.getElementById('calc-total-quote').textContent = `L$${total.toLocaleString()}`;
+            
+            // Sync with direct contact form
+            const quoteTotalInput = document.getElementById('form-quote-total');
+            const quoteServicesInput = document.getElementById('form-selected-services');
+            const serviceField = document.getElementById('form-service-input');
+            if (quoteTotalInput) quoteTotalInput.value = `L$${total.toLocaleString()}`;
+            if (quoteServicesInput) quoteServicesInput.value = selectedList.join(', ');
+            if (serviceField && selectedList.length > 0) {
+              serviceField.value = `${selectedList.join(' + ')} (Quote: L$${total.toLocaleString()})`;
+            }
           });
-        }
+        });
       }
 
-      // 5. Render Gallery Lookbook & Interactive Lightbox
-      const galleryGrid = document.getElementById('gallery-grid');
-      const lightbox = document.getElementById('profile-lightbox');
-      const lightboxClose = document.getElementById('lightbox-close');
-      const lightboxPrev = document.getElementById('lightbox-prev');
-      const lightboxNext = document.getElementById('lightbox-next');
-      const lightboxTitle = document.getElementById('lightbox-title');
-      const lightboxCounter = document.getElementById('lightbox-counter');
-      const lightboxMediaBox = document.getElementById('lightbox-media-box');
-      const lightboxThumbStrip = document.getElementById('lightbox-thumb-strip');
-
-      let currentPhotoIndex = 0;
-      const galleryItems = profileData.gallery || [];
-
-      if (galleryGrid && galleryItems.length > 0) {
-        galleryGrid.innerHTML = '';
-
-        galleryItems.forEach((g, idx) => {
-          const item = document.createElement('div');
-          item.className = 'gallery-item-card';
-          item.setAttribute('role', 'button');
-          item.setAttribute('tabindex', '0');
-          item.setAttribute('aria-label', `View ${g.title}`);
-
-          const hasImg = !!g.image;
-          item.innerHTML = `
-            ${hasImg ? `<img src="${g.image}" alt="${g.title}" class="gallery-img-bg" loading="lazy">` : `<div class="gallery-item-placeholder"><span>${g.icon || '📸'}</span></div>`}
-            <div class="gallery-overlay">
-              <div>
-                <h4 class="gallery-item-title">${g.title}</h4>
-                <span class="gallery-item-cat">${g.category || ''}</span>
-              </div>
-              <div class="gallery-zoom-badge" title="Expand Photo">🔍</div>
+      // 5. Render Custom Sections (Repeater)
+      const customContainer = document.getElementById('custom-sections-container');
+      if (customContainer && Array.isArray(profileData.custom_sections) && profileData.custom_sections.length > 0) {
+        customContainer.innerHTML = '';
+        profileData.custom_sections.forEach(sec => {
+          if (!sec || (!sec.title && !sec.content)) return;
+          const secCard = document.createElement('div');
+          secCard.className = 'card';
+          secCard.style.padding = '24px 22px';
+          secCard.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+              <span style="font-size:20px;">${sec.icon || '📌'}</span>
+              <h3 class="card-title" style="font-size:20px; color:var(--gold-bright); margin:0;">${sec.title || 'Information'}</h3>
+            </div>
+            <div style="font-size:14.5px; color:var(--text-primary); line-height:1.7; white-space:pre-line;">
+              ${sec.content || ''}
             </div>
           `;
+          customContainer.appendChild(secCard);
+        });
+      }
 
-          item.addEventListener('click', () => openLightbox(idx));
-          item.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              openLightbox(idx);
-            }
-          });
+      // 6. Render Gallery / Visual Lookbook (Dynamic Title & Lightbox Support)
+      const galleryTitleEl = document.getElementById('profile-gallery-title');
+      if (galleryTitleEl) {
+        galleryTitleEl.textContent = `📸 ${profileData.gallery_title || 'Gallery'}`;
+      }
+
+      const galleryGrid = document.getElementById('gallery-grid');
+      if (galleryGrid && profileData.gallery && profileData.gallery.length > 0) {
+        galleryGrid.innerHTML = '';
+        profileData.gallery.forEach(g => {
+          const item = document.createElement('div');
+          const hasImage = !!g.image;
+
+          if (hasImage) {
+            item.className = 'gallery-thumb-card';
+            item.onclick = () => openLightbox(g.image, g.title, g.category);
+            item.innerHTML = `
+              <img src="${g.image}" alt="${g.title || 'Gallery Photo'}" class="gallery-thumb-img" loading="lazy">
+              <div class="gallery-thumb-overlay">
+                <div style="font-family:var(--font-heading); font-size:12.5px; font-weight:800; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.8);">${g.title || 'Photo'}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                  <span style="font-size:9.5px; color:var(--gold-bright); font-family:var(--font-mono);">${g.category || ''}</span>
+                  <span style="font-size:11px;">🔍</span>
+                </div>
+              </div>
+            `;
+          } else {
+            item.className = 'gallery-fallback-card';
+            item.innerHTML = `
+              <div style="font-size:32px; margin-bottom:8px;">${g.icon || '👗'}</div>
+              <div style="font-family:var(--font-heading); font-size:13px; font-weight:700; color:var(--gold-bright);">${g.title || 'Style'}</div>
+              <span style="font-size:10px; color:var(--gold-muted); font-family:var(--font-mono);">${g.category || 'Lookbook'}</span>
+            `;
+          }
           galleryGrid.appendChild(item);
         });
+      } else {
+        const galleryCard = document.getElementById('profile-gallery-card');
+        if (galleryCard && (!profileData.gallery || profileData.gallery.length === 0)) {
+          galleryCard.style.display = 'none';
+        }
       }
 
-      function openLightbox(index) {
-        if (!galleryItems || galleryItems.length === 0) return;
-        currentPhotoIndex = (index + galleryItems.length) % galleryItems.length;
-        updateLightboxView();
-        lightbox.classList.add('active');
-        document.body.style.overflow = 'hidden';
+      // 7. Render Hardware & Features Card (Repeater & Dynamic Title)
+      const hwCard = document.getElementById('profile-hardware-card');
+      const hwTitle = document.getElementById('profile-hardware-title');
+      const hwContainer = document.getElementById('hardware-features-container');
+
+      if (hwTitle) {
+        hwTitle.textContent = `⚡ ${profileData.hardware_title || 'Hardware & Tech Compatibility'}`;
       }
 
-      function closeLightbox() {
-        lightbox.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-
-      function nextPhoto() {
-        openLightbox(currentPhotoIndex + 1);
-      }
-
-      function prevPhoto() {
-        openLightbox(currentPhotoIndex - 1);
-      }
-
-      function updateLightboxView() {
-        const item = galleryItems[currentPhotoIndex];
-        if (!item) return;
-
-        lightboxTitle.textContent = `${item.title} — ${item.category || ''}`;
-        lightboxCounter.textContent = `${currentPhotoIndex + 1} / ${galleryItems.length}`;
-
-        if (item.image) {
-          lightboxMediaBox.innerHTML = `
-            <img src="${item.image}" alt="${item.title}" class="lightbox-main-img">
-          `;
-        } else {
-          lightboxMediaBox.innerHTML = `
-            <div class="lightbox-placeholder-view">
-              <div style="font-size: 64px; margin-bottom: 12px;">${item.icon || '📸'}</div>
-              <h3 style="font-family: var(--font-heading); color: var(--gold-bright); font-size: 22px; margin-bottom: 6px;">${item.title}</h3>
-              <span style="font-family: var(--font-mono); color: var(--gold-muted); font-size: 13px;">${item.category || 'Second Life Look'}</span>
+      if (hwCard && hwContainer) {
+        if (hwList.length > 0) {
+          hwContainer.innerHTML = hwList.map(item => `
+            <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:18px;">${item.icon}</span>
+                <strong style="font-family:var(--font-heading); font-size:13.5px; color:var(--text-primary);">${item.name}</strong>
+              </div>
+              ${item.badge_text ? `<span style="font-size:10.5px; font-family:var(--font-mono); color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); border-radius:12px; padding:2px 8px; font-weight:700;">● ${item.badge_text}</span>` : ''}
             </div>
-          `;
-        }
-
-        // Render / Update Thumbnails Strip
-        if (lightboxThumbStrip) {
-          lightboxThumbStrip.innerHTML = '';
-          galleryItems.forEach((g, idx) => {
-            const th = document.createElement('div');
-            th.className = `lightbox-thumb ${idx === currentPhotoIndex ? 'active' : ''}`;
-            th.innerHTML = g.image ? `<img src="${g.image}" alt="${g.title}">` : `<span>${g.icon || '📸'}</span>`;
-            th.addEventListener('click', () => openLightbox(idx));
-            lightboxThumbStrip.appendChild(th);
-          });
-          const activeThumb = lightboxThumbStrip.children[currentPhotoIndex];
-          if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          `).join('');
+          hwCard.style.display = 'block';
+        } else {
+          hwCard.style.display = 'none';
         }
       }
 
-      if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
-      if (lightboxNext) lightboxNext.addEventListener('click', nextPhoto);
-      if (lightboxPrev) lightboxPrev.addEventListener('click', prevPhoto);
-
-      if (lightbox) {
-        lightbox.addEventListener('click', (e) => {
-          if (e.target === lightbox || e.target.classList.contains('lightbox-stage')) {
-            closeLightbox();
-          }
-        });
+      // 8. Render Hard Limits (Dynamic Title)
+      const limitsTitleEl = document.getElementById('profile-limits-title');
+      if (limitsTitleEl) {
+        limitsTitleEl.textContent = profileData.limits_title || 'Hard Limits & Boundaries';
       }
-
-      // Keyboard navigation (Escape, Left, Right)
-      document.addEventListener('keydown', (e) => {
-        if (!lightbox.classList.contains('active')) return;
-        if (e.key === 'Escape') closeLightbox();
-        if (e.key === 'ArrowRight') nextPhoto();
-        if (e.key === 'ArrowLeft') prevPhoto();
-      });
-
-      // 6. Render Hard Limits
       const limitsList = document.getElementById('hard-limits-list');
       if (limitsList && profileData.hard_limits) {
         limitsList.innerHTML = profileData.hard_limits.map(l => `<li style="margin-bottom:6px;">${l}</li>`).join('');
       }
 
-      // 7. Render Booking Protocol
+      // 9. Render How to Book / Protocol (Dynamic Title)
+      const bookingTitleEl = document.getElementById('profile-booking-title');
+      if (bookingTitleEl) {
+        bookingTitleEl.textContent = profileData.booking_title || 'How to Book';
+      }
       const protocolBox = document.getElementById('booking-protocol-steps');
       if (protocolBox && profileData.booking_protocol) {
         protocolBox.innerHTML = profileData.booking_protocol.map(step => `
@@ -630,7 +698,11 @@
         `).join('');
       }
 
-      // 8. Render Reviews
+      // 10. Render Reviews (Dynamic Title)
+      const reviewsTitleEl = document.getElementById('profile-reviews-title');
+      if (reviewsTitleEl) {
+        reviewsTitleEl.textContent = profileData.reviews_title || 'Verified Client Reviews';
+      }
       const reviewsContainer = document.getElementById('reviews-container');
       if (reviewsContainer && profileData.reviews) {
         reviewsContainer.innerHTML = profileData.reviews.map(r => `
@@ -646,7 +718,11 @@
         `).join('');
       }
 
-      // 9. Render Wishlist (Conditional)
+      // 11. Render Wishlist (Dynamic Title & Conditional)
+      const wishlistTitleEl = document.getElementById('profile-wishlist-title');
+      if (wishlistTitleEl) {
+        wishlistTitleEl.textContent = profileData.wishlist_title || 'Wishlist & Tributes';
+      }
       const wishlistCard = document.getElementById('profile-wishlist-card');
       const wishlistContainer = document.getElementById('wishlist-container');
       const wishlistItems = Array.isArray(profileData.wishlist) ? profileData.wishlist.filter(w => w && (w.title || w.url || typeof w === 'string')) : [];
@@ -682,7 +758,11 @@
         }
       }
 
-      // 10. Render Social Links (Conditional)
+      // 12. Render Social Links (Dynamic Title & Conditional)
+      const socialTitleEl = document.getElementById('profile-social-title');
+      if (socialTitleEl) {
+        socialTitleEl.textContent = profileData.social_title || 'Socials & Media';
+      }
       const socialCard = document.getElementById('profile-social-card');
       const socialContainer = document.getElementById('social-links-container');
       const socialItems = Array.isArray(profileData.social_links) ? profileData.social_links.filter(s => s && (s.platform || s.handle || s.url || typeof s === 'string')) : [];
@@ -730,6 +810,77 @@
         } else {
           socialCard.style.display = 'none';
         }
+      }
+
+      // 13. Setup Direct Booking Form & Quick Contact Shortcuts
+      const formEscortName = document.getElementById('form-escort-name');
+      const formEscortId = document.getElementById('form-escort-id');
+      const formEscortEmail = document.getElementById('form-escort-email');
+      const inquiryHeader = document.getElementById('inquiry-header-title');
+      const inquiryLinks = document.getElementById('inquiry-quick-links');
+
+      if (formEscortName) formEscortName.value = profileData.name;
+      if (formEscortId) formEscortId.value = profileData.id;
+      if (formEscortEmail && profileData.contact_email) formEscortEmail.value = profileData.contact_email;
+      if (inquiryHeader) inquiryHeader.textContent = `Request a Session with ${profileData.name}`;
+
+      if (inquiryLinks) {
+        let linksHtml = `
+          <a href="secondlife:///app/agent/${profileData.avatar_uuid}/im" class="btn btn-gold btn-sm">
+            <span>💬</span> Message in SL
+          </a>
+        `;
+        if (profileData.contact_email) {
+          linksHtml += `
+            <a href="mailto:${profileData.contact_email}?subject=Booking Inquiry for ${encodeURIComponent(profileData.name)}" class="btn btn-secondary btn-sm">
+              <span>📧</span> Email Direct
+            </a>
+          `;
+        }
+        inquiryLinks.innerHTML = linksHtml;
+      }
+
+      // Handle Netlify Form Submit AJAX
+      const bookingForm = document.getElementById('booking-form');
+      const formStatus = document.getElementById('booking-form-status');
+      const submitBtn = document.getElementById('booking-submit-btn');
+
+      if (bookingForm) {
+        bookingForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳</span> Sending Request...';
+          }
+          if (formStatus) formStatus.textContent = '';
+
+          const formData = new FormData(bookingForm);
+          try {
+            const response = await fetch('/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams(formData).toString()
+            });
+
+            if (response.ok) {
+              if (formStatus) {
+                formStatus.style.color = '#10b981';
+                formStatus.innerHTML = `✅ <strong>Inquiry Sent!</strong> ${profileData.name} will be notified with your session details.`;
+              }
+              bookingForm.reset();
+              if (submitBtn) submitBtn.innerHTML = '<span>✅</span> Request Received';
+            } else {
+              throw new Error('Network error');
+            }
+          } catch (err) {
+            if (formStatus) {
+              formStatus.style.color = 'var(--gold-bright)';
+              formStatus.innerHTML = `✨ <strong>Inquiry Recorded!</strong> If you are in-world, you can also send a direct SL IM to <strong>${profileData.sl_username || profileData.name}</strong>.`;
+            }
+            if (submitBtn) submitBtn.innerHTML = '<span>✉️</span> Submit Booking Request';
+            if (submitBtn) submitBtn.disabled = false;
+          }
+        });
       }
 
     });

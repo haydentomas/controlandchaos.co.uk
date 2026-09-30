@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="/styles.css">
   <style>
     .gallery-thumb-card {
       position: relative;
@@ -98,7 +98,7 @@
   <header class="hero" style="min-height: 55vh; padding: 120px 0 40px; background: linear-gradient(180deg, #1f1519 0%, #12100e 100%);">
     <canvas id="hero-canvas"></canvas>
     <div class="container" id="profile-hero-content">
-      <!-- Injected dynamically via JS based on URL param ?id=... -->
+      <!-- Injected dynamically via JS based on URL param or path -->
     </div>
   </header>
 
@@ -111,7 +111,7 @@
         <!-- Injected dynamically -->
       </div>
 
-      <!-- Two-Column Layout: Left (About, Rate Categories, Custom Blocks, Booking Calc) | Right (Gallery, Limits, How to Book, Reviews, Socials) -->
+      <!-- Two-Column Layout: Left (About, Rate Categories, Custom Blocks, Booking Calc) | Right (Gallery, Hardware, Limits, How to Book, Reviews, Socials) -->
       <div style="display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 40px;" id="profile-main-layout">
         
         <!-- Left Column: Bio, Categorized Rate Cards & Custom Sections -->
@@ -120,7 +120,7 @@
           <!-- Bio Box -->
           <div class="card" style="margin-bottom: 30px;" id="profile-about-card">
             <h3 class="card-title" id="profile-about-title" style="font-size: 22px;">About &amp; Philosophy</h3>
-            <p id="profile-about-text" style="font-size: 15px; color: var(--text-primary); line-height: 1.7; margin-top: 10px;"></p>
+            <p id="profile-about-text" style="font-size: 15px; color: var(--text-primary); line-height: 1.75; margin-top: 10px; white-space: pre-line;"></p>
           </div>
 
           <!-- Rate Categories Container (Repeater) -->
@@ -158,7 +158,7 @@
 
         </div>
 
-        <!-- Right Column: Gallery, Limits, How to Book & Reviews -->
+        <!-- Right Column: Gallery, Hardware, Limits, How to Book & Reviews -->
         <div>
           
           <!-- Visual Lookbook / Photo Gallery -->
@@ -316,7 +316,7 @@
 
   <site-footer></site-footer>
 
-  <script src="../app.js"></script>
+  <script src="/app.js"></script>
   <script>
     function openLightbox(imgSrc, title, category) {
       const modal = document.getElementById('gallery-lightbox');
@@ -340,30 +340,55 @@
     });
 
     document.addEventListener('DOMContentLoaded', async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const profileId = urlParams.get('id') || 'alexis-vane';
+      // Determine slug from folder name (e.g. /profile/alek-zane/) or query param (?id=alek-zane)
+      const pathSegments = window.location.pathname.split('/').filter(Boolean);
+      let profileId = '';
+      
+      const lastSeg = pathSegments[pathSegments.length - 1] || '';
+      const prevSeg = pathSegments[pathSegments.length - 2] || '';
+      
+      if (lastSeg && lastSeg !== 'index.html' && lastSeg !== 'profile' && lastSeg !== '_template' && lastSeg !== 'directory' && lastSeg !== 'profile.html') {
+        profileId = lastSeg;
+      } else if (prevSeg && prevSeg !== 'profile' && prevSeg !== '_template' && prevSeg !== 'directory') {
+        profileId = prevSeg;
+      }
+
+      if (!profileId || profileId === 'profile' || profileId === '_template' || profileId === 'directory') {
+        const urlParams = new URLSearchParams(window.location.search);
+        profileId = urlParams.get('id') || window.location.hash.replace('#', '') || 'alek-zane';
+      }
 
       let profileData = null;
 
-      // 1. Fetch individual profile JSON first (instant live Decap CMS sync), fallback to profiles.json
-      try {
-        const singleRes = await fetch(`profiles/${profileId}.json?v=${Date.now()}`);
-        if (singleRes.ok) {
-          profileData = await singleRes.json();
-        } else {
-          const res = await fetch(`profiles.json?v=${Date.now()}`);
+      // 1. Fetch individual profile JSON first (instant live Decap CMS sync)
+      const candidateUrls = [
+        `/directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `../../directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `../directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `/directory/profiles.json?v=${Date.now()}`
+      ];
+
+      for (const url of candidateUrls) {
+        try {
+          const res = await fetch(url, { cache: 'no-store' });
           if (res.ok) {
-            const profiles = await res.json();
-            profileData = profiles.find(p => p.id === profileId) || profiles[0];
+            const data = await res.json();
+            if (Array.isArray(data)) {
+              profileData = data.find(p => p.id === profileId) || data[0];
+            } else {
+              profileData = data;
+            }
+            if (profileData) break;
           }
-        }
-      } catch(e) {}
+        } catch(e) {}
+      }
 
       if (!profileData) return;
 
       document.title = `${profileData.name} — Rate Card & Services | Control & Chaos`;
 
-      const isDomme = profileData.role_type === 'domme';
+      const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
 
       // 1. Render Hero Header
       const heroContainer = document.getElementById('profile-hero-content');
@@ -376,11 +401,11 @@
             <div style="flex:1; min-width:280px;">
               <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                 <h1 style="font-family:var(--font-heading); font-size:38px; font-weight:900; color:var(--gold-bright); margin:0;">${profileData.name}</h1>
-                <span class="role-badge" style="background:rgba(184,154,88,0.25); border:1px solid var(--gold-border); color:var(--gold-bright); font-size:11px;">
+                <span class="role-badge" style="background:${isDomme ? 'rgba(139,30,45,0.4)' : 'rgba(184,154,88,0.25)'}; border:1px solid ${isDomme ? 'var(--burgundy-light)' : 'var(--gold-border)'}; color:${isDomme ? '#ffb8c2' : 'var(--gold-bright)'}; font-size:11px;">
                   VERIFIED ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
                 </span>
                 <span class="role-badge" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#6ee7b7; font-size:11px;">
-                  ● ${profileData.status}
+                  ● ${profileData.status || 'Available'}
                 </span>
               </div>
               <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:4px;">
@@ -448,7 +473,7 @@
               <a href="secondlife:///app/agent/${profileData.avatar_uuid}/im" class="btn btn-gold btn-sm">
                 💬 Message in SL IM
               </a>
-              <a href="${profileData.slurl}" class="btn btn-secondary btn-sm">
+              <a href="${profileData.slurl || 'secondlife://Chaos%20Manor/128/128/23'}" class="btn btn-secondary btn-sm">
                 📍 Teleport to Skybox
               </a>
               <a href="#booking-inquiry-section" class="btn btn-secondary btn-sm" style="border-color:var(--gold-border);">
@@ -459,13 +484,15 @@
         `;
       }
 
-      // 3. Render About Section (Dynamic Title)
+      // 3. Render About Section (Dynamic Title + Preserved Paragraph Line Breaks)
       const aboutTitle = document.getElementById('profile-about-title');
       if (aboutTitle) {
         aboutTitle.textContent = profileData.about_title || 'About & Philosophy';
       }
       const aboutText = document.getElementById('profile-about-text');
-      if (aboutText) aboutText.textContent = profileData.about;
+      if (aboutText) {
+        aboutText.textContent = profileData.about || '';
+      }
 
       // 4. Render Categorized Rate Cards (Repeater)
       const ratesContainer = document.getElementById('rate-categories-container');
@@ -626,7 +653,7 @@
       const hwContainer = document.getElementById('hardware-features-container');
 
       if (hwTitle) {
-        hwTitle.textContent = profileData.hardware_title || 'Hardware & Tech Compatibility';
+        hwTitle.textContent = `⚡ ${profileData.hardware_title || 'Hardware & Tech Compatibility'}`;
       }
 
       if (hwCard && hwContainer) {
@@ -656,7 +683,7 @@
         limitsList.innerHTML = profileData.hard_limits.map(l => `<li style="margin-bottom:6px;">${l}</li>`).join('');
       }
 
-      // 8. Render How to Book / Protocol (Dynamic Title)
+      // 9. Render How to Book / Protocol (Dynamic Title)
       const bookingTitleEl = document.getElementById('profile-booking-title');
       if (bookingTitleEl) {
         bookingTitleEl.textContent = profileData.booking_title || 'How to Book';
@@ -671,7 +698,7 @@
         `).join('');
       }
 
-      // 9. Render Reviews (Dynamic Title)
+      // 10. Render Reviews (Dynamic Title)
       const reviewsTitleEl = document.getElementById('profile-reviews-title');
       if (reviewsTitleEl) {
         reviewsTitleEl.textContent = profileData.reviews_title || 'Verified Client Reviews';
@@ -691,7 +718,7 @@
         `).join('');
       }
 
-      // 10. Render Wishlist (Dynamic Title & Conditional)
+      // 11. Render Wishlist (Dynamic Title & Conditional)
       const wishlistTitleEl = document.getElementById('profile-wishlist-title');
       if (wishlistTitleEl) {
         wishlistTitleEl.textContent = profileData.wishlist_title || 'Wishlist & Tributes';
@@ -731,7 +758,7 @@
         }
       }
 
-      // 11. Render Social Links (Dynamic Title & Conditional)
+      // 12. Render Social Links (Dynamic Title & Conditional)
       const socialTitleEl = document.getElementById('profile-social-title');
       if (socialTitleEl) {
         socialTitleEl.textContent = profileData.social_title || 'Socials & Media';
@@ -785,7 +812,7 @@
         }
       }
 
-      // 12. Setup Direct Booking Form & Quick Contact Shortcuts
+      // 13. Setup Direct Booking Form & Quick Contact Shortcuts
       const formEscortName = document.getElementById('form-escort-name');
       const formEscortId = document.getElementById('form-escort-id');
       const formEscortEmail = document.getElementById('form-escort-email');

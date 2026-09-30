@@ -1,4 +1,5 @@
 {
+  "hardware_title": "Hardware & Tech Compatibility",
   "avatar_uuid": "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec",
   "role_type": "sub",
   "wishlist": [
@@ -13,6 +14,7 @@
       "note": "Custom mesh head & hair styles"
     }
   ],
+  "about_title": "About  Alek Zane",
   "social_links": [
     {
       "platform": "Discord",
@@ -74,10 +76,9 @@
     "Brat",
     "BDSM Roleplay"
   ],
-  "hardware_title": "Hardware & Tech Compatibility",
   "hardware_compat": [
     {
-      "name": "Lovense Toy Control",
+      "name": "Lovense Toy Control innit",
       "icon": "🔌",
       "badge_text": "Synced"
     },
