@@ -37,9 +37,11 @@ collections:
       - { label: "Starting Rate", name: "starting_rate", widget: "string", default: "L$1,000 / hr" }
       - { label: "Rating Summary", name: "rating", widget: "string", default: "5.0 ★★★★★ (Verified)", required: false }
       - { label: "Tagline", name: "tagline", widget: "string" }
+      - { label: "About Section Title", name: "about_title", widget: "string", default: "About & Philosophy", required: false }
       - { label: "About Bio", name: "about", widget: "text" }
       - { label: "Location / Suite", name: "location", widget: "string", default: "Control & Chaos VIP Lounge" }
       - { label: "SLurl Landmark Link", name: "slurl", widget: "string", default: "secondlife://Chaos%20Manor/128/142/23" }
+      - { label: "Contact Email (Optional)", name: "contact_email", widget: "string", required: false, hint: "Email address for off-world booking inquiries" }
       
       - label: "Tags"
         name: "tags"
@@ -47,16 +49,23 @@ collections:
         required: false
         field: { label: "Tag", name: "tag", widget: "string" }
 
-      - label: "Hardware Compatibility"
+      - { label: "⚡ Hardware & Features Section Title", name: "hardware_title", widget: "string", default: "Hardware & Tech Compatibility", required: false }
+      - label: "⚡ Hardware & Tech Compatibility (Repeater)"
         name: "hardware_compat"
-        widget: "object"
+        widget: "list"
+        required: false
+        hint: "Add hardware, devices, toys, and tech compatibility items"
         fields:
-          - { label: "Vow Collar Certified", name: "vow_collar", widget: "boolean", default: true }
-          - { label: "Lovense Toy Control", name: "lovense", widget: "boolean", default: true }
-          - { label: "RLV Restraints", name: "rlv", widget: "boolean", default: true }
-          - { label: "Experience Enabled", name: "experience", widget: "boolean", default: true }
+          - { label: "Feature / Device Name", name: "name", widget: "string", hint: "e.g. Lovense Toy Control, Firestorm RLV, Vow Collar Certified" }
+          - { label: "Icon Emoji", name: "icon", widget: "string", default: "⚡", hint: "e.g. 🔌, 🔒, ⛓️, ⚡, 🎙️, 👑" }
+          - { label: "Status Badge (Optional)", name: "badge_text", widget: "string", default: "Supported", required: false, hint: "e.g. Certified, Synced, Ready, Active" }
 
-      - label: "Photo Gallery"
+      - label: "📸 Gallery Section Title"
+        name: "gallery_title"
+        widget: "string"
+        default: "Gallery"
+        required: false
+      - label: "📸 Photo Gallery Items"
         name: "gallery"
         widget: "list"
         required: false
@@ -66,12 +75,13 @@ collections:
           - { label: "Image (Upload or Web URL)", name: "image", widget: "image" }
           - { label: "Icon Emoji", name: "icon", widget: "string", default: "👗", required: false }
 
-      - label: "Rate Categories & Services"
+      - label: "💳 Rate Categories & Menus (Repeater)"
         name: "rate_categories"
         widget: "list"
         required: false
+        hint: "Add custom rate sections (e.g. FinDom, Escort, RLV Restraints, Voice Sessions)"
         fields:
-          - { label: "Category Name", name: "category_name", widget: "string" }
+          - { label: "Category Name / Title", name: "category_name", widget: "string", hint: "e.g. 🪙 Financial Domination, 🤵 Luxury Escort" }
           - { label: "Category Description", name: "category_desc", widget: "string", required: false }
           - label: "Services"
             name: "services"
@@ -82,19 +92,44 @@ collections:
               - { label: "Billing Unit", name: "unit", widget: "string", default: "per hour" }
               - { label: "Service Description", name: "desc", widget: "text", required: false }
 
-      - label: "Hard Limits"
+      - label: "📌 Custom Content Blocks (Repeater)"
+        name: "custom_sections"
+        widget: "list"
+        required: false
+        hint: "Add extra custom info cards (e.g. Attire Rules, Schedule, VIP Bundles)"
+        fields:
+          - { label: "Section Title", name: "title", widget: "string" }
+          - { label: "Icon Emoji", name: "icon", widget: "string", default: "📌", required: false }
+          - { label: "Content (Markdown / Text)", name: "content", widget: "markdown" }
+
+      - label: "🚫 Hard Limits Section Title"
+        name: "limits_title"
+        widget: "string"
+        default: "Hard Limits & Boundaries"
+        required: false
+      - label: "🚫 Hard Limits"
         name: "hard_limits"
         widget: "list"
         required: false
         field: { label: "Limit Rule", name: "limit", widget: "string" }
 
-      - label: "Booking Protocol Steps"
+      - label: "📜 How to Book Section Title"
+        name: "booking_title"
+        widget: "string"
+        default: "How to Book"
+        required: false
+      - label: "📜 How to Book Steps"
         name: "booking_protocol"
         widget: "list"
         required: false
         field: { label: "Step", name: "step", widget: "string" }
 
-      - label: "Client Reviews & Testimonials"
+      - label: "⭐ Client Reviews Section Title"
+        name: "reviews_title"
+        widget: "string"
+        default: "Verified Client Reviews"
+        required: false
+      - label: "⭐ Client Reviews & Testimonials"
         name: "reviews"
         widget: "list"
         required: false
@@ -102,6 +137,45 @@ collections:
           - { label: "Client Name", name: "client", widget: "string" }
           - { label: "Stars", name: "stars", widget: "string", default: "★★★★★" }
           - { label: "Testimonial Comment", name: "comment", widget: "text" }
+
+      - label: "🎁 Wishlist Section Title"
+        name: "wishlist_title"
+        widget: "string"
+        default: "Wishlist & Tributes"
+        required: false
+      - label: "🎁 Wishlist & Tributes"
+        name: "wishlist"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Platform / Item Title", name: "title", widget: "string", hint: "e.g. Throne Wishlist, Amazon, SL Marketplace" }
+          - { label: "URL Link", name: "url", widget: "string", hint: "e.g. https://throne.com/username" }
+          - { label: "Note / Description", name: "note", widget: "string", required: false, hint: "e.g. In-world gifts, outfits, furnishings" }
+
+      - label: "🌐 Socials Section Title"
+        name: "social_title"
+        widget: "string"
+        default: "Socials & Media"
+        required: false
+      - label: "🌐 Socials & External Links"
+        name: "social_links"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Platform"
+            name: "platform"
+            widget: "select"
+            options:
+              - "Discord"
+              - "Flickr"
+              - "Twitter / X"
+              - "Instagram"
+              - "TikTok"
+              - "Telegram"
+              - "Website"
+              - "Other"
+          - { label: "Handle / Display Text", name: "handle", widget: "string", hint: "e.g. @alexis_sl or AlexisVane#1234" }
+          - { label: "URL Link", name: "url", widget: "string", required: false, hint: "e.g. https://flickr.com/photos/..." }
 
   # -------------------------------------------------------------
   # 2. Sim Events & Tournaments (Individual Event Cards)
@@ -440,3 +514,4 @@ collections:
           - { label: "Discord Community Link", name: "discord_url", widget: "string", required: false }
           - { label: "Second Life Sim SLurl", name: "sim_slurl", widget: "string", default: "secondlife://Chaos%20Manor/128/128/23" }
           - { label: "Marketplace Store URL", name: "marketplace_url", widget: "string", required: false }
+
