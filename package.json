@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "npx serve .",
+    "cms": "npx decap-server",
     "build": "node build.js"
   },
   "devDependencies": {
     "clean-css": "^5.3.3",
+    "decap-server": "^3.1.2",
     "fs-extra": "^11.2.0",
     "html-minifier-terser": "^7.2.0",
     "terser": "^5.31.0"
