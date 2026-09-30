@@ -105,18 +105,19 @@ collections:
           - { label: "Icon Emoji", name: "icon", widget: "string", default: "👗", required: false }
 
       # =========================================================
-      # 7. Hardware & Tech Compatibility (Right Column - Repeater)
+      # 7. Hardware & Tech Compatibility / Toys (Right Column - Repeater)
       # =========================================================
-      - { label: "⚡ Hardware & Features Section Title", name: "hardware_title", widget: "string", default: "Hardware & Tech Compatibility", required: false }
+      - { label: "⚡ Hardware & Features Section Title", name: "hardware_title", widget: "string", default: "Hardware & Tech Compatibility", required: false, hint: "Custom card title (e.g. My Toys, Hardware & Tech, Interactive Devices)" }
       - label: "⚡ Hardware & Tech Compatibility (Repeater)"
         name: "hardware_compat"
         widget: "list"
         required: false
-        hint: "Add hardware, devices, toys, and tech compatibility items"
+        hint: "Add individual toys, devices, or hardware integrations with descriptions"
         fields:
-          - { label: "Feature / Device Name", name: "name", widget: "string", hint: "e.g. Lovense Toy Control, Firestorm RLV, Vow Collar Certified" }
-          - { label: "Icon Emoji", name: "icon", widget: "string", default: "⚡", hint: "e.g. 🔌, 🔒, ⛓️, ⚡, 🎙️, 👑" }
-          - { label: "Status Badge (Optional)", name: "badge_text", widget: "string", default: "Supported", required: false, hint: "e.g. Certified, Synced, Ready, Active" }
+          - { label: "Device / Toy Name", name: "name", widget: "string", hint: "e.g. Lovense Hush 2, Lovense Gush, Firestorm RLV" }
+          - { label: "Toy Description / Details (Sub-text)", name: "desc", widget: "string", required: false, hint: "e.g. Interactive Bluetooth plug, tip & vibe enabled" }
+          - { label: "Icon Emoji (Optional)", name: "icon", widget: "string", default: "🔌", required: false, hint: "Single emoji (e.g. 🔌, 🔒, ⛓️, ⚡, 🎮, 👑)" }
+          - { label: "Status Badge (Optional)", name: "badge_text", widget: "string", default: "Ready", required: false, hint: "e.g. Synced, Active, Supported, Certified" }
 
       # =========================================================
       # 8. Hard Limits & Boundaries (Right Column)
