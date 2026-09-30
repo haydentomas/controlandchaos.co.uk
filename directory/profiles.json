@@ -212,7 +212,7 @@
     "starting_rate": "L$2,500 / hr"
   },
   {
-    "hardware_title": "Hardware & Tech Compatibility",
+    "hardware_title": "My Toys",
     "avatar_uuid": "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec",
     "role_type": "sub",
     "wishlist": [
@@ -228,29 +228,15 @@
       }
     ],
     "about_title": "About  Alek Zane",
-    "social_links": [
-      {
-        "platform": "Discord",
-        "handle": "alek_zane#0001",
-        "url": "https://discord.gg/"
-      },
-      {
-        "platform": "Flickr",
-        "handle": "flickr.com/photos/alek-zane",
-        "url": "https://flickr.com/"
-      },
-      {
-        "platform": "Twitter / X",
-        "handle": "@AlekZaneSL",
-        "url": "https://x.com/"
-      }
-    ],
+    "social_links": [],
+    "banner_image": "https://www.pixelstalk.net/wp-content/uploads/images4/Cool-Wallpapers-HD.jpg",
     "name": "Alek Zane",
     "hard_limits": [
       "No non-consensual limits, zero OOC disrespect, strict safety words."
     ],
     "about": "Looking for an engaging, responsive submissive who actually knows how to keep things interesting? I offer dedicated, high-energy submission services exclusively to female dominants. Expect a discreet, attentive companion with an authentic British voice, a bubbly spark, and just enough playful brat in me to keep your sessions dynamic, fun, and completely engaging.\n\nI run high-quality male and female mesh avatars to cater directly to your specific tastes, visual aesthetics, or scenario needs.",
-    "tagline": "The versatile British sub you’ve been looking for.",
+    "tagline": "The versatile British sub you’ve been looking for. Ready to entertain female Dominants who desire a sharp, bubbly companion with just enough cheeky attitude to keep you on your toes—and complete devotion when put firmly in my place.",
+    "limits_title": "",
     "gallery": [
       {
         "title": "Formal Gala & Black Tie Look",
@@ -281,6 +267,7 @@
     "location": "Control & Chaos",
     "role": "Bratty, Pay to Play Submissive",
     "slurl": "https://maps.secondlife.com/secondlife/Los%20Pengos/85/167/3000",
+    "seo_title": "Title test",
     "tags": [
       "Female Dominance",
       "Lovense Control",
@@ -291,63 +278,130 @@
     ],
     "hardware_compat": [
       {
-        "name": "Lovense Toy Control innit",
-        "icon": "🔌",
-        "badge_text": "Synced"
+        "name": "Gush",
+        "icon": "🌊",
+        "badge_text": "",
+        "desc": "Control my Lovense Gush. Take control"
       },
       {
-        "name": "Firestorm RLV Restraints",
-        "icon": "🔒",
-        "badge_text": "Ready"
+        "icon": "💎",
+        "badge_text": "",
+        "name": "Diamo",
+        "desc": "Hands free discreet, can we worn anywhere."
       },
       {
-        "name": "Second Life Experience",
-        "icon": "⚡",
-        "badge_text": "Enabled"
+        "icon": "🚀",
+        "badge_text": "",
+        "name": "Max 2",
+        "desc": "The ultimate pleasure toy. Add ice for extra fun!"
       }
     ],
-    "reviews": [
-      {
-        "client": "Lady_Vesper Resident",
-        "stars": "★★★★★",
-        "comment": "Alek is consummate perfection. Charming, dangerous, and unforgettable."
-      }
-    ],
+    "seo_image": "/assets/uploads/me.jpg",
+    "seo_description": "Alek Zane description test",
+    "reviews": [],
     "id": "alek-zane",
     "rate_categories": [
       {
-        "category_name": "🪙 Financial Domination & Psychological Draining",
-        "category_desc": "Live wallet cleanouts, task enforcement, and recurring air taxes.",
+        "category_name": "🎮 Toy Control & Surrender",
+        "category_desc": "Live interactive toy access, take control. You know you want to...",
         "services": [
           {
-            "name": "1-on-1 High-Stakes Drain Session",
-            "price": "L$3,500",
-            "unit": "per hour",
-            "desc": "Calculated psychological drain with live tribute milestones and titler badges."
+            "name": "10-Minute Remote Surrender",
+            "price": "L$10,000",
+            "unit": "10 mins",
+            "desc": "Direct Lovense / toy control link with real-time feedback and compliance."
           },
           {
-            "name": "Sim-Wide Public Surrender",
-            "price": "L$10,000+",
-            "unit": "per event",
-            "desc": "Full public tribute broadcast across the entire Control & Chaos region."
+            "name": "20-Minute Deep Control Session",
+            "price": "L$18,000",
+            "unit": "20 mins",
+            "desc": "Extended interactive access capped strictly at 20 minutes for high-intensity play."
           }
         ]
       },
       {
-        "category_name": "🤵 Luxury Escort & Public Companion",
-        "category_desc": "Elite public date accompaniment, high-society galas, and VIP functions.",
+        "category_name": "🤵 Private Companionship",
+        "category_desc": "Dedicated attention, private conversation, and focused one-on-one deference.",
         "services": [
           {
-            "name": "Gala & Formal Date Accompaniment",
-            "price": "L$4,500",
-            "unit": "2 hours",
-            "desc": "Bespoke companion for galas, high-society balls, and private dinners."
+            "name": "Text Attendance (Hourly)",
+            "price": "L$9500",
+            "unit": "1 hour",
+            "desc": "Direct IM attention, attentive conversation, and active kneeling presence."
+          },
+          {
+            "unit": "per hour",
+            "name": "Voice Submission (Hourly)",
+            "price": "L$16,000",
+            "desc": "Live vocal deference, active listening, and instant compliance over voice."
+          },
+          {
+            "unit": "30 mins",
+            "name": "Short-Form Text Check-In",
+            "price": "L$5,000",
+            "desc": "30 minutes of dedicated, prompt IM conversation and attentive focus."
+          },
+          {
+            "unit": "30 mins",
+            "name": "Short-Form Voice Check-In",
+            "price": "L$8,000",
+            "desc": "30 minutes of audible obedience and vocal accompaniment."
+          }
+        ]
+      },
+      {
+        "category_name": "Structured Protocol & BDSM",
+        "category_desc": "Strict obedience, postural maintenance, inspections, and discipline drills.",
+        "services": [
+          {
+            "unit": "per hour",
+            "name": "D/s Immersion & Drill Session",
+            "desc": "60-minute structured protocol session covering posture maintenance, rules, and obedience.",
+            "price": "L$12,000"
+          },
+          {
+            "unit": "per hour",
+            "name": "Vocal Protocol & Inspection",
+            "desc": "Intensive voice-led discipline, audible line-repeating, and protocol drills.",
+            "price": "L$20,000"
+          },
+          {
+            "unit": "per hour",
+            "name": "Subordinate / Cuckold Service",
+            "desc": "Meticulous reverence, cleaning tasks, or deferential third-wheel service for you and a partner.",
+            "price": "L$15,000"
+          }
+        ]
+      },
+      {
+        "category_name": "Ongoing Contracts & Dedication",
+        "category_desc": "Long-term arrangements, weekly companionship blocks, and priority bookings.",
+        "services": [
+          {
+            "unit": "per week",
+            "name": "Dedicated Weekly Companion (Non-Sexual)",
+            "desc": "5 scheduled hours of focused attendance, parcel presence, and personal company.",
+            "price": "L$28,000"
+          },
+          {
+            "unit": "per week",
+            "name": "Full Intimate & Kink Retainer",
+            "desc": "5 scheduled hours across the week of unrestricted protocol, scene work, and dynamic play.",
+            "price": "L$75,000"
+          },
+          {
+            "unit": "per event",
+            "name": "Sim-Wide Devotion & Public Surrender",
+            "desc": "Description: Coordinated public kneeling, titler badge dedication, and profile tribute placement.",
+            "price": "L$7,500+"
           }
         ]
       }
     ],
+    "custom_sections": [],
     "sl_username": "alek.zane",
     "rating": "5.0 ★★★★★ ",
+    "contact_email": "alek.zane@gmail.com",
     "booking_protocol": [
       "1. Send an in-world IM or notecard to alek.zane Resident with your desired package.",
       "2. State your Second Life timezone and preferred venue.",

@@ -92,6 +92,23 @@ async function processDirectory(src, dest) {
 }
 
 async function run() {
+  console.log('🚀 Running static generators (blog posts & escort profiles)...');
+  try {
+    const { buildProfiles } = require('./scripts/build-profiles.js');
+    buildProfiles();
+  } catch (err) {
+    console.warn('[WARN] Profile builder warning:', err.message);
+  }
+
+  try {
+    if (await fs.pathExists(path.join(__dirname, 'scripts/build-posts.js'))) {
+      const { execSync } = require('child_process');
+      execSync('node scripts/build-posts.js', { stdio: 'inherit' });
+    }
+  } catch (err) {
+    console.warn('[WARN] Posts builder warning:', err.message);
+  }
+
   console.log('🚀 Building and minifying Control & Chaos web ecosystem...');
   await fs.remove(DIST_DIR);
   await processDirectory(SRC_DIR, DIST_DIR);
