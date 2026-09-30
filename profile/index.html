@@ -156,6 +156,76 @@
             </div>
           </div>
 
+          <!-- Direct Contact & Booking Inquiry Section (Inside Main Column) -->
+          <div id="booking-inquiry-section" class="card" style="margin-top: 30px; padding: 28px 24px; background: linear-gradient(175deg, #1a1715 0%, #100f0d 100%); border: 1px solid var(--gold-border);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px; margin-bottom:20px;">
+              <div>
+                <span class="section-tag tag-gold" style="margin-bottom:6px;">DIRECT INQUIRY</span>
+                <h2 style="font-family:var(--font-heading); font-size:22px; font-weight:800; color:var(--gold-bright); margin:0;" id="inquiry-header-title">
+                  Request a Session or Booking
+                </h2>
+                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">
+                  Not in Second Life right now? Send your session request directly below.
+                </p>
+              </div>
+              <div id="inquiry-quick-links" style="display:flex; gap:8px; flex-wrap:wrap;">
+                <!-- Direct links injected here -->
+              </div>
+            </div>
+
+            <form name="escort-booking" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" id="booking-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px;">
+              <input type="hidden" name="form-name" value="escort-booking">
+              <p style="display:none;"><label>Don’t fill this out if you're human: <input name="bot-field"></label></p>
+              <input type="hidden" name="escort_name" id="form-escort-name" value="">
+              <input type="hidden" name="escort_id" id="form-escort-id" value="">
+              <input type="hidden" name="escort_email" id="form-escort-email" value="">
+              <input type="hidden" name="quote_total" id="form-quote-total" value="">
+              <input type="hidden" name="selected_services" id="form-selected-services" value="">
+
+              <div>
+                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
+                  Your Name / SL Username *
+                </label>
+                <input type="text" name="client_name" required placeholder="e.g. Master_Orion Resident" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
+              </div>
+
+              <div>
+                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
+                  Your Contact (Discord/Email/SL) *
+                </label>
+                <input type="text" name="client_contact" required placeholder="e.g. username#1234 or email" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
+              </div>
+
+              <div>
+                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
+                  Preferred Date &amp; Time
+                </label>
+                <input type="text" name="preferred_time" placeholder="e.g. Saturday 2:00 PM SLT" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
+              </div>
+
+              <div>
+                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
+                  Service / Package
+                </label>
+                <input type="text" name="requested_service" id="form-service-input" placeholder="e.g. 1-on-1 Session" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
+              </div>
+
+              <div style="grid-column: 1 / -1;">
+                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
+                  Session Notes &amp; Details
+                </label>
+                <textarea name="message" rows="3" placeholder="Describe your scenario, Lovense/RLV preferences, or event..." style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px; resize:vertical;"></textarea>
+              </div>
+
+              <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:4px;">
+                <div id="booking-form-status" style="font-size:13px; color:var(--gold-bright);"></div>
+                <button type="submit" class="btn btn-gold btn-sm" id="booking-submit-btn" style="padding:10px 22px;">
+                  <span>✉️</span> Submit Request
+                </button>
+              </div>
+            </form>
+          </div>
+
         </div>
 
         <!-- Right Column: Gallery, Hardware, Limits, How to Book & Reviews -->
@@ -229,78 +299,6 @@
           </div>
 
         </div>
-
-      </div>
-
-      <!-- Direct Contact & Booking Inquiry Section (Netlify Form & Off-World Direct Contact) -->
-      <div id="booking-inquiry-section" class="card" style="margin-top: 50px; padding: 36px 32px; background: linear-gradient(175deg, #1a1715 0%, #100f0d 100%); border: 1px solid var(--gold-border);">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:20px; margin-bottom:24px;">
-          <div>
-            <span class="section-tag tag-gold" style="margin-bottom:8px;">DIRECT INQUIRY</span>
-            <h2 style="font-family:var(--font-heading); font-size:26px; font-weight:800; color:var(--gold-bright); margin:0;" id="inquiry-header-title">
-              Request a Session or Booking
-            </h2>
-            <p style="font-size:14px; color:var(--text-muted); margin-top:6px; max-width:650px;">
-              Not currently in Second Life? Submit your session request below. You can also reach out directly via In-World IM or Discord.
-            </p>
-          </div>
-          <div id="inquiry-quick-links" style="display:flex; gap:10px; flex-wrap:wrap;">
-            <!-- Direct links injected here -->
-          </div>
-        </div>
-
-        <form name="escort-booking" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" id="booking-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
-          <input type="hidden" name="form-name" value="escort-booking">
-          <p style="display:none;"><label>Don’t fill this out if you're human: <input name="bot-field"></label></p>
-          <input type="hidden" name="escort_name" id="form-escort-name" value="">
-          <input type="hidden" name="escort_id" id="form-escort-id" value="">
-          <input type="hidden" name="escort_email" id="form-escort-email" value="">
-          <input type="hidden" name="quote_total" id="form-quote-total" value="">
-          <input type="hidden" name="selected_services" id="form-selected-services" value="">
-
-          <div>
-            <label style="display:block; font-size:12px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:6px; text-transform:uppercase;">
-              Your Name / SL Username *
-            </label>
-            <input type="text" name="client_name" required placeholder="e.g. Master_Orion Resident or Alexis" style="width:100%; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:14px;">
-          </div>
-
-          <div>
-            <label style="display:block; font-size:12px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:6px; text-transform:uppercase;">
-              Your Contact (Discord, Email, or SL IM) *
-            </label>
-            <input type="text" name="client_contact" required placeholder="e.g. username#1234 or you@domain.com" style="width:100%; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:14px;">
-          </div>
-
-          <div>
-            <label style="display:block; font-size:12px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:6px; text-transform:uppercase;">
-              Preferred Date &amp; Time (SLT / Timezone)
-            </label>
-            <input type="text" name="preferred_time" placeholder="e.g. Saturday 2:00 PM SLT / UK 10pm" style="width:100%; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:14px;">
-          </div>
-
-          <div>
-            <label style="display:block; font-size:12px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:6px; text-transform:uppercase;">
-              Service / Package Requested
-            </label>
-            <input type="text" name="requested_service" id="form-service-input" placeholder="e.g. 1-on-1 Drain Session / Gala Escort" style="width:100%; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:14px;">
-          </div>
-
-          <div style="grid-column: 1 / -1;">
-            <label style="display:block; font-size:12px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:6px; text-transform:uppercase;">
-              Session Notes, Limits &amp; Details
-            </label>
-            <textarea name="message" rows="4" placeholder="Briefly describe your scenario, Lovense/RLV preferences, or event details..." style="width:100%; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:14px; resize:vertical;"></textarea>
-          </div>
-
-          <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-top:8px;">
-            <div id="booking-form-status" style="font-size:13.5px; color:var(--gold-bright);"></div>
-            <button type="submit" class="btn btn-gold" id="booking-submit-btn" style="padding:12px 28px;">
-              <span>✉️</span> Submit Booking Request
-            </button>
-          </div>
-        </form>
-      </div>
 
     </div>
   </main>
