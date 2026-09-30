@@ -1,30 +1,41 @@
 {
-  "id": "alek-zane",
-  "name": "Alek Zane",
-  "sl_username": "alek.zane",
   "avatar_uuid": "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec",
-  "role": "Bratty, Pay to Play Submissive",
   "role_type": "sub",
-  "tagline": "Calculated financial surrender, high-society gala accompaniment, and bespoke companion roleplay.",
-  "about": "A premier luxury companion offering bespoke immersion packages. From high-stakes financial drain sessions to immaculate formal event accompaniment, I provide unmatched sophistication, dark charm, and rigorous boundary respect.",
-  "location": "Chaos Manor Penthouse & VIP Skybox",
-  "slurl": "secondlife://Chaos%20Manor/128/128/23",
-  "rating": "5.0 ★★★★★ (35 Verified Tributes)",
-  "starting_rate": "L$3,000 / hr",
-  "tags": [
-    "FinDom",
-    "VIP Escort",
-    "High Society",
-    "RLV Restraints",
-    "Lovense Control",
-    "Air Tax Protocol"
+  "wishlist": [
+    {
+      "title": "Throne Tribute Wishlist",
+      "url": "https://throne.com/",
+      "note": "Formal menswear, collars, and sim furnishings"
+    },
+    {
+      "title": "Second Life Marketplace Wishlist",
+      "url": "https://marketplace.secondlife.com/",
+      "note": "Custom mesh head & hair styles"
+    }
   ],
-  "hardware_compat": {
-    "vow_collar": true,
-    "lovense": true,
-    "rlv": true,
-    "experience": true
-  },
+  "social_links": [
+    {
+      "platform": "Discord",
+      "handle": "alek_zane#0001",
+      "url": "https://discord.gg/"
+    },
+    {
+      "platform": "Flickr",
+      "handle": "flickr.com/photos/alek-zane",
+      "url": "https://flickr.com/"
+    },
+    {
+      "platform": "Twitter / X",
+      "handle": "@AlekZaneSL",
+      "url": "https://x.com/"
+    }
+  ],
+  "name": "Alek Zane",
+  "hard_limits": [
+    "No non-consensual limits, zero OOC disrespect, strict safety words."
+  ],
+  "about": "A premier luxury companion offering bespoke immersion packages. From high-stakes financial drain sessions to immaculate formal event accompaniment, I provide unmatched sophistication, dark charm, and rigorous boundary respect.",
+  "tagline": "Calculated financial surrender, high-society gala accompaniment, and bespoke companion roleplay.",
   "gallery": [
     {
       "title": "Formal Gala & Black Tie Look",
@@ -51,6 +62,32 @@
       "icon": "👑"
     }
   ],
+  "status": "Available for submission services (UK Time Zone)",
+  "location": "Chaos Manor Penthouse & VIP Skybox",
+  "role": "Bratty, Pay to Play Submissive",
+  "slurl": "secondlife://Chaos%20Manor/128/128/23",
+  "tags": [
+    "FinDom",
+    "VIP Escort",
+    "High Society",
+    "RLV Restraints",
+    "Lovense Control",
+    "Air Tax Protocol"
+  ],
+  "hardware_compat": {
+    "vow_collar": true,
+    "lovense": true,
+    "rlv": true,
+    "experience": true
+  },
+  "reviews": [
+    {
+      "client": "Lady_Vesper Resident",
+      "stars": "★★★★★",
+      "comment": "Alek is consummate perfection. Charming, dangerous, and unforgettable."
+    }
+  ],
+  "id": "alek-zane",
   "rate_categories": [
     {
       "category_name": "🪙 Financial Domination & Psychological Draining",
@@ -83,48 +120,12 @@
       ]
     }
   ],
-  "hard_limits": [
-    "No non-consensual limits, zero OOC disrespect, strict safety words."
-  ],
+  "sl_username": "alek.zane",
+  "rating": "5.0 ★★★★★ ",
   "booking_protocol": [
     "1. Send an in-world IM or notecard to alek.zane Resident with your desired package.",
     "2. State your Second Life timezone and preferred venue.",
     "3. Settle retainer via Tribute Jar at Chaos Manor before session starts."
   ],
-  "reviews": [
-    {
-      "client": "Lady_Vesper Resident",
-      "stars": "★★★★★",
-      "comment": "Alek is consummate perfection. Charming, dangerous, and unforgettable."
-    }
-  ],
-  "wishlist": [
-    {
-      "title": "Throne Tribute Wishlist",
-      "url": "https://throne.com/",
-      "note": "Formal menswear, collars, and sim furnishings"
-    },
-    {
-      "title": "Second Life Marketplace Wishlist",
-      "url": "https://marketplace.secondlife.com/",
-      "note": "Custom mesh head & hair styles"
-    }
-  ],
-  "social_links": [
-    {
-      "platform": "Discord",
-      "handle": "alek_zane#0001",
-      "url": "https://discord.gg/"
-    },
-    {
-      "platform": "Flickr",
-      "handle": "flickr.com/photos/alek-zane",
-      "url": "https://flickr.com/"
-    },
-    {
-      "platform": "Twitter / X",
-      "handle": "@AlekZaneSL",
-      "url": "https://x.com/"
-    }
-  ]
+  "starting_rate": "L$3,000 / hr"
 }
