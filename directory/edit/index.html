@@ -1244,13 +1244,42 @@
       document.getElementById('auth-badge').innerText = '👑 MASTER ADMIN';
 
       try {
-        const res = await fetch(`/directory/profiles.json?v=${Date.now()}`);
+        const res = await fetch(`/directory/profiles.json?v=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           allDirectoryProfiles = await res.json();
         }
       } catch(e) {
         console.warn("Could not load profiles.json", e);
       }
+
+      // Merge dynamic cloud profiles
+      try {
+        const netRes = await fetch(`/.netlify/functions/update-profile?v=${Date.now()}`, { cache: 'no-store' });
+        if (netRes.ok) {
+          const netData = await netRes.json();
+          if (netData.profiles) {
+            const processed = new Set();
+            Object.keys(netData.profiles).forEach(k => {
+              const customP = netData.profiles[k];
+              if (!customP || !customP.id) return;
+              const pKey = String(customP.avatar_uuid || customP.id || customP.sl_username || '').toLowerCase();
+              if (pKey && processed.has(pKey)) return;
+              if (pKey) processed.add(pKey);
+
+              const idx = allDirectoryProfiles.findIndex(p => 
+                (p.id && customP.id && p.id.toLowerCase() === customP.id.toLowerCase()) ||
+                (p.avatar_uuid && customP.avatar_uuid && p.avatar_uuid.toLowerCase() === customP.avatar_uuid.toLowerCase()) ||
+                (p.sl_username && customP.sl_username && p.sl_username.toLowerCase() === customP.sl_username.toLowerCase())
+              );
+              if (idx !== -1) {
+                allDirectoryProfiles[idx] = customP;
+              } else if (customP.name) {
+                allDirectoryProfiles.push(customP);
+              }
+            });
+          }
+        }
+      } catch(e) {}
 
       const select = document.getElementById('admin-profile-select');
       select.innerHTML = '';
@@ -1270,7 +1299,12 @@
 
       let target = allDirectoryProfiles[0];
       if (preferredId) {
-        target = allDirectoryProfiles.find(p => p.id === preferredId || p.avatar_uuid === preferredId || p.sl_username === preferredId) || target;
+        const cleanPref = String(preferredId).toLowerCase().trim();
+        target = allDirectoryProfiles.find(p => 
+          (p.id && p.id.toLowerCase() === cleanPref) || 
+          (p.avatar_uuid && p.avatar_uuid.toLowerCase() === cleanPref) || 
+          (p.sl_username && p.sl_username.toLowerCase() === cleanPref)
+        ) || target;
       }
 
       if (target) {
