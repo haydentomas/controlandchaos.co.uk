@@ -1038,24 +1038,7 @@
           const hasImage = !!g.image;
           const isLocked = g.is_locked || g.vip || g.locked;
 
-          if (hasImage && isLocked) {
-            item.className = 'gallery-thumb-card gallery-locked-card';
-            item.style.position = 'relative';
-            item.style.overflow = 'hidden';
-            item.onclick = (e) => {
-              e.stopPropagation();
-              alert(`🔒 VIP Exclusive Lookbook: "${g.title || 'Private Photoset'}"\n\nPrice to unlock: ${g.unlock_price || 'L$500'}\n\nTo unlock, please send a tribute of ${g.unlock_price || 'L$500'} in-world to ${profileData.name} or message in Second Life.`);
-            };
-            item.innerHTML = `
-              <img src="${g.image}" alt="${g.title || 'VIP Photo'}" class="gallery-thumb-img" style="filter: blur(12px) brightness(0.45); transform: scale(1.08);" loading="lazy">
-              <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; text-align:center; background:rgba(14, 12, 10, 0.45); backdrop-filter:blur(4px);">
-                <div style="width:34px; height:34px; border-radius:50%; background:rgba(30,26,22,0.92); border:1px solid var(--gold-border); display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:0 0 14px rgba(212,175,55,0.4); margin-bottom:6px;">🔒</div>
-                <div style="font-family:var(--font-heading); font-size:12px; font-weight:800; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,0.9);">${g.title || 'VIP Exclusive'}</div>
-                <div style="font-size:10.5px; font-family:var(--font-mono); color:var(--gold-bright); margin-top:2px;">${g.unlock_price || 'VIP Only'}</div>
-                <span style="font-size:9.5px; font-family:var(--font-mono); color:#4ade80; background:rgba(34,197,94,0.15); border:1px solid rgba(74,222,128,0.3); border-radius:10px; padding:2px 8px; margin-top:6px; font-weight:700;">🔓 Unlock</span>
-              </div>
-            `;
-          } else if (hasImage) {
+          if (hasImage) {
             item.className = 'gallery-thumb-card';
             item.onclick = () => openLightbox(g.image, g.title, g.category);
             item.innerHTML = `

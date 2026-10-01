@@ -1564,22 +1564,13 @@
               <input type="text" class="form-input font-xs" value="${escapeHtml(item.category || '')}" placeholder="VIP Escort" oninput="galleryItems[${idx}].category = this.value;">
             </div>
             <div>
-              <label class="form-label font-2xs">VIP Locked Status</label>
-              <select class="form-select font-xs" onchange="galleryItems[${idx}].is_locked = (this.value === 'true'); renderGallery();">
-                <option value="false" ${!item.is_locked ? 'selected' : ''}>🔓 Public Photo</option>
-                <option value="true" ${item.is_locked ? 'selected' : ''}>🔒 VIP Locked (Blur)</option>
-              </select>
+              <label class="form-label font-2xs">Emoji / Icon</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(item.icon || '📸')}" placeholder="👗" oninput="galleryItems[${idx}].icon = this.value;">
             </div>
           </div>
-          <div class="form-grid-2">
-            <div>
-              <label class="form-label font-2xs">Image URL (Upload or Web)</label>
-              <input type="text" class="form-input font-xs" value="${escapeHtml(item.image || '')}" placeholder="https://..." oninput="galleryItems[${idx}].image = this.value;">
-            </div>
-            <div>
-              <label class="form-label font-2xs">Unlock Requirement Note</label>
-              <input type="text" class="form-input font-xs" value="${escapeHtml(item.unlock_price || (item.is_locked ? 'L$500 Tribute' : 'Free'))}" placeholder="e.g. L$500 or VIP Only" oninput="galleryItems[${idx}].unlock_price = this.value;">
-            </div>
+          <div>
+            <label class="form-label font-2xs">Image URL (Upload or Web)</label>
+            <input type="text" class="form-input font-xs" value="${escapeHtml(item.image || '')}" placeholder="https://..." oninput="galleryItems[${idx}].image = this.value;">
           </div>
         </div>
       `).join('');
