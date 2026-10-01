@@ -1,6 +1,8 @@
 [
   {
     "avatar_uuid": "e8d64b18-3a9b-4b2e-a5b6-c9a8e7d6f5a1",
+    "sl_username": "alek.zane",
+    "id": "alexis-vane",
     "role_type": "domme",
     "name": "Mistress Alexis Vane",
     "hard_limits": [
@@ -11,6 +13,44 @@
     ],
     "about": "Welcome to my official rate card. I am Mistress Alexis, an established Second Life Dominant and luxury companion based out of Control & Chaos. I specialize in sophisticated financial domination, interactive Lovense toy control, full RLV restraint training, and high-society public accompaniment for discerning submissives who appreciate high status and uncompromising discipline. I am also check ing to see if this actually updates!",
     "tagline": "Unapologetic luxury, exquisite psychological draining, and high-society accompaniment.",
+    "tribute_goal": {
+      "active": true,
+      "title": "VIP Penthouse Renovation & Designer Corset",
+      "target_amount": 50000,
+      "current_amount": 32500,
+      "currency": "L$",
+      "supporters": [
+        {
+          "name": "Lord_Valerius",
+          "amount": "L$15,000",
+          "badge": "👑 Top Tributor"
+        },
+        {
+          "name": "Devoted_FinSub",
+          "amount": "L$10,000",
+          "badge": "💎 Devoted"
+        },
+        {
+          "name": "Sub_Kiki",
+          "amount": "L$7,500",
+          "badge": "🩷 Loyal Kneeler"
+        }
+      ]
+    },
+    "patrons": [
+      {
+        "name": "Lord Valerius",
+        "tier": "Sovereign Patron",
+        "avatar_sl": "valerius.resident",
+        "badge": "👑 Top Tributor"
+      },
+      {
+        "name": "Submissive Tyler",
+        "tier": "Devoted FinSub",
+        "avatar_sl": "tyler.cross",
+        "badge": "💎 Tier 2 Patron"
+      }
+    ],
     "gallery": [
       {
         "title": "Gala & Formal Event Look",
@@ -25,10 +65,12 @@
         "icon": "⛓️"
       },
       {
-        "title": "Private Penthouse Suite",
-        "category": "Private Sessions",
+        "title": "Private Penthouse VIP Lookbook",
+        "category": "VIP Lookbook",
         "image": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
-        "icon": "🍸"
+        "icon": "🔒",
+        "is_locked": true,
+        "unlock_price": "L$750"
       },
       {
         "title": "Control & Chaos Ballroom",
@@ -114,7 +156,6 @@
         "url": "https://x.com/"
       }
     ],
-    "id": "alexis-vane",
     "rate_categories": [
       {
         "category_name": "🪙 Financial Domination (FinDom)",
@@ -201,7 +242,6 @@
         ]
       }
     ],
-    "sl_username": "alek.zane",
     "rating": "5.0 ★★★★★ (48 Verified Tributes)",
     "booking_protocol": [
       "1. Send an in-world notecard or IM to alexis.vane Resident with your desired package(s) and time availability.",
@@ -214,6 +254,7 @@
   {
     "hardware_title": "My Toys",
     "avatar_uuid": "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec",
+    "sl_username": "alek.zane",
     "role_type": "sub",
     "wishlist": [
       {
@@ -237,6 +278,33 @@
     "about": "Looking for an engaging, responsive submissive who actually knows how to keep things interesting? I offer dedicated, high-energy submission services exclusively to female dominants. Expect a discreet, attentive companion with an authentic British voice, a bubbly spark, and just enough playful brat in me to keep your sessions dynamic, fun, and completely engaging.\n\nI run high-quality male and female mesh avatars to cater directly to your specific tastes, visual aesthetics, or scenario needs.",
     "tagline": "The versatile British sub you’ve been looking for. Ready to entertain female Dominants who desire a sharp, bubbly companion with just enough cheeky attitude to keep you on your toes—and complete devotion when put firmly in my place.",
     "limits_title": "",
+    "tribute_goal": {
+      "active": true,
+      "title": "Formal Gala Menswear & Collar Upgrades",
+      "target_amount": 30000,
+      "current_amount": 18500,
+      "currency": "L$",
+      "supporters": [
+        {
+          "name": "Mistress_Alexis",
+          "amount": "L$10,000",
+          "badge": "👑 Dominant Sponsor"
+        },
+        {
+          "name": "Lady_Seraphina",
+          "amount": "L$8,500",
+          "badge": "💎 Sponsor"
+        }
+      ]
+    },
+    "patrons": [
+      {
+        "name": "Mistress Alexis Vane",
+        "tier": "Lead Domme Sponsor",
+        "avatar_sl": "alexis.vane",
+        "badge": "👑 Sovereign"
+      }
+    ],
     "gallery": [
       {
         "title": "Formal Gala & Black Tie Look",
@@ -251,10 +319,12 @@
         "icon": "🍸"
       },
       {
-        "title": "RLV Chamber Protocol",
-        "category": "Restraints",
+        "title": "RLV Chamber Protocol VIP Lookbook",
+        "category": "VIP Restraints",
         "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
-        "icon": "⛓️"
+        "icon": "🔒",
+        "is_locked": true,
+        "unlock_price": "L$500"
       },
       {
         "title": "Control & Chaos Grand Ballroom",
@@ -399,7 +469,6 @@
       }
     ],
     "custom_sections": [],
-    "sl_username": "alek.zane",
     "rating": "5.0 ★★★★★ ",
     "contact_email": "alek.zane@gmail.com",
     "booking_protocol": [
