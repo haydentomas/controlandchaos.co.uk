@@ -17,7 +17,9 @@ const cleanCss = new CleanCSS({
 const htmlOptions = {
   collapseWhitespace: true,
   removeComments: true,
-  removeRedundantAttributes: true,
+  removeAttributeQuotes: false,
+  keepClosingSlash: true,
+  removeRedundantAttributes: false,
   removeScriptTypeAttributes: true,
   removeStyleLinkTypeAttributes: true,
   useShortDoctype: true,

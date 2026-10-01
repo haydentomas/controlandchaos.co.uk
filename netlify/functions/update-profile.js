@@ -79,6 +79,24 @@ let gTributeGoals = {
 // In-Memory Real-Time Custom Profiles Cache (Updated dynamically via Studio Editor)
 let gCustomProfiles = {};
 
+let getStore;
+try {
+  ({ getStore } = require('@netlify/blobs'));
+} catch (e) {}
+
+function getProfilesStore() {
+  if (getStore) {
+    try {
+      return getStore({ name: 'directory-profiles', consistency: 'strong' });
+    } catch (e) {
+      try {
+        return getStore('directory-profiles');
+      } catch (err) {}
+    }
+  }
+  return null;
+}
+
 function verifyToken(uuid, token, secret) {
   if (secret && (secret === SECRET_KEY || secret === "CC_DIRECTORY_SECRET_2026_GOLD")) {
     return true;
@@ -139,6 +157,8 @@ exports.handler = async (event) => {
     const targetId = (query.id || query.uuid || query.slug || query.username || '').toLowerCase().trim();
     let foundProfile = null;
 
+    const store = getProfilesStore();
+
     if (targetId) {
       if (gCustomProfiles[targetId]) {
         foundProfile = gCustomProfiles[targetId];
@@ -158,6 +178,29 @@ exports.handler = async (event) => {
           }
         }
       }
+
+      // If not in memory, query Netlify Blobs
+      if (!foundProfile && store) {
+        try {
+          foundProfile = await store.get(targetId, { type: 'json' });
+          if (foundProfile) {
+            gCustomProfiles[targetId] = foundProfile;
+          }
+        } catch(e) {}
+      }
+    }
+
+    // Try loading all profiles from Blobs store if memory is empty
+    if (Object.keys(gCustomProfiles).length === 0 && store) {
+      try {
+        const allStored = await store.get('all_profiles', { type: 'json' });
+        if (allStored && typeof allStored === 'object') {
+          gCustomProfiles = { ...allStored };
+          if (targetId && gCustomProfiles[targetId]) {
+            foundProfile = gCustomProfiles[targetId];
+          }
+        }
+      } catch(e) {}
     }
 
     return {
@@ -356,6 +399,19 @@ exports.handler = async (event) => {
 
       if (KNOWN_AVATARS[cleanUuid]) {
         KNOWN_AVATARS[cleanUuid].forEach(alias => { gCustomProfiles[alias.toLowerCase()] = profileData; });
+      }
+
+      // Save to Netlify Blobs for cross-container and cross-restart permanent persistence
+      const store = getProfilesStore();
+      if (store) {
+        try {
+          await store.setJSON(cleanUuid, profileData);
+          await store.setJSON(pId, profileData);
+          if (pUsername) await store.setJSON(pUsername, profileData);
+          await store.setJSON('all_profiles', gCustomProfiles);
+        } catch (blobErr) {
+          console.warn('[BLOBS STORAGE WARNING]', blobErr.message);
+        }
       }
 
       // Update Tribute Goal in-memory cache if provided
