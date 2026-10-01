@@ -705,7 +705,7 @@
       }
 
       // Background live status & subscription sync
-      fetch('/.netlify/functions/update-profile')
+      fetch(`/.netlify/functions/update-profile?v=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.ok ? r.json() : null)
         .then(d => {
           if (d) {

@@ -195,7 +195,10 @@ exports.handler = async (event) => {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   };
 
   if (event.httpMethod === 'OPTIONS') {
@@ -234,9 +237,17 @@ exports.handler = async (event) => {
       if (!foundProfile && store) {
         try {
           foundProfile = await store.get(targetId, { type: 'json' });
+          if (!foundProfile) {
+            const raw = await store.get(targetId);
+            if (raw && typeof raw === 'string') foundProfile = JSON.parse(raw);
+          }
           if (!foundProfile && KNOWN_AVATARS[targetId]) {
             for (const alias of KNOWN_AVATARS[targetId]) {
               foundProfile = await store.get(alias.toLowerCase(), { type: 'json' });
+              if (!foundProfile) {
+                const raw = await store.get(alias.toLowerCase());
+                if (raw && typeof raw === 'string') foundProfile = JSON.parse(raw);
+              }
               if (foundProfile) break;
             }
           }
@@ -250,7 +261,11 @@ exports.handler = async (event) => {
     // Try loading all profiles from Blobs store if memory is empty
     if (Object.keys(gCustomProfiles).length === 0 && store) {
       try {
-        const allStored = await store.get('all_profiles', { type: 'json' });
+        let allStored = await store.get('all_profiles', { type: 'json' });
+        if (!allStored) {
+          const raw = await store.get('all_profiles');
+          if (raw && typeof raw === 'string') allStored = JSON.parse(raw);
+        }
         if (allStored && typeof allStored === 'object') {
           gCustomProfiles = { ...allStored };
           if (targetId && gCustomProfiles[targetId]) {
@@ -464,11 +479,20 @@ exports.handler = async (event) => {
       const store = getProfilesStore();
       if (store) {
         try {
-          await store.setJSON(cleanUuid, profileData);
-          await store.setJSON(pId, profileData);
-          if (pUsername) await store.setJSON(pUsername, profileData);
-          if (profileData.avatar_uuid) await store.setJSON(profileData.avatar_uuid.toLowerCase().trim(), profileData);
-          await store.setJSON('all_profiles', gCustomProfiles);
+          if (store.setJSON) {
+            await store.setJSON(cleanUuid, profileData);
+            await store.setJSON(pId, profileData);
+            if (pUsername) await store.setJSON(pUsername, profileData);
+            if (profileData.avatar_uuid) await store.setJSON(profileData.avatar_uuid.toLowerCase().trim(), profileData);
+            await store.setJSON('all_profiles', gCustomProfiles);
+          } else if (store.set) {
+            const dataStr = JSON.stringify(profileData);
+            await store.set(cleanUuid, dataStr);
+            await store.set(pId, dataStr);
+            if (pUsername) await store.set(pUsername, dataStr);
+            if (profileData.avatar_uuid) await store.set(profileData.avatar_uuid.toLowerCase().trim(), dataStr);
+            await store.set('all_profiles', JSON.stringify(gCustomProfiles));
+          }
         } catch (blobErr) {
           console.warn('[BLOBS STORAGE WARNING]', blobErr.message);
         }
