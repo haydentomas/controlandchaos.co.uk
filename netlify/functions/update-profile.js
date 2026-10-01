@@ -277,6 +277,19 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'GET') {
     const query = event.queryStringParameters || {};
     const targetId = (query.id || query.uuid || query.slug || query.username || '').toLowerCase().trim();
+
+    if (query.action === 'subscription_status') {
+      const authorized = verifyToken(targetId, query.token, '', { uuid: targetId });
+      const subscription = gSubscriptions[targetId] || null;
+      const expiry = subscription && subscription.expires_at ? new Date(subscription.expires_at).getTime() : 0;
+      const active = !!(authorized && subscription && subscription.published !== false && (subscription.is_vip === true || expiry > Date.now()));
+      return {
+        statusCode: authorized ? 200 : 403,
+        headers,
+        body: JSON.stringify({ success: authorized, active })
+      };
+    }
+
     let foundProfile = null;
 
     const store = getProfilesStore(event);
