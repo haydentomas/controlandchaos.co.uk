@@ -435,6 +435,14 @@ exports.handler = async (event) => {
     }
     const requiresAdmin = action === 'admin_grant_time' || action === 'admin_toggle_publish' || action === 'admin_remove_profile';
 
+    if (requiresAdmin && !process.env.ADMIN_EDIT_TOKEN) {
+      return {
+        statusCode: 503,
+        headers,
+        body: JSON.stringify({ error: 'Admin actions are disabled: ADMIN_EDIT_TOKEN is not configured in the Netlify site environment.' })
+      };
+    }
+
     if (requiresAdmin ? !adminAuthorized : action === 'register_paid' ? !validPaymentRegistration : !verifyToken(targetKey, token, '', payload)) {
       return {
         statusCode: 403,
