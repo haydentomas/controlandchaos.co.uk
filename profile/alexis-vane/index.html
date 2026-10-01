@@ -318,11 +318,16 @@
                 <textarea name="message" id="form-message-input" rows="6" placeholder="Describe your scenario, Lovense/RLV preferences, or event..." style="width:100%; min-height:145px; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px; line-height:1.6; resize:vertical; font-family:inherit;"></textarea>
               </div>
 
-              <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:4px;">
+              <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:6px;">
                 <div id="booking-form-status" style="font-size:13px; color:var(--gold-bright);"></div>
-                <button type="submit" class="btn btn-gold btn-sm" id="booking-submit-btn" style="padding:10px 22px;">
-                  <span>✉️</span> Submit Request
-                </button>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                  <button type="submit" class="btn btn-secondary btn-sm" id="booking-submit-btn" style="padding:10px 18px; font-size:12.5px;">
+                    <span>✉️</span> Request More Info / Send Inquiry
+                  </button>
+                  <button type="button" class="btn btn-gold btn-sm" id="booking-pay-now-btn" onclick="openPaymentModalWithQuote()" style="padding:10px 20px; font-size:13px; font-weight:800; box-shadow:0 0 16px rgba(212,175,55,0.35); cursor:pointer;">
+                    <span>💎</span> Pay / Settle Deposit (<span id="pay-now-btn-amount">Quote</span>)
+                  </button>
+                </div>
               </div>
             </form>
           </div>
@@ -853,13 +858,21 @@
           if (quoteTotalInput) quoteTotalInput.value = `L$${total.toLocaleString()}`;
           if (quoteServicesInput) quoteServicesInput.value = selectedItems.map(s => s.name).join(', ');
 
+          const payBtnAmount = document.getElementById('pay-now-btn-amount');
+          if (payBtnAmount) {
+            payBtnAmount.textContent = total > 0 ? `L$${total.toLocaleString()}` : 'Quote';
+          }
+
+          window.currentQuoteTotal = total;
+          window.currentQuoteUSD = Math.round(total / 250);
+
           if (selectedItems.length > 0) {
             if (serviceField) {
               serviceField.value = `${selectedItems.map(s => s.name).join(' + ')} (Total: L$${total.toLocaleString()})`;
             }
             if (messageField) {
               const servicesBreakdown = selectedItems.map(s => `  • ${s.name} (${s.cat ? `${s.cat} — ` : ''}L$${s.price.toLocaleString()})`).join('\n');
-              messageField.value = `Hello ${profileData.name},\n\nI would like to request a booking/session for the following services:\n${servicesBreakdown}\n\nEstimated Total: L$${total.toLocaleString()}\n\nSession Preferences & Notes:\n[Please specify any Lovense/RLV preferences, scenario ideas, or timing details here]`;
+              messageField.value = `Hello ${profileData.name},\n\nI would like to request a booking/session for the following services:\n${servicesBreakdown}\n\nEstimated Total: L$${total.toLocaleString()} (~$${Math.round(total / 250)})\n\nSession Preferences & Notes:\n[Please specify any Lovense/RLV preferences, scenario ideas, or timing details here]`;
             }
           } else {
             if (serviceField) serviceField.value = '';
@@ -868,6 +881,38 @@
             }
           }
         }
+
+        window.openPaymentModalWithQuote = function() {
+          const tributeModal = document.getElementById('tribute-modal');
+          const modalName = document.getElementById('tribute-modal-name');
+          const modalCashappLink = document.getElementById('modal-cashapp-link');
+          const modalPaypalLink = document.getElementById('modal-paypal-link');
+
+          const totalL$ = window.currentQuoteTotal || 0;
+          const totalUSD = window.currentQuoteUSD || (totalL$ > 0 ? Math.round(totalL$ / 250) : 0);
+
+          if (modalName) {
+            modalName.textContent = totalL$ > 0 ? `Settle Deposit (L$${totalL$.toLocaleString()} / ~$${totalUSD})` : `Send Tribute to ${profileData.name}`;
+          }
+
+          // Dynamic pre-filled Cash App amount (cash.app/$tag/amount)
+          if (profileData.cashapp && modalCashappLink) {
+            const cleanTag = profileData.cashapp.startsWith('$') ? profileData.cashapp : `$${profileData.cashapp}`;
+            modalCashappLink.href = totalUSD > 0 ? `https://cash.app/${cleanTag}/${totalUSD}` : `https://cash.app/${cleanTag}`;
+            modalCashappLink.textContent = totalUSD > 0 ? `Pay $${totalUSD} via Cash.app ↗` : 'Pay via Cash.app ↗';
+          }
+
+          // Dynamic pre-filled PayPal.me amount (paypal.me/user/amountUSD)
+          if (profileData.paypal_me && modalPaypalLink) {
+            const cleanPaypal = profileData.paypal_me.replace(/\/+$/, '');
+            modalPaypalLink.href = totalUSD > 0 ? `${cleanPaypal}/${totalUSD}USD` : cleanPaypal;
+            modalPaypalLink.textContent = totalUSD > 0 ? `Send $${totalUSD} via PayPal ↗` : 'Send via PayPal ↗';
+          }
+
+          if (tributeModal) {
+            tributeModal.style.display = 'flex';
+          }
+        };
 
         document.querySelectorAll('.quote-check').forEach(chk => {
           chk.addEventListener('change', updateQuoteAndForm);
