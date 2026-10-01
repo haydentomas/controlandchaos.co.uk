@@ -128,6 +128,70 @@
     </a>
   </div>
 
+  <!-- Interactive Tribute Selection Modal -->
+  <div id="tribute-modal" class="lightbox-overlay" style="display:none; z-index:9999; backdrop-filter:blur(8px); background:rgba(10,8,7,0.85); align-items:center; justify-content:center; position:fixed; inset:0;">
+    <div style="background:linear-gradient(165deg, #1f1a14 0%, #120f0c 100%); border:1px solid var(--gold-border); border-radius:16px; padding:28px 24px; max-width:480px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.9); position:relative;">
+      <button id="tribute-modal-close" style="position:absolute; top:14px; right:16px; background:none; border:none; color:var(--text-muted); font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+      
+      <div style="text-align:center; margin-bottom:20px;">
+        <div style="font-size:34px; margin-bottom:4px;">💎</div>
+        <h3 style="font-family:var(--font-heading); font-size:22px; font-weight:900; color:var(--gold-bright); margin:0;" id="tribute-modal-name">Send Tribute</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Choose your preferred tribute method:</p>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        
+        <!-- 1. Second Life In-World Lindens -->
+        <div style="background:rgba(28,24,20,0.9); border:1px solid var(--gold-border-subtle); border-radius:10px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong style="color:#fff; font-size:14px; display:flex; align-items:center; gap:6px;">🪙 In-World Linden Dollars (L$)</strong>
+            <span class="tag-pill-badge" style="font-size:9.5px; padding:1px 6px;">Zero Fee</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#0e0c0a; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:6px 10px; margin-bottom:10px;">
+            <span style="font-family:var(--font-mono); font-size:12px; color:var(--gold-bright);" id="modal-sl-username">@username</span>
+            <button id="copy-sl-username-btn" style="background:rgba(212,175,55,0.15); border:1px solid var(--gold-border-subtle); color:var(--gold-bright); border-radius:4px; font-size:10.5px; font-family:var(--font-mono); padding:3px 8px; cursor:pointer;">📋 Copy</button>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <a id="modal-teleport-btn" href="#" class="btn btn-secondary btn-sm" style="flex:1; justify-content:center; font-size:11px; padding:6px 10px;">📍 Teleport</a>
+            <a id="modal-im-btn" href="#" class="btn btn-gold btn-sm" style="flex:1; justify-content:center; font-size:11px; padding:6px 10px;">💬 Message in SL</a>
+          </div>
+        </div>
+
+        <!-- 2. Throne Cash Tribute & Wishlist (100% Private) -->
+        <div id="modal-throne-box" style="display:none; background:rgba(28,24,20,0.9); border:1px solid rgba(212,175,55,0.35); border-radius:10px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:var(--gold-bright); font-size:14px; display:flex; align-items:center; gap:6px;">👑 Throne Anonymous Tribute</strong>
+            <span style="font-size:9.5px; color:#4ade80; font-family:var(--font-mono);">100% Private</span>
+          </div>
+          <p style="font-size:11.5px; color:var(--text-muted); margin:0 0 10px 0; line-height:1.4;">Send direct cash tributes or gifts securely without exchanging real names or billing info.</p>
+          <a id="modal-throne-link" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width:100%; justify-content:center; font-size:11.5px; padding:8px 12px;">🎁 Open Throne Page ↗</a>
+        </div>
+
+        <!-- 3. Cash App ($cashtag) -->
+        <div id="modal-cashapp-box" style="display:none; background:rgba(28,24,20,0.9); border:1px solid rgba(34,197,94,0.3); border-radius:10px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong style="color:#4ade80; font-size:14px; display:flex; align-items:center; gap:6px;">💲 Cash App ($cashtag)</strong>
+            <span style="font-size:9.5px; color:#4ade80; font-family:var(--font-mono);">Direct</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#0e0c0a; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:6px 10px; margin-bottom:10px;">
+            <span style="font-family:var(--font-mono); font-size:12.5px; color:#4ade80; font-weight:700;" id="modal-cashapp-tag">$cashtag</span>
+            <button id="copy-cashapp-btn" style="background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:#4ade80; border-radius:4px; font-size:10.5px; font-family:var(--font-mono); padding:3px 8px; cursor:pointer;">📋 Copy</button>
+          </div>
+          <a id="modal-cashapp-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center; font-size:11px; padding:6px 10px; border-color:rgba(34,197,94,0.4); color:#4ade80;">Pay via Cash.app ↗</a>
+        </div>
+
+        <!-- 4. PayPal.me (Optional) -->
+        <div id="modal-paypal-box" style="display:none; background:rgba(28,24,20,0.9); border:1px solid var(--gold-border-subtle); border-radius:10px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#60a5fa; font-size:14px; display:flex; align-items:center; gap:6px;">💳 PayPal.me</strong>
+          </div>
+          <a id="modal-paypal-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center; font-size:11px; padding:6px 10px;">Send via PayPal ↗</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- Profile Hero & Cover Header -->
   <header class="hero" id="profile-hero-header" style="min-height: 55vh; padding: 120px 0 40px; background: linear-gradient(180deg, #1f1519 0%, #12100e 100%); position: relative; background-size: cover; background-position: center;">
     <div id="profile-hero-overlay" style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,12,11,0.7) 0%, rgba(18,16,14,0.85) 60%, rgba(18,16,14,0.98) 100%); pointer-events: none; z-index: 1; display: none;"></div>
@@ -296,14 +360,9 @@
               <div id="tribute-supporters-list" style="display: flex; flex-direction: column; gap: 6px;"></div>
             </div>
 
-            <div style="display: flex; gap: 8px;">
-              <a id="tribute-sl-btn" href="#" class="btn btn-gold btn-sm" style="flex: 1; justify-content: center; font-size: 11.5px; padding: 8px 12px;">
-                <span>💎</span> Send L$ Tribute
-              </a>
-              <a id="tribute-pp-btn" href="/directory/checkout/" class="btn btn-secondary btn-sm" style="font-size: 11.5px; padding: 8px 12px;">
-                <span>💳</span> PayPal
-              </a>
-            </div>
+            <button id="open-tribute-modal-btn" class="btn btn-gold btn-sm" style="width:100%; justify-content:center; font-size:13px; font-weight:800; padding:10px 16px; box-shadow:0 0 15px rgba(212,175,55,0.3); cursor:pointer;">
+              <span>💎</span> Send Tribute
+            </button>
           </div>
           
           <!-- Visual Lookbook / Photo Gallery -->
@@ -581,6 +640,26 @@
                 }
               }
             }
+            if (d.tributeGoals) {
+              const liveGoal = (profileData.avatar_uuid && d.tributeGoals[profileData.avatar_uuid.toLowerCase()]) ||
+                               (profileData.id && d.tributeGoals[profileData.id.toLowerCase()]) ||
+                               (profileData.sl_username && d.tributeGoals[profileData.sl_username.toLowerCase()]);
+              if (liveGoal) {
+                const cur = liveGoal.current_amount || 0;
+                const tar = liveGoal.target_amount || (profileData.tribute_goal && profileData.tribute_goal.target_amount) || 10000;
+                const sym = liveGoal.currency || 'L$';
+                const pct = Math.min(100, Math.round((cur / (tar || 1)) * 100));
+
+                const curTxt = document.getElementById('tribute-current-txt');
+                const tarTxt = document.getElementById('tribute-target-txt');
+                const pctTxt = document.getElementById('tribute-pct-txt');
+                const pBar = document.getElementById('tribute-progress-bar');
+                if (curTxt) curTxt.textContent = `${sym}${cur.toLocaleString()}`;
+                if (tarTxt) tarTxt.textContent = `${sym}${tar.toLocaleString()} Goal`;
+                if (pctTxt) pctTxt.textContent = `${pct}% Funded`;
+                if (pBar) pBar.style.width = `${pct}%`;
+              }
+            }
           }
         })
         .catch(() => {});
@@ -854,8 +933,6 @@
         const pBar = document.getElementById('tribute-progress-bar');
         const supContainer = document.getElementById('tribute-supporters-container');
         const supList = document.getElementById('tribute-supporters-list');
-        const slBtn = document.getElementById('tribute-sl-btn');
-        const ppBtn = document.getElementById('tribute-pp-btn');
 
         const cur = tg.current_amount || tg.current || 0;
         const tar = tg.target_amount || tg.target || 10000;
@@ -868,13 +945,6 @@
         if (pctTxt) pctTxt.textContent = `${pct}% Funded`;
         if (pBar) {
           setTimeout(() => { pBar.style.width = `${pct}%`; }, 150);
-        }
-
-        if (slBtn) {
-          slBtn.href = `secondlife:///app/agent/${profileData.avatar_uuid}/im`;
-        }
-        if (ppBtn) {
-          ppBtn.href = `/directory/checkout/?uuid=${profileData.avatar_uuid || profileData.id}&name=${encodeURIComponent(profileData.name)}&tier=tribute`;
         }
 
         const supporters = Array.isArray(tg.supporters) ? tg.supporters : [];
@@ -892,6 +962,83 @@
           supContainer.style.display = 'block';
         }
         tributeCard.style.display = 'block';
+      }
+
+      // Setup Interactive Tribute Modal
+      const tributeModal = document.getElementById('tribute-modal');
+      const openTributeBtn = document.getElementById('open-tribute-modal-btn');
+      const closeTributeBtn = document.getElementById('tribute-modal-close');
+      const modalName = document.getElementById('tribute-modal-name');
+      const modalSlUsername = document.getElementById('modal-sl-username');
+      const copySlBtn = document.getElementById('copy-sl-username-btn');
+      const modalTeleportBtn = document.getElementById('modal-teleport-btn');
+      const modalImBtn = document.getElementById('modal-im-btn');
+
+      const modalThroneBox = document.getElementById('modal-throne-box');
+      const modalThroneLink = document.getElementById('modal-throne-link');
+      const modalCashappBox = document.getElementById('modal-cashapp-box');
+      const modalCashappTag = document.getElementById('modal-cashapp-tag');
+      const copyCashappBtn = document.getElementById('copy-cashapp-btn');
+      const modalCashappLink = document.getElementById('modal-cashapp-link');
+      const modalPaypalBox = document.getElementById('modal-paypal-box');
+      const modalPaypalLink = document.getElementById('modal-paypal-link');
+
+      if (modalName) modalName.textContent = `Send Tribute to ${profileData.name}`;
+      if (modalSlUsername) modalSlUsername.textContent = `@${profileData.sl_username || profileData.id}`;
+      if (modalTeleportBtn) modalTeleportBtn.href = profileData.slurl || 'secondlife://Chaos%20Manor/128/128/23';
+      if (modalImBtn) modalImBtn.href = `secondlife:///app/agent/${profileData.avatar_uuid}/im`;
+
+      if (copySlBtn) {
+        copySlBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(profileData.sl_username || profileData.id);
+          copySlBtn.textContent = '✓ Copied!';
+          setTimeout(() => { copySlBtn.textContent = '📋 Copy'; }, 2000);
+        });
+      }
+
+      // 100% Anonymous Throne Wishlist & Direct Cash Tributes
+      const throneWishlist = Array.isArray(profileData.wishlist) ? profileData.wishlist.find(w => (w.url && w.url.includes('throne.com')) || (typeof w === 'string' && w.includes('throne.com'))) : null;
+      const throneUrl = profileData.throne_url || (throneWishlist ? (typeof throneWishlist === 'object' ? throneWishlist.url : throneWishlist) : null);
+      if (throneUrl && modalThroneBox && modalThroneLink) {
+        modalThroneLink.href = throneUrl;
+        modalThroneBox.style.display = 'block';
+      }
+
+      // Anonymous Cash App ($cashtag)
+      if (profileData.cashapp && modalCashappBox && modalCashappTag && modalCashappLink) {
+        const cleanTag = profileData.cashapp.startsWith('$') ? profileData.cashapp : `$${profileData.cashapp}`;
+        modalCashappTag.textContent = cleanTag;
+        modalCashappLink.href = `https://cash.app/${cleanTag}`;
+        modalCashappBox.style.display = 'block';
+        if (copyCashappBtn) {
+          copyCashappBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(cleanTag);
+            copyCashappBtn.textContent = '✓ Copied!';
+            setTimeout(() => { copyCashappBtn.textContent = '📋 Copy'; }, 2000);
+          });
+        }
+      }
+
+      // Optional PayPal.me
+      if (profileData.paypal_me && modalPaypalBox && modalPaypalLink) {
+        modalPaypalLink.href = profileData.paypal_me;
+        modalPaypalBox.style.display = 'block';
+      }
+
+      if (openTributeBtn && tributeModal) {
+        openTributeBtn.addEventListener('click', () => {
+          tributeModal.style.display = 'flex';
+        });
+      }
+      if (closeTributeBtn && tributeModal) {
+        closeTributeBtn.addEventListener('click', () => {
+          tributeModal.style.display = 'none';
+        });
+      }
+      if (tributeModal) {
+        tributeModal.addEventListener('click', (e) => {
+          if (e.target === tributeModal) tributeModal.style.display = 'none';
+        });
       }
 
       // 6. Render Gallery / Visual Lookbook (Dynamic Title & Locked VIP Support)

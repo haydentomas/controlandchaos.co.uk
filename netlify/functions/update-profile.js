@@ -48,6 +48,50 @@ let gSubscriptions = {
   }
 };
 
+// In-Memory Real-Time Tribute Goal Progress Cache
+let gTributeGoals = {
+  "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec": {
+    title: "Formal Gala Menswear & Collar Upgrades",
+    target_amount: 30000,
+    current_amount: 18500,
+    currency: "L$",
+    supporters: [
+      { name: "Mistress_Alexis", amount: "L$10,000", badge: "👑 Dominant Sponsor" },
+      { name: "Lady_Seraphina", amount: "L$8,500", badge: "💎 Sponsor" }
+    ]
+  },
+  "alek-zane": {
+    title: "Formal Gala Menswear & Collar Upgrades",
+    target_amount: 30000,
+    current_amount: 18500,
+    currency: "L$",
+    supporters: [
+      { name: "Mistress_Alexis", amount: "L$10,000", badge: "👑 Dominant Sponsor" },
+      { name: "Lady_Seraphina", amount: "L$8,500", badge: "💎 Sponsor" }
+    ]
+  },
+  "e8d64b18-3a9b-4b2e-a5b6-c9a8e7d6f5a1": {
+    title: "VIP Penthouse Renovation & Designer Corset",
+    target_amount: 50000,
+    current_amount: 32500,
+    currency: "L$",
+    supporters: [
+      { name: "Lord_Valerius", amount: "L$15,000", badge: "👑 Top Tributor" },
+      { name: "Devoted_FinSub", amount: "L$10,000", badge: "💎 Devoted" }
+    ]
+  },
+  "alexis-vane": {
+    title: "VIP Penthouse Renovation & Designer Corset",
+    target_amount: 50000,
+    current_amount: 32500,
+    currency: "L$",
+    supporters: [
+      { name: "Lord_Valerius", amount: "L$15,000", badge: "👑 Top Tributor" },
+      { name: "Devoted_FinSub", amount: "L$10,000", badge: "💎 Devoted" }
+    ]
+  }
+};
+
 function verifyToken(uuid, token, secret) {
   if (secret && (secret === SECRET_KEY || secret === "CC_DIRECTORY_SECRET_2026_GOLD")) {
     return true;
@@ -102,7 +146,7 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  // Support GET request to retrieve all live in-world statuses and subscription states
+  // Support GET request to retrieve all live in-world statuses, subscriptions, and tribute goals
   if (event.httpMethod === 'GET') {
     return {
       statusCode: 200,
@@ -111,6 +155,7 @@ exports.handler = async (event) => {
         success: true,
         statuses: gLiveStatuses,
         subscriptions: gSubscriptions,
+        tributeGoals: gTributeGoals,
         timestamp: new Date().toISOString()
       })
     };
@@ -216,11 +261,40 @@ exports.handler = async (event) => {
     if (action === 'admin_toggle_publish') {
       const existing = gSubscriptions[cleanUuid] || gSubscriptions[cleanId] || { tier: 'Tier 1 Standard', expires_at: new Date(Date.now() + 30 * 86400000).toISOString() };
       existing.published = (published === true);
-
       gSubscriptions[cleanUuid] = existing;
       if (cleanId) gSubscriptions[cleanId] = existing;
       if (KNOWN_AVATARS[cleanUuid]) {
         KNOWN_AVATARS[cleanUuid].forEach(alias => { gSubscriptions[alias.toLowerCase()] = existing; });
+      }
+    }
+
+    // 5. Add Tribute / Tip Sync (from In-World Tip Jar or Web Tribute)
+    if (action === 'add_tribute') {
+      const amountNum = parseInt(String(payload.amount || '0').replace(/[^0-9]/g, '')) || 500;
+      const donor = payload.tributor || payload.donor || payload.username || 'Anonymous Supporter';
+      const badge = payload.badge || '💎 Tributor';
+
+      const existingGoal = gTributeGoals[cleanUuid] || gTributeGoals[cleanId] || {
+        title: 'Tribute Goal',
+        target_amount: 50000,
+        current_amount: 0,
+        currency: 'L$',
+        supporters: []
+      };
+
+      existingGoal.current_amount = (existingGoal.current_amount || 0) + amountNum;
+      if (!Array.isArray(existingGoal.supporters)) existingGoal.supporters = [];
+      existingGoal.supporters.unshift({
+        name: donor,
+        amount: `L$${amountNum.toLocaleString()}`,
+        badge: badge
+      });
+      existingGoal.supporters = existingGoal.supporters.slice(0, 5); // Keep top 5
+
+      gTributeGoals[cleanUuid] = existingGoal;
+      if (cleanId) gTributeGoals[cleanId] = existingGoal;
+      if (KNOWN_AVATARS[cleanUuid]) {
+        KNOWN_AVATARS[cleanUuid].forEach(alias => { gTributeGoals[alias.toLowerCase()] = existingGoal; });
       }
     }
 
@@ -230,12 +304,13 @@ exports.handler = async (event) => {
       headers,
       body: JSON.stringify({
         success: true,
-        message: 'Profile / subscription update received and processed successfully.',
+        message: 'Profile / subscription / tribute update received and processed successfully.',
         timestamp: new Date().toISOString(),
         uuid: uuid,
         status: status || 'updated',
         liveStatuses: gLiveStatuses,
-        subscriptions: gSubscriptions
+        subscriptions: gSubscriptions,
+        tributeGoals: gTributeGoals
       })
     };
   } catch (err) {

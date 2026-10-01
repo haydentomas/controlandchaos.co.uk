@@ -834,10 +834,66 @@
           <!-- ================= TAB 6: WISHLIST, SOCIALS & REVIEWS ================= -->
           <div id="tab-socials" class="tab-content">
             
+            <!-- Active Tribute Goal & Tipping Milestone -->
+            <div class="editor-card" style="border-color: rgba(212,175,55,0.4); background: linear-gradient(180deg, #16131d 0%, #0d0c12 100%);">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">💎</span> Live Tribute Goal &amp; Tipping Milestone</h3>
+                <span class="section-tag tag-gold font-2xs m-0">LIVE PROGRESS BAR</span>
+              </div>
+              <p class="font-xs text-muted mb-16">
+                Display a crowdfunding/tribute goal bar on your public profile. When subs or clients tip in-world or through your web links, the animated progress bar automatically advances!
+              </p>
+              <div class="form-group">
+                <label class="form-label" for="edit-tribute-goal-title">Tribute Goal Title / Purpose</label>
+                <input type="text" id="edit-tribute-goal-title" class="form-input" placeholder="e.g. VIP Penthouse Renovation &amp; Designer Corset">
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-tribute-goal-target">Target Goal Amount (L$)</label>
+                  <input type="number" id="edit-tribute-goal-target" class="form-input" placeholder="50000" min="0" step="500">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-tribute-goal-current">Current Funded Amount (L$)</label>
+                  <input type="number" id="edit-tribute-goal-current" class="form-input" placeholder="32500" min="0" step="100">
+                  <div class="form-hint">Tip jars in-world can also increment this automatically.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Privacy-Safe Tributes & Payment Options -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🔒</span> Privacy-Safe Payment &amp; Tribute Links</h3>
+                <span class="section-tag tag-emerald font-2xs m-0">100% PSEUDONYMOUS</span>
+              </div>
+              <p class="font-xs text-muted mb-16">
+                Protect your real legal identity. Tributes sent via Throne and Cash App do not reveal your real name or billing address to clients.
+              </p>
+              
+              <div class="form-group">
+                <label class="form-label" for="edit-throne-url">Throne Wishlist &amp; Cash Tribute URL</label>
+                <input type="text" id="edit-throne-url" class="form-input" placeholder="https://throne.com/username">
+                <div class="form-hint">👑 100% private. Allows fans/subs to send cash tributes and items without seeing your legal name.</div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-cashapp">Cash App $cashtag</label>
+                  <input type="text" id="edit-cashapp" class="form-input" placeholder="$YourCashtag">
+                  <div class="form-hint">💲 Instant mobile tribute link.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-paypal-me">PayPal.me URL (Optional)</label>
+                  <input type="text" id="edit-paypal-me" class="form-input" placeholder="https://paypal.me/username">
+                  <div class="form-hint">💳 Note: Personal PayPal may reveal your legal name.</div>
+                </div>
+              </div>
+            </div>
+
             <!-- Wishlist -->
             <div class="editor-card">
               <div class="editor-card-header">
-                <h3 class="editor-card-title"><span class="icon">🎁</span> Wishlist &amp; Tributes</h3>
+                <h3 class="editor-card-title"><span class="icon">🎁</span> Additional Wishlists &amp; Item Links</h3>
                 <button type="button" onclick="addWishlistItem()" class="btn-add-repeater">
                   <span>+</span> Add Wishlist Link
                 </button>
@@ -1355,6 +1411,16 @@
         };
       });
 
+      // Tribute & Privacy Payment Settings
+      const tributeGoal = p.tribute_goal || {};
+      document.getElementById('edit-tribute-goal-title').value = tributeGoal.title || '';
+      document.getElementById('edit-tribute-goal-target').value = tributeGoal.target_amount || '';
+      document.getElementById('edit-tribute-goal-current').value = tributeGoal.current_amount || '';
+
+      document.getElementById('edit-throne-url').value = p.throne_url || '';
+      document.getElementById('edit-cashapp').value = p.cashapp || '';
+      document.getElementById('edit-paypal-me').value = p.paypal_me || '';
+
       // Populate Arrays
       rateCategories = p.rate_categories || [];
       galleryItems = p.gallery || [];
@@ -1489,13 +1555,22 @@
               <input type="text" class="form-input font-xs" value="${escapeHtml(item.category || '')}" placeholder="VIP Escort" oninput="galleryItems[${idx}].category = this.value;">
             </div>
             <div>
-              <label class="form-label font-2xs">Emoji Icon</label>
-              <input type="text" class="form-input font-xs" value="${escapeHtml(item.icon || '📸')}" placeholder="👗" oninput="galleryItems[${idx}].icon = this.value;">
+              <label class="form-label font-2xs">VIP Locked Status</label>
+              <select class="form-select font-xs" onchange="galleryItems[${idx}].is_locked = (this.value === 'true'); renderGallery();">
+                <option value="false" ${!item.is_locked ? 'selected' : ''}>🔓 Public Photo</option>
+                <option value="true" ${item.is_locked ? 'selected' : ''}>🔒 VIP Locked (Blur)</option>
+              </select>
             </div>
           </div>
-          <div>
-            <label class="form-label font-2xs">Image URL (Upload or Web)</label>
-            <input type="text" class="form-input font-xs" value="${escapeHtml(item.image || '')}" placeholder="https://..." oninput="galleryItems[${idx}].image = this.value;">
+          <div class="form-grid-2">
+            <div>
+              <label class="form-label font-2xs">Image URL (Upload or Web)</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(item.image || '')}" placeholder="https://..." oninput="galleryItems[${idx}].image = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">Unlock Requirement Note</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(item.unlock_price || (item.is_locked ? 'L$500 Tribute' : 'Free'))}" placeholder="e.g. L$500 or VIP Only" oninput="galleryItems[${idx}].unlock_price = this.value;">
+            </div>
           </div>
         </div>
       `).join('');
@@ -1920,7 +1995,17 @@
         booking_protocol: bookingStepsList,
         wishlist: wishlistItems,
         social_links: socialLinksList,
-        reviews: reviewsList,
+        // Tribute Goal & Privacy Tributes
+        tribute_goal: {
+          title: document.getElementById('edit-tribute-goal-title')?.value || 'Active Tribute Goal',
+          target_amount: parseInt(document.getElementById('edit-tribute-goal-target')?.value || '30000'),
+          current_amount: parseInt(document.getElementById('edit-tribute-goal-current')?.value || '0'),
+          currency: 'L$',
+          supporters: currentProfile?.tribute_goal?.supporters || []
+        },
+        throne_url: document.getElementById('edit-throne-url')?.value || '',
+        cashapp: document.getElementById('edit-cashapp')?.value || '',
+        paypal_me: document.getElementById('edit-paypal-me')?.value || '',
 
         seo_title: document.getElementById('edit-seo-title').value,
         seo_description: document.getElementById('edit-seo-desc').value,
