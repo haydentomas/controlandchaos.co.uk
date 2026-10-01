@@ -87,6 +87,23 @@
       outline: none !important;
     }
 
+    /* Decap CMS Image Upload / Media Controls Styling */
+    div[class*="FileWidgetButton"],
+    div[class*="ImageWrapper"],
+    div[class*="ControlContainer"],
+    div[class*="WidgetContainer"] {
+      background: #111018 !important;
+      border-color: rgba(212, 175, 55, 0.2) !important;
+      color: #eaeaf0 !important;
+    }
+
+    div[class*="ImageWrapper"] {
+      border: 1px solid rgba(212, 175, 55, 0.25) !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
+      padding: 12px !important;
+    }
+
     /* Luxury Buttons */
     button[class*="StyledButton"],
     button[class*="PublishButton"],
@@ -139,172 +156,298 @@
     // Register Master Stylesheet for live preview rendering
     CMS.registerPreviewStyle('../styles.css');
 
-    // Custom Live Luxury Preview for Service Providers
+    // Custom Live Luxury Showcase Preview for Service Providers & Dominants
     const DirectoryPreview = createClass({
       render: function() {
         const entry = this.props.entry;
+        const id = entry.getIn(['data', 'id']) || 'alek-zane';
         const name = entry.getIn(['data', 'name']) || 'Provider Name';
         const role = entry.getIn(['data', 'role']) || 'Financial Domme & Luxury Companion';
         const roleType = (entry.getIn(['data', 'role_type']) || 'domme').toUpperCase();
-        const startingRate = entry.getIn(['data', 'starting_rate']) || 'L$2,500 / hr';
-        const rating = entry.getIn(['data', 'rating']) || '5.0 ★★★★★';
+        const startingRate = entry.getIn(['data', 'starting_rate']) || 'L$3,000 / hr';
+        const status = entry.getIn(['data', 'status']) || 'Available';
         const tagline = entry.getIn(['data', 'tagline']) || 'Unapologetic luxury, exquisite psychological draining...';
-        const location = entry.getIn(['data', 'location']) || 'Control & Chaos Penthouse & VIP Skybox';
-        const gallery = entry.getIn(['data', 'gallery']);
+        const location = entry.getIn(['data', 'location']) || 'Control & Chaos VIP Lounge';
+        const slUsername = entry.getIn(['data', 'sl_username']) || 'resident.name';
+        const aboutTitle = entry.getIn(['data', 'about_title']) || 'About & Philosophy';
+        const about = entry.getIn(['data', 'about']) || '';
+
+        const rawAvatar = entry.getIn(['data', 'avatar_image']);
+        const avatarImg = rawAvatar ? this.props.getAsset(rawAvatar).toString() : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
+
+        const rawBanner = entry.getIn(['data', 'banner_image']);
+        const bannerImg = rawBanner ? this.props.getAsset(rawBanner).toString() : null;
+
+        const rateCats = entry.getIn(['data', 'rate_categories']);
+        const hardware = entry.getIn(['data', 'hardware_compat']);
+        const limits = entry.getIn(['data', 'hard_limits']);
         const tags = entry.getIn(['data', 'tags']);
-        
-        let heroImg = null;
-        if (gallery && gallery.size > 0) {
-          const first = gallery.get(0);
-          const rawImg = first.get('image');
-          if (rawImg) {
-            heroImg = this.props.getAsset(rawImg).toString();
-          }
-        }
+
+        const roleIcon = roleType === 'DOMME' || roleType === 'DOM' ? '👑' : (roleType === 'SUB' ? '⛓️' : '🎭');
+        const isBusy = status.toLowerCase().includes('busy');
+        const isAppt = status.toLowerCase().includes('appt');
+        const dotColor = isBusy ? '#ef4444' : (isAppt ? '#f59e0b' : '#10b981');
 
         return h('div', {
           style: {
-            padding: '30px 20px',
+            padding: '24px 16px',
             background: '#09090d',
             color: '#eaeaf0',
             minHeight: '100vh',
             fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif"
           }
         }, [
+          // Top Shortcut Bar
           h('div', {
             style: {
-              textAlign: 'center',
-              marginBottom: '20px',
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: '11px',
-              color: '#d4af37',
-              letterSpacing: '2px'
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              maxWidth: '680px',
+              margin: '0 auto 16px',
+              padding: '8px 14px',
+              background: '#14121a',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+              borderRadius: '8px'
             }
-          }, 'LIVE CARD PREVIEW'),
+          }, [
+            h('span', {
+              style: {
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: '11px',
+                color: '#d4af37',
+                letterSpacing: '1px'
+              }
+            }, '✨ LIVE DIRECTORY SHOWCASE'),
+            h('a', {
+              href: `/directory/edit/?uuid=${encodeURIComponent(id)}&token=CC_DIRECTORY_SECRET_2026_GOLD`,
+              target: '_blank',
+              style: {
+                color: '#ffd700',
+                fontSize: '11px',
+                textDecoration: 'none',
+                fontWeight: '700',
+                padding: '4px 10px',
+                background: 'rgba(212,175,55,0.15)',
+                border: '1px solid rgba(212,175,55,0.3)',
+                borderRadius: '6px'
+              }
+            }, '🚀 Open in Standalone Editor ↗')
+          ]),
 
-          // Card Container
+          // Showcase Card Container
           h('div', {
             className: 'card',
             style: {
-              background: 'rgba(18, 18, 24, 0.95)',
+              background: '#110f14',
               border: '1px solid rgba(212, 175, 55, 0.35)',
               borderRadius: '16px',
-              padding: '24px',
-              maxWidth: '380px',
+              overflow: 'hidden',
+              maxWidth: '680px',
               margin: '0 auto',
-              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.7)'
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8)'
             }
           }, [
-            // Photo if present
-            heroImg ? h('img', {
-              src: heroImg,
-              style: {
-                width: '100%',
-                height: '240px',
-                objectFit: 'cover',
-                borderRadius: '12px',
-                marginBottom: '16px',
-                border: '1px solid rgba(212, 175, 55, 0.2)'
-              }
-            }) : null,
-
-            // Header Row (Badge + Stars)
+            // Banner & Avatar
             h('div', {
               style: {
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '10px'
+                height: '180px',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundColor: '#1a171e',
+                backgroundImage: bannerImg ? `url('${bannerImg}')` : 'radial-gradient(ellipse at center, #261f2d 0%, #110e14 100%)',
+                position: 'relative'
               }
             }, [
-              h('span', {
+              h('div', {
                 style: {
-                  background: 'rgba(212, 175, 55, 0.15)',
-                  color: '#ffd700',
-                  border: '1px solid rgba(212, 175, 55, 0.3)',
-                  padding: '3px 10px',
-                  borderRadius: '20px',
-                  fontSize: '10px',
-                  fontWeight: '700',
-                  letterSpacing: '1px'
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(17,15,20,0.92) 100%)'
                 }
-              }, roleType),
-              h('span', {
+              }),
+              h('img', {
+                src: avatarImg,
                 style: {
-                  color: '#ffd700',
-                  fontSize: '11px',
-                  fontFamily: "'JetBrains Mono', monospace"
+                  width: '80px',
+                  height: '80px',
+                  borderRadius: '50%',
+                  border: '3px solid #d4af37',
+                  objectFit: 'cover',
+                  position: 'absolute',
+                  bottom: '-32px',
+                  left: '24px',
+                  boxShadow: '0 6px 18px rgba(0,0,0,0.8), 0 0 15px rgba(212,175,55,0.3)'
                 }
-              }, rating)
+              })
             ]),
 
-            // Name & Role
-            h('h3', {
-              style: {
-                margin: '6px 0 4px',
-                fontSize: '20px',
-                color: '#fff',
-                fontWeight: '700'
-              }
-            }, name),
-            h('div', {
-              style: {
-                color: '#d4af37',
-                fontSize: '13px',
-                marginBottom: '10px',
-                fontWeight: '500'
-              }
-            }, role),
-
-            // Tagline Quote
-            h('p', {
-              style: {
-                color: '#a0a0b5',
-                fontSize: '12.5px',
-                fontStyle: 'italic',
-                lineHeight: '1.5',
-                marginBottom: '14px'
-              }
-            }, `"${tagline}"`),
-
-            // Location
-            h('div', {
-              style: {
-                fontSize: '11px',
-                color: '#707085',
-                marginBottom: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }
-            }, `📍 ${location}`),
-
-            // Footer (Rate + Button)
-            h('div', {
-              style: {
-                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                paddingTop: '14px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }
-            }, [
-              h('div', null, [
-                h('div', { style: { fontSize: '10px', color: '#707085', textTransform: 'uppercase' } }, 'Rates From:'),
-                h('div', { style: { color: '#ffd700', fontSize: '16px', fontWeight: '700' } }, startingRate)
-              ]),
-              h('button', {
+            // Body
+            h('div', { style: { padding: '44px 24px 24px' } }, [
+              // Identity Row
+              h('div', {
                 style: {
-                  background: 'linear-gradient(135deg, #d4af37 0%, #997c22 100%)',
-                  color: '#09090d',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: '8px',
-                  fontWeight: '700',
-                  fontSize: '11px',
-                  cursor: 'pointer'
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: '14px',
+                  flexWrap: 'wrap',
+                  gap: '8px'
                 }
-              }, 'Full Rate Card →')
+              }, [
+                h('div', null, [
+                  h('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' } }, [
+                    h('span', {
+                      style: {
+                        display: 'inline-block',
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        background: dotColor,
+                        boxShadow: `0 0 8px ${dotColor}`
+                      }
+                    }),
+                    h('span', {
+                      style: {
+                        background: 'rgba(212, 175, 55, 0.15)',
+                        color: '#ffd700',
+                        border: '1px solid rgba(212, 175, 55, 0.3)',
+                        padding: '2px 8px',
+                        borderRadius: '12px',
+                        fontSize: '10px',
+                        fontWeight: '700'
+                      }
+                    }, status.toUpperCase()),
+                    h('span', { style: { fontSize: '14px' } }, roleIcon)
+                  ]),
+                  h('h2', {
+                    style: {
+                      margin: '4px 0 2px',
+                      fontSize: '24px',
+                      fontWeight: '800',
+                      color: '#fff'
+                    }
+                  }, name),
+                  h('div', { style: { color: '#d4af37', fontSize: '13px', fontWeight: '600' } }, role)
+                ]),
+                h('div', { style: { textAlign: 'right' } }, [
+                  h('div', { style: { fontSize: '10px', color: '#a09c95', textTransform: 'uppercase', fontFamily: 'monospace' } }, 'Starting Rate'),
+                  h('div', { style: { color: '#ffd700', fontSize: '18px', fontWeight: '800', fontFamily: "'Outfit', sans-serif" } }, startingRate)
+                ])
+              ]),
+
+              // Tagline Quote
+              h('div', {
+                style: {
+                  padding: '10px 14px',
+                  background: 'rgba(212,175,55,0.06)',
+                  borderLeft: '3px solid #d4af37',
+                  borderRadius: '0 6px 6px 0',
+                  marginBottom: '16px'
+                }
+              }, [
+                h('p', { style: { margin: 0, fontSize: '13px', fontStyle: 'italic', color: '#f5edd6' } }, `"${tagline}"`)
+              ]),
+
+              // Quick Stats Grid
+              h('div', {
+                style: {
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr 1fr',
+                  gap: '8px',
+                  padding: '12px',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: '8px',
+                  marginBottom: '18px'
+                }
+              }, [
+                h('div', null, [
+                  h('span', { style: { fontSize: '10px', color: '#888', textTransform: 'uppercase', display: 'block', fontFamily: 'monospace' } }, 'Location'),
+                  h('strong', { style: { fontSize: '12px', color: '#fff' } }, location)
+                ]),
+                h('div', null, [
+                  h('span', { style: { fontSize: '10px', color: '#888', textTransform: 'uppercase', display: 'block', fontFamily: 'monospace' } }, 'SL Username'),
+                  h('strong', { style: { fontSize: '12px', color: '#ffd700', fontFamily: 'monospace' } }, `@${slUsername}`)
+                ]),
+                h('div', null, [
+                  h('span', { style: { fontSize: '10px', color: '#888', textTransform: 'uppercase', display: 'block', fontFamily: 'monospace' } }, 'Tech Sync'),
+                  h('strong', { style: { fontSize: '12px', color: '#10b981' } }, `⚡ ${hardware && hardware.size ? hardware.size : 'Ready'}`)
+                ])
+              ]),
+
+              // About Section
+              about ? h('div', { style: { marginBottom: '18px' } }, [
+                h('span', { style: { fontSize: '11px', color: '#d4af37', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '1px', display: 'block', marginBottom: '6px' } }, aboutTitle),
+                h('p', { style: { fontSize: '13px', color: '#b0b0c5', lineHeight: '1.6', margin: 0, whiteSpace: 'pre-line' } }, about)
+              ]) : null,
+
+              // Rate Categories & Services
+              rateCats && rateCats.size > 0 ? h('div', { style: { marginBottom: '18px' } }, [
+                h('span', { style: { fontSize: '11px', color: '#d4af37', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '1px', display: 'block', marginBottom: '8px' } }, '🪙 Rate Card & Services Menu'),
+                (rateCats.toJS ? rateCats.toJS() : rateCats).map((cat, ci) => h('div', {
+                  key: ci,
+                  style: { marginBottom: '12px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(212,175,55,0.2)' }
+                }, [
+                  h('strong', { style: { color: '#ffd700', fontSize: '13px', display: 'block', marginBottom: '6px' } }, cat.category_name || 'Services'),
+                  (cat.services || []).map((srv, si) => h('div', {
+                    key: si,
+                    style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '12px' }
+                  }, [
+                    h('span', { style: { color: '#fff' } }, srv.name),
+                    h('span', { style: { color: '#ffd700', fontFamily: 'monospace', fontWeight: '700' } }, `${srv.price} ${srv.unit ? `(${srv.unit})` : ''}`)
+                  ]))
+                ]))
+              ]) : null,
+
+              // Hardware Compatibility Badges
+              hardware && hardware.size > 0 ? h('div', { style: { marginBottom: '16px' } }, [
+                h('span', { style: { fontSize: '11px', color: '#d4af37', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '1px', display: 'block', marginBottom: '6px' } }, '⚡ Hardware Compatibility'),
+                h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '6px' } },
+                  (hardware.toJS ? hardware.toJS() : hardware).map((hItem, hi) => h('span', {
+                    key: hi,
+                    style: { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(212,175,55,0.3)', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', color: '#fff' }
+                  }, `${hItem.icon || '⚡'} ${hItem.name} [${hItem.badge_text || 'Ready'}]`))
+                )
+              ]) : null,
+
+              // Hard Limits
+              limits && limits.size > 0 ? h('div', {
+                style: {
+                  marginBottom: '16px',
+                  padding: '12px',
+                  background: 'rgba(139,30,45,0.15)',
+                  border: '1px solid rgba(139,30,45,0.35)',
+                  borderRadius: '8px'
+                }
+              }, [
+                h('span', { style: { fontSize: '11px', color: '#ffb8c2', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '1px', display: 'block', marginBottom: '6px' } }, '🚫 Hard Limits & Boundaries'),
+                h('ul', { style: { paddingLeft: '16px', margin: 0, fontSize: '12px', color: '#ddd', lineHeight: '1.5' } },
+                  (limits.toJS ? limits.toJS() : limits).map((l, li) => h('li', { key: li }, typeof l === 'object' ? l.limit : l))
+                )
+              ]) : null,
+
+              // Tags
+              tags && tags.size > 0 ? h('div', {
+                style: {
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '6px',
+                  borderTop: '1px solid rgba(255,255,255,0.08)',
+                  paddingTop: '14px'
+                }
+              }, (tags.toJS ? tags.toJS() : tags).map((t, ti) => h('span', {
+                key: ti,
+                style: {
+                  background: 'rgba(212,175,55,0.12)',
+                  border: '1px solid rgba(212,175,55,0.3)',
+                  color: '#ffd700',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  fontSize: '10.5px'
+                }
+              }, typeof t === 'object' ? t.tag : t))) : null
+
             ])
           ])
         ]);
