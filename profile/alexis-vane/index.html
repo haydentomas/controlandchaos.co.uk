@@ -145,17 +145,24 @@
         
         <!-- 1. Second Life In-World Lindens -->
         <div style="background:rgba(28,24,20,0.9); border:1px solid var(--gold-border-subtle); border-radius:10px; padding:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <strong style="color:#fff; font-size:14px; display:flex; align-items:center; gap:6px;">🪙 In-World Linden Dollars (L$)</strong>
             <span class="tag-pill-badge" style="font-size:9.5px; padding:1px 6px;">Zero Fee</span>
           </div>
-          <div style="display:flex; align-items:center; justify-content:space-between; background:#0e0c0a; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:6px 10px; margin-bottom:10px;">
-            <span style="font-family:var(--font-mono); font-size:12px; color:var(--gold-bright);" id="modal-sl-username">@username</span>
-            <button id="copy-sl-username-btn" style="background:rgba(212,175,55,0.15); border:1px solid var(--gold-border-subtle); color:var(--gold-bright); border-radius:4px; font-size:10.5px; font-family:var(--font-mono); padding:3px 8px; cursor:pointer;">📋 Copy</button>
+          <p style="font-size:11.5px; color:var(--text-muted); margin:0 0 10px 0; line-height:1.45;">
+            Pay directly in Second Life from anywhere on the grid (no need to be on the same sim). Search the username in your viewer to send L$ or an IM.
+          </p>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#0e0c0a; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:8px 12px; margin-bottom:10px;">
+            <span style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--gold-bright);" id="modal-sl-username">@username</span>
+            <button id="copy-sl-username-btn" style="background:rgba(212,175,55,0.2); border:1px solid var(--gold-border); color:var(--gold-bright); border-radius:4px; font-size:11px; font-family:var(--font-mono); padding:4px 10px; cursor:pointer; font-weight:700;">📋 Copy</button>
           </div>
           <div style="display:flex; gap:8px;">
-            <a id="modal-teleport-btn" href="#" class="btn btn-secondary btn-sm" style="flex:1; justify-content:center; font-size:11px; padding:6px 10px;">📍 Teleport</a>
-            <a id="modal-im-btn" href="#" class="btn btn-gold btn-sm" style="flex:1; justify-content:center; font-size:11px; padding:6px 10px;">💬 Message in SL</a>
+            <a id="modal-sl-profile-btn" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="flex:1; justify-content:center; font-size:11px; padding:7px 10px;">
+              <span>🌐</span> SL Profile ↗
+            </a>
+            <button type="button" id="modal-web-inquiry-btn" class="btn btn-gold btn-sm" style="flex:1; justify-content:center; font-size:11px; padding:7px 10px; cursor:pointer;">
+              <span>✉️</span> Web Inquiry ↓
+            </button>
           </div>
         </div>
 
@@ -1170,8 +1177,8 @@
       const modalName = document.getElementById('tribute-modal-name');
       const modalSlUsername = document.getElementById('modal-sl-username');
       const copySlBtn = document.getElementById('copy-sl-username-btn');
-      const modalTeleportBtn = document.getElementById('modal-teleport-btn');
-      const modalImBtn = document.getElementById('modal-im-btn');
+      const modalSlProfileBtn = document.getElementById('modal-sl-profile-btn');
+      const modalWebInquiryBtn = document.getElementById('modal-web-inquiry-btn');
 
       const modalThroneBox = document.getElementById('modal-throne-box');
       const modalThroneLink = document.getElementById('modal-throne-link');
@@ -1188,8 +1195,25 @@
 
       if (modalName) modalName.textContent = `Send Tribute to ${profileData.name}`;
       if (modalSlUsername) modalSlUsername.textContent = `@${profileData.sl_username || profileData.id}`;
-      if (modalTeleportBtn) modalTeleportBtn.href = profileData.slurl || 'secondlife://Chaos%20Manor/128/128/23';
-      if (modalImBtn) modalImBtn.href = `secondlife:///app/agent/${profileData.avatar_uuid}/im`;
+      
+      const cleanSlUser = (profileData.sl_username || profileData.id || '').replace(/\s+/g, '.').toLowerCase();
+      if (modalSlProfileBtn) {
+        modalSlProfileBtn.href = `https://my.secondlife.com/${cleanSlUser}`;
+      }
+
+      if (modalWebInquiryBtn) {
+        modalWebInquiryBtn.addEventListener('click', () => {
+          if (tributeModal) tributeModal.style.display = 'none';
+          const formSection = document.getElementById('booking-inquiry-section');
+          if (formSection) {
+            formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => {
+              const nameInput = document.querySelector('input[name="client_name"]');
+              if (nameInput) nameInput.focus();
+            }, 400);
+          }
+        });
+      }
 
       if (copySlBtn) {
         copySlBtn.addEventListener('click', () => {
