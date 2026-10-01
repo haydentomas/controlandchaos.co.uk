@@ -1,7 +1,8 @@
 const crypto = require('crypto');
 
 // Shared Secret (Must match SECRET_KEY in CC_Directory_Kiosk.lsl)
-const SECRET_KEY = process.env.DIRECTORY_SECRET_KEY || "CC_DIRECTORY_SECRET_2026_GOLD";
+const KIOSK_DEFAULT_SECRET = "CC_DIRECTORY_SECRET_2026_GOLD";
+const SECRET_KEY = process.env.DIRECTORY_SECRET_KEY || KIOSK_DEFAULT_SECRET;
 
 // Known avatar mappings (UUID <-> Slugs <-> Usernames)
 const KNOWN_AVATARS = {
@@ -137,32 +138,33 @@ function verifyToken(uuid, token, secret, payload) {
   const nowSeconds = Math.floor(Date.now() / 1000);
   const currentDay = Math.floor(nowSeconds / 86400);
 
-  const secretsToCheck = [SECRET_KEY];
+  const secretsToCheck = [...new Set([SECRET_KEY, KIOSK_DEFAULT_SECRET])];
 
   // 4. Check rolling tokens (15-day rolling window: -7 to +7 days)
   for (const candidate of candidateKeys) {
     for (const sec of secretsToCheck) {
-      // Check static hash
-      const staticHash = crypto.createHash('md5').update(`${candidate}:${sec}`).digest('hex').toLowerCase();
-      if (staticHash === cleanToken || staticHash.startsWith(cleanToken) || cleanToken.startsWith(staticHash.substring(0, 12))) {
-        return true;
+      // LSL llMD5String(src, 0) hashes `src:0`; retain the earlier raw form for compatibility.
+      const staticInputs = [`${candidate}:${sec}:0`, `${candidate}:${sec}`];
+      for (const input of staticInputs) {
+        const staticHash = crypto.createHash('md5').update(input).digest('hex').toLowerCase();
+        if (staticHash === cleanToken || staticHash.startsWith(cleanToken) || cleanToken.startsWith(staticHash.substring(0, 12))) {
+          return true;
+        }
       }
 
       // Check daily rolling hashes
       for (let d = currentDay - 7; d <= currentDay + 7; d++) {
-        const fullHash = crypto
-          .createHash('md5')
-          .update(`${candidate}:${d}:${sec}`)
-          .digest('hex')
-          .toLowerCase();
-
-        if (
-          fullHash === cleanToken || 
-          fullHash.startsWith(cleanToken) || 
-          cleanToken.startsWith(fullHash.substring(0, 12)) ||
-          fullHash.substring(0, cleanToken.length) === cleanToken
-        ) {
-          return true;
+        const dailyInputs = [`${candidate}:${d}:${sec}:0`, `${candidate}:${d}:${sec}`];
+        for (const input of dailyInputs) {
+          const fullHash = crypto.createHash('md5').update(input).digest('hex').toLowerCase();
+          if (
+            fullHash === cleanToken ||
+            fullHash.startsWith(cleanToken) ||
+            cleanToken.startsWith(fullHash.substring(0, 12)) ||
+            fullHash.substring(0, cleanToken.length) === cleanToken
+          ) {
+            return true;
+          }
         }
       }
     }
@@ -248,11 +250,13 @@ function verifyKioskPaymentToken(uuid, tier, durationDays, paymentToken) {
   if (!uuid || !paymentToken || !tier || !durationDays) return false;
   const nowSeconds = Math.floor(Date.now() / 1000);
   const currentDay = Math.floor(nowSeconds / 86400);
+  const secretsToCheck = [...new Set([SECRET_KEY, KIOSK_DEFAULT_SECRET])];
   for (let day = currentDay - 7; day <= currentDay + 7; day++) {
-    const expected = crypto.createHash('md5')
-      .update(`${String(uuid).toLowerCase().trim()}:paid:${tier}:${durationDays}:${day}:${SECRET_KEY}`)
-      .digest('hex').substring(0, 16);
-    if (expected === String(paymentToken).toLowerCase().trim()) return true;
+    const expectedTokens = secretsToCheck.flatMap(secret => {
+      const message = `${String(uuid).toLowerCase().trim()}:paid:${tier}:${durationDays}:${day}:${secret}`;
+      return [message + ':0', message].map(input => crypto.createHash('md5').update(input).digest('hex').substring(0, 16));
+    });
+    if (expectedTokens.includes(String(paymentToken).toLowerCase().trim())) return true;
   }
   return false;
 }
