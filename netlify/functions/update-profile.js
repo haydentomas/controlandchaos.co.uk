@@ -204,6 +204,46 @@ async function saveSubscriptions(store) {
   }
 }
 
+async function loadSubscriptionFor(store, uuid) {
+  const key = String(uuid || '').toLowerCase().trim();
+  if (!key) return null;
+  if (gSubscriptions[key]) return gSubscriptions[key];
+  if (!store) return null;
+
+  try {
+    let subscription = await store.get(`subscription_${key}`, { type: 'json' });
+    if (!subscription) {
+      const raw = await store.get(`subscription_${key}`);
+      if (raw && typeof raw === 'string') subscription = JSON.parse(raw);
+    }
+    if (subscription && typeof subscription === 'object') {
+      gSubscriptions[key] = subscription;
+      return subscription;
+    }
+  } catch (e) {
+    lastStoreError = 'Per-avatar subscription load error: ' + e.message;
+  }
+  return null;
+}
+
+async function persistSubscription(store, uuid, subscription) {
+  if (!store) throw new Error('Subscription storage is unavailable.');
+  const key = `subscription_${String(uuid).toLowerCase().trim()}`;
+  if (store.setJSON) {
+    await store.setJSON(key, subscription);
+  } else if (store.set) {
+    await store.set(key, JSON.stringify(subscription));
+  } else {
+    throw new Error('Subscription storage does not support writes.');
+  }
+
+  try {
+    await saveSubscriptions(store);
+  } catch (e) {
+    lastStoreError = 'Subscription index update error: ' + e.message;
+  }
+}
+
 function verifyKioskPaymentToken(uuid, tier, durationDays, paymentToken) {
   if (!uuid || !paymentToken || !tier || !durationDays) return false;
   const nowSeconds = Math.floor(Date.now() / 1000);
@@ -280,7 +320,9 @@ exports.handler = async (event) => {
 
     if (query.action === 'subscription_status') {
       const authorized = verifyToken(targetId, query.token, '', { uuid: targetId });
-      const subscription = gSubscriptions[targetId] || null;
+      const store = getProfilesStore(event);
+      await loadSubscriptions(store);
+      const subscription = await loadSubscriptionFor(store, targetId);
       const expiry = subscription && subscription.expires_at ? new Date(subscription.expires_at).getTime() : 0;
       const active = !!(authorized && subscription && subscription.published !== false && (subscription.is_vip === true || expiry > Date.now()));
       return {
@@ -308,7 +350,7 @@ exports.handler = async (event) => {
 
     if (query.action === 'editor_access') {
       const authorized = verifyToken(targetId, query.token);
-      const subscription = gSubscriptions[targetId];
+      const subscription = await loadSubscriptionFor(store, targetId);
       const isAdmin = !!process.env.ADMIN_EDIT_TOKEN && query.token === process.env.ADMIN_EDIT_TOKEN;
       const allowed = authorized && (isAdmin || isSubscriptionActive(subscription));
       return {
@@ -492,7 +534,7 @@ exports.handler = async (event) => {
       const store = getProfilesStore(event);
       await loadSubscriptions(store);
       const dur = duration_days || (tier && tier.includes('3') ? 3650 : 30);
-      const current = gSubscriptions[cleanUuid];
+      const current = await loadSubscriptionFor(store, cleanUuid);
       const currentExpiry = current && current.expires_at ? new Date(current.expires_at).getTime() : 0;
       const expiryBase = Math.max(Date.now(), Number.isFinite(currentExpiry) ? currentExpiry : 0);
       const expiry = new Date(expiryBase + (dur * 86400000)).toISOString();
@@ -509,7 +551,20 @@ exports.handler = async (event) => {
       if (KNOWN_AVATARS[cleanUuid]) {
         KNOWN_AVATARS[cleanUuid].forEach(alias => { gSubscriptions[alias.toLowerCase()] = subEntry; });
       }
-      await saveSubscriptions(store);
+      await persistSubscription(store, cleanUuid, subEntry);
+      if (cleanId && cleanId !== cleanUuid) {
+        try {
+          if (store.setJSON) await store.setJSON(`subscription_${cleanId}`, subEntry);
+          else if (store.set) await store.set(`subscription_${cleanId}`, JSON.stringify(subEntry));
+        } catch (e) {
+          lastStoreError = 'Subscription alias persistence error: ' + e.message;
+        }
+      }
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ success: true, subscription: subEntry })
+      };
     }
 
     // 3. Admin: Grant Time
