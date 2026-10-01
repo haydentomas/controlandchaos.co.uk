@@ -251,9 +251,14 @@
                 <span style="font-size:12px; color:var(--text-muted); display:block;">Estimated Total:</span>
                 <span id="calc-total-quote" style="font-family:var(--font-heading); font-size:24px; font-weight:900; color:var(--gold-bright);">L$0</span>
               </div>
-              <a href="#booking-inquiry-section" id="calc-book-cta" class="btn btn-gold btn-sm">
-                <span>💬</span> Book with this Quote
-              </a>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                <a href="#booking-inquiry-section" id="calc-book-cta" class="btn btn-secondary btn-sm">
+                  <span>💬</span> Book with this Quote
+                </a>
+                <button type="button" class="btn btn-gold btn-sm" onclick="openPaymentModalWithQuote()" style="font-weight:800; box-shadow:0 0 14px rgba(212,175,55,0.35); cursor:pointer;">
+                  <span>💎</span> Pay / Settle Quote
+                </button>
+              </div>
             </div>
           </div>
 
