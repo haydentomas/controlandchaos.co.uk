@@ -928,25 +928,37 @@
                 <span class="section-tag tag-emerald font-2xs m-0">100% PSEUDONYMOUS</span>
               </div>
               <p class="font-xs text-muted mb-16">
-                Protect your real legal identity. Tributes sent via Throne and Cash App do not reveal your real name or billing address to clients.
+                Protect your real legal identity. Tributes sent via Throne, Ko-fi, and Revolut do not reveal your real name or billing address to clients.
               </p>
               
-              <div class="form-group">
-                <label class="form-label" for="edit-throne-url">Throne Wishlist &amp; Cash Tribute URL</label>
-                <input type="text" id="edit-throne-url" class="form-input" placeholder="https://throne.com/username">
-                <div class="form-hint">👑 100% private. Allows fans/subs to send cash tributes and items without seeing your legal name.</div>
+              <div class="form-grid-2 mb-16">
+                <div class="form-group mb-0">
+                  <label class="form-label" for="edit-throne-url">Throne Wishlist &amp; Cash Tribute URL</label>
+                  <input type="text" id="edit-throne-url" class="form-input" placeholder="https://throne.com/username">
+                  <div class="form-hint">👑 100% private. Cash tributes and gifts (UK £, US $, EU €).</div>
+                </div>
+                <div class="form-group mb-0">
+                  <label class="form-label" for="edit-kofi">Ko-fi URL / Username (UK &amp; Worldwide)</label>
+                  <input type="text" id="edit-kofi" class="form-input" placeholder="https://ko-fi.com/username">
+                  <div class="form-hint">☕ 0% fee tips &amp; tributes. Accepts Card, Apple Pay, PayPal.</div>
+                </div>
               </div>
 
-              <div class="form-grid-2">
+              <div class="form-grid-3">
                 <div class="form-group">
-                  <label class="form-label" for="edit-cashapp">Cash App $cashtag</label>
-                  <input type="text" id="edit-cashapp" class="form-input" placeholder="$YourCashtag">
-                  <div class="form-hint">💲 Instant mobile tribute link.</div>
+                  <label class="form-label" for="edit-revolut-me">Revolut.me Link (UK / EU)</label>
+                  <input type="text" id="edit-revolut-me" class="form-input" placeholder="https://revolut.me/username">
+                  <div class="form-hint">⚡ Instant card / mobile payments.</div>
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="edit-paypal-me">PayPal.me URL (Optional)</label>
+                  <label class="form-label" for="edit-paypal-me">PayPal.me URL</label>
                   <input type="text" id="edit-paypal-me" class="form-input" placeholder="https://paypal.me/username">
-                  <div class="form-hint">💳 Note: Personal PayPal may reveal your legal name.</div>
+                  <div class="form-hint">💳 Universal payment link.</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-cashapp">Cash App $cashtag (US Only)</label>
+                  <input type="text" id="edit-cashapp" class="form-input" placeholder="$YourCashtag">
+                  <div class="form-hint">💲 US mobile instant link.</div>
                 </div>
               </div>
             </div>
@@ -1485,6 +1497,8 @@
       document.getElementById('edit-tribute-goal-current').value = tributeGoal.current_amount || '';
 
       document.getElementById('edit-throne-url').value = p.throne_url || '';
+      document.getElementById('edit-kofi').value = p.kofi || '';
+      document.getElementById('edit-revolut-me').value = p.revolut_me || '';
       document.getElementById('edit-cashapp').value = p.cashapp || '';
       document.getElementById('edit-paypal-me').value = p.paypal_me || '';
 
@@ -2067,6 +2081,8 @@
           supporters: currentProfile?.tribute_goal?.supporters || []
         },
         throne_url: document.getElementById('edit-throne-url')?.value || '',
+        kofi: document.getElementById('edit-kofi')?.value || '',
+        revolut_me: document.getElementById('edit-revolut-me')?.value || '',
         cashapp: document.getElementById('edit-cashapp')?.value || '',
         paypal_me: document.getElementById('edit-paypal-me')?.value || '',
 
