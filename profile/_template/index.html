@@ -188,6 +188,42 @@
           <a id="modal-paypal-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center; font-size:11px; padding:6px 10px;">Send via PayPal ↗</a>
         </div>
 
+        <!-- 5. Record / Confirm Sent Tribute (Self-Report & Goal Bar Sync) -->
+        <div style="margin-top:4px; padding-top:12px; border-top:1px dashed rgba(212,175,55,0.25);">
+          <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:4px 2px;" onclick="toggleRecordTributeForm()">
+            <span style="font-size:12px; font-weight:700; color:var(--gold-bright); display:flex; align-items:center; gap:6px;">
+              ✨ Sent a tribute? Record it here!
+            </span>
+            <span id="record-tribute-toggle-arrow" style="font-size:11px; color:var(--gold-muted); transition:transform 0.2s;">▼</span>
+          </div>
+          <div id="record-tribute-form" style="display:none; margin-top:10px; background:#0c0a08; border:1px solid rgba(212,175,55,0.25); border-radius:8px; padding:12px;">
+            <p style="font-size:11.5px; color:var(--text-muted); margin:0 0 10px 0; line-height:1.4;">Log your tribute to advance the live goal progress bar and appear on recent supporters:</p>
+            <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:8px; margin-bottom:8px;">
+              <div>
+                <label style="font-size:10px; font-family:var(--font-mono); color:var(--gold-muted); display:block; margin-bottom:3px; text-transform:uppercase;">Your SL Name</label>
+                <input type="text" id="record-donor-name" placeholder="e.g. Lord_Kael" style="width:100%; font-size:11.5px; padding:6px 8px; background:#14110e; border:1px solid rgba(255,255,255,0.12); color:#fff; border-radius:4px;">
+              </div>
+              <div>
+                <label style="font-size:10px; font-family:var(--font-mono); color:var(--gold-muted); display:block; margin-bottom:3px; text-transform:uppercase;">Amount Sent</label>
+                <input type="text" id="record-donor-amount" placeholder="e.g. 2500 or $10" style="width:100%; font-size:11.5px; padding:6px 8px; background:#14110e; border:1px solid rgba(255,255,255,0.12); color:#fff; border-radius:4px;">
+              </div>
+            </div>
+            <div style="margin-bottom:10px;">
+              <label style="font-size:10px; font-family:var(--font-mono); color:var(--gold-muted); display:block; margin-bottom:3px; text-transform:uppercase;">Method Used</label>
+              <select id="record-donor-method" style="width:100%; font-size:11.5px; padding:6px 8px; background:#14110e; border:1px solid rgba(255,255,255,0.12); color:#fff; border-radius:4px;">
+                <option value="Throne">👑 Throne Wishlist / Cash</option>
+                <option value="Cash App">💲 Cash App ($cashtag)</option>
+                <option value="In-World L$">🪙 In-World Linden Dollars (L$)</option>
+                <option value="PayPal">💳 PayPal.me</option>
+              </select>
+            </div>
+            <button type="button" id="submit-record-tribute-btn" onclick="submitRecordTribute()" class="btn btn-gold btn-sm" style="width:100%; justify-content:center; font-size:12px; font-weight:700; padding:8px 12px; cursor:pointer;">
+              <span>💖</span> Record &amp; Update Goal Bar
+            </button>
+            <div id="record-tribute-feedback" style="display:none; font-size:11px; margin-top:8px; text-align:center; padding:6px 8px; border-radius:4px;"></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1040,6 +1076,134 @@
           if (e.target === tributeModal) tributeModal.style.display = 'none';
         });
       }
+
+      window.toggleRecordTributeForm = function() {
+        const form = document.getElementById('record-tribute-form');
+        const arrow = document.getElementById('record-tribute-toggle-arrow');
+        if (form) {
+          const isOpen = form.style.display === 'block';
+          form.style.display = isOpen ? 'none' : 'block';
+          if (arrow) arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+      };
+
+      window.submitRecordTribute = async function() {
+        const nameInput = document.getElementById('record-donor-name');
+        const amountInput = document.getElementById('record-donor-amount');
+        const methodSelect = document.getElementById('record-donor-method');
+        const btn = document.getElementById('submit-record-tribute-btn');
+        const feedback = document.getElementById('record-tribute-feedback');
+
+        const donor = (nameInput?.value || '').trim() || 'Anonymous Supporter';
+        const rawAmount = (amountInput?.value || '').trim();
+        const method = methodSelect?.value || 'Tribute';
+
+        if (!rawAmount) {
+          if (feedback) {
+            feedback.style.display = 'block';
+            feedback.style.background = 'rgba(239,68,68,0.15)';
+            feedback.style.border = '1px solid rgba(239,68,68,0.3)';
+            feedback.style.color = '#f87171';
+            feedback.textContent = 'Please enter the amount sent (e.g. 2500 or $10).';
+          }
+          return;
+        }
+
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = '<span>⏳</span> Recording...';
+        }
+
+        try {
+          const res = await fetch('/.netlify/functions/update-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              uuid: profileData.avatar_uuid || profileData.id,
+              id: profileData.id,
+              token: 'CC_DIRECTORY_SECRET_2026_GOLD',
+              action: 'add_tribute',
+              amount: rawAmount,
+              donor: donor,
+              method: method,
+              badge: `💎 ${method}`
+            })
+          });
+
+          const data = await res.json();
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<span>✓</span> Recorded!';
+          }
+
+          if (feedback) {
+            feedback.style.display = 'block';
+            feedback.style.background = 'rgba(34,197,94,0.15)';
+            feedback.style.border = '1px solid rgba(34,197,94,0.3)';
+            feedback.style.color = '#4ade80';
+            feedback.innerHTML = `✅ <strong>Tribute Logged!</strong> Thank you <strong>${donor}</strong>, your tribute of <strong>${rawAmount}</strong> via <strong>${method}</strong> has been added to the goal progress bar.`;
+          }
+
+          // Trigger live bar update on the profile
+          if (data && data.tributeGoals) {
+            const liveGoal = data.tributeGoals[profileData.avatar_uuid?.toLowerCase()] ||
+                             data.tributeGoals[profileData.id?.toLowerCase()] ||
+                             data.tributeGoals[profileData.sl_username?.toLowerCase()];
+            if (liveGoal) {
+              const cur = liveGoal.current_amount || 0;
+              const tar = liveGoal.target_amount || 30000;
+              const sym = liveGoal.currency || 'L$';
+              const pct = Math.min(100, Math.round((cur / (tar || 1)) * 100));
+
+              const curTxt = document.getElementById('tribute-current-txt');
+              const tarTxt = document.getElementById('tribute-target-txt');
+              const pctTxt = document.getElementById('tribute-pct-txt');
+              const pBar = document.getElementById('tribute-progress-bar');
+              if (curTxt) curTxt.textContent = `${sym}${cur.toLocaleString()}`;
+              if (tarTxt) tarTxt.textContent = `${sym}${tar.toLocaleString()} Goal`;
+              if (pctTxt) pctTxt.textContent = `${pct}% Funded`;
+              if (pBar) {
+                pBar.style.width = `${pct}%`;
+                pBar.style.boxShadow = '0 0 25px rgba(255,215,0,0.9)';
+                setTimeout(() => { pBar.style.boxShadow = ''; }, 2000);
+              }
+
+              const supContainer = document.getElementById('tribute-supporters-container');
+              const supList = document.getElementById('tribute-supporters-list');
+              const supporters = Array.isArray(liveGoal.supporters) ? liveGoal.supporters : [];
+              if (supContainer && supList && supporters.length > 0) {
+                supList.innerHTML = supporters.map(s => `
+                  <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:6px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <span style="color:var(--gold-bright);">◆</span>
+                      <strong style="color:var(--text-primary);">${s.name || 'Anonymous Sub'}</strong>
+                      ${s.badge ? `<span class="tag-pill-badge" style="font-size:9px; padding:1px 6px;">${s.badge}</span>` : ''}
+                    </div>
+                    <span style="font-family:var(--font-mono); font-weight:700; color:var(--gold-bright);">${s.amount || ''}</span>
+                  </div>
+                `).join('');
+                supContainer.style.display = 'block';
+              }
+            }
+          }
+
+          setTimeout(() => {
+            if (btn) btn.innerHTML = '<span>💖</span> Record &amp; Update Goal Bar';
+          }, 3500);
+        } catch (e) {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<span>💖</span> Record &amp; Update Goal Bar';
+          }
+          if (feedback) {
+            feedback.style.display = 'block';
+            feedback.style.background = 'rgba(239,68,68,0.15)';
+            feedback.style.border = '1px solid rgba(239,68,68,0.3)';
+            feedback.style.color = '#f87171';
+            feedback.textContent = 'Could not record tribute. Please check your connection.';
+          }
+        }
+      };
 
       // 6. Render Gallery / Visual Lookbook (Dynamic Title & Locked VIP Support)
       const galleryTitleEl = document.getElementById('profile-gallery-title');

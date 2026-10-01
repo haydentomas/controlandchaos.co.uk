@@ -268,25 +268,58 @@ exports.handler = async (event) => {
       }
     }
 
-    // 5. Add Tribute / Tip Sync (from In-World Tip Jar or Web Tribute)
+    // 5. Add Tribute / Tip Sync (from In-World Tip Jar, Throne, Cash App, or Web Confirmation)
     if (action === 'add_tribute') {
-      const amountNum = parseInt(String(payload.amount || '0').replace(/[^0-9]/g, '')) || 500;
+      const rawAmountStr = String(payload.amount || '500').trim();
       const donor = payload.tributor || payload.donor || payload.username || 'Anonymous Supporter';
-      const badge = payload.badge || '💎 Tributor';
+      const method = payload.method || 'Tribute';
+      const badge = payload.badge || (method ? `💎 ${method}` : '💎 Tributor');
 
       const existingGoal = gTributeGoals[cleanUuid] || gTributeGoals[cleanId] || {
         title: 'Tribute Goal',
-        target_amount: 50000,
+        target_amount: 30000,
         current_amount: 0,
         currency: 'L$',
         supporters: []
       };
 
-      existingGoal.current_amount = (existingGoal.current_amount || 0) + amountNum;
+      const goalCurrency = existingGoal.currency || 'L$';
+      let addedToGoal = 0;
+      let displayAmount = '';
+
+      const isDollarInput = rawAmountStr.includes('$') && !rawAmountStr.toLowerCase().includes('l$');
+      const isPoundInput = rawAmountStr.includes('£');
+      const numericVal = parseFloat(rawAmountStr.replace(/[^0-9\.]/g, '')) || 0;
+
+      if (goalCurrency === 'L$') {
+        if (isDollarInput) {
+          addedToGoal = Math.round(numericVal * 250); // ~$1 = L$250
+          displayAmount = `$${numericVal.toFixed(0)} (~L$${addedToGoal.toLocaleString()})`;
+        } else if (isPoundInput) {
+          addedToGoal = Math.round(numericVal * 315); // ~£1 = L$315
+          displayAmount = `£${numericVal.toFixed(0)} (~L$${addedToGoal.toLocaleString()})`;
+        } else {
+          addedToGoal = Math.round(numericVal);
+          displayAmount = `L$${addedToGoal.toLocaleString()}`;
+        }
+      } else if (goalCurrency === '$' || goalCurrency === 'USD') {
+        if (rawAmountStr.toLowerCase().includes('l$')) {
+          addedToGoal = Math.round((numericVal / 250) * 100) / 100;
+          displayAmount = `$${addedToGoal.toFixed(2)}`;
+        } else {
+          addedToGoal = numericVal;
+          displayAmount = `$${numericVal.toFixed(2)}`;
+        }
+      } else {
+        addedToGoal = numericVal;
+        displayAmount = `${goalCurrency}${numericVal.toLocaleString()}`;
+      }
+
+      existingGoal.current_amount = (existingGoal.current_amount || 0) + addedToGoal;
       if (!Array.isArray(existingGoal.supporters)) existingGoal.supporters = [];
       existingGoal.supporters.unshift({
         name: donor,
-        amount: `L$${amountNum.toLocaleString()}`,
+        amount: displayAmount,
         badge: badge
       });
       existingGoal.supporters = existingGoal.supporters.slice(0, 5); // Keep top 5

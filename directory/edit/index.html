@@ -847,15 +847,23 @@
                 <label class="form-label" for="edit-tribute-goal-title">Tribute Goal Title / Purpose</label>
                 <input type="text" id="edit-tribute-goal-title" class="form-input" placeholder="e.g. VIP Penthouse Renovation &amp; Designer Corset">
               </div>
-              <div class="form-grid-2">
+              <div class="form-grid-3">
                 <div class="form-group">
-                  <label class="form-label" for="edit-tribute-goal-target">Target Goal Amount (L$)</label>
-                  <input type="number" id="edit-tribute-goal-target" class="form-input" placeholder="50000" min="0" step="500">
+                  <label class="form-label" for="edit-tribute-goal-currency">Currency</label>
+                  <select id="edit-tribute-goal-currency" class="form-select">
+                    <option value="L$">🪙 L$ (Linden Dollars)</option>
+                    <option value="$">💲 $ (USD)</option>
+                    <option value="£">💷 £ (GBP)</option>
+                    <option value="€">💶 € (EUR)</option>
+                  </select>
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="edit-tribute-goal-current">Current Funded Amount (L$)</label>
-                  <input type="number" id="edit-tribute-goal-current" class="form-input" placeholder="32500" min="0" step="100">
-                  <div class="form-hint">Tip jars in-world can also increment this automatically.</div>
+                  <label class="form-label" for="edit-tribute-goal-target">Target Goal Amount</label>
+                  <input type="number" id="edit-tribute-goal-target" class="form-input" placeholder="50000" min="0" step="10">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-tribute-goal-current">Current Funded Amount</label>
+                  <input type="number" id="edit-tribute-goal-current" class="form-input" placeholder="32500" min="0" step="10">
                 </div>
               </div>
             </div>
@@ -1414,6 +1422,7 @@
       // Tribute & Privacy Payment Settings
       const tributeGoal = p.tribute_goal || {};
       document.getElementById('edit-tribute-goal-title').value = tributeGoal.title || '';
+      document.getElementById('edit-tribute-goal-currency').value = tributeGoal.currency || 'L$';
       document.getElementById('edit-tribute-goal-target').value = tributeGoal.target_amount || '';
       document.getElementById('edit-tribute-goal-current').value = tributeGoal.current_amount || '';
 
@@ -2000,7 +2009,7 @@
           title: document.getElementById('edit-tribute-goal-title')?.value || 'Active Tribute Goal',
           target_amount: parseInt(document.getElementById('edit-tribute-goal-target')?.value || '30000'),
           current_amount: parseInt(document.getElementById('edit-tribute-goal-current')?.value || '0'),
-          currency: 'L$',
+          currency: document.getElementById('edit-tribute-goal-currency')?.value || 'L$',
           supporters: currentProfile?.tribute_goal?.supporters || []
         },
         throne_url: document.getElementById('edit-throne-url')?.value || '',
