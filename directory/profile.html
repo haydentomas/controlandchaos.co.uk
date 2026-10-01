@@ -542,6 +542,10 @@
       if (modal) modal.classList.remove('active');
     }
 
+    function profileSlugFor(profile) {
+      return String(profile.slug || profile.name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeLightbox();
     });
@@ -573,7 +577,7 @@
                             localStorage.getItem('cc_profile_edit_' + profileId.toLowerCase().replace(/[^a-z0-9]/g, '-'));
         if (localCached) {
           const parsed = JSON.parse(localCached);
-          if (parsed && (parsed.id === profileId || parsed.avatar_uuid === profileId || parsed.sl_username === profileId)) {
+          if (parsed && (parsed.id === profileId || parsed.avatar_uuid === profileId || parsed.sl_username === profileId || profileSlugFor(parsed) === profileId)) {
             profileData = parsed;
           }
         }
@@ -594,7 +598,8 @@
           if (res.ok) {
             const data = await res.json();
             if (Array.isArray(data)) {
-              const matched = data.find(p => p.id === profileId || p.avatar_uuid === profileId || p.sl_username === profileId) || data[0];
+              const matched = data.find(p => p.id === profileId || p.avatar_uuid === profileId || p.sl_username === profileId || profileSlugFor(p) === profileId);
+              if (!matched) continue;
               profileData = profileData ? { ...matched, ...profileData } : matched;
             } else {
               profileData = profileData ? { ...data, ...profileData } : data;
@@ -612,7 +617,8 @@
           if (netData.profile) {
             profileData = { ...(profileData || {}), ...netData.profile };
           } else if (netData.profiles) {
-            const pFromMap = netData.profiles[profileId.toLowerCase()] || 
+            const pFromMap = netData.profiles[profileId.toLowerCase()] ||
+              Object.values(netData.profiles).find(p => profileSlugFor(p) === profileId.toLowerCase()) ||
               (profileData && profileData.avatar_uuid && netData.profiles[profileData.avatar_uuid.toLowerCase()]) ||
               (profileData && profileData.sl_username && netData.profiles[profileData.sl_username.toLowerCase()]);
             if (pFromMap) {
@@ -623,6 +629,32 @@
       } catch(e) {}
 
       if (!profileData) return;
+
+      const liveResponse = await fetch(`/.netlify/functions/update-profile?v=${Date.now()}`, { cache: 'no-store' }).catch(() => null);
+      const liveData = liveResponse && liveResponse.ok ? await liveResponse.json().catch(() => null) : null;
+      const entitlement = liveData && liveData.subscriptions && (
+        (profileData.avatar_uuid && liveData.subscriptions[profileData.avatar_uuid.toLowerCase()]) ||
+        (profileData.id && liveData.subscriptions[profileData.id.toLowerCase()]) ||
+        (profileData.sl_username && liveData.subscriptions[profileData.sl_username.toLowerCase()])
+      );
+      const profileExpiry = profileData.expires_at ? new Date(profileData.expires_at).getTime() : 0;
+      const subscriptionExpired = entitlement
+        ? entitlement.published === false || (!entitlement.is_vip && (!entitlement.expires_at || new Date(entitlement.expires_at).getTime() <= Date.now()))
+        : profileData.published === false || (!!profileData.avatar_uuid && !entitlement) || (profileExpiry > 0 && profileExpiry <= Date.now());
+      if (subscriptionExpired) {
+        const banner = document.getElementById('profile-renewal-banner');
+        const link = document.getElementById('profile-renewal-link');
+        const main = document.querySelector('main.section');
+        if (main) main.style.display = 'none';
+        if (banner) banner.style.display = 'block';
+        if (link) link.href = `/directory/checkout/?uuid=${encodeURIComponent(profileData.avatar_uuid || profileData.id)}&name=${encodeURIComponent(profileData.name || '')}`;
+        return;
+      }
+
+      const canonicalSlug = profileSlugFor(profileData) || profileId;
+      if (canonicalSlug !== profileId) {
+        window.history.replaceState(null, '', `/profile/${encodeURIComponent(canonicalSlug)}/`);
+      }
 
       const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
 
@@ -638,7 +670,7 @@
       if (!finalSeoImg) {
         finalSeoImg = 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80';
       }
-      const pageUrl = window.location.href;
+      const pageUrl = `${window.location.origin}/profile/${encodeURIComponent(canonicalSlug)}/`;
 
       document.title = finalSeoTitle;
       const metaDesc = document.getElementById('meta-description');

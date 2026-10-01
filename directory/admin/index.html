@@ -241,7 +241,8 @@
       const statExpired = document.getElementById('stat-expired');
 
       // Initialize Secret Key from localStorage if saved
-      let currentSecret = localStorage.getItem('cc_directory_admin_key') || 'CC_DIRECTORY_SECRET_2026_GOLD';
+      let currentSecret = localStorage.getItem('cc_directory_admin_key') || '';
+      if (currentSecret.toUpperCase() === 'CC_DIRECTORY_SECRET_2026_GOLD') currentSecret = '';
       authInput.value = currentSecret;
 
       authBtn.addEventListener('click', () => {
@@ -413,7 +414,7 @@
                 <button class="action-pill" data-id="${p.id}" data-action="grant-30" title="Add 30 days">+30d</button>
                 <button class="action-pill" data-id="${p.id}" data-action="grant-90" title="Add 90 days">+90d</button>
                 <button class="action-pill" data-id="${p.id}" data-action="grant-vip" title="Set VIP Lifetime">👑 VIP</button>
-                <a href="/directory/edit/?uuid=${p.avatar_uuid || p.id}&token=cc_directory_secret_2026_gold" target="_blank" class="action-pill" style="text-decoration:none;" title="Open editor">✏️ Edit</a>
+                <a href="/directory/edit/?uuid=${p.avatar_uuid || p.id}&admin=true&token=${encodeURIComponent(currentSecret)}" target="_blank" class="action-pill" style="text-decoration:none;" title="Open editor">✏️ Edit</a>
                 <a href="/profile/${p.id}/" target="_blank" class="action-pill" style="text-decoration:none;" title="View public rate card">👁️ View</a>
               </div>
             </td>
@@ -435,7 +436,7 @@
 
             try {
               let payload = {
-                secret: currentSecret,
+                token: currentSecret,
                 uuid: targetProfile.avatar_uuid || targetProfile.id,
                 id: targetProfile.id
               };

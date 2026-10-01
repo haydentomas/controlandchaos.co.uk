@@ -22,6 +22,10 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;');
 }
 
+function slugifyProfileName(name) {
+  return String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
 function buildProfiles() {
   console.log('👑 Generating static profile SEO pages & syncing profiles.json...');
 
@@ -47,12 +51,24 @@ function buildProfiles() {
     }
   }
 
-  // Sync combined directory/profiles.json
+  const usedSlugs = new Set();
+  for (const profile of allProfiles) {
+    const baseSlug = slugifyProfileName(profile.name) || 'profile';
+    let id = baseSlug;
+    let suffix = 2;
+    while (usedSlugs.has(id)) {
+      id = `${baseSlug}-${suffix++}`;
+    }
+    usedSlugs.add(id);
+    profile.slug = id;
+  }
+
+  // Sync combined directory/profiles.json, including generated public slugs.
   fs.writeFileSync(COMBINED_JSON, JSON.stringify(allProfiles, null, 2), 'utf8');
   console.log(`✅ Synced ${allProfiles.length} profiles into directory/profiles.json`);
 
   for (const profile of allProfiles) {
-    const id = profile.id || path.basename(file, '.json');
+    const id = profile.slug;
     const outFolder = path.join(PROFILE_OUT_DIR, id);
     if (!fs.existsSync(outFolder)) {
       fs.mkdirSync(outFolder, { recursive: true });

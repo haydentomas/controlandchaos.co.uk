@@ -532,7 +532,7 @@
         </p>
         <div class="flex-center gap-12 flex-wrap">
           <button onclick="loginAsAdmin()" class="btn btn-gold btn-md">
-            <span>👑</span> Master Admin Login (All Profiles)
+            <span>👑</span> Directory Admin Login
           </button>
           <button onclick="promptManualToken()" class="btn btn-secondary btn-md">
             <span>🔑</span> Enter Avatar Token Manually
@@ -622,12 +622,22 @@
               <div class="form-grid-2">
                 <div class="form-group">
                   <label class="form-label" for="edit-name">Display Name *</label>
-                  <input type="text" id="edit-name" class="form-input" placeholder="Mistress Alexis Vane" required>
+                  <input type="text" id="edit-name" class="form-input" placeholder="Mistress Alexis Vane" required oninput="syncProfileSlug(); updatePreview();">
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="edit-username">Second Life Username *</label>
                   <input type="text" id="edit-username" class="form-input" placeholder="alexis.vane" required>
                 </div>
+              </div>
+
+              <div class="form-group mb-16">
+                <label class="form-label" for="edit-slug">Automatic Public Profile Link</label>
+                <div style="display:flex; align-items:center; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; padding:0 12px;">
+                  <span style="font-family:var(--font-mono); font-size:12px; color:var(--gold-muted); white-space:nowrap;">controlandchaos.co.uk/profile/</span>
+                  <input type="text" id="edit-slug" class="form-input font-xs" style="border:none; padding:10px 4px; font-weight:700; color:var(--gold-bright);" placeholder="haydn-kimono" readonly>
+                  <span style="font-family:var(--font-mono); font-size:12px; color:var(--gold-muted);">/</span>
+                </div>
+                <p class="font-2xs text-muted" style="margin-top:4px;">Generated from your display name and updated automatically.</p>
               </div>
 
               <div class="form-grid-2">
@@ -1197,15 +1207,11 @@
       const params = new URLSearchParams(window.location.search);
       const urlId = params.get('uuid') || params.get('id');
       const urlToken = params.get('token');
-      const isAdminParam = params.get('admin') === 'true' || urlToken === 'CC_DIRECTORY_SECRET_2026_GOLD';
-      const hasStoredAdmin = localStorage.getItem('cc_admin_session') === 'true';
+      const isAdminParam = params.get('admin') === 'true';
 
-      if (isAdminParam || hasStoredAdmin) {
-        // Admin Master Mode
-        isAdminMode = true;
-        authToken = 'CC_DIRECTORY_SECRET_2026_GOLD';
-        localStorage.setItem('cc_admin_session', 'true');
-        await initAdminMode(urlId);
+      if (isAdminParam) {
+        authToken = urlToken || '';
+        await initAdminMode(urlId, authToken);
       } else if (urlId) {
         // Avatar-Specific Mode (from Kiosk)
         authUUID = urlId;
@@ -1215,24 +1221,55 @@
     });
 
     function loginAsAdmin() {
-      const key = prompt("Enter Master Admin Key:", "CC_DIRECTORY_SECRET_2026_GOLD");
+      const key = prompt("Enter the directory admin token configured for this site:");
       if (!key) return;
-      if (key.trim() === "CC_DIRECTORY_SECRET_2026_GOLD") {
-        isAdminMode = true;
-        authToken = "CC_DIRECTORY_SECRET_2026_GOLD";
-        localStorage.setItem('cc_admin_session', 'true');
-        initAdminMode();
-      } else {
-        alert("Invalid Master Admin Key.");
-      }
+      authToken = key.trim();
+      initAdminMode(undefined, authToken);
     }
 
     function logoutAdmin() {
-      localStorage.removeItem('cc_admin_session');
+      authToken = null;
+      isAdminMode = false;
       window.location.href = window.location.pathname;
     }
 
-    async function initAdminMode(preferredId) {
+    function showEditorAccessGate(message, uuid) {
+      const gate = document.getElementById('access-gate');
+      gate.style.display = 'block';
+      document.getElementById('auth-banner').style.display = 'none';
+      document.getElementById('view-mode-bar').style.display = 'none';
+      document.getElementById('editor-container').style.display = 'none';
+      let notice = document.getElementById('editor-access-notice');
+      if (!notice) {
+        notice = document.createElement('p');
+        notice.id = 'editor-access-notice';
+        notice.className = 'card-desc mb-16';
+        gate.insertBefore(notice, gate.querySelector('.flex-center'));
+      }
+      notice.textContent = message;
+      if (uuid) {
+        let checkout = document.getElementById('editor-checkout-link');
+        if (!checkout) {
+          checkout = document.createElement('a');
+          checkout.id = 'editor-checkout-link';
+          checkout.className = 'btn btn-gold btn-md';
+          checkout.textContent = 'Subscribe or Renew';
+          gate.querySelector('.flex-center').prepend(checkout);
+        }
+        checkout.href = `/directory/checkout/?uuid=${encodeURIComponent(uuid)}&token=${encodeURIComponent(authToken || '')}`;
+        checkout.style.display = 'inline-flex';
+      }
+    }
+
+    async function initAdminMode(preferredId, adminToken) {
+      authToken = adminToken || authToken;
+      const check = await fetch(`/.netlify/functions/update-profile?action=editor_access&token=${encodeURIComponent(authToken || '')}&v=${Date.now()}`, { cache: 'no-store' });
+      const access = await check.json().catch(() => ({}));
+      if (!check.ok || !access.allowed || !access.is_admin) {
+        showEditorAccessGate('Admin access is not configured or the supplied admin token is invalid.');
+        return;
+      }
+      isAdminMode = true;
       document.getElementById('access-gate').style.display = 'none';
       document.getElementById('auth-banner').style.display = 'block';
       document.getElementById('view-mode-bar').style.display = 'flex';
@@ -1397,11 +1434,19 @@
     function promptManualToken() {
       const uuid = prompt("Enter your Second Life Avatar UUID or Username:");
       if (!uuid) return;
-      const token = prompt("Enter your Security Access Key (from In-World Kiosk):") || "CC_DIRECTORY_SECRET_2026_GOLD";
+      const token = prompt("Enter the avatar access token from the in-world kiosk:");
+      if (!token) return;
       window.location.search = `?uuid=${encodeURIComponent(uuid.trim())}&token=${encodeURIComponent(token.trim())}`;
     }
 
     async function initEditor(uuid, token) {
+      authToken = token;
+      const accessResponse = await fetch(`/.netlify/functions/update-profile?action=editor_access&id=${encodeURIComponent(uuid)}&token=${encodeURIComponent(token || '')}&v=${Date.now()}`, { cache: 'no-store' });
+      const access = await accessResponse.json().catch(() => ({}));
+      if (!accessResponse.ok || !access.allowed) {
+        showEditorAccessGate(access.error || 'An active directory subscription is required to create or edit a profile.', uuid);
+        return;
+      }
       document.getElementById('access-gate').style.display = 'none';
       document.getElementById('auth-banner').style.display = 'block';
       document.getElementById('view-mode-bar').style.display = 'flex';
@@ -1543,15 +1588,33 @@
       }
     }
 
+    function slugifyProfileName(name) {
+      return String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    function syncProfileSlug() {
+      const slug = slugifyProfileName(document.getElementById('edit-name').value) || 'profile';
+      document.getElementById('edit-slug').value = slug;
+      const liveLink = document.getElementById('view-live-profile-btn');
+      if (liveLink) liveLink.href = `/profile/${slug}/`;
+    }
+
     function populateForm(p) {
       document.getElementById('auth-user-name').innerText = p.name || p.sl_username;
       
       const liveLink = document.getElementById('view-live-profile-btn');
-      if (liveLink) liveLink.href = `/profile/${p.id || authUUID}/`;
+      if (liveLink) liveLink.href = `/profile/${slugifyProfileName(p.name || p.sl_username) || 'profile'}/`;
 
       // Identity Tab
       document.getElementById('edit-name').value = p.name || '';
       document.getElementById('edit-username').value = p.sl_username || '';
+
+      const slugVal = slugifyProfileName(p.name || p.sl_username) || 'profile';
+      const slugInput = document.getElementById('edit-slug');
+      if (slugInput) {
+        slugInput.value = slugVal;
+      }
+
       document.getElementById('edit-role-type').value = p.role_type || 'domme';
       document.getElementById('edit-role').value = p.role || '';
       document.getElementById('edit-rate').value = p.starting_rate || '';
@@ -2175,6 +2238,14 @@
     async function saveProfile() {
       const btn = document.getElementById('save-btn');
       const feedback = document.getElementById('save-feedback');
+      const nameVal = (document.getElementById('edit-name').value || '').trim();
+      if (!nameVal) {
+        feedback.style.display = 'block';
+        feedback.className = 'form-feedback-box';
+        feedback.innerHTML = '<strong>Enter a display name before publishing your profile.</strong>';
+        return;
+      }
+      const finalId = slugifyProfileName(nameVal) || 'profile';
 
       btn.disabled = true;
       btn.innerHTML = '<span>⏳</span> Saving & Publishing Profile...';
@@ -2189,19 +2260,11 @@
       const customStatus = document.getElementById('edit-custom-status')?.value;
       const finalStatus = customStatus || (activeStatusPill ? activeStatusPill.getAttribute('data-status') : 'Available');
 
-      const nameVal = (document.getElementById('edit-name').value || '').trim();
-      const usernameVal = (document.getElementById('edit-username').value || '').trim();
-      
-      let finalId = currentProfile?.id;
-      const isRawUuidOrTemp = !finalId || /^[0-9a-f]{8}-[0-9a-f]{4}/i.test(finalId) || finalId.startsWith('provider-');
-      if (isRawUuidOrTemp) {
-        const sourceForSlug = nameVal || usernameVal || authUUID;
-        finalId = sourceForSlug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      }
-      if (!finalId) finalId = authUUID.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      document.getElementById('edit-slug').value = finalId;
 
       const profilePayload = {
         id: finalId,
+        slug: finalId,
         avatar_uuid: authUUID,
         name: document.getElementById('edit-name').value,
         sl_username: document.getElementById('edit-username').value,
@@ -2267,8 +2330,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             uuid: authUUID,
-            token: authToken || 'CC_DIRECTORY_SECRET_2026_GOLD',
-            secret: 'CC_DIRECTORY_SECRET_2026_GOLD',
+            token: authToken || '',
             action: 'save_profile',
             profileData: profilePayload,
             status: finalStatus
@@ -2280,6 +2342,19 @@
         if (!response.ok || !result.success) {
           throw new Error(result.error || ('Server returned status ' + response.status));
         }
+
+        const savedSlug = (result.profile && result.profile.slug) || finalId;
+        profilePayload.id = savedSlug;
+        profilePayload.slug = savedSlug;
+        currentProfile = profilePayload;
+        document.getElementById('edit-slug').value = savedSlug;
+        const liveLink = document.getElementById('view-live-profile-btn');
+        if (liveLink) liveLink.href = `/profile/${savedSlug}/`;
+        try {
+          localStorage.setItem('cc_profile_edit_' + savedSlug.toLowerCase(), JSON.stringify(profilePayload));
+          if (authUUID) localStorage.setItem('cc_profile_edit_' + authUUID.toLowerCase(), JSON.stringify(profilePayload));
+          if (profilePayload.sl_username) localStorage.setItem('cc_profile_edit_' + profilePayload.sl_username.toLowerCase(), JSON.stringify(profilePayload));
+        } catch(e) {}
 
         const blobStatus = result.profile && result.profile._blob_saved ? '💾 Persisted to cloud storage' : '⚠️ In-memory only (may not persist across restarts)';
         const storeAvail = result.profile && result.profile._store_available ? 'Store: ✓' : 'Store: ✗';

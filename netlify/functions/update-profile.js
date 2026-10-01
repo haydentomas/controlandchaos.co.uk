@@ -20,33 +20,8 @@ let gLiveStatuses = {
   "alexis.vane": { status: "Available / In-World", timestamp: Date.now() }
 };
 
-// In-Memory Subscription & Publishing State Cache
-let gSubscriptions = {
-  "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec": {
-    tier: "Tier 2 VIP",
-    published: true,
-    is_vip: false,
-    expires_at: new Date(Date.now() + 28 * 86400000).toISOString()
-  },
-  "alek-zane": {
-    tier: "Tier 2 VIP",
-    published: true,
-    is_vip: false,
-    expires_at: new Date(Date.now() + 28 * 86400000).toISOString()
-  },
-  "e8d64b18-3a9b-4b2e-a5b6-c9a8e7d6f5a1": {
-    tier: "Tier 3 Royal Lifetime",
-    published: true,
-    is_vip: true,
-    expires_at: "2026-12-31T23:59:59Z"
-  },
-  "alexis-vane": {
-    tier: "Tier 3 Royal Lifetime",
-    published: true,
-    is_vip: true,
-    expires_at: "2026-12-31T23:59:59Z"
-  }
-};
+// Subscription entitlements are loaded from Blobs; process memory is only a cache.
+let gSubscriptions = {};
 
 // In-Memory Real-Time Tribute Goal Progress Cache
 let gTributeGoals = {
@@ -78,6 +53,10 @@ let gTributeGoals = {
 
 // In-Memory Real-Time Custom Profiles Cache (Updated dynamically via Studio Editor)
 let gCustomProfiles = {};
+
+function slugifyProfileName(name) {
+  return String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
 
 let getStore;
 let connectLambda;
@@ -121,30 +100,9 @@ function getProfilesStore(event) {
 }
 
 function verifyToken(uuid, token, secret, payload) {
-  // 1. Direct Web Studio save_profile permission
-  if (payload && payload.action === 'save_profile') {
-    return true;
-  }
-
-  const cleanSecret = secret ? String(secret).trim() : (payload && payload.secret ? String(payload.secret).trim() : '');
   const cleanToken = token ? String(token).trim().toLowerCase() : (payload && payload.token ? String(payload.token).trim().toLowerCase() : '');
-
-  // 2. Direct Master Secret / Admin / Web Studio verification
-  if (
-    cleanSecret === SECRET_KEY || 
-    cleanSecret.toUpperCase() === "CC_DIRECTORY_SECRET_2026_GOLD" ||
-    cleanSecret.toLowerCase() === "cc_directory_secret_2026_gold" ||
-    cleanToken.toUpperCase() === "CC_DIRECTORY_SECRET_2026_GOLD" ||
-    cleanToken.toLowerCase() === "cc_directory_secret_2026_gold" ||
-    cleanToken === 'paypal_verified' ||
-    cleanToken === 'admin' ||
-    (payload && payload.secret && String(payload.secret).toUpperCase() === "CC_DIRECTORY_SECRET_2026_GOLD") ||
-    (payload && payload.token && String(payload.token).toUpperCase() === "CC_DIRECTORY_SECRET_2026_GOLD")
-  ) {
-    return true;
-  }
-
-  if (process.env.ADMIN_EDIT_TOKEN && cleanToken === process.env.ADMIN_EDIT_TOKEN.toLowerCase()) {
+  const adminToken = process.env.ADMIN_EDIT_TOKEN;
+  if (adminToken && cleanToken && cleanToken === adminToken.toLowerCase()) {
     return true;
   }
 
@@ -179,7 +137,7 @@ function verifyToken(uuid, token, secret, payload) {
   const nowSeconds = Math.floor(Date.now() / 1000);
   const currentDay = Math.floor(nowSeconds / 86400);
 
-  const secretsToCheck = [SECRET_KEY, "CC_DIRECTORY_SECRET_2026_GOLD"];
+  const secretsToCheck = [SECRET_KEY];
 
   // 4. Check rolling tokens (15-day rolling window: -7 to +7 days)
   for (const candidate of candidateKeys) {
@@ -213,6 +171,93 @@ function verifyToken(uuid, token, secret, payload) {
   return false;
 }
 
+function isSubscriptionActive(subscription) {
+  if (!subscription || subscription.published === false) return false;
+  if (subscription.is_vip === true) return true;
+  const expiry = subscription.expires_at ? new Date(subscription.expires_at).getTime() : 0;
+  return Number.isFinite(expiry) && expiry > Date.now();
+}
+
+async function loadSubscriptions(store) {
+  if (!store) return gSubscriptions;
+  try {
+    let stored = await store.get('all_subscriptions', { type: 'json' });
+    if (!stored) {
+      const raw = await store.get('all_subscriptions');
+      if (raw && typeof raw === 'string') stored = JSON.parse(raw);
+    }
+    if (stored && typeof stored === 'object') gSubscriptions = { ...gSubscriptions, ...stored };
+  } catch (e) {
+    lastStoreError = 'Subscription load error: ' + e.message;
+  }
+  return gSubscriptions;
+}
+
+async function saveSubscriptions(store) {
+  if (!store) throw new Error('Subscription storage is unavailable.');
+  if (store.setJSON) {
+    await store.setJSON('all_subscriptions', gSubscriptions);
+  } else if (store.set) {
+    await store.set('all_subscriptions', JSON.stringify(gSubscriptions));
+  } else {
+    throw new Error('Subscription storage does not support writes.');
+  }
+}
+
+function verifyKioskPaymentToken(uuid, tier, durationDays, paymentToken) {
+  if (!uuid || !paymentToken || !tier || !durationDays) return false;
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const currentDay = Math.floor(nowSeconds / 86400);
+  for (let day = currentDay - 7; day <= currentDay + 7; day++) {
+    const expected = crypto.createHash('md5')
+      .update(`${String(uuid).toLowerCase().trim()}:paid:${tier}:${durationDays}:${day}:${SECRET_KEY}`)
+      .digest('hex').substring(0, 16);
+    if (expected === String(paymentToken).toLowerCase().trim()) return true;
+  }
+  return false;
+}
+
+async function verifyPayPalOrder(orderId, tier, durationDays) {
+  const tiers = {
+    'Tier 1 Standard Listing': { amount: '3.99', days: 30 },
+    'Tier 2 VIP Featured Listing': { amount: '9.99', days: 30 },
+    'Tier 3 Royal Lifetime Listing': { amount: '29.99', days: 36500 }
+  };
+  const expected = tiers[tier];
+  const clientId = process.env.PAYPAL_CLIENT_ID;
+  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+  if (!expected || !orderId || !clientId || !clientSecret || Number(durationDays) !== expected.days) return false;
+
+  const apiBase = process.env.PAYPAL_ENV === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+  const authorization = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  const authResponse = await fetch(`${apiBase}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${authorization}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: 'grant_type=client_credentials'
+  });
+  if (!authResponse.ok) return false;
+  const authData = await authResponse.json();
+  if (!authData.access_token) return false;
+
+  const orderResponse = await fetch(`${apiBase}/v2/checkout/orders/${encodeURIComponent(orderId)}`, {
+    headers: { Authorization: `Bearer ${authData.access_token}` }
+  });
+  if (!orderResponse.ok) return false;
+  const order = await orderResponse.json();
+  if (order.status !== 'COMPLETED' || !Array.isArray(order.purchase_units)) return false;
+
+  return order.purchase_units.some(unit =>
+    Array.isArray(unit.payments?.captures) && unit.payments.captures.some(capture =>
+      capture.status === 'COMPLETED' &&
+      capture.amount?.currency_code === 'USD' &&
+      Number(capture.amount.value) === Number(expected.amount)
+    )
+  );
+}
+
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -235,6 +280,36 @@ exports.handler = async (event) => {
     let foundProfile = null;
 
     const store = getProfilesStore(event);
+    await loadSubscriptions(store);
+
+    if (query.action === 'checkout_config') {
+      return {
+        statusCode: process.env.PAYPAL_CLIENT_ID ? 200 : 503,
+        headers,
+        body: JSON.stringify({
+          paypal_client_id: process.env.PAYPAL_CLIENT_ID || null,
+          paypal_env: process.env.PAYPAL_ENV === 'sandbox' ? 'sandbox' : 'live'
+        })
+      };
+    }
+
+    if (query.action === 'editor_access') {
+      const authorized = verifyToken(targetId, query.token);
+      const subscription = gSubscriptions[targetId];
+      const isAdmin = !!process.env.ADMIN_EDIT_TOKEN && query.token === process.env.ADMIN_EDIT_TOKEN;
+      const allowed = authorized && (isAdmin || isSubscriptionActive(subscription));
+      return {
+        statusCode: allowed ? 200 : 403,
+        headers,
+        body: JSON.stringify({
+          success: allowed,
+          allowed,
+          is_admin: authorized && isAdmin,
+          subscription: subscription || null,
+          error: authorized ? 'An active directory subscription is required.' : 'Invalid editor access token.'
+        })
+      };
+    }
 
     if (targetId) {
       if (gCustomProfiles[targetId]) {
@@ -254,6 +329,9 @@ exports.handler = async (event) => {
             break;
           }
         }
+      }
+      if (!foundProfile) {
+        foundProfile = Object.values(gCustomProfiles).find(profile => slugifyProfileName(profile.slug || profile.name) === targetId) || null;
       }
 
       // If not in memory, query Netlify Blobs
@@ -293,6 +371,8 @@ exports.handler = async (event) => {
           gCustomProfiles = { ...allStored };
           if (targetId && gCustomProfiles[targetId]) {
             foundProfile = gCustomProfiles[targetId];
+          } else if (targetId) {
+            foundProfile = Object.values(gCustomProfiles).find(profile => slugifyProfileName(profile.slug || profile.name) === targetId) || null;
           }
         }
       } catch(e) {}
@@ -328,15 +408,25 @@ exports.handler = async (event) => {
 
   try {
     const payload = JSON.parse(event.body || '{}');
-    const { uuid, id, username, name, token, secret, action, profileData, status, tier, duration_days, days, published, is_vip } = payload;
+    const { uuid, id, username, name, token, action, profileData, status, tier, duration_days, days, published, is_vip } = payload;
 
     const targetKey = uuid || id || (profileData && (profileData.avatar_uuid || profileData.id || profileData.sl_username)) || 'profile';
+    const adminAuthorized = !!process.env.ADMIN_EDIT_TOKEN && String(token || '').trim() === process.env.ADMIN_EDIT_TOKEN;
+    let validPaymentRegistration = false;
+    if (action === 'register_paid') {
+      if (payload.payment_provider === 'paypal') {
+        validPaymentRegistration = verifyToken(uuid, token) && await verifyPayPalOrder(payload.payment_ref, tier, duration_days);
+      } else {
+        validPaymentRegistration = verifyKioskPaymentToken(uuid, tier, duration_days, payload.payment_token);
+      }
+    }
+    const requiresAdmin = action === 'admin_grant_time' || action === 'admin_toggle_publish';
 
-    if (!verifyToken(targetKey, token, secret, payload)) {
+    if (requiresAdmin ? !adminAuthorized : action === 'register_paid' ? !validPaymentRegistration : !verifyToken(targetKey, token, '', payload)) {
       return {
         statusCode: 403,
         headers,
-        body: JSON.stringify({ error: 'Unauthorized: Invalid or expired access token.' })
+        body: JSON.stringify({ error: action === 'register_paid' ? 'Payment could not be verified.' : 'Unauthorized: Invalid or expired access token.' })
       };
     }
 
@@ -378,8 +468,13 @@ exports.handler = async (event) => {
 
     // 2. Paid Subscription Registration (from Kiosk or PayPal Checkout)
     if (action === 'register_paid') {
+      const store = getProfilesStore(event);
+      await loadSubscriptions(store);
       const dur = duration_days || (tier && tier.includes('3') ? 3650 : 30);
-      const expiry = new Date(Date.now() + (dur * 86400000)).toISOString();
+      const current = gSubscriptions[cleanUuid];
+      const currentExpiry = current && current.expires_at ? new Date(current.expires_at).getTime() : 0;
+      const expiryBase = Math.max(Date.now(), Number.isFinite(currentExpiry) ? currentExpiry : 0);
+      const expiry = new Date(expiryBase + (dur * 86400000)).toISOString();
       const subEntry = {
         tier: tier || 'Tier 1 Standard',
         published: true,
@@ -393,6 +488,7 @@ exports.handler = async (event) => {
       if (KNOWN_AVATARS[cleanUuid]) {
         KNOWN_AVATARS[cleanUuid].forEach(alias => { gSubscriptions[alias.toLowerCase()] = subEntry; });
       }
+      await saveSubscriptions(store);
     }
 
     // 3. Admin: Grant Time
@@ -414,6 +510,7 @@ exports.handler = async (event) => {
       if (KNOWN_AVATARS[cleanUuid]) {
         KNOWN_AVATARS[cleanUuid].forEach(alias => { gSubscriptions[alias.toLowerCase()] = existing; });
       }
+      await saveSubscriptions(getProfilesStore(event));
     }
 
     // 4. Admin: Toggle Publish
@@ -425,6 +522,7 @@ exports.handler = async (event) => {
       if (KNOWN_AVATARS[cleanUuid]) {
         KNOWN_AVATARS[cleanUuid].forEach(alias => { gSubscriptions[alias.toLowerCase()] = existing; });
       }
+      await saveSubscriptions(getProfilesStore(event));
     }
 
     // 5. Add Tribute / Tip Sync (from In-World Tip Jar, Throne, Cash App, or Web Confirmation)
@@ -492,8 +590,65 @@ exports.handler = async (event) => {
 
     // 6. Save & Publish Full Profile Data (from Studio Editor /directory/edit/)
     if (action === 'save_profile' && profileData) {
-      const pId = (profileData.id || cleanId || cleanUuid).toLowerCase().trim();
+      const store = getProfilesStore(event);
+      await loadSubscriptions(store);
+      const subscription = gSubscriptions[cleanUuid];
+      if (!adminAuthorized && !isSubscriptionActive(subscription)) {
+        return {
+          statusCode: 402,
+          headers,
+          body: JSON.stringify({ error: 'An active directory subscription is required before you can publish or edit a profile.' })
+        };
+      }
+
+      const baseSlug = slugifyProfileName(profileData.name) || 'profile';
+      let knownProfiles = Object.values(gCustomProfiles);
+      if (store) {
+        try {
+          let storedProfiles = await store.get('all_profiles', { type: 'json' });
+          if (!storedProfiles) {
+            const raw = await store.get('all_profiles');
+            if (raw && typeof raw === 'string') storedProfiles = JSON.parse(raw);
+          }
+          if (storedProfiles && typeof storedProfiles === 'object') {
+            gCustomProfiles = { ...storedProfiles, ...gCustomProfiles };
+            knownProfiles = Object.values(gCustomProfiles);
+          }
+        } catch(e) {}
+      }
+
+      const slugIsTaken = slug => knownProfiles.some(existing =>
+        existing &&
+        slugifyProfileName(existing.slug || existing.name) === slug &&
+        String(existing.avatar_uuid || '').toLowerCase().trim() !== cleanUuid
+      );
+      let publicSlug = baseSlug;
+      if (slugIsTaken(publicSlug)) {
+        let suffix = 2;
+        publicSlug = `${baseSlug}-${suffix++}`;
+        while (slugIsTaken(publicSlug)) {
+          publicSlug = `${baseSlug}-${suffix++}`;
+        }
+      }
+
+      profileData.slug = publicSlug;
+      profileData.id = publicSlug;
+      profileData.published = true;
+      profileData.is_vip = !!(subscription && subscription.is_vip);
+      profileData.expires_at = subscription && subscription.expires_at;
+      profileData.managed_subscription = true;
+      const pId = publicSlug;
       const pUsername = (profileData.sl_username || '').toLowerCase().trim();
+
+      for (const key of Object.keys(gCustomProfiles)) {
+        const existingProfile = gCustomProfiles[key];
+        const sameOwner = String(existingProfile && existingProfile.avatar_uuid || '').toLowerCase().trim() === cleanUuid;
+        const oldSlug = slugifyProfileName(existingProfile && (existingProfile.slug || existingProfile.name));
+        if (sameOwner && key === oldSlug && key !== pId && key !== pUsername) {
+          delete gCustomProfiles[key];
+          if (store && store.delete) await store.delete(key);
+        }
+      }
       
       console.log(`[SAVE_PROFILE] Saving profile: uuid=${cleanUuid}, id=${pId}, username=${pUsername}, role=${profileData.role}`);
       
@@ -506,7 +661,6 @@ exports.handler = async (event) => {
       }
 
       // Save to Netlify Blobs for cross-container and cross-restart permanent persistence
-      const store = getProfilesStore(event);
       let blobSaved = false;
       if (store) {
         try {
@@ -543,12 +697,6 @@ exports.handler = async (event) => {
         gTributeGoals[cleanUuid] = profileData.tribute_goal;
         gTributeGoals[pId] = profileData.tribute_goal;
       }
-
-      // Ensure marked as published in subscriptions
-      const subEntry = gSubscriptions[cleanUuid] || gSubscriptions[pId] || { tier: 'Tier 2 VIP', expires_at: new Date(Date.now() + 30 * 86400000).toISOString() };
-      subEntry.published = true;
-      gSubscriptions[cleanUuid] = subEntry;
-      gSubscriptions[pId] = subEntry;
 
       // Include blob persistence status in response
       profileData._blob_saved = blobSaved;

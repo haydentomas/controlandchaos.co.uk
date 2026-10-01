@@ -29,6 +29,40 @@ export default async function handler(request, context) {
       const store = getStore({ name: "directory-profiles", consistency: "strong" });
       if (store) {
         customProfile = await store.get(profileId, { type: "json" });
+        let allProfiles = null;
+        if (!customProfile) {
+          allProfiles = await store.get("all_profiles", { type: "json" });
+        }
+        if (!allProfiles) {
+          const raw = await store.get("all_profiles");
+          if (raw && typeof raw === "string") allProfiles = JSON.parse(raw);
+        }
+        if (!customProfile && allProfiles && typeof allProfiles === "object") {
+          customProfile = Object.values(allProfiles).find(profile => slugifyProfileName(profile.slug || profile.name) === profileId) || null;
+        }
+
+        if (customProfile) {
+          let subscriptions = await store.get("all_subscriptions", { type: "json" });
+          if (!subscriptions) {
+            const raw = await store.get("all_subscriptions");
+            if (raw && typeof raw === "string") subscriptions = JSON.parse(raw);
+          }
+          const ownerId = String(customProfile.avatar_uuid || "").toLowerCase();
+          const subscription = subscriptions && (
+            subscriptions[ownerId] ||
+            subscriptions[String(customProfile.id || "").toLowerCase()] ||
+            subscriptions[String(customProfile.sl_username || "").toLowerCase()]
+          );
+          const expiry = subscription && subscription.expires_at ? new Date(subscription.expires_at).getTime() : 0;
+          const active = subscription && subscription.published !== false && (subscription.is_vip === true || expiry > Date.now());
+          const legacyActive = !customProfile.avatar_uuid && customProfile.published !== false && (!customProfile.expires_at || new Date(customProfile.expires_at).getTime() > Date.now());
+          if (!active && !legacyActive) {
+            return new Response("This directory listing is inactive.", {
+              status: 404,
+              headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" }
+            });
+          }
+        }
       }
     } catch(e) {}
 
@@ -80,4 +114,8 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+function slugifyProfileName(name) {
+  return String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }

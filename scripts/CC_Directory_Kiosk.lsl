@@ -13,6 +13,7 @@ string SECRET_KEY       = "CC_DIRECTORY_SECRET_2026_GOLD";
 
 // Dialog handles & tracking
 list   gActiveListens   = []; // [key agent, integer channel, integer listenHandle, integer expiry, string menuState]
+list   gPendingRegistrationRequests = []; // [key HTTP request, key agent]
 integer gOwnerConfiguring = 0; // 1 = T1 L$, 2 = T2 L$, 3 = T3 L$, 4 = T1 $, 5 = T2 $, 6 = T3 $, 7 = Grant 30d, 8 = Grant VIP
 integer gLastAuditTime    = 0;
 
@@ -49,6 +50,12 @@ string GetTierButtonLabel(integer tierNum) {
 string GenerateToken(key agent) {
     integer dayNumber = llGetUnixTime() / 86400;
     return llGetSubString(llMD5String((string)agent + ":" + (string)dayNumber + ":" + SECRET_KEY, 0), 0, 15);
+}
+
+string GeneratePaidToken(key agent, string tier, integer durationDays) {
+    integer dayNumber = llGetUnixTime() / 86400;
+    string payload = (string)agent + ":paid:" + tier + ":" + (string)durationDays + ":" + (string)dayNumber + ":" + SECRET_KEY;
+    return llGetSubString(llMD5String(payload, 0), 0, 15);
 }
 
 // Generates a unique dialog channel per avatar UUID
@@ -227,7 +234,7 @@ SendQuickStatusUpdate(key agent, string newStatus) {
     ], payload);
 }
 
-SendSubscriptionRegistration(key agent, string tierName, integer amount, integer durationDays) {
+key SendSubscriptionRegistration(key agent, string tierName, integer amount, integer durationDays) {
     string token = GenerateToken(agent);
     string name = llGetDisplayName(agent);
     if (name == "" || name == "???") name = llKey2Name(agent);
@@ -245,11 +252,11 @@ SendSubscriptionRegistration(key agent, string tierName, integer amount, integer
         "\"amount\":" + (string)amount + "," +
         "\"duration_days\":" + (string)durationDays + "," +
         "\"token\":\"" + token + "\"," +
-        "\"secret\":\"" + SECRET_KEY + "\"" +
+        "\"payment_token\":\"" + GeneratePaidToken(agent, tierName, durationDays) + "\"" +
     "}";
     
     llRegionSayTo(agent, 0, "⏳ Registering your '" + tierName + "' directory subscription on controlandchaos.co.uk...");
-    llHTTPRequest(UPDATE_API_URL, [
+    return llHTTPRequest(UPDATE_API_URL, [
         HTTP_METHOD, "POST",
         HTTP_MIMETYPE, "application/json"
     ], payload);
@@ -464,8 +471,8 @@ default {
         
         llRegionSayTo(giver, 0, "💎 [DIRECTORY] Payment of L$" + (string)amount + " received from " + name + "! Unlocking " + tierName + "...");
         DeliverSubscriberPackage(giver);
-        SendSubscriptionRegistration(giver, tierName, amount, durationDays);
-        LaunchWebEditor(giver);
+        key registrationRequest = SendSubscriptionRegistration(giver, tierName, amount, durationDays);
+        gPendingRegistrationRequests += [registrationRequest, giver];
     }
 
     listen(integer channel, string name, key id, string message) {
@@ -512,7 +519,8 @@ default {
                 string targetName = llKey2Name(targetKey);
                 if (targetName == "") targetName = cleanVal;
                 RecordSubscriber(targetKey, targetName, "Tier 2 VIP (Owner Grant)", 30);
-                SendSubscriptionRegistration(targetKey, "Tier 2 VIP (Owner Grant)", 0, 30);
+                key registrationRequest = SendSubscriptionRegistration(targetKey, "Tier 2 VIP (Owner Grant)", 0, 30);
+                gPendingRegistrationRequests += [registrationRequest, targetKey];
                 llOwnerSay("🎁 Granted +30 Days to " + targetName + " (" + cleanVal + ").");
             }
             else if (gOwnerConfiguring == 8) { // Grant VIP Lifetime
@@ -520,7 +528,8 @@ default {
                 string targetName = llKey2Name(targetKey);
                 if (targetName == "") targetName = cleanVal;
                 RecordSubscriber(targetKey, targetName, "Tier 3 Royal Lifetime (VIP Grant)", 36500);
-                SendSubscriptionRegistration(targetKey, "Tier 3 Royal Lifetime (VIP Grant)", 0, 36500);
+                key registrationRequest = SendSubscriptionRegistration(targetKey, "Tier 3 Royal Lifetime (VIP Grant)", 0, 36500);
+                gPendingRegistrationRequests += [registrationRequest, targetKey];
                 llOwnerSay("👑 Granted VIP Lifetime to " + targetName + " (" + cleanVal + ").");
             }
             gOwnerConfiguring = 0;
@@ -562,8 +571,8 @@ default {
             else if (message == "🎁 Owner Free" && id == llGetOwner()) {
                 llRegionSayTo(id, 0, "👑 [OWNER GRANT] Unlocking lifetime access for your avatar...");
                 DeliverSubscriberPackage(id);
-                SendSubscriptionRegistration(id, "Tier 3 Royal Lifetime (Owner Grant)", 0, 36500);
-                LaunchWebEditor(id);
+                key registrationRequest = SendSubscriptionRegistration(id, "Tier 3 Royal Lifetime (Owner Grant)", 0, 36500);
+                gPendingRegistrationRequests += [registrationRequest, id];
             }
             else if (message == "❌ Cancel") {
                 llRegionSayTo(id, 0, "❌ Menu closed.");
@@ -670,6 +679,16 @@ default {
     }
 
     http_response(key request_id, integer status, list metadata, string body) {
+        integer pendingIndex = llListFindList(gPendingRegistrationRequests, [request_id]);
+        if (pendingIndex != -1) {
+            key subscriber = llList2Key(gPendingRegistrationRequests, pendingIndex + 1);
+            gPendingRegistrationRequests = llDeleteSubList(gPendingRegistrationRequests, pendingIndex, pendingIndex + 1);
+            if (status == 200 || status == 201) {
+                LaunchWebEditor(subscriber);
+            } else {
+                llRegionSayTo(subscriber, 0, "⚠️ [DIRECTORY] Payment was received, but access could not be activated. Please contact the estate manager with your payment time.");
+            }
+        }
         if (status == 200 || status == 201) {
             llOwnerSay("✅ [DIRECTORY KIOSK] Server response: Success (Code " + (string)status + ").");
         } else {

@@ -293,7 +293,7 @@
           // 1. Subscription & Publish Visibility Check
           const isPublished = (p.published !== false);
           const isNotExpired = (!p.expires_at || new Date(p.expires_at).getTime() > Date.now() || p.is_vip);
-          if (!isPublished || !isNotExpired) return false;
+          if (!isPublished || !isNotExpired || p._subscription_verified === false) return false;
 
           const isDomme = (p.role_type === 'domme' || p.role_type === 'DOMINANT' || p.role_type === 'dom');
           const isSub = (p.role_type === 'sub' || p.role_type === 'SUBMISSIVE' || p.role_type === 'submissive');
@@ -364,7 +364,7 @@
                 <span class="font-2xs text-muted block">Rates From:</span>
                 <span class="dom-rate-price">${p.starting_rate || 'From L$2,000 / hr'}</span>
               </div>
-              <a href="/profile/${p.id}/" class="dom-rate-pill">
+              <a href="/profile/${p.slug || String(p.name || p.id || 'profile').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}/" class="dom-rate-pill">
                 RATE CARD &rarr;
               </a>
             </div>
@@ -469,9 +469,15 @@
                             (p.id && liveData.subscriptions[p.id.toLowerCase()]) || 
                             (p.sl_username && liveData.subscriptions[p.sl_username.toLowerCase()]);
                 if (sub) {
+                  p._subscription_verified = true;
                   if (typeof sub.published === 'boolean') p.published = sub.published;
                   if (sub.expires_at) p.expires_at = sub.expires_at;
                   if (typeof sub.is_vip === 'boolean') p.is_vip = sub.is_vip;
+                  if (sub.published === false || (!sub.is_vip && (!sub.expires_at || new Date(sub.expires_at).getTime() <= Date.now()))) {
+                    p.published = false;
+                  }
+                } else if (p.avatar_uuid || p.managed_subscription) {
+                  p._subscription_verified = false;
                 }
               });
             }

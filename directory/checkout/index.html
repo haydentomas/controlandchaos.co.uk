@@ -12,9 +12,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../styles.css">
 
-  <!-- PayPal SDK (Configurable Client-ID, defaults to sandbox/live placeholder) -->
-  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&components=buttons"></script>
-
   <style>
     :root {
       --bg-dark: #070709;
@@ -355,6 +352,8 @@
 
         <!-- PayPal Buttons Mount -->
         <div class="paypal-box">
+          <label for="checkout-avatar-token" style="display:block; font-size:12px; color:#cbd5e1; margin-bottom:8px;">Avatar access token from the Directory Kiosk</label>
+          <input id="checkout-avatar-token" type="password" autocomplete="off" placeholder="Paste the token from your kiosk editor link" style="width:100%; margin-bottom:12px; padding:10px 12px; background:#0e0c0b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:#fff;">
           <div id="paypal-button-container"></div>
           
           <!-- Direct Link Fallback -->
@@ -393,6 +392,7 @@
     let avatarName = urlParams.get('name') || localStorage.getItem('cc_avatar_name') || 'Second Life Creator';
     let avatarToken = urlParams.get('token') || localStorage.getItem('cc_edit_token') || '';
     let preselectedTier = urlParams.get('tier') || 'tier2';
+    let paypalSdkLoading = false;
 
     let currentTier = {
       id: 'tier2',
@@ -402,7 +402,7 @@
       durationDays: 30
     };
 
-    function initPage() {
+    async function initPage() {
       // Setup avatar info
       if (avatarUUID) {
         document.getElementById('av-uuid').textContent = 'UUID: ' + avatarUUID;
@@ -420,6 +420,28 @@
         localStorage.setItem('cc_edit_token', avatarToken);
       }
 
+      const tokenInput = document.getElementById('checkout-avatar-token');
+      if (tokenInput) {
+        tokenInput.value = avatarToken;
+        tokenInput.addEventListener('input', () => {
+          avatarToken = tokenInput.value.trim();
+          if (avatarToken) localStorage.setItem('cc_edit_token', avatarToken);
+          if (avatarToken && avatarUUID) {
+            const container = document.getElementById('paypal-button-container');
+            if (container && container.textContent.includes('Enter the avatar token')) {
+              container.textContent = '';
+              initializePayPalCheckout();
+            }
+          }
+        });
+      }
+
+      if (!avatarUUID) {
+        const container = document.getElementById('paypal-button-container');
+        if (container) container.textContent = 'Open checkout from the Directory Kiosk so your payment can be linked to your avatar.';
+        return;
+      }
+
       // Preselect tier if provided in URL
       if (preselectedTier === 'tier1') {
         selectTier('tier1', 'Tier 1 Standard Listing', 3.99, 'month');
@@ -429,7 +451,44 @@
         selectTier('tier2', 'Tier 2 VIP Featured Listing', 9.99, 'month');
       }
 
-      renderPayPalButtons();
+      if (!avatarToken) {
+        const container = document.getElementById('paypal-button-container');
+        if (container) container.textContent = 'Enter the avatar token from your Directory Kiosk editor link before continuing to payment.';
+        return;
+      }
+
+      initializePayPalCheckout();
+    }
+
+    async function initializePayPalCheckout() {
+      if (!avatarUUID || !avatarToken || paypalSdkLoading) return;
+      if (typeof paypal !== 'undefined') {
+        renderPayPalButtons();
+        return;
+      }
+      paypalSdkLoading = true;
+      try {
+        const configResponse = await fetch('/.netlify/functions/update-profile?action=checkout_config', { cache: 'no-store' });
+        const config = await configResponse.json();
+        if (!configResponse.ok || !config.paypal_client_id) {
+          throw new Error('PayPal checkout is not configured. Please contact directory support.');
+        }
+        const paypalScript = document.createElement('script');
+        paypalScript.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(config.paypal_client_id)}&currency=USD&components=buttons`;
+        paypalScript.onload = () => {
+          paypalSdkLoading = false;
+          renderPayPalButtons();
+        };
+        paypalScript.onerror = () => {
+          paypalSdkLoading = false;
+          document.getElementById('paypal-button-container').textContent = 'PayPal could not be loaded. Please try again later.';
+        };
+        document.head.appendChild(paypalScript);
+      } catch (error) {
+        paypalSdkLoading = false;
+        const container = document.getElementById('paypal-button-container');
+        if (container) container.textContent = error.message;
+      }
     }
 
     function selectTier(tierId, name, price, cycleType) {
@@ -499,18 +558,26 @@
 
     async function completeSubscription(paymentDetails) {
       const orderId = paymentDetails.id || 'MANUAL-' + Date.now();
+      if (!avatarUUID) {
+        alert('This payment is not linked to an avatar. Please reopen checkout from the Directory Kiosk.');
+        return;
+      }
+      if (!avatarToken) {
+        alert('Enter your avatar token from the Directory Kiosk before paying.');
+        return;
+      }
       
       // Send auto-activation payload to Netlify
       try {
         const payload = {
           action: 'register_paid',
-          uuid: avatarUUID || ('PAYPAL-' + orderId),
+          uuid: avatarUUID,
           name: avatarName,
           tier: currentTier.name,
-          amount: currentTier.price,
           duration_days: currentTier.durationDays,
-          token: avatarToken || 'PAYPAL_VERIFIED',
-          payment_ref: orderId
+          payment_provider: 'paypal',
+          payment_ref: orderId,
+          token: avatarToken
         };
 
         const res = await fetch('/.netlify/functions/update-profile', {
@@ -519,9 +586,15 @@
           body: JSON.stringify(payload)
         });
 
-        console.log('[BACKEND REGISTER RESULT]', await res.json());
+        const registration = await res.json();
+        if (!res.ok || !registration.success) {
+          throw new Error(registration.error || 'Payment verification failed.');
+        }
+        console.log('[BACKEND REGISTER RESULT]', registration);
       } catch (err) {
         console.warn('[BACKEND REGISTRATION NOTICE]', err);
+        alert(`Your payment was captured, but listing activation could not be verified: ${err.message}. Please contact support with order ${orderId}.`);
+        return;
       }
 
       // Show confirmation modal
@@ -531,6 +604,8 @@
         let target = '../edit/';
         if (avatarUUID && avatarToken) {
           target += `?uuid=${avatarUUID}&token=${avatarToken}`;
+        } else {
+          target += `?uuid=${avatarUUID}`;
         }
         studioLink.href = target;
       }
