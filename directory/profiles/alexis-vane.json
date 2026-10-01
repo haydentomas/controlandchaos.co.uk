@@ -19,12 +19,7 @@
     "title": "VIP Penthouse Renovation & Designer Corset",
     "target_amount": 50000,
     "current_amount": 32500,
-    "currency": "L$",
-    "supporters": [
-      { "name": "Lord_Valerius", "amount": "L$15,000", "badge": "👑 Top Tributor" },
-      { "name": "Devoted_FinSub", "amount": "L$10,000", "badge": "💎 Devoted" },
-      { "name": "Sub_Kiki", "amount": "L$7,500", "badge": "🩷 Loyal Kneeler" }
-    ]
+    "currency": "L$"
   },
   "patrons": [
     { "name": "Lord Valerius", "tier": "Sovereign Patron", "avatar_sl": "valerius.resident", "badge": "👑 Top Tributor" },

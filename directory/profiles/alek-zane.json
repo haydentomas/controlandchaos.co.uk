@@ -32,11 +32,7 @@
     "title": "Formal Gala Menswear & Collar Upgrades",
     "target_amount": 30000,
     "current_amount": 18500,
-    "currency": "L$",
-    "supporters": [
-      { "name": "Mistress_Alexis", "amount": "L$10,000", "badge": "👑 Dominant Sponsor" },
-      { "name": "Lady_Seraphina", "amount": "L$8,500", "badge": "💎 Sponsor" }
-    ]
+    "currency": "L$"
   },
   "patrons": [
     { "name": "Mistress Alexis Vane", "tier": "Lead Domme Sponsor", "avatar_sl": "alexis.vane", "badge": "👑 Sovereign" }

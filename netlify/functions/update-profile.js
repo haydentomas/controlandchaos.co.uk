@@ -54,41 +54,25 @@ let gTributeGoals = {
     title: "Formal Gala Menswear & Collar Upgrades",
     target_amount: 30000,
     current_amount: 18500,
-    currency: "L$",
-    supporters: [
-      { name: "Mistress_Alexis", amount: "L$10,000", badge: "👑 Dominant Sponsor" },
-      { name: "Lady_Seraphina", amount: "L$8,500", badge: "💎 Sponsor" }
-    ]
+    currency: "L$"
   },
   "alek-zane": {
     title: "Formal Gala Menswear & Collar Upgrades",
     target_amount: 30000,
     current_amount: 18500,
-    currency: "L$",
-    supporters: [
-      { name: "Mistress_Alexis", amount: "L$10,000", badge: "👑 Dominant Sponsor" },
-      { name: "Lady_Seraphina", amount: "L$8,500", badge: "💎 Sponsor" }
-    ]
+    currency: "L$"
   },
   "e8d64b18-3a9b-4b2e-a5b6-c9a8e7d6f5a1": {
     title: "VIP Penthouse Renovation & Designer Corset",
     target_amount: 50000,
     current_amount: 32500,
-    currency: "L$",
-    supporters: [
-      { name: "Lord_Valerius", amount: "L$15,000", badge: "👑 Top Tributor" },
-      { name: "Devoted_FinSub", amount: "L$10,000", badge: "💎 Devoted" }
-    ]
+    currency: "L$"
   },
   "alexis-vane": {
     title: "VIP Penthouse Renovation & Designer Corset",
     target_amount: 50000,
     current_amount: 32500,
-    currency: "L$",
-    supporters: [
-      { name: "Lord_Valerius", amount: "L$15,000", badge: "👑 Top Tributor" },
-      { name: "Devoted_FinSub", amount: "L$10,000", badge: "💎 Devoted" }
-    ]
+    currency: "L$"
   }
 };
 
