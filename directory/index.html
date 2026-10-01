@@ -268,23 +268,8 @@
             tags: ["FinSub", "Ballroom Escort", "Vow Collar Certified", "RLV Restraints"],
             hardware_compat: { vow_collar: true, lovense: false, rlv: true, experience: true }
           }
-      // 2. Fetch live in-world statuses from Netlify Function
-      try {
-        const liveRes = await fetch('/.netlify/functions/update-profile');
-        if (liveRes.ok) {
-          const liveData = await liveRes.json();
-          if (liveData && liveData.statuses) {
-            allProfiles.forEach(p => {
-              const liveEntry = liveData.statuses[p.id?.toLowerCase()] || 
-                                liveData.statuses[p.sl_username?.toLowerCase()] || 
-                                (p.avatar_uuid && liveData.statuses[p.avatar_uuid?.toLowerCase()]);
-              if (liveEntry && liveEntry.status) {
-                p.status = liveEntry.status;
-              }
-            });
-          }
-        }
-      } catch(e) {}
+        ];
+      }
 
       function getStatusBadgeHtml(rawStatus) {
         const s = (rawStatus || 'Offline').toLowerCase();
@@ -402,6 +387,24 @@
       });
 
       renderProfiles();
+
+      // Fetch dynamic in-world live statuses in background and update cards
+      fetch('/.netlify/functions/update-profile')
+        .then(res => res.ok ? res.json() : null)
+        .then(liveData => {
+          if (liveData && liveData.statuses) {
+            allProfiles.forEach(p => {
+              const liveEntry = liveData.statuses[p.id?.toLowerCase()] || 
+                                liveData.statuses[p.sl_username?.toLowerCase()] || 
+                                (p.avatar_uuid && liveData.statuses[p.avatar_uuid?.toLowerCase()]);
+              if (liveEntry && liveEntry.status) {
+                p.status = liveEntry.status;
+              }
+            });
+            renderProfiles();
+          }
+        })
+        .catch(() => {});
     });
   </script>
 </body>
