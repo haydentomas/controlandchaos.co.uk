@@ -271,6 +271,23 @@
         ];
       }
 
+      function getStatusBadgeHtml(rawStatus) {
+        const s = (rawStatus || 'Available').toLowerCase();
+        if (s.includes('busy') || s.includes('session') || s.includes('booked')) {
+          return `<span class="live-status-badge status-busy"><span class="status-dot dot-busy"></span> In Session</span>`;
+        }
+        if (s.includes('away') || s.includes('afk')) {
+          return `<span class="live-status-badge status-away"><span class="status-dot dot-away"></span> Away</span>`;
+        }
+        if (s.includes('appt') || s.includes('appointment')) {
+          return `<span class="live-status-badge status-appt"><span class="status-dot dot-appt"></span> By Appt</span>`;
+        }
+        if (s.includes('offline')) {
+          return `<span class="live-status-badge status-offline"><span class="status-dot dot-offline"></span> Offline</span>`;
+        }
+        return `<span class="live-status-badge status-available"><span class="status-dot dot-available"></span> Live In-World</span>`;
+      }
+
       function renderProfiles() {
         const query = (searchInput.value || '').toLowerCase().trim();
         container.innerHTML = '';
@@ -318,7 +335,10 @@
                   </div>
                   <div>
                     <h3 class="dom-name font-md m-0">${p.name}</h3>
-                    <div class="font-mono font-xs text-gold">@${p.sl_username}</div>
+                    <div class="flex-row gap-8 align-center mt-2 flex-wrap">
+                      <span class="font-mono font-xs text-gold">@${p.sl_username}</span>
+                      ${getStatusBadgeHtml(p.status)}
+                    </div>
                   </div>
                 </div>
                 <span class="${isDomme ? 'dom-role-badge' : 'section-tag font-2xs m-0'}">

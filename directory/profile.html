@@ -474,6 +474,23 @@
         if (heroOverlay) heroOverlay.style.display = 'none';
       }
 
+      function getStatusBadgeHtml(rawStatus) {
+        const s = (rawStatus || 'Available').toLowerCase();
+        if (s.includes('busy') || s.includes('session') || s.includes('booked')) {
+          return `<span class="live-status-badge status-busy"><span class="status-dot dot-busy"></span> In Session</span>`;
+        }
+        if (s.includes('away') || s.includes('afk')) {
+          return `<span class="live-status-badge status-away"><span class="status-dot dot-away"></span> Away / AFK</span>`;
+        }
+        if (s.includes('appt') || s.includes('appointment')) {
+          return `<span class="live-status-badge status-appt"><span class="status-dot dot-appt"></span> By Appointment</span>`;
+        }
+        if (s.includes('offline')) {
+          return `<span class="live-status-badge status-offline"><span class="status-dot dot-offline"></span> Offline</span>`;
+        }
+        return `<span class="live-status-badge status-available"><span class="status-dot dot-available"></span> Live In-World</span>`;
+      }
+
       if (heroContainer) {
         const avatarImg = profileData.avatar_image || profileData.avatar || '';
         const textShadowStyle = bannerUrl ? 'text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 4px 20px rgba(0,0,0,0.85);' : '';
@@ -489,9 +506,7 @@
                 <span class="role-badge" style="background:${isDomme ? 'rgba(139,30,45,0.6)' : 'rgba(184,154,88,0.35)'}; border:1px solid ${isDomme ? 'var(--burgundy-light)' : 'var(--gold-border)'}; color:${isDomme ? '#ffb8c2' : 'var(--gold-bright)'}; font-size:11px; backdrop-filter:blur(4px);">
                   VERIFIED ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
                 </span>
-                <span class="role-badge" style="background:rgba(16,185,129,0.3); border:1px solid #10b981; color:#6ee7b7; font-size:11px; backdrop-filter:blur(4px);">
-                  ● ${profileData.status || 'Available'}
-                </span>
+                ${getStatusBadgeHtml(profileData.status)}
               </div>
               <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:6px; text-shadow:0 1px 4px rgba(0,0,0,0.8);">
                 Second Life Username: <strong>${profileData.sl_username || profileData.id}</strong> ${profileData.level ? `&bull; Level ${profileData.level} (${profileData.rank || ''})` : ''}
