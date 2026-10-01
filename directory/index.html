@@ -273,14 +273,14 @@
 
       function getStatusBadgeHtml(rawStatus) {
         const s = (rawStatus || 'Offline').toLowerCase();
-        if (s.includes('live') || s.includes('avail') || s.includes('online')) {
-          return `<span class="traffic-status traffic-live"><span class="traffic-dot"></span> Live</span>`;
+        if (s.includes('busy') || s.includes('session') || s.includes('booked') || s.includes('dnd') || s.includes('do not disturb')) {
+          return `<span class="traffic-status traffic-busy"><span class="traffic-dot"></span> Busy</span>`;
         }
-        if (s.includes('away') || s.includes('afk')) {
+        if (s.includes('away') || s.includes('afk') || s.includes('brb')) {
           return `<span class="traffic-status traffic-away"><span class="traffic-dot"></span> Away</span>`;
         }
-        if (s.includes('busy') || s.includes('session') || s.includes('booked')) {
-          return `<span class="traffic-status traffic-busy"><span class="traffic-dot"></span> Busy</span>`;
+        if (s.includes('live') || s.includes('avail') || s.includes('online') || s.includes('in-world') || s.includes('ready')) {
+          return `<span class="traffic-status traffic-live"><span class="traffic-dot"></span> Live</span>`;
         }
         return `<span class="traffic-status traffic-offline"><span class="traffic-dot"></span> Offline</span>`;
       }
@@ -394,9 +394,12 @@
         .then(liveData => {
           if (liveData && liveData.statuses) {
             allProfiles.forEach(p => {
-              const liveEntry = liveData.statuses[p.id?.toLowerCase()] || 
-                                liveData.statuses[p.sl_username?.toLowerCase()] || 
-                                (p.avatar_uuid && liveData.statuses[p.avatar_uuid?.toLowerCase()]);
+              const liveEntry = (p.avatar_uuid && liveData.statuses[p.avatar_uuid.toLowerCase()]) ||
+                                (p.id && liveData.statuses[p.id.toLowerCase()]) || 
+                                (p.sl_username && liveData.statuses[p.sl_username.toLowerCase()]) ||
+                                (p.name && liveData.statuses[p.name.toLowerCase()]) ||
+                                (p.name && liveData.statuses[p.name.toLowerCase().replace(/\s+/g, '-')]) ||
+                                (p.name && liveData.statuses[p.name.toLowerCase().replace(/\s+/g, '.')]);
               if (liveEntry && liveEntry.status) {
                 p.status = liveEntry.status;
               }

@@ -3,10 +3,21 @@ const crypto = require('crypto');
 // Shared Secret (Must match SECRET_KEY in CC_Directory_Kiosk.lsl)
 const SECRET_KEY = process.env.DIRECTORY_SECRET_KEY || "CC_DIRECTORY_SECRET_2026_GOLD";
 
+// Known avatar mappings (UUID <-> Slugs <-> Usernames)
+const KNOWN_AVATARS = {
+  "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec": ["alek-zane", "alek.zane", "alek zane", "alek.resident"],
+  "e8d64b18-3a9b-4b2e-a5b6-c9a8e7d6f5a1": ["alexis-vane", "alexis.vane", "alexis vane"],
+  "alek-zane": ["b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec", "alek.zane", "alek zane"],
+  "alexis-vane": ["e8d64b18-3a9b-4b2e-a5b6-c9a8e7d6f5a1", "alexis.vane", "alexis vane"]
+};
+
 // In-Memory Live Status Cache (Preserved during active function lifecycle)
 let gLiveStatuses = {
-  "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec": { status: "Available / In-World", timestamp: Date.now() },
-  "alek-zane": { status: "Available / In-World", timestamp: Date.now() }
+  "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec": { status: "Busy / In Session", timestamp: Date.now() },
+  "alek-zane": { status: "Busy / In Session", timestamp: Date.now() },
+  "alek.zane": { status: "Busy / In Session", timestamp: Date.now() },
+  "alexis-vane": { status: "Available / In-World", timestamp: Date.now() },
+  "alexis.vane": { status: "Available / In-World", timestamp: Date.now() }
 };
 
 function verifyToken(uuid, token, secret) {
@@ -86,7 +97,7 @@ exports.handler = async (event) => {
 
   try {
     const payload = JSON.parse(event.body || '{}');
-    const { uuid, token, secret, action, profileData, status } = payload;
+    const { uuid, username, name, token, secret, action, profileData, status } = payload;
 
     if (!uuid || !verifyToken(uuid, token, secret)) {
       return {
@@ -98,12 +109,36 @@ exports.handler = async (event) => {
 
     console.log(`[DIRECTORY UPDATE] Action: ${action || 'save_profile'} for UUID: ${uuid} | Status: ${status}`);
 
-    // Update in-memory live status
+    // Update in-memory live status across all associated keys
     if (status) {
-      gLiveStatuses[uuid.toLowerCase()] = {
+      const keysToUpdate = new Set();
+      const cleanUuid = String(uuid).toLowerCase().trim();
+      keysToUpdate.add(cleanUuid);
+
+      if (username) {
+        const u = String(username).toLowerCase().trim();
+        keysToUpdate.add(u);
+        keysToUpdate.add(u.replace(/[\s\.]+/g, '-'));
+      }
+      if (name) {
+        const n = String(name).toLowerCase().trim();
+        keysToUpdate.add(n);
+        keysToUpdate.add(n.replace(/[\s\.]+/g, '-'));
+      }
+
+      // Check KNOWN_AVATARS aliases
+      if (KNOWN_AVATARS[cleanUuid]) {
+        KNOWN_AVATARS[cleanUuid].forEach(alias => keysToUpdate.add(alias.toLowerCase()));
+      }
+
+      const entry = {
         status: status,
         timestamp: Date.now()
       };
+
+      keysToUpdate.forEach(k => {
+        gLiveStatuses[k] = entry;
+      });
     }
 
     // Return success response
