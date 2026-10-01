@@ -2189,8 +2189,19 @@
       const customStatus = document.getElementById('edit-custom-status')?.value;
       const finalStatus = customStatus || (activeStatusPill ? activeStatusPill.getAttribute('data-status') : 'Available');
 
+      const nameVal = (document.getElementById('edit-name').value || '').trim();
+      const usernameVal = (document.getElementById('edit-username').value || '').trim();
+      
+      let finalId = currentProfile?.id;
+      const isRawUuidOrTemp = !finalId || /^[0-9a-f]{8}-[0-9a-f]{4}/i.test(finalId) || finalId.startsWith('provider-');
+      if (isRawUuidOrTemp) {
+        const sourceForSlug = nameVal || usernameVal || authUUID;
+        finalId = sourceForSlug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      }
+      if (!finalId) finalId = authUUID.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
       const profilePayload = {
-        id: currentProfile?.id || authUUID.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+        id: finalId,
         avatar_uuid: authUUID,
         name: document.getElementById('edit-name').value,
         sl_username: document.getElementById('edit-username').value,

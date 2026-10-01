@@ -22,3 +22,8 @@
 [[edge_functions]]
   path = "/profile/*"
   function = "profile-og"
+
+[[redirects]]
+  from = "/profile/*"
+  to = "/directory/profile.html"
+  status = 200
