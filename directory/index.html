@@ -476,8 +476,12 @@
                   if (sub.published === false || (!sub.is_vip && (!sub.expires_at || new Date(sub.expires_at).getTime() <= Date.now()))) {
                     p.published = false;
                   }
-                } else if (p.avatar_uuid || p.managed_subscription) {
+                } else if (p.managed_subscription) {
                   p._subscription_verified = false;
+                } else if (p.published === false || (p.expires_at && !p.is_vip && new Date(p.expires_at).getTime() <= Date.now())) {
+                  p._subscription_verified = false;
+                } else {
+                  p._subscription_verified = true;
                 }
               });
             }
