@@ -2191,6 +2191,7 @@
           body: JSON.stringify({
             uuid: authUUID,
             token: authToken || 'CC_DIRECTORY_SECRET_2026_GOLD',
+            secret: authToken || 'CC_DIRECTORY_SECRET_2026_GOLD',
             action: 'save_profile',
             profileData: profilePayload,
             status: finalStatus
@@ -2199,11 +2200,17 @@
 
         const result = await response.json();
 
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || ('Server returned status ' + response.status));
+        }
+
         btn.disabled = false;
         btn.innerHTML = '<span>✓</span> Saved Successfully!';
 
         feedback.style.display = 'block';
         feedback.className = 'form-feedback-box success';
+        feedback.style.borderColor = '#10b981';
+        feedback.style.color = '#34d399';
         feedback.innerHTML = `
           <strong>✓ Profile &amp; Rate Card Published!</strong><br>
           Your rate card, live availability status, photos, and boundary settings are saved and updated live across the Control &amp; Chaos directory.
@@ -2219,7 +2226,7 @@
         feedback.className = 'form-feedback-box';
         feedback.style.borderColor = '#ef4444';
         feedback.style.color = '#f87171';
-        feedback.innerHTML = `<strong>Error saving profile.</strong> Please check your connection or contact sim tech support at Los Pengos.`;
+        feedback.innerHTML = `<strong>Error saving profile:</strong> ${err.message}. Please check your connection or contact sim tech support.`;
       }
     }
   </script>

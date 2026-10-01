@@ -97,14 +97,13 @@ function getProfilesStore() {
   return null;
 }
 
-function verifyToken(uuid, token, secret) {
+function verifyToken(uuid, token, secret, payload) {
   if (secret && (secret === SECRET_KEY || secret === "CC_DIRECTORY_SECRET_2026_GOLD")) {
     return true;
   }
 
-  if (!uuid || !token) return false;
-  
-  const cleanToken = String(token).trim().toLowerCase();
+  const cleanToken = token ? String(token).trim().toLowerCase() : '';
+  if (!cleanToken) return false;
 
   // Direct admin / secret bypass
   if (process.env.ADMIN_EDIT_TOKEN && cleanToken === process.env.ADMIN_EDIT_TOKEN.toLowerCase()) {
@@ -114,25 +113,48 @@ function verifyToken(uuid, token, secret) {
     return true;
   }
 
+  // Collect all possible candidate keys (UUIDs, usernames, slugs, profile IDs)
+  const candidateKeys = new Set();
+  if (uuid) candidateKeys.add(String(uuid).toLowerCase().trim());
+  if (payload) {
+    if (payload.uuid) candidateKeys.add(String(payload.uuid).toLowerCase().trim());
+    if (payload.id) candidateKeys.add(String(payload.id).toLowerCase().trim());
+    if (payload.username) candidateKeys.add(String(payload.username).toLowerCase().trim());
+    if (payload.profileData) {
+      if (payload.profileData.avatar_uuid) candidateKeys.add(String(payload.profileData.avatar_uuid).toLowerCase().trim());
+      if (payload.profileData.id) candidateKeys.add(String(payload.profileData.id).toLowerCase().trim());
+      if (payload.profileData.sl_username) candidateKeys.add(String(payload.profileData.sl_username).toLowerCase().trim());
+    }
+  }
+
+  // Add all mapped aliases from KNOWN_AVATARS
+  for (const k of Array.from(candidateKeys)) {
+    if (KNOWN_AVATARS[k]) {
+      KNOWN_AVATARS[k].forEach(alias => candidateKeys.add(alias.toLowerCase()));
+    }
+  }
+
   const nowSeconds = Math.floor(Date.now() / 1000);
   const currentDay = Math.floor(nowSeconds / 86400);
 
   // Check today, yesterday, and tomorrow (handles timezone shifts & rolling tokens)
-  for (let d = currentDay - 1; d <= currentDay + 1; d++) {
-    const fullHash = crypto
-      .createHash('md5')
-      .update(`${uuid}:${d}:${SECRET_KEY}`)
-      .digest('hex')
-      .toLowerCase();
+  for (const candidate of candidateKeys) {
+    for (let d = currentDay - 1; d <= currentDay + 1; d++) {
+      const fullHash = crypto
+        .createHash('md5')
+        .update(`${candidate}:${d}:${SECRET_KEY}`)
+        .digest('hex')
+        .toLowerCase();
 
-    // Match full hash, 15-char substring, 16-char substring, or prefix
-    if (
-      fullHash === cleanToken || 
-      fullHash.startsWith(cleanToken) || 
-      cleanToken.startsWith(fullHash.substring(0, 12)) ||
-      fullHash.substring(0, cleanToken.length) === cleanToken
-    ) {
-      return true;
+      // Match full hash, 15-char substring, 16-char substring, or prefix
+      if (
+        fullHash === cleanToken || 
+        fullHash.startsWith(cleanToken) || 
+        cleanToken.startsWith(fullHash.substring(0, 12)) ||
+        fullHash.substring(0, cleanToken.length) === cleanToken
+      ) {
+        return true;
+      }
     }
   }
 
@@ -183,6 +205,12 @@ exports.handler = async (event) => {
       if (!foundProfile && store) {
         try {
           foundProfile = await store.get(targetId, { type: 'json' });
+          if (!foundProfile && KNOWN_AVATARS[targetId]) {
+            for (const alias of KNOWN_AVATARS[targetId]) {
+              foundProfile = await store.get(alias.toLowerCase(), { type: 'json' });
+              if (foundProfile) break;
+            }
+          }
           if (foundProfile) {
             gCustomProfiles[targetId] = foundProfile;
           }
@@ -230,7 +258,7 @@ exports.handler = async (event) => {
     const payload = JSON.parse(event.body || '{}');
     const { uuid, id, username, name, token, secret, action, profileData, status, tier, duration_days, days, published, is_vip } = payload;
 
-    if (!uuid || !verifyToken(uuid, token, secret)) {
+    if (!uuid || !verifyToken(uuid, token, secret, payload)) {
       return {
         statusCode: 403,
         headers,
@@ -408,6 +436,7 @@ exports.handler = async (event) => {
           await store.setJSON(cleanUuid, profileData);
           await store.setJSON(pId, profileData);
           if (pUsername) await store.setJSON(pUsername, profileData);
+          if (profileData.avatar_uuid) await store.setJSON(profileData.avatar_uuid.toLowerCase().trim(), profileData);
           await store.setJSON('all_profiles', gCustomProfiles);
         } catch (blobErr) {
           console.warn('[BLOBS STORAGE WARNING]', blobErr.message);
