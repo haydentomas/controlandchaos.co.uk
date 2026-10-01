@@ -1035,10 +1035,9 @@
 
           const totalL$ = window.currentQuoteTotal || 0;
           const totalUSD = window.currentQuoteUSD || (totalL$ > 0 ? Math.round(totalL$ / 250) : 0);
-          const totalGBP = totalL$ > 0 ? Math.round(totalL$ / 315) : 0;
 
           if (modalName) {
-            modalName.textContent = totalL$ > 0 ? `Settle Deposit (L$${totalL$.toLocaleString()} / ~£${totalGBP} / ~$${totalUSD})` : `Send Tribute to ${profileData.name}`;
+            modalName.textContent = totalL$ > 0 ? `Settle Deposit (L$${totalL$.toLocaleString()} / ~$${totalUSD})` : `Send Tribute to ${profileData.name}`;
           }
 
           // Throne
@@ -1049,19 +1048,19 @@
             modalThroneBox.style.display = 'block';
           }
 
-          // Dynamic pre-filled Ko-fi link
+          // Dynamic pre-filled Ko-fi link ($ USD)
           if (profileData.kofi && modalKofiBox && modalKofiLink) {
             const cleanKofi = profileData.kofi.replace(/^https?:\/\/(www\.)?ko-fi\.com\//, '').replace(/\/+$/, '');
             modalKofiLink.href = `https://ko-fi.com/${cleanKofi}`;
-            modalKofiLink.textContent = totalGBP > 0 ? `☕ Pay £${totalGBP} via Ko-fi ↗` : '☕ Pay via Ko-fi ↗';
+            modalKofiLink.textContent = totalUSD > 0 ? `☕ Pay $${totalUSD} via Ko-fi ↗` : '☕ Pay via Ko-fi ↗';
             modalKofiBox.style.display = 'block';
           }
 
-          // Dynamic pre-filled Revolut.me link
+          // Dynamic pre-filled Revolut.me link ($ USD)
           if (profileData.revolut_me && modalRevolutBox && modalRevolutLink) {
             const cleanRev = profileData.revolut_me.replace(/^https?:\/\/(www\.)?revolut\.me\//, '').replace(/\/+$/, '');
-            modalRevolutLink.href = totalGBP > 0 ? `https://revolut.me/${cleanRev}/${totalGBP}gbp` : `https://revolut.me/${cleanRev}`;
-            modalRevolutLink.textContent = totalGBP > 0 ? `Send £${totalGBP} via Revolut ↗` : 'Send via Revolut ↗';
+            modalRevolutLink.href = totalUSD > 0 ? `https://revolut.me/${cleanRev}/${totalUSD}usd` : `https://revolut.me/${cleanRev}`;
+            modalRevolutLink.textContent = totalUSD > 0 ? `Send $${totalUSD} via Revolut ↗` : 'Send via Revolut ↗';
             modalRevolutBox.style.display = 'block';
           }
 
