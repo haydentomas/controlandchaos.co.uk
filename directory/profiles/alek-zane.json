@@ -25,6 +25,20 @@
   "about": "Looking for an engaging, responsive submissive who actually knows how to keep things interesting? I offer dedicated, high-energy submission services exclusively to female dominants. Expect a discreet, attentive companion with an authentic British voice, a bubbly spark, and just enough playful brat in me to keep your sessions dynamic, fun, and completely engaging.\n\nI run high-quality male and female mesh avatars to cater directly to your specific tastes, visual aesthetics, or scenario needs.",
   "tagline": "The versatile British sub you’ve been looking for. Ready to entertain female Dominants who desire a sharp, bubbly companion with just enough cheeky attitude to keep you on your toes—and complete devotion when put firmly in my place.",
   "limits_title": "",
+  "tribute_goal": {
+    "active": true,
+    "title": "Formal Gala Menswear & Collar Upgrades",
+    "target_amount": 30000,
+    "current_amount": 18500,
+    "currency": "L$",
+    "supporters": [
+      { "name": "Mistress_Alexis", "amount": "L$10,000", "badge": "👑 Dominant Sponsor" },
+      { "name": "Lady_Seraphina", "amount": "L$8,500", "badge": "💎 Sponsor" }
+    ]
+  },
+  "patrons": [
+    { "name": "Mistress Alexis Vane", "tier": "Lead Domme Sponsor", "avatar_sl": "alexis.vane", "badge": "👑 Sovereign" }
+  ],
   "gallery": [
     {
       "title": "Formal Gala & Black Tie Look",
@@ -39,10 +53,12 @@
       "icon": "🍸"
     },
     {
-      "title": "RLV Chamber Protocol",
-      "category": "Restraints",
+      "title": "RLV Chamber Protocol VIP Lookbook",
+      "category": "VIP Restraints",
       "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
-      "icon": "⛓️"
+      "icon": "🔒",
+      "is_locked": true,
+      "unlock_price": "L$500"
     },
     {
       "title": "Control & Chaos Grand Ballroom",
