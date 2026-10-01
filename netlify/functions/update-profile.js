@@ -103,15 +103,15 @@ function getProfilesStore(event) {
 
   if (getStore) {
     try {
-      const store = getStore({ name: 'directory-profiles', consistency: 'strong' });
+      const store = getStore('directory-profiles');
       if (store) return store;
     } catch (e1) {
-      lastStoreError = 'getStore with consistency failed: ' + e1.message;
+      lastStoreError = 'getStore directory-profiles failed: ' + e1.message;
       try {
-        const store = getStore('directory-profiles');
+        const store = getStore({ name: 'directory-profiles' });
         if (store) return store;
       } catch (e2) {
-        lastStoreError = 'getStore name failed: ' + e2.message;
+        lastStoreError = 'getStore object failed: ' + e2.message;
       }
     }
   } else {

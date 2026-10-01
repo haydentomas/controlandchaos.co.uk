@@ -418,18 +418,31 @@
               Object.keys(liveData.profiles).forEach(k => {
                 const customP = liveData.profiles[k];
                 if (!customP || !customP.id) return;
-                // Deduplicate: only process each unique profile object once
-                const profileKey = customP.id || customP.avatar_uuid || customP.sl_username;
-                if (processed.has(profileKey)) return;
-                processed.add(profileKey);
                 
-                const existingIdx = allProfiles.findIndex(p => 
-                  p.id === customP.id || 
-                  p.id === k ||
-                  p.avatar_uuid === customP.avatar_uuid || 
-                  p.avatar_uuid === k ||
-                  (p.sl_username && (p.sl_username === customP.sl_username || p.sl_username === k))
-                );
+                const pId = String(customP.id || '').toLowerCase().trim();
+                const pUuid = String(customP.avatar_uuid || '').toLowerCase().trim();
+                const pUser = String(customP.sl_username || '').toLowerCase().trim();
+                const cleanKey = String(k || '').toLowerCase().trim();
+
+                const dedupKey = pUuid || pId || pUser;
+                if (dedupKey && processed.has(dedupKey)) return;
+                if (dedupKey) processed.add(dedupKey);
+                
+                const existingIdx = allProfiles.findIndex(p => {
+                  const targetId = String(p.id || '').toLowerCase().trim();
+                  const targetUuid = String(p.avatar_uuid || '').toLowerCase().trim();
+                  const targetUser = String(p.sl_username || '').toLowerCase().trim();
+
+                  return (
+                    (pId && targetId === pId) ||
+                    (cleanKey && targetId === cleanKey) ||
+                    (pUuid && targetUuid === pUuid) ||
+                    (cleanKey && targetUuid === cleanKey) ||
+                    (pUser && targetUser === pUser) ||
+                    (cleanKey && targetUser === cleanKey)
+                  );
+                });
+
                 if (existingIdx !== -1) {
                   allProfiles[existingIdx] = customP;
                 } else if (customP.name) {
