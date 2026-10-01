@@ -222,6 +222,49 @@
             <p id="profile-about-text" style="font-size: 15px; color: var(--text-primary); line-height: 1.75; margin-top: 10px; white-space: pre-line;"></p>
           </div>
 
+          <!-- Voice Clip & Video Introduction Card (Conditionally Shown) -->
+          <div class="card" style="margin-bottom: 30px; display: none;" id="profile-media-intro-card">
+            <h3 class="card-title" id="media-intro-card-title" style="font-size: 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+              <span>🎙️</span> <span id="media-intro-header-text">Voice &amp; Video Introduction</span>
+            </h3>
+
+            <!-- Voice Audio Clip Player -->
+            <div id="voice-clip-container" style="display: none; margin-bottom: 18px; background: rgba(20,18,16,0.85); border: 1px solid var(--gold-border); border-radius: 12px; padding: 18px 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div>
+                  <div style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: var(--gold-bright); display: flex; align-items: center; gap: 6px;">
+                    <span>🎙️</span> <span id="voice-clip-title">Voice Sample &amp; Accent</span>
+                  </div>
+                  <div style="font-size: 11.5px; font-family: var(--font-mono); color: var(--gold-muted); margin-top: 2px;" id="voice-clip-subtitle">
+                    Listen to verified voice sample
+                  </div>
+                </div>
+                <span class="tag-pill-badge" style="font-size: 10px; padding: 3px 8px; color: #4ade80; border-color: rgba(74,222,128,0.3);">● AUDIO VERIFIED</span>
+              </div>
+              
+              <!-- HTML5 Audio Element with custom styling -->
+              <div style="background: #0d0b09; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center;">
+                <audio id="profile-voice-audio" controls preload="metadata" style="width: 100%; height: 38px; filter: invert(0.9) hue-rotate(180deg) contrast(1.2);">
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            </div>
+
+            <!-- Video Introduction Player -->
+            <div id="video-intro-container" style="display: none; background: rgba(20,18,16,0.85); border: 1px solid var(--gold-border); border-radius: 12px; padding: 18px 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: var(--gold-bright); display: flex; align-items: center; gap: 6px;">
+                  <span>🎬</span> <span id="video-intro-title">Virtual Intro &amp; Avatar Motion</span>
+                </div>
+                <span class="tag-pill-badge" style="font-size: 10px; padding: 3px 8px; color: #60a5fa; border-color: rgba(96,165,250,0.3);">HD VIDEO</span>
+              </div>
+              <div id="video-embed-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #000;">
+                <!-- Iframe or Video tag injected dynamically -->
+              </div>
+            </div>
+
+          </div>
+
           <!-- Rate Categories Container (Repeater) -->
           <div id="rate-categories-container" style="display: flex; flex-direction: column; gap: 30px; margin-bottom: 30px;">
             <!-- Categorized Rate Tables injected dynamically -->
@@ -769,6 +812,78 @@
       const aboutText = document.getElementById('profile-about-text');
       if (aboutText) {
         aboutText.textContent = profileData.about || '';
+      }
+
+      // 3.5 Render Voice Clip & Video Introduction Card (Conditionally Rendered)
+      const mediaCard = document.getElementById('profile-media-intro-card');
+      const voiceContainer = document.getElementById('voice-clip-container');
+      const voiceAudio = document.getElementById('profile-voice-audio');
+      const voiceTitle = document.getElementById('voice-clip-title');
+      const voiceSubtitle = document.getElementById('voice-clip-subtitle');
+
+      const videoContainer = document.getElementById('video-intro-container');
+      const videoTitle = document.getElementById('video-intro-title');
+      const videoWrapper = document.getElementById('video-embed-wrapper');
+      const mediaHeaderText = document.getElementById('media-intro-header-text');
+
+      let hasVoice = false;
+      let hasVideo = false;
+
+      const voiceUrl = profileData.voice_clip || profileData.voice_audio || profileData.audio_sample || '';
+      if (voiceUrl && voiceContainer && voiceAudio) {
+        voiceAudio.src = voiceUrl;
+        if (voiceTitle) voiceTitle.textContent = profileData.voice_title || `${profileData.name}'s Voice Sample`;
+        if (voiceSubtitle) voiceSubtitle.textContent = profileData.voice_subtitle || 'Verified voice sample & accent';
+        voiceContainer.style.display = 'block';
+        hasVoice = true;
+      }
+
+      const videoUrl = profileData.video_intro || profileData.intro_video || profileData.video || '';
+      if (videoUrl && videoContainer && videoWrapper) {
+        if (videoTitle) videoTitle.textContent = profileData.video_title || 'Virtual Intro & Avatar Motion';
+        
+        let embedHtml = '';
+        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+          let ytId = '';
+          if (videoUrl.includes('youtu.be/')) {
+            ytId = videoUrl.split('youtu.be/')[1].split(/[?&]/)[0];
+          } else if (videoUrl.includes('v=')) {
+            ytId = videoUrl.split('v=')[1].split('&')[0];
+          } else if (videoUrl.includes('embed/')) {
+            ytId = videoUrl.split('embed/')[1].split(/[?&]/)[0];
+          }
+          if (ytId) {
+            embedHtml = `<iframe src="https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1" title="Video Intro" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
+          }
+        } else if (videoUrl.includes('vimeo.com')) {
+          const vimeoId = videoUrl.split('vimeo.com/')[1].split(/[?&]/)[0];
+          if (vimeoId) {
+            embedHtml = `<iframe src="https://player.vimeo.com/video/${vimeoId}" title="Video Intro" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position: absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
+          }
+        } else {
+          embedHtml = `<video src="${videoUrl}" controls playsinline style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;"></video>`;
+        }
+
+        if (embedHtml) {
+          videoWrapper.innerHTML = embedHtml;
+          videoContainer.style.display = 'block';
+          hasVideo = true;
+        }
+      }
+
+      if (mediaCard) {
+        if (hasVoice && hasVideo) {
+          if (mediaHeaderText) mediaHeaderText.textContent = 'Voice & Video Introduction';
+          mediaCard.style.display = 'block';
+        } else if (hasVoice) {
+          if (mediaHeaderText) mediaHeaderText.textContent = 'Voice Sample & Audio Intro';
+          mediaCard.style.display = 'block';
+        } else if (hasVideo) {
+          if (mediaHeaderText) mediaHeaderText.textContent = 'Video & Virtual Introduction';
+          mediaCard.style.display = 'block';
+        } else {
+          mediaCard.style.display = 'none';
+        }
       }
 
       // 4. Render Categorized Rate Cards (Repeater)

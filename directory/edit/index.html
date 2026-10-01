@@ -692,6 +692,59 @@
                 <div class="form-hint">Wide luxury banner (e.g. 1920x600 px) for profile header background.</div>
                 <img id="preview-banner-thumb" class="img-preview-thumb" src="" alt="Banner Preview" onerror="this.style.display='none'">
               </div>
+            <!-- Voice Sample & Video Introduction -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🎙️</span> Voice Sample &amp; Video Introduction</h3>
+              </div>
+              <p class="font-xs text-muted mb-16">
+                Let potential clients hear your voice accent or see your avatar in motion. If left blank, this section remains hidden.
+              </p>
+
+              <!-- Voice Audio Input -->
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(212,175,55,0.2); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px;">
+                <div class="flex-between align-center mb-10">
+                  <span class="font-xs text-gold uppercase font-mono font-bold">🎙️ Voice Clip / Audio Sample</span>
+                  <span class="tag-pill-badge" style="font-size: 10px; color: #4ade80;">MP3 / WAV / Direct Link</span>
+                </div>
+                
+                <div class="form-grid-2 mb-10">
+                  <div class="form-group mb-0">
+                    <label class="form-label" for="edit-voice-title">Audio Title / Accent Label</label>
+                    <input type="text" id="edit-voice-title" class="form-input" placeholder="e.g. Authentic British Accent Sample">
+                  </div>
+                  <div class="form-group mb-0">
+                    <label class="form-label" for="edit-voice-subtitle">Audio Subtitle</label>
+                    <input type="text" id="edit-voice-subtitle" class="form-input" placeholder="e.g. Verified voice sample & tone">
+                  </div>
+                </div>
+
+                <div class="form-group mb-0">
+                  <label class="form-label" for="edit-voice-clip">Audio File URL (.mp3, .ogg, .wav or web link)</label>
+                  <input type="text" id="edit-voice-clip" class="form-input" placeholder="https://.../my-voice-sample.mp3">
+                  <div class="form-hint">Direct audio link to your voice introduction.</div>
+                </div>
+              </div>
+
+              <!-- Video Intro Input -->
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(212,175,55,0.2); border-radius: 8px; padding: 14px 16px;">
+                <div class="flex-between align-center mb-10">
+                  <span class="font-xs text-gold uppercase font-mono font-bold">🎬 Video Introduction / Avatar Reel</span>
+                  <span class="tag-pill-badge" style="font-size: 10px; color: #60a5fa;">YouTube / Vimeo / MP4</span>
+                </div>
+
+                <div class="form-grid-2 mb-10">
+                  <div class="form-group mb-0">
+                    <label class="form-label" for="edit-video-title">Video Header Title</label>
+                    <input type="text" id="edit-video-title" class="form-input" placeholder="e.g. Virtual Intro & Avatar Motion">
+                  </div>
+                  <div class="form-group mb-0">
+                    <label class="form-label" for="edit-video-intro">Video URL (YouTube, Vimeo, or .mp4)</label>
+                    <input type="text" id="edit-video-intro" class="form-input" placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/...">
+                  </div>
+                </div>
+                <div class="form-hint">Paste a standard YouTube link, Vimeo URL, or direct MP4 video link.</div>
+              </div>
             </div>
 
             <!-- Photo Lookbook Gallery -->
@@ -1385,6 +1438,11 @@
       // Media Tab
       document.getElementById('edit-avatar-img').value = p.avatar_image || '';
       document.getElementById('edit-banner-img').value = p.banner_image || '';
+      document.getElementById('edit-voice-clip').value = p.voice_clip || p.voice_audio || p.audio_sample || '';
+      document.getElementById('edit-voice-title').value = p.voice_title || '';
+      document.getElementById('edit-voice-subtitle').value = p.voice_subtitle || '';
+      document.getElementById('edit-video-intro').value = p.video_intro || p.intro_video || p.video || '';
+      document.getElementById('edit-video-title').value = p.video_title || '';
 
       // Bio Tab
       document.getElementById('edit-tagline').value = p.tagline || '';
@@ -1982,6 +2040,11 @@
         
         avatar_image: document.getElementById('edit-avatar-img').value,
         banner_image: document.getElementById('edit-banner-img').value,
+        voice_clip: document.getElementById('edit-voice-clip')?.value || '',
+        voice_title: document.getElementById('edit-voice-title')?.value || '',
+        voice_subtitle: document.getElementById('edit-voice-subtitle')?.value || '',
+        video_intro: document.getElementById('edit-video-intro')?.value || '',
+        video_title: document.getElementById('edit-video-title')?.value || '',
 
         tagline: document.getElementById('edit-tagline').value,
         about_title: document.getElementById('edit-about-title').value || 'About & Philosophy',
