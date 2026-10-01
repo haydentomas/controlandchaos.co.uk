@@ -433,7 +433,7 @@ exports.handler = async (event) => {
         validPaymentRegistration = verifyKioskPaymentToken(uuid, tier, duration_days, payload.payment_token);
       }
     }
-    const requiresAdmin = action === 'admin_grant_time' || action === 'admin_toggle_publish';
+    const requiresAdmin = action === 'admin_grant_time' || action === 'admin_toggle_publish' || action === 'admin_remove_profile';
 
     if (requiresAdmin ? !adminAuthorized : action === 'register_paid' ? !validPaymentRegistration : !verifyToken(targetKey, token, '', payload)) {
       return {
@@ -536,6 +536,66 @@ exports.handler = async (event) => {
         KNOWN_AVATARS[cleanUuid].forEach(alias => { gSubscriptions[alias.toLowerCase()] = existing; });
       }
       await saveSubscriptions(getProfilesStore(event));
+    }
+
+    if (action === 'admin_remove_profile') {
+      const store = getProfilesStore(event);
+      if (!store) {
+        return {
+          statusCode: 503,
+          headers,
+          body: JSON.stringify({ error: 'Profile storage is unavailable; no profile was removed.' })
+        };
+      }
+
+      let storedProfiles = await store.get('all_profiles', { type: 'json' });
+      if (!storedProfiles) {
+        const raw = await store.get('all_profiles');
+        if (raw && typeof raw === 'string') storedProfiles = JSON.parse(raw);
+      }
+      if (!storedProfiles || typeof storedProfiles !== 'object') storedProfiles = {};
+
+      const removedProfiles = new Map();
+      for (const [profileKey, profile] of Object.entries(storedProfiles)) {
+        if (String(profile && profile.avatar_uuid || '').toLowerCase().trim() === cleanUuid) {
+          removedProfiles.set(profileKey, profile);
+        }
+      }
+      for (const [profileKey, profile] of Object.entries(gCustomProfiles)) {
+        if (String(profile && profile.avatar_uuid || '').toLowerCase().trim() === cleanUuid) {
+          removedProfiles.set(profileKey, profile);
+        }
+      }
+
+      const blobKeysToDelete = new Set([cleanUuid]);
+      for (const [profileKey, profile] of removedProfiles) {
+        delete storedProfiles[profileKey];
+        delete gCustomProfiles[profileKey];
+        blobKeysToDelete.add(profileKey);
+        if (profile.id) blobKeysToDelete.add(String(profile.id).toLowerCase().trim());
+        if (profile.slug) blobKeysToDelete.add(String(profile.slug).toLowerCase().trim());
+        if (profile.sl_username) blobKeysToDelete.add(String(profile.sl_username).toLowerCase().trim());
+        if (profile.avatar_uuid) blobKeysToDelete.add(String(profile.avatar_uuid).toLowerCase().trim());
+      }
+
+      for (const key of blobKeysToDelete) {
+        if (key && key !== 'all_profiles' && store.delete) await store.delete(key);
+      }
+      if (store.setJSON) await store.setJSON('all_profiles', storedProfiles);
+      else if (store.set) await store.set('all_profiles', JSON.stringify(storedProfiles));
+
+      await loadSubscriptions(store);
+      for (const key of [...blobKeysToDelete, ...((KNOWN_AVATARS[cleanUuid] || []).map(alias => alias.toLowerCase()))]) {
+        if (key) delete gSubscriptions[key];
+      }
+      if (store.setJSON) await store.setJSON('all_subscriptions', gSubscriptions);
+      else if (store.set) await store.set('all_subscriptions', JSON.stringify(gSubscriptions));
+
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ success: true, removed: removedProfiles.size > 0, removed_keys: Array.from(blobKeysToDelete) })
+      };
     }
 
     // 5. Add Tribute / Tip Sync (from In-World Tip Jar, Throne, Cash App, or Web Confirmation)

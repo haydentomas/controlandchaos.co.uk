@@ -292,6 +292,20 @@
           const res = await fetch('/.netlify/functions/update-profile');
           if (res.ok) {
             const data = await res.json();
+            if (data && data.profiles) {
+              const seenDynamicProfiles = new Set();
+              Object.values(data.profiles).forEach(profile => {
+                if (!profile || !profile.avatar_uuid) return;
+                const avatarUuid = String(profile.avatar_uuid).toLowerCase();
+                if (seenDynamicProfiles.has(avatarUuid)) return;
+                seenDynamicProfiles.add(avatarUuid);
+                const existingIndex = rawProfiles.findIndex(existing =>
+                  String(existing.avatar_uuid || '').toLowerCase() === avatarUuid
+                );
+                if (existingIndex >= 0) rawProfiles[existingIndex] = profile;
+                else rawProfiles.push(profile);
+              });
+            }
             if (data && data.subscriptions) {
               serverSubs = data.subscriptions;
             }
@@ -350,7 +364,7 @@
           if (exp.status === 'expired' || !exp.published) expired++;
 
           const matchesSearch = !search || (
-            (p.name || '') + ' ' + (p.sl_username || '') + ' ' + (p.id || '')
+            (p.name || '') + ' ' + (p.sl_username || '') + ' ' + (p.id || '') + ' ' + (p.avatar_uuid || '')
           ).toLowerCase().includes(search);
 
           let matchesFilter = true;
@@ -414,6 +428,7 @@
                 <button class="action-pill" data-id="${p.id}" data-action="grant-30" title="Add 30 days">+30d</button>
                 <button class="action-pill" data-id="${p.id}" data-action="grant-90" title="Add 90 days">+90d</button>
                 <button class="action-pill" data-id="${p.id}" data-action="grant-vip" title="Set VIP Lifetime">👑 VIP</button>
+                ${p.avatar_uuid ? `<button class="action-pill" data-id="${p.id}" data-action="remove-profile" title="Permanently remove this dynamic profile" style="color:#f87171; border-color:rgba(248,113,113,0.35);">Remove</button>` : ''}
                 <a href="/directory/edit/?uuid=${p.avatar_uuid || p.id}&admin=true&token=${encodeURIComponent(currentSecret)}" target="_blank" class="action-pill" style="text-decoration:none;" title="Open editor">✏️ Edit</a>
                 <a href="/profile/${p.id}/" target="_blank" class="action-pill" style="text-decoration:none;" title="View public rate card">👁️ View</a>
               </div>
@@ -431,6 +446,11 @@
             const targetProfile = rawProfiles.find(p => p.id === id);
             if (!targetProfile) return;
 
+            if (action === 'remove-profile') {
+              const label = targetProfile.name || targetProfile.avatar_uuid;
+              if (!confirm(`Permanently remove ${label}'s dynamic profile and subscription data? This cannot be undone.`)) return;
+            }
+
             btn.disabled = true;
             btn.textContent = '⏳';
 
@@ -445,6 +465,9 @@
                 const exp = getExpirationInfo(targetProfile);
                 payload.action = 'admin_toggle_publish';
                 payload.published = !exp.published;
+              } else if (action === 'remove-profile') {
+                payload.action = 'admin_remove_profile';
+                payload.uuid = targetProfile.avatar_uuid;
               } else if (action === 'grant-30') {
                 payload.action = 'admin_grant_time';
                 payload.days = 30;
@@ -463,6 +486,10 @@
               });
 
               if (res.ok) {
+                if (action === 'remove-profile') {
+                  const result = await res.json();
+                  if (!result.removed) alert('No dynamic profile was found for that UUID.');
+                }
                 await loadProviders();
               } else {
                 alert('Action failed. Please verify your Admin Secret Key.');
