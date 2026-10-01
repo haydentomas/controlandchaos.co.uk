@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directory Subscription Checkout — Control &amp; Chaos Second Life</title>
+  <meta name="description" content="Secure PayPal and Credit Card checkout for Control & Chaos Dominant & Creator Directory subscription packages.">
+  <link rel="canonical" href="https://controlandchaos.co.uk/directory/checkout/">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles.css">
+
+  <!-- PayPal SDK (Configurable Client-ID, defaults to sandbox/live placeholder) -->
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&components=buttons"></script>
+
+  <style>
+    :root {
+      --bg-dark: #070709;
+      --bg-card: rgba(18, 18, 24, 0.95);
+      --border-card: rgba(255, 215, 0, 0.18);
+      --gold-primary: #d4af37;
+      --gold-light: #f3e5ab;
+      --gold-glow: rgba(212, 175, 55, 0.35);
+      --accent-purple: #9d4edd;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #171226 0%, #08080c 60%, #030305 100%);
+      color: #e2e8f0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .checkout-container {
+      max-width: 1100px;
+      margin: 100px auto 60px;
+      padding: 0 20px;
+    }
+
+    .checkout-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .checkout-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: var(--gold-light);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+
+    .checkout-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      color: #fff;
+      margin: 0 0 12px;
+      line-height: 1.15;
+    }
+
+    .checkout-subtitle {
+      color: #94a3b8;
+      font-size: 1.05rem;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (max-width: 880px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 20px;
+      padding: 28px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .tier-option {
+      border: 2px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .tier-option:hover {
+      border-color: rgba(212, 175, 55, 0.4);
+      background: rgba(212, 175, 55, 0.04);
+    }
+
+    .tier-option.active {
+      border-color: var(--gold-primary);
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, rgba(18, 18, 24, 0.6) 100%);
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+    }
+
+    .tier-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .tier-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tier-price {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--gold-light);
+    }
+
+    .tier-desc {
+      font-size: 0.88rem;
+      color: #94a3b8;
+      line-height: 1.45;
+    }
+
+    .avatar-summary {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .avatar-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-primary), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #000;
+      font-weight: 800;
+    }
+
+    .avatar-info h4 {
+      margin: 0;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .avatar-info p {
+      margin: 2px 0 0;
+      font-size: 0.78rem;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .order-summary {
+      border-top: 1px dashed rgba(255, 255, 255, 0.12);
+      padding-top: 18px;
+      margin-top: 20px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      color: #94a3b8;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .paypal-box {
+      margin-top: 24px;
+      min-height: 140px;
+    }
+
+    .manual-paypal-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: #0070ba;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px;
+      border-radius: 10px;
+      text-decoration: none;
+      margin-top: 14px;
+      transition: background 0.2s ease;
+    }
+
+    .manual-paypal-btn:hover {
+      background: #005ea6;
+    }
+
+    .success-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .success-card {
+      background: #0d0d14;
+      border: 2px solid var(--gold-primary);
+      border-radius: 24px;
+      padding: 36px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(212, 175, 55, 0.35);
+    }
+
+    .success-icon {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <site-navbar></site-navbar>
+
+  <main class="checkout-container">
+    <header class="checkout-header">
+      <div class="checkout-badge">👑 Verified Directory Membership</div>
+      <h1 class="checkout-title">Complete Your <span class="text-gold-gradient">Listing Tier</span></h1>
+      <p class="checkout-subtitle">Pay securely via PayPal, Debit, or Credit Card. Your directory profile, rate card builder, and live status sync are unlocked instantly upon payment.</p>
+    </header>
+
+    <div class="checkout-grid">
+      <!-- Left: Tier Selection & Benefits -->
+      <div class="panel-card">
+        <h3 style="margin: 0 0 20px; font-size: 1.15rem; color: #fff;">1. Choose Your Subscription Tier</h3>
+
+        <div class="tier-option active" id="opt-tier2" onclick="selectTier('tier2', 'Tier 2 VIP Featured Listing', 9.99, 'month')">
+          <div class="tier-header">
+            <span class="tier-name">👑 Tier 2: VIP Featured <span style="font-size: 0.75rem; background: var(--gold-primary); color: #000; padding: 2px 8px; border-radius: 6px; font-weight: 800;">POPULAR</span></span>
+            <span class="tier-price">$9.99 <span style="font-size: 0.8rem; color: #94a3b8;">/ mo</span></span>
+          </div>
+          <div class="tier-desc">
+            • Verified Gold Badge &amp; Top-Row Placement<br>
+            • Photo Lookbook &amp; Lovense / RLV Badges<br>
+            • Wearable Rate Card HUD with Real-Time Web Sync
+          </div>
+        </div>
+
+        <div class="tier-option" id="opt-tier1" onclick="selectTier('tier1', 'Tier 1 Standard Listing', 3.99, 'month')">
+          <div class="tier-header">
+            <span class="tier-name">✨ Tier 1: Standard Verified</span>
+            <span class="tier-price">$3.99 <span style="font-size: 0.8rem; color: #94a3b8;">/ mo</span></span>
+          </div>
+          <div class="tier-desc">
+            • Official Directory Listing on controlandchaos.co.uk<br>
+            • Live Status Availability Toggle (Available/Busy)<br>
+            • Direct SLurl Landmark &amp; Rate Card Builder
+          </div>
+        </div>
+
+        <div class="tier-option" id="opt-tier3" onclick="selectTier('tier3', 'Tier 3 Royal Lifetime Listing', 29.99, 'one-time')">
+          <div class="tier-header">
+            <span class="tier-name">💎 Tier 3: Royal Lifetime</span>
+            <span class="tier-price">$29.99 <span style="font-size: 0.8rem; color: #94a3b8;">one-time</span></span>
+          </div>
+          <div class="tier-desc">
+            • Permanent Lifetime Listing (Never expires)<br>
+            • Homepage Spotlight Banner &amp; Elite Status<br>
+            • Dedicated Skybox Showcase &amp; Custom Wishlist
+          </div>
+        </div>
+
+        <div style="font-size: 0.82rem; color: #64748b; margin-top: 14px;">
+          Prefer paying in Second Life Lindens? You can touch and pay the <strong>Directory Kiosk</strong> in-world anytime!
+        </div>
+      </div>
+
+      <!-- Right: Avatar Info & Checkout Portal -->
+      <div class="panel-card">
+        <h3 style="margin: 0 0 20px; font-size: 1.15rem; color: #fff;">2. Subscriber &amp; Payment Details</h3>
+
+        <div class="avatar-summary">
+          <div class="avatar-icon" id="av-avatar-icon">👑</div>
+          <div class="avatar-info">
+            <h4 id="av-display-name">Loading Second Life Avatar...</h4>
+            <p id="av-uuid">UUID: checking in-world session...</p>
+          </div>
+        </div>
+
+        <div class="order-summary">
+          <div class="summary-row">
+            <span>Selected Package:</span>
+            <strong id="sum-tier-name" style="color: #fff;">Tier 2 VIP Featured Listing</strong>
+          </div>
+          <div class="summary-row">
+            <span>Billing Cycle:</span>
+            <span id="sum-tier-cycle">Monthly Recurring</span>
+          </div>
+          <div class="summary-row">
+            <span>Instant In-World Delivery:</span>
+            <span style="color: #4ade80;">Included (Rate Card HUD)</span>
+          </div>
+          <div class="summary-total">
+            <span>Total Due Today:</span>
+            <span id="sum-tier-total" class="text-gold-gradient">$9.99 USD</span>
+          </div>
+        </div>
+
+        <!-- PayPal Buttons Mount -->
+        <div class="paypal-box">
+          <div id="paypal-button-container"></div>
+          
+          <!-- Direct Link Fallback -->
+          <a id="paypal-manual-link" href="https://www.paypal.me/ControlAndChaos/9.99USD" target="_blank" class="manual-paypal-btn" style="display: none;">
+            <span>💳</span> Pay with PayPal.me ($9.99)
+          </a>
+        </div>
+
+        <div style="font-size: 0.78rem; color: #64748b; text-align: center; margin-top: 16px;">
+          🔒 256-Bit SSL Encrypted &amp; Securely Processed via PayPal.<br>
+          Your personal Rate Card Studio editor will open immediately upon completion.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Success Confirmation Modal -->
+  <div class="success-modal" id="successModal">
+    <div class="success-card">
+      <div class="success-icon">💎</div>
+      <h2 style="font-family: 'Cinzel', serif; color: var(--gold-light); margin: 0 0 12px; font-size: 1.8rem;">Subscription Activated!</h2>
+      <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5; margin-bottom: 24px;">
+        Thank you! Your payment was verified and your <strong id="success-tier-name" style="color: #fff;">Tier 2 VIP Featured</strong> directory profile is now active on Control &amp; Chaos.
+      </p>
+      <a id="btn-open-studio" href="../edit/" class="btn btn-gold" style="width: 100%; display: block; padding: 14px; font-size: 1rem;">
+        ✨ Open Your Profile &amp; Rate Card Studio
+      </a>
+    </div>
+  </div>
+
+  <script src="../../navbar.js"></script>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    let avatarUUID = urlParams.get('uuid') || localStorage.getItem('cc_edit_uuid') || '';
+    let avatarName = urlParams.get('name') || localStorage.getItem('cc_avatar_name') || 'Second Life Creator';
+    let avatarToken = urlParams.get('token') || localStorage.getItem('cc_edit_token') || '';
+    let preselectedTier = urlParams.get('tier') || 'tier2';
+
+    let currentTier = {
+      id: 'tier2',
+      name: 'Tier 2 VIP Featured Listing',
+      price: 9.99,
+      cycle: 'Monthly Recurring',
+      durationDays: 30
+    };
+
+    function initPage() {
+      // Setup avatar info
+      if (avatarUUID) {
+        document.getElementById('av-uuid').textContent = 'UUID: ' + avatarUUID;
+        localStorage.setItem('cc_edit_uuid', avatarUUID);
+      } else {
+        document.getElementById('av-uuid').textContent = 'UUID: Guest Checkout (Will link upon save)';
+      }
+
+      if (avatarName) {
+        document.getElementById('av-display-name').textContent = avatarName;
+        document.getElementById('av-avatar-icon').textContent = avatarName.charAt(0).toUpperCase();
+      }
+
+      if (avatarToken) {
+        localStorage.setItem('cc_edit_token', avatarToken);
+      }
+
+      // Preselect tier if provided in URL
+      if (preselectedTier === 'tier1') {
+        selectTier('tier1', 'Tier 1 Standard Listing', 3.99, 'month');
+      } else if (preselectedTier === 'tier3') {
+        selectTier('tier3', 'Tier 3 Royal Lifetime Listing', 29.99, 'one-time');
+      } else {
+        selectTier('tier2', 'Tier 2 VIP Featured Listing', 9.99, 'month');
+      }
+
+      renderPayPalButtons();
+    }
+
+    function selectTier(tierId, name, price, cycleType) {
+      currentTier.id = tierId;
+      currentTier.name = name;
+      currentTier.price = price;
+      currentTier.cycle = (cycleType === 'month') ? 'Monthly Recurring' : 'Permanent Lifetime';
+      currentTier.durationDays = (cycleType === 'month') ? 30 : 36500;
+
+      // Update active card class
+      document.querySelectorAll('.tier-option').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById('opt-' + tierId);
+      if (activeEl) activeEl.classList.add('active');
+
+      // Update summary
+      document.getElementById('sum-tier-name').textContent = name;
+      document.getElementById('sum-tier-cycle').textContent = currentTier.cycle;
+      document.getElementById('sum-tier-total').textContent = '$' + price.toFixed(2) + ' USD';
+
+      // Update manual fallback link
+      const manualLink = document.getElementById('paypal-manual-link');
+      if (manualLink) {
+        manualLink.href = `https://www.paypal.me/ControlAndChaos/${price.toFixed(2)}USD`;
+        manualLink.innerHTML = `<span>💳</span> Pay $${price.toFixed(2)} with PayPal.me`;
+      }
+    }
+
+    function renderPayPalButtons() {
+      const container = document.getElementById('paypal-button-container');
+      if (!container) return;
+
+      if (typeof paypal !== 'undefined') {
+        container.innerHTML = '';
+        paypal.Buttons({
+          style: {
+            layout: 'vertical',
+            color: 'gold',
+            shape: 'rect',
+            label: 'pay'
+          },
+          createOrder: function(data, actions) {
+            return actions.order.create({
+              purchase_units: [{
+                description: `Control & Chaos Directory - ${currentTier.name} (${avatarName})`,
+                amount: {
+                  currency_code: 'USD',
+                  value: currentTier.price.toFixed(2)
+                }
+              }]
+            });
+          },
+          onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+              console.log('[PAYPAL APPROVED]', details);
+              completeSubscription(details);
+            });
+          },
+          onError: function(err) {
+            console.error('[PAYPAL ERROR]', err);
+            document.getElementById('paypal-manual-link').style.display = 'block';
+          }
+        }).render('#paypal-button-container');
+      } else {
+        document.getElementById('paypal-manual-link').style.display = 'block';
+      }
+    }
+
+    async function completeSubscription(paymentDetails) {
+      const orderId = paymentDetails.id || 'MANUAL-' + Date.now();
+      
+      // Send auto-activation payload to Netlify
+      try {
+        const payload = {
+          action: 'register_paid',
+          uuid: avatarUUID || ('PAYPAL-' + orderId),
+          name: avatarName,
+          tier: currentTier.name,
+          amount: currentTier.price,
+          duration_days: currentTier.durationDays,
+          token: avatarToken || 'PAYPAL_VERIFIED',
+          payment_ref: orderId
+        };
+
+        const res = await fetch('/.netlify/functions/update-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        console.log('[BACKEND REGISTER RESULT]', await res.json());
+      } catch (err) {
+        console.warn('[BACKEND REGISTRATION NOTICE]', err);
+      }
+
+      // Show confirmation modal
+      document.getElementById('success-tier-name').textContent = currentTier.name;
+      const studioLink = document.getElementById('btn-open-studio');
+      if (studioLink) {
+        let target = '../edit/';
+        if (avatarUUID && avatarToken) {
+          target += `?uuid=${avatarUUID}&token=${avatarToken}`;
+        }
+        studioLink.href = target;
+      }
+      document.getElementById('successModal').style.display = 'flex';
+    }
+
+    window.addEventListener('DOMContentLoaded', initPage);
+  </script>
+</body>
+</html>
