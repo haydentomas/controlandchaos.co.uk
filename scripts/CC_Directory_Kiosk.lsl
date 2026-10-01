@@ -92,7 +92,7 @@ LaunchPayPalCheckout(key agent, string tierKey) {
 
 SendQuickStatusUpdate(key agent, string newStatus) {
     string token = GenerateToken(agent);
-    string payload = "{\"action\":\"quick_status\",\"uuid\":\"" + (string)agent + "\",\"status\":\"" + newStatus + "\",\"token\":\"" + token + "\"}";
+    string payload = "{\"action\":\"quick_status\",\"uuid\":\"" + (string)agent + "\",\"status\":\"" + newStatus + "\",\"token\":\"" + token + "\",\"secret\":\"" + SECRET_KEY + "\"}";
     
     llRegionSayTo(agent, 0, "⏳ Updating your live directory status to: '" + newStatus + "'...");
     llHTTPRequest(UPDATE_API_URL, [

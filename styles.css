@@ -2515,92 +2515,64 @@ body {
 }
 
 /* ==========================================================================
-   LIVE AVAILABILITY STATUS SIGNALS & BADGES (Kiosk & Wearable HUD Sync)
+   LIVE AVAILABILITY TRAFFIC LIGHT SYSTEM (Green: Live, Yellow: Away, Grey: Offline)
    ========================================================================== */
-.live-status-badge {
+.traffic-status {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
-  border-radius: 9999px;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-family: var(--font-brand), var(--font-mono), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-brand), sans-serif;
+  letter-spacing: 0.02em;
+  margin-top: 3px;
   line-height: 1;
-  backdrop-filter: blur(6px);
-  transition: all 0.25s ease;
 }
 
-.status-dot {
-  width: 7px;
-  height: 7px;
+.traffic-dot {
+  width: 7.5px;
+  height: 7.5px;
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
 }
 
-.status-available {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.45);
+.traffic-live {
   color: #34d399;
 }
-.dot-available {
+.traffic-live .traffic-dot {
   background: #10b981;
   box-shadow: 0 0 8px #10b981;
   animation: pulse-green 1.8s infinite;
 }
 
-.status-busy {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.45);
-  color: #f87171;
-}
-.dot-busy {
-  background: #ef4444;
-  box-shadow: 0 0 8px #ef4444;
-  animation: pulse-red 2s infinite;
-}
-
-.status-away {
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.45);
+.traffic-away {
   color: #fbbf24;
 }
-.dot-away {
+.traffic-away .traffic-dot {
   background: #f59e0b;
-  box-shadow: 0 0 8px #f59e0b;
+  box-shadow: 0 0 6px #f59e0b;
 }
 
-.status-appt {
-  background: rgba(168, 85, 247, 0.15);
-  border: 1px solid rgba(168, 85, 247, 0.45);
-  color: #c084fc;
+.traffic-busy {
+  color: #f87171;
 }
-.dot-appt {
-  background: #a855f7;
+.traffic-busy .traffic-dot {
+  background: #ef4444;
+  box-shadow: 0 0 6px #ef4444;
 }
 
-.status-offline {
-  background: rgba(148, 163, 184, 0.1);
-  border: 1px solid rgba(148, 163, 184, 0.25);
+.traffic-offline {
   color: #94a3b8;
 }
-.dot-offline {
+.traffic-offline .traffic-dot {
   background: #64748b;
 }
 
 @keyframes pulse-green {
   0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  70% { transform: scale(1.15); box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
   100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-
-@keyframes pulse-red {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 

@@ -475,20 +475,17 @@
       }
 
       function getStatusBadgeHtml(rawStatus) {
-        const s = (rawStatus || 'Available').toLowerCase();
-        if (s.includes('busy') || s.includes('session') || s.includes('booked')) {
-          return `<span class="live-status-badge status-busy"><span class="status-dot dot-busy"></span> In Session</span>`;
+        const s = (rawStatus || 'Offline').toLowerCase();
+        if (s.includes('live') || s.includes('avail') || s.includes('online')) {
+          return `<span class="traffic-status traffic-live" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); padding:4px 12px; border-radius:9999px;"><span class="traffic-dot"></span> Live</span>`;
         }
         if (s.includes('away') || s.includes('afk')) {
-          return `<span class="live-status-badge status-away"><span class="status-dot dot-away"></span> Away / AFK</span>`;
+          return `<span class="traffic-status traffic-away" style="background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.4); padding:4px 12px; border-radius:9999px;"><span class="traffic-dot"></span> Away</span>`;
         }
-        if (s.includes('appt') || s.includes('appointment')) {
-          return `<span class="live-status-badge status-appt"><span class="status-dot dot-appt"></span> By Appointment</span>`;
+        if (s.includes('busy') || s.includes('session') || s.includes('booked')) {
+          return `<span class="traffic-status traffic-busy" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); padding:4px 12px; border-radius:9999px;"><span class="traffic-dot"></span> Busy</span>`;
         }
-        if (s.includes('offline')) {
-          return `<span class="live-status-badge status-offline"><span class="status-dot dot-offline"></span> Offline</span>`;
-        }
-        return `<span class="live-status-badge status-available"><span class="status-dot dot-available"></span> Live In-World</span>`;
+        return `<span class="traffic-status traffic-offline" style="background:rgba(148,163,184,0.1); border:1px solid rgba(148,163,184,0.25); padding:4px 12px; border-radius:9999px;"><span class="traffic-dot"></span> Offline</span>`;
       }
 
       if (heroContainer) {

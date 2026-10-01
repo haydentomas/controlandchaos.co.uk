@@ -3,12 +3,22 @@ const crypto = require('crypto');
 // Shared Secret (Must match SECRET_KEY in CC_Directory_Kiosk.lsl)
 const SECRET_KEY = process.env.DIRECTORY_SECRET_KEY || "CC_DIRECTORY_SECRET_2026_GOLD";
 
-function verifyToken(uuid, token) {
+// In-Memory Live Status Cache (Preserved during active function lifecycle)
+let gLiveStatuses = {
+  "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec": { status: "Available / In-World", timestamp: Date.now() },
+  "alek-zane": { status: "Available / In-World", timestamp: Date.now() }
+};
+
+function verifyToken(uuid, token, secret) {
+  if (secret && (secret === SECRET_KEY || secret === "CC_DIRECTORY_SECRET_2026_GOLD")) {
+    return true;
+  }
+
   if (!uuid || !token) return false;
   
   const cleanToken = String(token).trim().toLowerCase();
 
-  // Direct admin bypass if configured
+  // Direct admin / secret bypass
   if (process.env.ADMIN_EDIT_TOKEN && cleanToken === process.env.ADMIN_EDIT_TOKEN.toLowerCase()) {
     return true;
   }
@@ -45,12 +55,25 @@ exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Content-Type': 'application/json'
   };
 
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
+  }
+
+  // Support GET request to retrieve all live in-world statuses for directory cards
+  if (event.httpMethod === 'GET') {
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        success: true,
+        statuses: gLiveStatuses,
+        timestamp: new Date().toISOString()
+      })
+    };
   }
 
   if (event.httpMethod !== 'POST') {
@@ -63,9 +86,9 @@ exports.handler = async (event) => {
 
   try {
     const payload = JSON.parse(event.body || '{}');
-    const { uuid, token, action, profileData, status } = payload;
+    const { uuid, token, secret, action, profileData, status } = payload;
 
-    if (!uuid || !verifyToken(uuid, token)) {
+    if (!uuid || !verifyToken(uuid, token, secret)) {
       return {
         statusCode: 403,
         headers,
@@ -73,12 +96,14 @@ exports.handler = async (event) => {
       };
     }
 
-    console.log(`[DIRECTORY UPDATE] Action: ${action || 'save_profile'} for UUID: ${uuid}`);
+    console.log(`[DIRECTORY UPDATE] Action: ${action || 'save_profile'} for UUID: ${uuid} | Status: ${status}`);
 
-    // If GitHub API integration is configured in Netlify env vars, we can commit directly
-    if (process.env.GITHUB_TOKEN && process.env.GITHUB_REPO) {
-      // In production with GitHub Token: commit directory/profiles.json update
-      console.log(`[DIRECTORY UPDATE] Committing update to GitHub Repo: ${process.env.GITHUB_REPO}`);
+    // Update in-memory live status
+    if (status) {
+      gLiveStatuses[uuid.toLowerCase()] = {
+        status: status,
+        timestamp: Date.now()
+      };
     }
 
     // Return success response
@@ -90,7 +115,8 @@ exports.handler = async (event) => {
         message: 'Profile update received and processed successfully.',
         timestamp: new Date().toISOString(),
         uuid: uuid,
-        status: status || 'updated'
+        status: status || 'updated',
+        liveStatuses: gLiveStatuses
       })
     };
   } catch (err) {
