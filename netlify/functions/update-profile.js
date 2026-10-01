@@ -20,6 +20,34 @@ let gLiveStatuses = {
   "alexis.vane": { status: "Available / In-World", timestamp: Date.now() }
 };
 
+// In-Memory Subscription & Publishing State Cache
+let gSubscriptions = {
+  "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec": {
+    tier: "Tier 2 VIP",
+    published: true,
+    is_vip: false,
+    expires_at: new Date(Date.now() + 28 * 86400000).toISOString()
+  },
+  "alek-zane": {
+    tier: "Tier 2 VIP",
+    published: true,
+    is_vip: false,
+    expires_at: new Date(Date.now() + 28 * 86400000).toISOString()
+  },
+  "e8d64b18-3a9b-4b2e-a5b6-c9a8e7d6f5a1": {
+    tier: "Tier 3 Royal Lifetime",
+    published: true,
+    is_vip: true,
+    expires_at: "2026-12-31T23:59:59Z"
+  },
+  "alexis-vane": {
+    tier: "Tier 3 Royal Lifetime",
+    published: true,
+    is_vip: true,
+    expires_at: "2026-12-31T23:59:59Z"
+  }
+};
+
 function verifyToken(uuid, token, secret) {
   if (secret && (secret === SECRET_KEY || secret === "CC_DIRECTORY_SECRET_2026_GOLD")) {
     return true;
@@ -74,7 +102,7 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  // Support GET request to retrieve all live in-world statuses for directory cards
+  // Support GET request to retrieve all live in-world statuses and subscription states
   if (event.httpMethod === 'GET') {
     return {
       statusCode: 200,
@@ -82,6 +110,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         success: true,
         statuses: gLiveStatuses,
+        subscriptions: gSubscriptions,
         timestamp: new Date().toISOString()
       })
     };
@@ -97,7 +126,7 @@ exports.handler = async (event) => {
 
   try {
     const payload = JSON.parse(event.body || '{}');
-    const { uuid, username, name, token, secret, action, profileData, status } = payload;
+    const { uuid, id, username, name, token, secret, action, profileData, status, tier, duration_days, days, published, is_vip } = payload;
 
     if (!uuid || !verifyToken(uuid, token, secret)) {
       return {
@@ -109,11 +138,14 @@ exports.handler = async (event) => {
 
     console.log(`[DIRECTORY UPDATE] Action: ${action || 'save_profile'} for UUID: ${uuid} | Status: ${status}`);
 
-    // Update in-memory live status across all associated keys
+    const cleanUuid = String(uuid).toLowerCase().trim();
+    const cleanId = id ? String(id).toLowerCase().trim() : null;
+
+    // 1. Live Status Updates
     if (status) {
       const keysToUpdate = new Set();
-      const cleanUuid = String(uuid).toLowerCase().trim();
       keysToUpdate.add(cleanUuid);
+      if (cleanId) keysToUpdate.add(cleanId);
 
       if (username) {
         const u = String(username).toLowerCase().trim();
@@ -126,7 +158,6 @@ exports.handler = async (event) => {
         keysToUpdate.add(n.replace(/[\s\.]+/g, '-'));
       }
 
-      // Check KNOWN_AVATARS aliases
       if (KNOWN_AVATARS[cleanUuid]) {
         KNOWN_AVATARS[cleanUuid].forEach(alias => keysToUpdate.add(alias.toLowerCase()));
       }
@@ -141,17 +172,70 @@ exports.handler = async (event) => {
       });
     }
 
+    // 2. Paid Subscription Registration (from Kiosk or PayPal Checkout)
+    if (action === 'register_paid') {
+      const dur = duration_days || (tier && tier.includes('3') ? 3650 : 30);
+      const expiry = new Date(Date.now() + (dur * 86400000)).toISOString();
+      const subEntry = {
+        tier: tier || 'Tier 1 Standard',
+        published: true,
+        is_vip: (dur >= 3650),
+        expires_at: expiry,
+        updated_at: new Date().toISOString()
+      };
+
+      gSubscriptions[cleanUuid] = subEntry;
+      if (cleanId) gSubscriptions[cleanId] = subEntry;
+      if (KNOWN_AVATARS[cleanUuid]) {
+        KNOWN_AVATARS[cleanUuid].forEach(alias => { gSubscriptions[alias.toLowerCase()] = subEntry; });
+      }
+    }
+
+    // 3. Admin: Grant Time
+    if (action === 'admin_grant_time') {
+      const existing = gSubscriptions[cleanUuid] || gSubscriptions[cleanId] || { published: true, tier: 'Tier 1 Standard' };
+      if (is_vip) {
+        existing.is_vip = true;
+        existing.expires_at = '2030-12-31T23:59:59Z';
+      } else {
+        const currentExp = existing.expires_at ? new Date(existing.expires_at).getTime() : Date.now();
+        const base = Math.max(Date.now(), currentExp);
+        const addMs = (days || 30) * 86400000;
+        existing.expires_at = new Date(base + addMs).toISOString();
+      }
+      existing.published = true;
+
+      gSubscriptions[cleanUuid] = existing;
+      if (cleanId) gSubscriptions[cleanId] = existing;
+      if (KNOWN_AVATARS[cleanUuid]) {
+        KNOWN_AVATARS[cleanUuid].forEach(alias => { gSubscriptions[alias.toLowerCase()] = existing; });
+      }
+    }
+
+    // 4. Admin: Toggle Publish
+    if (action === 'admin_toggle_publish') {
+      const existing = gSubscriptions[cleanUuid] || gSubscriptions[cleanId] || { tier: 'Tier 1 Standard', expires_at: new Date(Date.now() + 30 * 86400000).toISOString() };
+      existing.published = (published === true);
+
+      gSubscriptions[cleanUuid] = existing;
+      if (cleanId) gSubscriptions[cleanId] = existing;
+      if (KNOWN_AVATARS[cleanUuid]) {
+        KNOWN_AVATARS[cleanUuid].forEach(alias => { gSubscriptions[alias.toLowerCase()] = existing; });
+      }
+    }
+
     // Return success response
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
-        message: 'Profile update received and processed successfully.',
+        message: 'Profile / subscription update received and processed successfully.',
         timestamp: new Date().toISOString(),
         uuid: uuid,
         status: status || 'updated',
-        liveStatuses: gLiveStatuses
+        liveStatuses: gLiveStatuses,
+        subscriptions: gSubscriptions
       })
     };
   } catch (err) {

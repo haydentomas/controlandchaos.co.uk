@@ -1,7 +1,8 @@
 // CC_Directory_Kiosk.lsl
-// [Control & Chaos] In-World Directory, Tiered Subscription & Profile Sync Kiosk
+// [Control & Chaos] In-World Directory, Tiered Subscription & Automated Expiration Manager
 // Enables avatars to subscribe to 3 configurable tiered packages (Monthly / Lifetime),
-// pay in L$ or PayPal/Credit Card, unlock self-service directory profiles, and sync live status.
+// pay in L$ or PayPal/Credit Card, unlock self-service directory profiles, sync live status,
+// and automatically sends 3-Day Expiration IM Reminders before auto-unpublishing expired listings.
 
 string WEB_PORTAL_URL   = "https://controlandchaos.co.uk/directory/edit/";
 string CHECKOUT_URL     = "https://controlandchaos.co.uk/directory/checkout/";
@@ -12,7 +13,8 @@ string SECRET_KEY       = "CC_DIRECTORY_SECRET_2026_GOLD";
 
 // Dialog handles & tracking
 list   gActiveListens   = []; // [key agent, integer channel, integer listenHandle, integer expiry, string menuState]
-integer gOwnerConfiguring = 0; // 1 = T1 L$, 2 = T2 L$, 3 = T3 L$, 4 = T1 $, 5 = T2 $, 6 = T3 $
+integer gOwnerConfiguring = 0; // 1 = T1 L$, 2 = T2 L$, 3 = T3 L$, 4 = T1 $, 5 = T2 $, 6 = T3 $, 7 = Grant 30d, 8 = Grant VIP
+integer gLastAuditTime    = 0;
 
 // =========================================================================
 // 🪙 DYNAMIC TIER PRICING GETTERS & SETTERS (Persistent via LinksetData)
@@ -45,7 +47,7 @@ string GetTierButtonLabel(integer tierNum) {
 
 // Generates a daily rolling cryptographic token for the avatar
 string GenerateToken(key agent) {
-    integer dayNumber = llGetUnixTime() / 86400; // Changes daily for security
+    integer dayNumber = llGetUnixTime() / 86400;
     return llGetSubString(llMD5String((string)agent + ":" + (string)dayNumber + ":" + SECRET_KEY, 0), 0, 15);
 }
 
@@ -54,27 +56,148 @@ integer GetUserChannel(key agent) {
     return (integer)("0x" + llGetSubString((string)agent, 0, 6)) | 0x80000000;
 }
 
+// =========================================================================
+// 📜 SUBSCRIPTION TRACKING & AUTOMATED EXPIRATION AUDIT ENGINE
+// =========================================================================
+RecordSubscriber(key agent, string name, string tier, integer durationDays) {
+    integer now = llGetUnixTime();
+    integer currentExpiry = now;
+    
+    string existing = llLinksetDataRead("sub_" + (string)agent);
+    if (existing != "") {
+        list parts = llParseString2List(existing, ["|"], []);
+        if (llGetListLength(parts) >= 3) {
+            integer oldExp = (integer)llList2String(parts, 2);
+            if (oldExp > now) currentExpiry = oldExp;
+        }
+    }
+    
+    integer newExpiry = currentExpiry + (durationDays * 86400);
+    if (durationDays >= 3650) {
+        newExpiry = now + (36500 * 86400); // Lifetime
+    }
+    
+    // Store: name|tier|expires_unix|reminded(0 or 1)
+    string record = name + "|" + tier + "|" + (string)newExpiry + "|0";
+    llLinksetDataWrite("sub_" + (string)agent, record);
+    
+    // Update master subscriber list
+    string listStr = llLinksetDataRead("subscriber_list");
+    list allSubs = llCSV2List(listStr);
+    if (llListFindList(allSubs, [(string)agent]) == -1) {
+        allSubs += [(string)agent];
+        llLinksetDataWrite("subscriber_list", llList2CSV(allSubs));
+    }
+}
+
+RunSubscriptionAudit() {
+    integer now = llGetUnixTime();
+    gLastAuditTime = now;
+    string listStr = llLinksetDataRead("subscriber_list");
+    if (listStr == "") return;
+    
+    list allSubs = llCSV2List(listStr);
+    integer count = llGetListLength(allSubs);
+    integer i;
+    
+    llOwnerSay("🔍 [AUDIT] Running subscription expiration audit across " + (string)count + " providers...");
+    
+    for (i = 0; i < count; i++) {
+        string uuidStr = llList2String(allSubs, i);
+        key agent = (key)uuidStr;
+        string record = llLinksetDataRead("sub_" + uuidStr);
+        
+        if (record != "") {
+            list parts = llParseString2List(record, ["|"], []);
+            if (llGetListLength(parts) >= 4) {
+                string name = llList2String(parts, 0);
+                string tier = llList2String(parts, 1);
+                integer expiry = (integer)llList2String(parts, 2);
+                integer reminded = (integer)llList2String(parts, 3);
+                
+                integer diffSeconds = expiry - now;
+                integer daysLeft = diffSeconds / 86400;
+                
+                // 3-Day Expiration Warning Trigger
+                if (diffSeconds > 0 && daysLeft <= 3 && reminded == 0) {
+                    string reminderMsg = "👑 [CONTROL & CHAOS] Greetings " + name + "!\n" +
+                                         "Your Directory Listing subscription expires in " + (string)daysLeft + " days.\n" +
+                                         "To prevent your listing from unpublishing automatically, please renew at the in-world Kiosk or online:\n" +
+                                         CHECKOUT_URL + "?uuid=" + uuidStr + "&tier=tier2";
+                    llInstantMessage(agent, reminderMsg);
+                    llLinksetDataWrite("sub_" + uuidStr, name + "|" + tier + "|" + (string)expiry + "|1");
+                    llOwnerSay("⚠️ Sent 3-Day Expiration Reminder IM to: " + name + " (@" + uuidStr + ")");
+                }
+                // Expired Notice Trigger
+                else if (diffSeconds <= 0 && reminded < 2) {
+                    string expiredMsg = "⏳ [CONTROL & CHAOS] Notice for " + name + ":\n" +
+                                        "Your Directory Listing has reached its expiration date and is now unpublished from public search.\n" +
+                                        "Your rates and profile are safely saved. Renew anytime at the in-world Kiosk or online:\n" +
+                                        CHECKOUT_URL + "?uuid=" + uuidStr + "&tier=tier2";
+                    llInstantMessage(agent, expiredMsg);
+                    llLinksetDataWrite("sub_" + uuidStr, name + "|" + tier + "|" + (string)expiry + "|2");
+                    llOwnerSay("🔴 Sent Expiration Notice to: " + name + " (Unpublished).");
+                }
+            }
+        }
+    }
+}
+
+DumpAllSubscribers(key ownerKey) {
+    string listStr = llLinksetDataRead("subscriber_list");
+    if (listStr == "") {
+        llRegionSayTo(ownerKey, 0, "📋 [SUBSCRIPTION LIST] No subscribers recorded yet.");
+        return;
+    }
+    
+    list allSubs = llCSV2List(listStr);
+    integer count = llGetListLength(allSubs);
+    integer now = llGetUnixTime();
+    
+    llRegionSayTo(ownerKey, 0, "\n📋 [CONTROL & CHAOS DIRECTORY SUBSCRIBERS (" + (string)count + " Total)]\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    
+    integer i;
+    for (i = 0; i < count; i++) {
+        string uuidStr = llList2String(allSubs, i);
+        string record = llLinksetDataRead("sub_" + uuidStr);
+        if (record != "") {
+            list parts = llParseString2List(record, ["|"], []);
+            if (llGetListLength(parts) >= 3) {
+                string name = llList2String(parts, 0);
+                string tier = llList2String(parts, 1);
+                integer expiry = (integer)llList2String(parts, 2);
+                integer diffDays = (expiry - now) / 86400;
+                
+                string statusIcon = "🟢 Active";
+                if (diffDays <= 0) statusIcon = "🔴 Expired (" + (string)llAbs(diffDays) + "d ago)";
+                else if (diffDays <= 3) statusIcon = "🟡 Expiring (" + (string)diffDays + "d left)";
+                else if (diffDays > 3000) statusIcon = "👑 VIP Lifetime";
+                else statusIcon = "🟢 " + (string)diffDays + "d left";
+                
+                llRegionSayTo(ownerKey, 0, "• " + name + " [" + tier + "] ── " + statusIcon + " (@" + uuidStr + ")");
+            }
+        }
+    }
+    llRegionSayTo(ownerKey, 0, "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👉 Web Admin Console: https://controlandchaos.co.uk/directory/admin/");
+}
+
 InitKiosk() {
-    // Force touch action on root and all linked child prims
     llSetClickAction(CLICK_ACTION_TOUCH);
     if (llGetNumberOfPrims() > 1) {
         llSetLinkPrimitiveParamsFast(LINK_SET, [PRIM_CLICK_ACTION, CLICK_ACTION_TOUCH]);
     }
     
-    // Set Fast Pay Prices from dynamic LinksetData
     integer p1 = GetTierPrice(1);
     integer p2 = GetTierPrice(2);
     integer p3 = GetTierPrice(3);
     llSetPayPrice(PAY_HIDE, [p1, p2, p3, PAY_HIDE]);
     
-    // Set hovertext
     llSetText("👑 Control & Chaos\n✨ Dominant Directory & Subscription Portal\n[ Touch to Subscribe (L$ / PayPal) or Edit Profile ]", <0.83, 0.69, 0.22>, 1.0);
 }
 
 LaunchWebEditor(key agent) {
     string token = GenerateToken(agent);
     string fullUrl = WEB_PORTAL_URL + "?uuid=" + (string)agent + "&token=" + token;
-    
     llLoadURL(agent, "✨ Control & Chaos: Open your Private Profile & Rate Card Editor", fullUrl);
     llRegionSayTo(agent, 0, "👑 [DIRECTORY] Private Editor link: " + fullUrl);
 }
@@ -85,7 +208,6 @@ LaunchPayPalCheckout(key agent, string tierKey) {
     if (name == "" || name == "???") name = llKey2Name(agent);
     
     string checkoutUrl = CHECKOUT_URL + "?uuid=" + (string)agent + "&name=" + llEscapeURL(name) + "&token=" + token + "&tier=" + tierKey;
-    
     llLoadURL(agent, "💳 Open Secure PayPal / Card Checkout", checkoutUrl);
     llRegionSayTo(agent, 0, "💳 [PAYPAL CHECKOUT] Secure web payment link: " + checkoutUrl);
 }
@@ -110,6 +232,10 @@ SendSubscriptionRegistration(key agent, string tierName, integer amount, integer
     string name = llGetDisplayName(agent);
     if (name == "" || name == "???") name = llKey2Name(agent);
     
+    // 1. Record locally in LinksetData for automated reminder IMs
+    RecordSubscriber(agent, name, tierName, durationDays);
+    
+    // 2. Sync to Web Netlify backend
     string payload = "{" +
         "\"action\":\"register_paid\"," +
         "\"uuid\":\"" + (string)agent + "\"," +
@@ -118,7 +244,8 @@ SendSubscriptionRegistration(key agent, string tierName, integer amount, integer
         "\"tier\":\"" + tierName + "\"," +
         "\"amount\":" + (string)amount + "," +
         "\"duration_days\":" + (string)durationDays + "," +
-        "\"token\":\"" + token + "\"" +
+        "\"token\":\"" + token + "\"," +
+        "\"secret\":\"" + SECRET_KEY + "\"" +
     "}";
     
     llRegionSayTo(agent, 0, "⏳ Registering your '" + tierName + "' directory subscription on controlandchaos.co.uk...");
@@ -128,7 +255,6 @@ SendSubscriptionRegistration(key agent, string tierName, integer amount, integer
     ], payload);
 }
 
-// Helper: Deliver Package / Rate Card items stored in Kiosk inventory
 DeliverSubscriberPackage(key buyer) {
     integer invCount = llGetInventoryNumber(INVENTORY_OBJECT);
     integer i;
@@ -142,7 +268,6 @@ DeliverSubscriberPackage(key buyer) {
 ShowMainMenu(key agent) {
     integer channel = GetUserChannel(agent);
     
-    // Clean up any existing listen
     integer idx = llListFindList(gActiveListens, [agent]);
     if (idx != -1) {
         integer oldHandle = llList2Integer(gActiveListens, idx + 2);
@@ -159,14 +284,14 @@ ShowMainMenu(key agent) {
     
     string prompt = "👑 [CONTROL & CHAOS DIRECTORY PORTAL]\n" +
                     "Welcome, " + name + ".\n\n" +
-                    "Choose how you would like to manage your profile or subscribe:";
+                    "Choose an option to manage your listing or subscribe:";
                     
     list buttons;
     if (agent == llGetOwner()) {
         buttons = [
             "🌐 Web Editor", "💳 Subscribe L$", "💳 PayPal / Card",
             "🟢 Available",  "🔴 Busy",           "📋 My Profile",
-            "⚙️ Config Tiers", "🎁 Owner Free",   "❌ Cancel"
+            "👑 Admin Panel", "🎁 Owner Free",   "❌ Cancel"
         ];
     } else {
         buttons = [
@@ -178,7 +303,6 @@ ShowMainMenu(key agent) {
     
     llRegionSayTo(agent, 0, "👑 [DIRECTORY] Menu opened for " + name + ".");
     llDialog(agent, prompt, buttons, channel);
-    llSetTimerEvent(10.0);
 }
 
 ShowSubscribeMenu(key agent) {
@@ -231,6 +355,32 @@ ShowTierInfo(key agent) {
     llRegionSayTo(agent, 0, info);
 }
 
+ShowAdminPanel(key agent) {
+    integer channel = GetUserChannel(agent);
+    
+    integer idx = llListFindList(gActiveListens, [agent]);
+    if (idx != -1) {
+        integer oldHandle = llList2Integer(gActiveListens, idx + 2);
+        llListenRemove(oldHandle);
+        gActiveListens = llDeleteSubList(gActiveListens, idx, idx + 4);
+    }
+    
+    integer handle = llListen(channel, "", agent, "");
+    integer expiry = llGetUnixTime() + 60;
+    gActiveListens += [agent, channel, handle, expiry, "ADMIN"];
+    
+    string prompt = "👑 [OWNER / ADMIN MANAGEMENT CONSOLE]\n\n" +
+                    "Manage active listings, grant complimentary time, trigger reminder audits, or configure pricing:";
+                    
+    list buttons = [
+        "📋 List Subs",    "🎁 Grant +30d",  "👑 Grant VIP",
+        "🔔 Run Audit",    "⚙️ Config Tiers", "🌐 Web Admin",
+        "⬅️ Main Menu",   "❌ Close"
+    ];
+    
+    llDialog(agent, prompt, buttons, channel);
+}
+
 ShowOwnerConfigMenu(key agent) {
     integer channel = GetUserChannel(agent);
     
@@ -255,7 +405,7 @@ ShowOwnerConfigMenu(key agent) {
     list buttons = [
         "Set T1 L$", "Set T2 L$", "Set T3 L$",
         "Set T1 USD", "Set T2 USD", "Set T3 USD",
-        "Reset Defaults", "⬅️ Main Menu", "❌ Close"
+        "Reset Defaults", "⬅️ Admin Panel", "❌ Close"
     ];
     
     llDialog(agent, prompt, buttons, channel);
@@ -264,7 +414,9 @@ ShowOwnerConfigMenu(key agent) {
 default {
     state_entry() {
         InitKiosk();
-        llOwnerSay("✨ [DIRECTORY KIOSK] Ready! Dynamic pricing & PayPal checkout enabled.");
+        gLastAuditTime = llGetUnixTime();
+        llSetTimerEvent(30.0);
+        llOwnerSay("✨ [DIRECTORY KIOSK] Ready! Dynamic pricing, PayPal checkout, and 3-Day Expiration Reminders active.");
     }
 
     on_rez(integer start_param) {
@@ -300,7 +452,7 @@ default {
         }
         else if (amount >= p3) {
             tierName = "Tier 3 Royal Lifetime";
-            durationDays = 36500; // 100 years / Lifetime
+            durationDays = 36500;
         }
         else {
             tierName = "Custom Subscriber (L$" + (string)amount + ")";
@@ -325,7 +477,6 @@ default {
         
         string menuState = llList2String(gActiveListens, idx + 4);
         
-        // Remove listener
         integer handle = llList2Integer(gActiveListens, idx + 2);
         llListenRemove(handle);
         gActiveListens = llDeleteSubList(gActiveListens, idx, idx + 4);
@@ -356,9 +507,25 @@ default {
                 llLinksetDataWrite("tier3_usd", cleanVal);
                 llOwnerSay("✓ Tier 3 USD price label updated to: " + cleanVal);
             }
+            else if (gOwnerConfiguring == 7) { // Grant 30d to entered UUID
+                key targetKey = (key)cleanVal;
+                string targetName = llKey2Name(targetKey);
+                if (targetName == "") targetName = cleanVal;
+                RecordSubscriber(targetKey, targetName, "Tier 2 VIP (Owner Grant)", 30);
+                SendSubscriptionRegistration(targetKey, "Tier 2 VIP (Owner Grant)", 0, 30);
+                llOwnerSay("🎁 Granted +30 Days to " + targetName + " (" + cleanVal + ").");
+            }
+            else if (gOwnerConfiguring == 8) { // Grant VIP Lifetime
+                key targetKey = (key)cleanVal;
+                string targetName = llKey2Name(targetKey);
+                if (targetName == "") targetName = cleanVal;
+                RecordSubscriber(targetKey, targetName, "Tier 3 Royal Lifetime (VIP Grant)", 36500);
+                SendSubscriptionRegistration(targetKey, "Tier 3 Royal Lifetime (VIP Grant)", 0, 36500);
+                llOwnerSay("👑 Granted VIP Lifetime to " + targetName + " (" + cleanVal + ").");
+            }
             gOwnerConfiguring = 0;
             InitKiosk();
-            ShowOwnerConfigMenu(id);
+            ShowAdminPanel(id);
             return;
         }
 
@@ -389,8 +556,8 @@ default {
             else if (message == "ℹ️ Tier Info") {
                 ShowTierInfo(id);
             }
-            else if (message == "⚙️ Config Tiers" && id == llGetOwner()) {
-                ShowOwnerConfigMenu(id);
+            else if (message == "👑 Admin Panel" && id == llGetOwner()) {
+                ShowAdminPanel(id);
             }
             else if (message == "🎁 Owner Free" && id == llGetOwner()) {
                 llRegionSayTo(id, 0, "👑 [OWNER GRANT] Unlocking lifetime access for your avatar...");
@@ -400,6 +567,39 @@ default {
             }
             else if (message == "❌ Cancel") {
                 llRegionSayTo(id, 0, "❌ Menu closed.");
+            }
+        }
+        else if (menuState == "ADMIN" && id == llGetOwner()) {
+            integer chan = GetUserChannel(id);
+            if (message == "📋 List Subs") {
+                DumpAllSubscribers(id);
+                ShowAdminPanel(id);
+            }
+            else if (message == "🎁 Grant +30d") {
+                gOwnerConfiguring = 7;
+                integer h = llListen(chan, "", id, "");
+                gActiveListens += [id, chan, h, llGetUnixTime() + 60, "TEXTBOX_CONFIG"];
+                llTextBox(id, "Enter Avatar UUID to grant +30 Days active subscription:", chan);
+            }
+            else if (message == "👑 Grant VIP") {
+                gOwnerConfiguring = 8;
+                integer h = llListen(chan, "", id, "");
+                gActiveListens += [id, chan, h, llGetUnixTime() + 60, "TEXTBOX_CONFIG"];
+                llTextBox(id, "Enter Avatar UUID to grant VIP Lifetime permanent status:", chan);
+            }
+            else if (message == "🔔 Run Audit") {
+                RunSubscriptionAudit();
+                llRegionSayTo(id, 0, "✓ Subscription expiration check and reminder sweep completed.");
+                ShowAdminPanel(id);
+            }
+            else if (message == "⚙️ Config Tiers") {
+                ShowOwnerConfigMenu(id);
+            }
+            else if (message == "🌐 Web Admin") {
+                llLoadURL(id, "Open Web Admin Dashboard", "https://controlandchaos.co.uk/directory/admin/");
+            }
+            else if (message == "⬅️ Main Menu") {
+                ShowMainMenu(id);
             }
         }
         else if (menuState == "SUBSCRIBE") {
@@ -463,8 +663,8 @@ default {
                 InitKiosk();
                 ShowOwnerConfigMenu(id);
             }
-            else if (message == "⬅️ Main Menu") {
-                ShowMainMenu(id);
+            else if (message == "⬅️ Admin Panel") {
+                ShowAdminPanel(id);
             }
         }
     }
@@ -479,6 +679,8 @@ default {
 
     timer() {
         integer now = llGetUnixTime();
+        
+        // 1. Clean expired listeners
         integer i = 0;
         while (i < llGetListLength(gActiveListens)) {
             integer expiry = llList2Integer(gActiveListens, i + 3);
@@ -490,8 +692,10 @@ default {
                 i += 5;
             }
         }
-        if (llGetListLength(gActiveListens) == 0) {
-            llSetTimerEvent(0.0);
+        
+        // 2. Periodic Subscription Expiration Audit Sweep (Every 3600 seconds / 1 hour)
+        if (now - gLastAuditTime >= 3600) {
+            RunSubscriptionAudit();
         }
     }
 }

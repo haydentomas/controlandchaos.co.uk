@@ -290,6 +290,11 @@
         container.innerHTML = '';
 
         const filtered = allProfiles.filter(p => {
+          // 1. Subscription & Publish Visibility Check
+          const isPublished = (p.published !== false);
+          const isNotExpired = (!p.expires_at || new Date(p.expires_at).getTime() > Date.now() || p.is_vip);
+          if (!isPublished || !isNotExpired) return false;
+
           const isDomme = (p.role_type === 'domme' || p.role_type === 'DOMINANT' || p.role_type === 'dom');
           const isSub = (p.role_type === 'sub' || p.role_type === 'SUBMISSIVE' || p.role_type === 'submissive');
           
@@ -388,22 +393,36 @@
 
       renderProfiles();
 
-      // Fetch dynamic in-world live statuses in background and update cards
+      // Fetch dynamic in-world live statuses & subscriptions in background and update cards
       fetch('/.netlify/functions/update-profile')
         .then(res => res.ok ? res.json() : null)
         .then(liveData => {
-          if (liveData && liveData.statuses) {
-            allProfiles.forEach(p => {
-              const liveEntry = (p.avatar_uuid && liveData.statuses[p.avatar_uuid.toLowerCase()]) ||
-                                (p.id && liveData.statuses[p.id.toLowerCase()]) || 
-                                (p.sl_username && liveData.statuses[p.sl_username.toLowerCase()]) ||
-                                (p.name && liveData.statuses[p.name.toLowerCase()]) ||
-                                (p.name && liveData.statuses[p.name.toLowerCase().replace(/\s+/g, '-')]) ||
-                                (p.name && liveData.statuses[p.name.toLowerCase().replace(/\s+/g, '.')]);
-              if (liveEntry && liveEntry.status) {
-                p.status = liveEntry.status;
-              }
-            });
+          if (liveData) {
+            if (liveData.statuses) {
+              allProfiles.forEach(p => {
+                const liveEntry = (p.avatar_uuid && liveData.statuses[p.avatar_uuid.toLowerCase()]) ||
+                                  (p.id && liveData.statuses[p.id.toLowerCase()]) || 
+                                  (p.sl_username && liveData.statuses[p.sl_username.toLowerCase()]) ||
+                                  (p.name && liveData.statuses[p.name.toLowerCase()]) ||
+                                  (p.name && liveData.statuses[p.name.toLowerCase().replace(/\s+/g, '-')]) ||
+                                  (p.name && liveData.statuses[p.name.toLowerCase().replace(/\s+/g, '.')]);
+                if (liveEntry && liveEntry.status) {
+                  p.status = liveEntry.status;
+                }
+              });
+            }
+            if (liveData.subscriptions) {
+              allProfiles.forEach(p => {
+                const sub = (p.avatar_uuid && liveData.subscriptions[p.avatar_uuid.toLowerCase()]) ||
+                            (p.id && liveData.subscriptions[p.id.toLowerCase()]) || 
+                            (p.sl_username && liveData.subscriptions[p.sl_username.toLowerCase()]);
+                if (sub) {
+                  if (typeof sub.published === 'boolean') p.published = sub.published;
+                  if (sub.expires_at) p.expires_at = sub.expires_at;
+                  if (typeof sub.is_vip === 'boolean') p.is_vip = sub.is_vip;
+                }
+              });
+            }
             renderProfiles();
           }
         })

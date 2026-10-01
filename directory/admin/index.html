@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directory Listing Manager &amp; Subscriptions | Control &amp; Chaos</title>
+  <meta name="description" content="Control &amp; Chaos Directory Management Console for Estate Owners &amp; Staff. Manage provider subscriptions, expiration dates, and publishing states.">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="/components/site-navbar.js" defer></script>
+  <script src="/components/site-footer.js" defer></script>
+  <style>
+    .admin-card {
+      background: linear-gradient(165deg, #181512 0%, #100e0c 100%);
+      border: 1px solid var(--gold-border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .stat-badge {
+      font-size: 28px;
+      font-weight: 900;
+      font-family: var(--font-heading);
+      color: var(--gold-bright);
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .admin-table th {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 2px solid var(--gold-border);
+      color: var(--gold-muted);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .admin-table td {
+      padding: 16px;
+      border-bottom: 1px solid rgba(184, 154, 88, 0.15);
+      vertical-align: middle;
+    }
+    .admin-table tr:hover td {
+      background: rgba(216, 194, 144, 0.03);
+    }
+    .sub-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 4px 10px;
+      border-radius: 9999px;
+    }
+    .sub-active {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+    .sub-expiring {
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(250, 204, 21, 0.3);
+    }
+    .sub-expired {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+    .sub-vip {
+      background: rgba(216, 194, 144, 0.2);
+      color: #ebdca9;
+      border: 1px solid var(--gold-border);
+    }
+    .switch-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .switch-published {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.4);
+    }
+    .switch-unpublished {
+      background: rgba(107, 114, 128, 0.2);
+      color: #9ca3af;
+      border: 1px solid rgba(156, 163, 175, 0.3);
+    }
+    .action-pill {
+      background: rgba(26, 23, 20, 0.9);
+      border: 1px solid var(--gold-border-subtle);
+      color: var(--text-primary);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .action-pill:hover {
+      background: var(--gold-bright);
+      color: #12100e;
+      border-color: var(--gold-bright);
+    }
+  </style>
+</head>
+<body>
+  <site-navbar></site-navbar>
+
+  <header class="hero" style="padding: 120px 0 40px; text-align: center; background: radial-gradient(circle at 50% 20%, rgba(139,30,45,0.2) 0%, rgba(18,16,14,0.98) 70%);">
+    <div class="container">
+      <span class="section-tag">ESTATE OWNER CONSOLE</span>
+      <h1 class="hero-title" style="font-size: 40px; margin-bottom: 12px;">Directory &amp; Subscription Manager</h1>
+      <p class="hero-subtitle" style="max-width: 700px; margin: 0 auto;">
+        Control published states, grant membership extensions, view expiration countdowns, and manage live directory listings.
+      </p>
+    </div>
+  </header>
+
+  <main class="section" style="padding: 40px 0 80px;">
+    <div class="container">
+
+      <!-- Admin Secret Key Bar -->
+      <div class="admin-card mb-30" id="auth-panel" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 24px;">🔐</span>
+          <div>
+            <div style="font-weight: 700; color: var(--gold-bright);">Admin Secret Authorization</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Enter master directory key to perform administrative actions</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="password" id="admin-secret-input" placeholder="Enter Secret Key..." style="padding: 8px 14px; background: #0c0a09; border: 1px solid var(--gold-border); border-radius: 6px; color: #fff; font-family: var(--font-mono); font-size: 13px; width: 260px;">
+          <button class="btn btn-gold btn-sm" id="auth-btn">Authorize</button>
+        </div>
+      </div>
+
+      <!-- Quick Stats Counter -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div class="admin-card">
+          <div class="text-muted font-xs font-mono mb-6">TOTAL PROVIDERS</div>
+          <div class="stat-badge" id="stat-total">--</div>
+        </div>
+        <div class="admin-card">
+          <div class="text-muted font-xs font-mono mb-6">🟢 ACTIVE LISTINGS</div>
+          <div class="stat-badge text-green" style="color:#4ade80;" id="stat-active">--</div>
+        </div>
+        <div class="admin-card">
+          <div class="text-muted font-xs font-mono mb-6">🟡 EXPIRING SOON (&le;3 DAYS)</div>
+          <div class="stat-badge" style="color:#facc15;" id="stat-expiring">--</div>
+        </div>
+        <div class="admin-card">
+          <div class="text-muted font-xs font-mono mb-6">🔴 EXPIRED / UNPUBLISHED</div>
+          <div class="stat-badge" style="color:#f87171;" id="stat-expired">--</div>
+        </div>
+      </div>
+
+      <!-- Filter and Action Bar -->
+      <div class="admin-card mb-24" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <input type="text" id="filter-search" placeholder="Search provider name, username, or ID..." style="padding: 8px 14px; background: #0c0a09; border: 1px solid var(--gold-border-subtle); border-radius: 6px; color: #fff; font-size: 13.5px; width: 300px;">
+          <select id="filter-status" style="padding: 8px 12px; background: #0c0a09; border: 1px solid var(--gold-border-subtle); border-radius: 6px; color: var(--gold-bright); font-size: 13px;">
+            <option value="all">All Statuses</option>
+            <option value="active">Active Only</option>
+            <option value="expiring">Expiring Soon (&le;3 Days)</option>
+            <option value="expired">Expired Only</option>
+            <option value="unpublished">Unpublished Only</option>
+            <option value="vip">VIP Lifetime Only</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-secondary btn-sm" id="btn-refresh">🔄 Refresh Data</button>
+          <a href="/directory/" target="_blank" class="btn btn-gold btn-sm">🌐 View Public Directory ↗</a>
+        </div>
+      </div>
+
+      <!-- Listings Management Table -->
+      <div class="admin-card" style="overflow-x: auto; padding: 0;">
+        <table class="admin-table" id="providers-table">
+          <thead>
+            <tr>
+              <th>Provider</th>
+              <th>Role</th>
+              <th>Publish State</th>
+              <th>Subscription Status</th>
+              <th>Expires</th>
+              <th style="text-align: right;">Quick Actions</th>
+            </tr>
+          </thead>
+          <tbody id="providers-table-body">
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                ⏳ Loading registered directory listings...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- In-World Kiosk Sync & Reminder Protocol Notice -->
+      <div class="admin-card mt-30" style="border-color: rgba(184, 154, 88, 0.3);">
+        <h3 style="font-family: var(--font-heading); font-size: 18px; color: var(--gold-bright); margin-bottom: 8px;">
+          🤖 Automated In-World Kiosk Synchronization
+        </h3>
+        <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 0;">
+          • <strong>Instant Web Unpublishing:</strong> When a subscription reaches 0 days left, the public directory automatically hides the card from search listings.<br>
+          • <strong>3-Day Expiration Reminder:</strong> The in-world Kiosk automatically detects expiring accounts and sends an automated Second Life Instant Message (IM) inviting them to touch the kiosk or pay via PayPal to maintain their listing.<br>
+          • <strong>Zero-Loss Reactivation:</strong> Unpublishing hides listings from public search but never deletes photos, bios, or rates. Once renewed, listings re-publish immediately.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <site-footer></site-footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const authInput = document.getElementById('admin-secret-input');
+      const authBtn = document.getElementById('auth-btn');
+      const tableBody = document.getElementById('providers-table-body');
+      const searchInput = document.getElementById('filter-search');
+      const statusFilter = document.getElementById('filter-status');
+      const refreshBtn = document.getElementById('btn-refresh');
+
+      const statTotal = document.getElementById('stat-total');
+      const statActive = document.getElementById('stat-active');
+      const statExpiring = document.getElementById('stat-expiring');
+      const statExpired = document.getElementById('stat-expired');
+
+      // Initialize Secret Key from localStorage if saved
+      let currentSecret = localStorage.getItem('cc_directory_admin_key') || 'CC_DIRECTORY_SECRET_2026_GOLD';
+      authInput.value = currentSecret;
+
+      authBtn.addEventListener('click', () => {
+        currentSecret = authInput.value.trim();
+        localStorage.setItem('cc_directory_admin_key', currentSecret);
+        loadProviders();
+      });
+
+      let rawProfiles = [];
+      let serverSubs = {};
+
+      async function fetchJson(paths) {
+        for (const p of paths) {
+          try {
+            const r = await fetch(p.includes('?') ? p : `${p}?v=${Date.now()}`, { cache: 'no-store' });
+            if (r.ok) return await r.json();
+          } catch(e) {}
+        }
+        return null;
+      }
+
+      async function loadProviders() {
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">⏳ Synchronizing with live directory...</td></tr>';
+        
+        // 1. Fetch profiles
+        try {
+          const slugs = await fetchJson(['../manifest.json', '/directory/manifest.json']);
+          if (slugs && Array.isArray(slugs)) {
+            const promises = slugs.map(s => fetchJson([`../profiles/${s}.json`, `/directory/profiles/${s}.json`]));
+            const list = await Promise.all(promises);
+            rawProfiles = list.filter(p => p !== null);
+          } else {
+            const legacy = await fetchJson(['../profiles.json', '/directory/profiles.json']);
+            if (legacy && Array.isArray(legacy)) rawProfiles = legacy;
+          }
+        } catch(e) {}
+
+        if (!rawProfiles || rawProfiles.length === 0) {
+          rawProfiles = [
+            { id: "alexis-vane", name: "Mistress Alexis Vane", sl_username: "alexis.vane", role_type: "domme", published: true, is_vip: true, expires_at: "2026-12-31T23:59:59Z" },
+            { id: "alek-zane", name: "Alek Zane", sl_username: "alek.zane", role_type: "sub", published: true, is_vip: false, expires_at: new Date(Date.now() + 28 * 86400000).toISOString() }
+          ];
+        }
+
+        // 2. Fetch server subscriptions & live overrides
+        try {
+          const res = await fetch('/.netlify/functions/update-profile');
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.subscriptions) {
+              serverSubs = data.subscriptions;
+            }
+          }
+        } catch(e) {}
+
+        renderTable();
+      }
+
+      function getExpirationInfo(p) {
+        const sub = (p.avatar_uuid && serverSubs[p.avatar_uuid.toLowerCase()]) || 
+                    (p.id && serverSubs[p.id.toLowerCase()]) || 
+                    (p.sl_username && serverSubs[p.sl_username.toLowerCase()]);
+
+        const isVip = p.is_vip || (sub && sub.is_vip);
+        const published = (sub && typeof sub.published === 'boolean') ? sub.published : (p.published !== false);
+        const expiresAtStr = (sub && sub.expires_at) || p.expires_at;
+
+        if (isVip) {
+          return { status: 'vip', label: '👑 VIP Lifetime', days: 9999, dateStr: 'Permanent VIP', published };
+        }
+
+        if (!expiresAtStr) {
+          // Default 30-day active for new unconfigured verified listings
+          return { status: 'active', label: '🟢 Active (+30d)', days: 30, dateStr: 'Active Listing', published };
+        }
+
+        const now = Date.now();
+        const expiry = new Date(expiresAtStr).getTime();
+        const diffMs = expiry - now;
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 0) {
+          return { status: 'expired', label: `🔴 Expired (${Math.abs(diffDays)}d ago)`, days: diffDays, dateStr: new Date(expiry).toLocaleDateString(), published };
+        } else if (diffDays <= 3) {
+          return { status: 'expiring', label: `🟡 Expiring in ${diffDays}d`, days: diffDays, dateStr: new Date(expiry).toLocaleDateString(), published };
+        } else {
+          return { status: 'active', label: `🟢 Active (${diffDays}d left)`, days: diffDays, dateStr: new Date(expiry).toLocaleDateString(), published };
+        }
+      }
+
+      function renderTable() {
+        const search = (searchInput.value || '').toLowerCase().trim();
+        const filter = statusFilter.value;
+
+        let total = 0;
+        let active = 0;
+        let expiring = 0;
+        let expired = 0;
+
+        const filtered = rawProfiles.filter(p => {
+          const exp = getExpirationInfo(p);
+          total++;
+          if (exp.status === 'active' || exp.status === 'vip') active++;
+          if (exp.status === 'expiring') expiring++;
+          if (exp.status === 'expired' || !exp.published) expired++;
+
+          const matchesSearch = !search || (
+            (p.name || '') + ' ' + (p.sl_username || '') + ' ' + (p.id || '')
+          ).toLowerCase().includes(search);
+
+          let matchesFilter = true;
+          if (filter === 'active') matchesFilter = (exp.status === 'active' || exp.status === 'vip') && exp.published;
+          if (filter === 'expiring') matchesFilter = (exp.status === 'expiring');
+          if (filter === 'expired') matchesFilter = (exp.status === 'expired');
+          if (filter === 'unpublished') matchesFilter = !exp.published;
+          if (filter === 'vip') matchesFilter = exp.status === 'vip';
+
+          return matchesSearch && matchesFilter;
+        });
+
+        statTotal.textContent = total;
+        statActive.textContent = active;
+        statExpiring.textContent = expiring;
+        statExpired.textContent = expired;
+
+        if (filtered.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">No providers matched your filter query.</td></tr>';
+          return;
+        }
+
+        tableBody.innerHTML = '';
+        filtered.forEach(p => {
+          const exp = getExpirationInfo(p);
+          const isDomme = (p.role_type === 'domme' || p.role_type === 'DOMINANT');
+          const tr = document.createElement('tr');
+
+          tr.innerHTML = `
+            <td>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: #221e1a; border: 1px solid var(--gold-border); display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                  ${isDomme ? '👑' : '🩷'}
+                </div>
+                <div>
+                  <strong style="color: var(--text-primary); font-size: 14.5px;">${p.name}</strong>
+                  <div style="font-family: var(--font-mono); font-size: 11px; color: var(--gold-muted);">@${p.sl_username || p.id}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="${isDomme ? 'dom-role-badge' : 'section-tag font-2xs m-0'}" style="font-size: 10px; padding: 2px 8px;">
+                ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
+              </span>
+            </td>
+            <td>
+              <button class="switch-btn ${exp.published ? 'switch-published' : 'switch-unpublished'}" data-id="${p.id}" data-action="toggle-publish">
+                ${exp.published ? '● Published' : '○ Unpublished'}
+              </button>
+            </td>
+            <td>
+              <span class="sub-badge sub-${exp.status}">
+                ${exp.label}
+              </span>
+            </td>
+            <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">
+              ${exp.dateStr}
+            </td>
+            <td style="text-align: right;">
+              <div style="display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
+                <button class="action-pill" data-id="${p.id}" data-action="grant-30" title="Add 30 days">+30d</button>
+                <button class="action-pill" data-id="${p.id}" data-action="grant-90" title="Add 90 days">+90d</button>
+                <button class="action-pill" data-id="${p.id}" data-action="grant-vip" title="Set VIP Lifetime">👑 VIP</button>
+                <a href="/directory/edit/?uuid=${p.avatar_uuid || p.id}&token=cc_directory_secret_2026_gold" target="_blank" class="action-pill" style="text-decoration:none;" title="Open editor">✏️ Edit</a>
+                <a href="/profile/${p.id}/" target="_blank" class="action-pill" style="text-decoration:none;" title="View public rate card">👁️ View</a>
+              </div>
+            </td>
+          `;
+
+          tableBody.appendChild(tr);
+        });
+
+        // Bind interactive action pills
+        document.querySelectorAll('[data-action]').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const action = btn.getAttribute('data-action');
+            const id = btn.getAttribute('data-id');
+            const targetProfile = rawProfiles.find(p => p.id === id);
+            if (!targetProfile) return;
+
+            btn.disabled = true;
+            btn.textContent = '⏳';
+
+            try {
+              let payload = {
+                secret: currentSecret,
+                uuid: targetProfile.avatar_uuid || targetProfile.id,
+                id: targetProfile.id
+              };
+
+              if (action === 'toggle-publish') {
+                const exp = getExpirationInfo(targetProfile);
+                payload.action = 'admin_toggle_publish';
+                payload.published = !exp.published;
+              } else if (action === 'grant-30') {
+                payload.action = 'admin_grant_time';
+                payload.days = 30;
+              } else if (action === 'grant-90') {
+                payload.action = 'admin_grant_time';
+                payload.days = 90;
+              } else if (action === 'grant-vip') {
+                payload.action = 'admin_grant_time';
+                payload.is_vip = true;
+              }
+
+              const res = await fetch('/.netlify/functions/update-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+
+              if (res.ok) {
+                await loadProviders();
+              } else {
+                alert('Action failed. Please verify your Admin Secret Key.');
+                await loadProviders();
+              }
+            } catch(err) {
+              alert('Error executing action: ' + err.message);
+              await loadProviders();
+            }
+          });
+        });
+      }
+
+      searchInput.addEventListener('input', renderTable);
+      statusFilter.addEventListener('change', renderTable);
+      refreshBtn.addEventListener('click', loadProviders);
+
+      loadProviders();
+    });
+  </script>
+</body>
+</html>

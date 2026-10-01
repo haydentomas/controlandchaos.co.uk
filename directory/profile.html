@@ -120,6 +120,14 @@
 
   <site-navbar></site-navbar>
 
+  <!-- Inactive / Pending Renewal Alert Banner -->
+  <div id="profile-renewal-banner" style="display:none; background:linear-gradient(90deg, #3d1017 0%, #5e1622 50%, #3d1017 100%); border-bottom:1px solid rgba(235,220,169,0.3); padding:14px 20px; text-align:center; font-size:14px; color:#fff; z-index:100; position:relative; box-shadow:0 4px 20px rgba(0,0,0,0.5);">
+    <span>⏳ <strong>Listing Pending Subscription Renewal:</strong> This directory profile is currently inactive.</span>
+    <a id="profile-renewal-link" href="/directory/checkout/" class="btn btn-gold btn-sm" style="margin-left:14px; padding:4px 14px; font-size:11.5px; text-decoration:none;">
+      💳 Renew Subscription &rarr;
+    </a>
+  </div>
+
   <!-- Profile Hero & Cover Header -->
   <header class="hero" id="profile-hero-header" style="min-height: 55vh; padding: 120px 0 40px; background: linear-gradient(180deg, #1f1519 0%, #12100e 100%); position: relative; background-size: cover; background-position: center;">
     <div id="profile-hero-overlay" style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,12,11,0.7) 0%, rgba(18,16,14,0.85) 60%, rgba(18,16,14,0.98) 100%); pointer-events: none; z-index: 1; display: none;"></div>
@@ -488,20 +496,41 @@
         return `<span id="profile-live-badge" class="traffic-status traffic-offline"><span class="traffic-dot"></span> Offline</span>`;
       }
 
-      // Background live status sync
+      // Background live status & subscription sync
       fetch('/.netlify/functions/update-profile')
         .then(r => r.ok ? r.json() : null)
         .then(d => {
-          if (d && d.statuses) {
-            const entry = (profileData.avatar_uuid && d.statuses[profileData.avatar_uuid.toLowerCase()]) ||
-                          (profileData.id && d.statuses[profileData.id.toLowerCase()]) ||
-                          (profileData.sl_username && d.statuses[profileData.sl_username.toLowerCase()]) ||
-                          (profileData.name && d.statuses[profileData.name.toLowerCase()]) ||
-                          (profileData.name && d.statuses[profileData.name.toLowerCase().replace(/\s+/g, '-')]);
-            if (entry && entry.status) {
-              const badgeEl = document.getElementById('profile-live-badge');
-              if (badgeEl) {
-                badgeEl.outerHTML = getStatusBadgeHtml(entry.status);
+          if (d) {
+            if (d.statuses) {
+              const entry = (profileData.avatar_uuid && d.statuses[profileData.avatar_uuid.toLowerCase()]) ||
+                            (profileData.id && d.statuses[profileData.id.toLowerCase()]) ||
+                            (profileData.sl_username && d.statuses[profileData.sl_username.toLowerCase()]) ||
+                            (profileData.name && d.statuses[profileData.name.toLowerCase()]) ||
+                            (profileData.name && d.statuses[profileData.name.toLowerCase().replace(/\s+/g, '-')]);
+              if (entry && entry.status) {
+                const badgeEl = document.getElementById('profile-live-badge');
+                if (badgeEl) {
+                  badgeEl.outerHTML = getStatusBadgeHtml(entry.status);
+                }
+              }
+            }
+            if (d.subscriptions) {
+              const sub = (profileData.avatar_uuid && d.subscriptions[profileData.avatar_uuid.toLowerCase()]) ||
+                          (profileData.id && d.subscriptions[profileData.id.toLowerCase()]) ||
+                          (profileData.sl_username && d.subscriptions[profileData.sl_username.toLowerCase()]);
+              if (sub) {
+                const isVip = sub.is_vip || profileData.is_vip;
+                const isPublished = sub.published !== false;
+                const isExpired = sub.expires_at && new Date(sub.expires_at).getTime() < Date.now();
+                
+                if ((!isPublished || isExpired) && !isVip) {
+                  const banner = document.getElementById('profile-renewal-banner');
+                  const link = document.getElementById('profile-renewal-link');
+                  if (banner) banner.style.display = 'block';
+                  if (link) {
+                    link.href = `/directory/checkout/?uuid=${profileData.avatar_uuid || profileData.id}&name=${encodeURIComponent(profileData.name)}`;
+                  }
+                }
               }
             }
           }
