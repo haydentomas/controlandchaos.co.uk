@@ -328,11 +328,13 @@ exports.handler = async (event) => {
       await loadSubscriptions(store);
       const subscription = await loadSubscriptionFor(store, targetId);
       const expiry = subscription && subscription.expires_at ? new Date(subscription.expires_at).getTime() : 0;
-      const active = !!(authorized && subscription && subscription.published !== false && (subscription.is_vip === true || expiry > Date.now()));
+      const isVip = !!(subscription && subscription.is_vip === true);
+      const daysLeft = !authorized || isVip || !Number.isFinite(expiry) ? 0 : Math.max(0, Math.ceil((expiry - Date.now()) / 86400000));
+      const active = !!(authorized && subscription && subscription.published !== false && (isVip || daysLeft > 0));
       return {
         statusCode: authorized ? 200 : 403,
         headers,
-        body: JSON.stringify({ success: authorized, active })
+        body: JSON.stringify({ success: authorized, active, days_left: daysLeft, is_vip: authorized && isVip })
       };
     }
 
