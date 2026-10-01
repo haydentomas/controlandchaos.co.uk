@@ -784,6 +784,7 @@
                 </span>
                 ${getStatusBadgeHtml(profileData.status)}
               </div>
+              ${profileData.role ? `<div style="font-size:16px; font-weight:700; color:var(--gold-bright); margin-top:8px; letter-spacing:0.3px; text-shadow:0 1px 6px rgba(0,0,0,0.9);">${profileData.role}</div>` : ''}
               <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:6px; text-shadow:0 1px 4px rgba(0,0,0,0.8);">
                 Second Life Username: <strong>${profileData.sl_username || profileData.id}</strong> ${profileData.level ? `&bull; Level ${profileData.level} (${profileData.rank || ''})` : ''}
               </div>
