@@ -147,6 +147,15 @@
         </div>
       </div>
 
+      <div class="admin-card mb-30" style="display:flex; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div style="flex:1; min-width:260px;">
+          <div style="font-weight:700; color:var(--gold-bright);">Restore a Paid Subscription</div>
+          <div style="font-size:12px; color:var(--text-muted);">Credit 30 days by avatar UUID when payment succeeded but activation did not.</div>
+        </div>
+        <input type="text" id="manual-grant-uuid" placeholder="Avatar UUID" style="padding:8px 12px; background:#0c0a09; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-family:var(--font-mono); font-size:13px; width:300px;">
+        <button class="btn btn-secondary btn-sm" id="manual-grant-btn">Grant 30 Days</button>
+      </div>
+
       <!-- Quick Stats Counter -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px;">
         <div class="admin-card">
@@ -165,6 +174,15 @@
           <div class="text-muted font-xs font-mono mb-6">🔴 EXPIRED / UNPUBLISHED</div>
           <div class="stat-badge" style="color:#f87171;" id="stat-expired">--</div>
         </div>
+      </div>
+
+      <div class="admin-card mb-24" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div style="flex:1 1 280px;">
+          <div style="font-weight:700; color:var(--gold-bright);">Credit a paid account</div>
+          <div style="font-size:12px; color:var(--text-muted);">Use when payment succeeded but the profile is not yet in the table.</div>
+        </div>
+        <input type="text" id="manual-credit-uuid" placeholder="Avatar UUID" autocomplete="off" style="padding:8px 12px; background:#0c0a09; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-family:var(--font-mono); font-size:13px; width:300px;">
+        <button class="btn btn-gold btn-sm" id="manual-credit-30">Credit 30 days</button>
       </div>
 
       <!-- Filter and Action Bar -->
@@ -249,6 +267,70 @@
         currentSecret = authInput.value.trim();
         localStorage.setItem('cc_directory_admin_key', currentSecret);
         loadProviders();
+      });
+
+      document.getElementById('manual-grant-btn').addEventListener('click', async () => {
+        const uuidInput = document.getElementById('manual-grant-uuid');
+        const uuid = uuidInput.value.trim().toLowerCase();
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(uuid)) {
+          alert('Enter a valid avatar UUID.');
+          return;
+        }
+        if (!currentSecret) {
+          alert('Authorize with the configured directory admin token first.');
+          return;
+        }
+        if (!confirm(`Grant 30 days of directory access to ${uuid}?`)) return;
+
+        const button = document.getElementById('manual-grant-btn');
+        button.disabled = true;
+        try {
+          const response = await fetch('/.netlify/functions/update-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'admin_grant_time',
+              uuid,
+              days: 30,
+              token: currentSecret
+            })
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.error || `Server returned ${response.status}`);
+          alert('30 days of access granted. She can reopen the kiosk editor now.');
+          uuidInput.value = '';
+          await loadProviders();
+        } catch (error) {
+          alert(`Could not grant access: ${error.message}`);
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      document.getElementById('manual-credit-30').addEventListener('click', async () => {
+        const uuid = document.getElementById('manual-credit-uuid').value.trim();
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid)) {
+          alert('Enter a valid avatar UUID.');
+          return;
+        }
+        if (!confirm(`Credit 30 subscription days to ${uuid}? Use this only for a verified payment or approved grant.`)) return;
+        try {
+          const response = await fetch('/.netlify/functions/update-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'admin_grant_time', uuid, days: 30, token: currentSecret })
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            alert(result.error || 'Could not credit this account. Check the directory admin token.');
+            return;
+          }
+          alert('30 subscription days credited. The account can now open the kiosk editor.');
+          document.getElementById('manual-credit-uuid').value = '';
+          await loadProviders();
+        } catch (error) {
+          alert('Could not credit this account: ' + error.message);
+        }
       });
 
       let rawProfiles = [];

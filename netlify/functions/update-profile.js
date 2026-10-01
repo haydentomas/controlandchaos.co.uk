@@ -569,7 +569,9 @@ exports.handler = async (event) => {
 
     // 3. Admin: Grant Time
     if (action === 'admin_grant_time') {
-      const existing = gSubscriptions[cleanUuid] || gSubscriptions[cleanId] || { published: true, tier: 'Tier 1 Standard' };
+      const store = getProfilesStore(event);
+      await loadSubscriptions(store);
+      const existing = (await loadSubscriptionFor(store, cleanUuid)) || gSubscriptions[cleanId] || { published: true, tier: 'Tier 1 Standard' };
       if (is_vip) {
         existing.is_vip = true;
         existing.expires_at = '2030-12-31T23:59:59Z';
@@ -586,7 +588,11 @@ exports.handler = async (event) => {
       if (KNOWN_AVATARS[cleanUuid]) {
         KNOWN_AVATARS[cleanUuid].forEach(alias => { gSubscriptions[alias.toLowerCase()] = existing; });
       }
-      await saveSubscriptions(getProfilesStore(event));
+      await persistSubscription(store, cleanUuid, existing);
+      if (cleanId && cleanId !== cleanUuid) {
+        if (store.setJSON) await store.setJSON(`subscription_${cleanId}`, existing);
+        else if (store.set) await store.set(`subscription_${cleanId}`, JSON.stringify(existing));
+      }
     }
 
     // 4. Admin: Toggle Publish
@@ -643,6 +649,10 @@ exports.handler = async (event) => {
 
       for (const key of blobKeysToDelete) {
         if (key && key !== 'all_profiles' && store.delete) await store.delete(key);
+      }
+      const subscriptionKeys = new Set([cleanUuid, cleanId, ...((KNOWN_AVATARS[cleanUuid] || []).map(alias => alias.toLowerCase()))]);
+      for (const key of subscriptionKeys) {
+        if (key && store.delete) await store.delete(`subscription_${key}`);
       }
       if (store.setJSON) await store.setJSON('all_profiles', storedProfiles);
       else if (store.set) await store.set('all_profiles', JSON.stringify(storedProfiles));
