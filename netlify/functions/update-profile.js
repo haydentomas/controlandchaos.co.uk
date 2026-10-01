@@ -76,6 +76,9 @@ let gTributeGoals = {
   }
 };
 
+// In-Memory Real-Time Custom Profiles Cache (Updated dynamically via Studio Editor)
+let gCustomProfiles = {};
+
 function verifyToken(uuid, token, secret) {
   if (secret && (secret === SECRET_KEY || secret === "CC_DIRECTORY_SECRET_2026_GOLD")) {
     return true;
@@ -130,13 +133,40 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  // Support GET request to retrieve all live in-world statuses, subscriptions, and tribute goals
+  // Support GET request to retrieve all live in-world statuses, dynamic profiles, subscriptions, and tribute goals
   if (event.httpMethod === 'GET') {
+    const query = event.queryStringParameters || {};
+    const targetId = (query.id || query.uuid || query.slug || query.username || '').toLowerCase().trim();
+    let foundProfile = null;
+
+    if (targetId) {
+      if (gCustomProfiles[targetId]) {
+        foundProfile = gCustomProfiles[targetId];
+      } else if (KNOWN_AVATARS[targetId]) {
+        for (const alias of KNOWN_AVATARS[targetId]) {
+          if (gCustomProfiles[alias.toLowerCase()]) {
+            foundProfile = gCustomProfiles[alias.toLowerCase()];
+            break;
+          }
+        }
+      }
+      if (!foundProfile) {
+        for (const k of Object.keys(gCustomProfiles)) {
+          if (k.toLowerCase() === targetId || k.toLowerCase().replace(/[\s\.]+/g, '-') === targetId) {
+            foundProfile = gCustomProfiles[k];
+            break;
+          }
+        }
+      }
+    }
+
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
+        profile: foundProfile,
+        profiles: gCustomProfiles,
         statuses: gLiveStatuses,
         subscriptions: gSubscriptions,
         tributeGoals: gTributeGoals,
@@ -315,6 +345,32 @@ exports.handler = async (event) => {
       }
     }
 
+    // 6. Save & Publish Full Profile Data (from Studio Editor /directory/edit/)
+    if (action === 'save_profile' && profileData) {
+      const pId = (profileData.id || cleanId || cleanUuid).toLowerCase().trim();
+      const pUsername = (profileData.sl_username || '').toLowerCase().trim();
+      
+      gCustomProfiles[cleanUuid] = profileData;
+      gCustomProfiles[pId] = profileData;
+      if (pUsername) gCustomProfiles[pUsername] = profileData;
+
+      if (KNOWN_AVATARS[cleanUuid]) {
+        KNOWN_AVATARS[cleanUuid].forEach(alias => { gCustomProfiles[alias.toLowerCase()] = profileData; });
+      }
+
+      // Update Tribute Goal in-memory cache if provided
+      if (profileData.tribute_goal) {
+        gTributeGoals[cleanUuid] = profileData.tribute_goal;
+        gTributeGoals[pId] = profileData.tribute_goal;
+      }
+
+      // Ensure marked as published in subscriptions
+      const subEntry = gSubscriptions[cleanUuid] || gSubscriptions[pId] || { tier: 'Tier 2 VIP', expires_at: new Date(Date.now() + 30 * 86400000).toISOString() };
+      subEntry.published = true;
+      gSubscriptions[cleanUuid] = subEntry;
+      gSubscriptions[pId] = subEntry;
+    }
+
     // Return success response
     return {
       statusCode: 200,
@@ -327,7 +383,8 @@ exports.handler = async (event) => {
         status: status || 'updated',
         liveStatuses: gLiveStatuses,
         subscriptions: gSubscriptions,
-        tributeGoals: gTributeGoals
+        tributeGoals: gTributeGoals,
+        profile: profileData || gCustomProfiles[cleanUuid] || null
       })
     };
   } catch (err) {

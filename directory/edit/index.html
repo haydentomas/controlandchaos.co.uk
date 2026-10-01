@@ -1365,16 +1365,48 @@
       try {
         let loaded = false;
         
-        // 1. Try fetching individual JSON first
+        // 0. Check localStorage first (instant local session persistence)
         try {
-          const resSingle = await fetch(`/directory/profiles/${uuid}.json?v=${Date.now()}`);
-          if (resSingle.ok) {
-            currentProfile = await resSingle.json();
-            loaded = true;
+          const localSaved = localStorage.getItem('cc_profile_edit_' + uuid) || 
+                             localStorage.getItem('cc_profile_edit_' + uuid.toLowerCase().replace(/[^a-z0-9]/g, '-'));
+          if (localSaved) {
+            const parsed = JSON.parse(localSaved);
+            if (parsed && (parsed.avatar_uuid === uuid || parsed.id === uuid || parsed.sl_username === uuid)) {
+              currentProfile = parsed;
+              loaded = true;
+            }
           }
         } catch(e) {}
 
-        // 2. Fallback to combined profiles.json
+        // 1. Try fetching from dynamic Netlify function (live dynamic memory)
+        if (!loaded) {
+          try {
+            const netlifyRes = await fetch(`/.netlify/functions/update-profile?id=${encodeURIComponent(uuid)}&v=${Date.now()}`);
+            if (netlifyRes.ok) {
+              const netData = await netlifyRes.json();
+              if (netData.profile) {
+                currentProfile = netData.profile;
+                loaded = true;
+              } else if (netData.profiles && netData.profiles[uuid.toLowerCase()]) {
+                currentProfile = netData.profiles[uuid.toLowerCase()];
+                loaded = true;
+              }
+            }
+          } catch(e) {}
+        }
+
+        // 2. Try fetching individual JSON static file
+        if (!loaded) {
+          try {
+            const resSingle = await fetch(`/directory/profiles/${uuid}.json?v=${Date.now()}`);
+            if (resSingle.ok) {
+              currentProfile = await resSingle.json();
+              loaded = true;
+            }
+          } catch(e) {}
+        }
+
+        // 3. Fallback to combined profiles.json
         if (!loaded) {
           const resAll = await fetch(`/directory/profiles.json?v=${Date.now()}`);
           if (resAll.ok) {
@@ -2092,6 +2124,15 @@
         seo_description: document.getElementById('edit-seo-desc').value,
         seo_image: document.getElementById('edit-banner-img').value || document.getElementById('edit-avatar-img').value
       };
+
+      currentProfile = profilePayload;
+
+      // Local storage persistence across tabs & pages
+      try {
+        if (profilePayload.id) localStorage.setItem('cc_profile_edit_' + profilePayload.id.toLowerCase(), JSON.stringify(profilePayload));
+        if (authUUID) localStorage.setItem('cc_profile_edit_' + authUUID.toLowerCase(), JSON.stringify(profilePayload));
+        if (profilePayload.sl_username) localStorage.setItem('cc_profile_edit_' + profilePayload.sl_username.toLowerCase(), JSON.stringify(profilePayload));
+      } catch(e) {}
 
       try {
         const response = await fetch('/.netlify/functions/update-profile', {

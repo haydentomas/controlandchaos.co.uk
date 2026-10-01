@@ -567,6 +567,18 @@
 
       let profileData = null;
 
+      // 0. Check localStorage (instant client-side session cache for recently edited profiles)
+      try {
+        const localCached = localStorage.getItem('cc_profile_edit_' + profileId) || 
+                            localStorage.getItem('cc_profile_edit_' + profileId.toLowerCase().replace(/[^a-z0-9]/g, '-'));
+        if (localCached) {
+          const parsed = JSON.parse(localCached);
+          if (parsed && (parsed.id === profileId || parsed.avatar_uuid === profileId || parsed.sl_username === profileId)) {
+            profileData = parsed;
+          }
+        }
+      } catch(e) {}
+
       // 1. Fetch individual profile JSON first (instant live Decap CMS sync)
       const candidateUrls = [
         `/directory/profiles/${profileId}.json?v=${Date.now()}`,
@@ -582,14 +594,29 @@
           if (res.ok) {
             const data = await res.json();
             if (Array.isArray(data)) {
-              profileData = data.find(p => p.id === profileId) || data[0];
+              const matched = data.find(p => p.id === profileId || p.avatar_uuid === profileId || p.sl_username === profileId) || data[0];
+              profileData = profileData ? { ...matched, ...profileData } : matched;
             } else {
-              profileData = data;
+              profileData = profileData ? { ...data, ...profileData } : data;
             }
             if (profileData) break;
           }
         } catch(e) {}
       }
+
+      // 2. Fetch live dynamic published profile from Netlify serverless function
+      try {
+        const netlifyRes = await fetch(`/.netlify/functions/update-profile?id=${encodeURIComponent(profileId)}&v=${Date.now()}`, { cache: 'no-store' });
+        if (netlifyRes.ok) {
+          const netData = await netlifyRes.json();
+          if (netData.profile) {
+            profileData = { ...(profileData || {}), ...netData.profile };
+          } else if (netData.profiles && (netData.profiles[profileId.toLowerCase()] || (profileData && profileData.avatar_uuid && netData.profiles[profileData.avatar_uuid.toLowerCase()]))) {
+            const pFromMap = netData.profiles[profileId.toLowerCase()] || (profileData && profileData.avatar_uuid && netData.profiles[profileData.avatar_uuid.toLowerCase()]);
+            profileData = { ...(profileData || {}), ...pFromMap };
+          }
+        }
+      } catch(e) {}
 
       if (!profileData) return;
 
@@ -1049,42 +1076,62 @@
 
           // Throne
           const throneWishlist = Array.isArray(profileData.wishlist) ? profileData.wishlist.find(w => (w.url && w.url.includes('throne.com')) || (typeof w === 'string' && w.includes('throne.com'))) : null;
-          const throneUrl = profileData.throne_url || (throneWishlist ? (typeof throneWishlist === 'object' ? throneWishlist.url : throneWishlist) : null);
-          if (throneUrl && modalThroneBox && modalThroneLink) {
-            modalThroneLink.href = throneUrl;
-            modalThroneBox.style.display = 'block';
+          const throneUrl = (profileData.throne_url && profileData.throne_url.trim()) ? profileData.throne_url.trim() : (throneWishlist ? (typeof throneWishlist === 'object' ? throneWishlist.url : throneWishlist) : null);
+          if (modalThroneBox) {
+            if (throneUrl && modalThroneLink) {
+              modalThroneLink.href = throneUrl;
+              modalThroneBox.style.display = 'block';
+            } else {
+              modalThroneBox.style.display = 'none';
+            }
           }
 
           // Dynamic pre-filled Ko-fi link ($ USD)
-          if (profileData.kofi && modalKofiBox && modalKofiLink) {
-            const cleanKofi = profileData.kofi.replace(/^https?:\/\/(www\.)?ko-fi\.com\//, '').replace(/\/+$/, '');
-            modalKofiLink.href = `https://ko-fi.com/${cleanKofi}`;
-            modalKofiLink.textContent = totalUSD > 0 ? `☕ Pay $${totalUSD} via Ko-fi ↗` : '☕ Pay via Ko-fi ↗';
-            modalKofiBox.style.display = 'block';
+          if (modalKofiBox) {
+            if (profileData.kofi && profileData.kofi.trim() && modalKofiLink) {
+              const cleanKofi = profileData.kofi.trim().replace(/^https?:\/\/(www\.)?ko-fi\.com\//, '').replace(/\/+$/, '');
+              modalKofiLink.href = `https://ko-fi.com/${cleanKofi}`;
+              modalKofiLink.textContent = totalUSD > 0 ? `☕ Pay $${totalUSD} via Ko-fi ↗` : '☕ Pay via Ko-fi ↗';
+              modalKofiBox.style.display = 'block';
+            } else {
+              modalKofiBox.style.display = 'none';
+            }
           }
 
           // Dynamic pre-filled Revolut.me link ($ USD)
-          if (profileData.revolut_me && modalRevolutBox && modalRevolutLink) {
-            const cleanRev = profileData.revolut_me.replace(/^https?:\/\/(www\.)?revolut\.me\//, '').replace(/\/+$/, '');
-            modalRevolutLink.href = totalUSD > 0 ? `https://revolut.me/${cleanRev}/${totalUSD}usd` : `https://revolut.me/${cleanRev}`;
-            modalRevolutLink.textContent = totalUSD > 0 ? `Send $${totalUSD} via Revolut ↗` : 'Send via Revolut ↗';
-            modalRevolutBox.style.display = 'block';
+          if (modalRevolutBox) {
+            if (profileData.revolut_me && profileData.revolut_me.trim() && modalRevolutLink) {
+              const cleanRev = profileData.revolut_me.trim().replace(/^https?:\/\/(www\.)?revolut\.me\//, '').replace(/\/+$/, '');
+              modalRevolutLink.href = totalUSD > 0 ? `https://revolut.me/${cleanRev}/${totalUSD}usd` : `https://revolut.me/${cleanRev}`;
+              modalRevolutLink.textContent = totalUSD > 0 ? `Send $${totalUSD} via Revolut ↗` : 'Send via Revolut ↗';
+              modalRevolutBox.style.display = 'block';
+            } else {
+              modalRevolutBox.style.display = 'none';
+            }
           }
 
           // Dynamic pre-filled Cash App amount (cash.app/$tag/amount)
-          if (profileData.cashapp && modalCashappBox && modalCashappLink) {
-            const cleanTag = profileData.cashapp.startsWith('$') ? profileData.cashapp : `$${profileData.cashapp}`;
-            modalCashappLink.href = totalUSD > 0 ? `https://cash.app/${cleanTag}/${totalUSD}` : `https://cash.app/${cleanTag}`;
-            modalCashappLink.textContent = totalUSD > 0 ? `Pay $${totalUSD} via Cash.app ↗` : 'Pay via Cash.app ↗';
-            modalCashappBox.style.display = 'block';
+          if (modalCashappBox) {
+            if (profileData.cashapp && profileData.cashapp.trim() && modalCashappLink) {
+              const cleanTag = profileData.cashapp.trim().startsWith('$') ? profileData.cashapp.trim() : `$${profileData.cashapp.trim()}`;
+              modalCashappLink.href = totalUSD > 0 ? `https://cash.app/${cleanTag}/${totalUSD}` : `https://cash.app/${cleanTag}`;
+              modalCashappLink.textContent = totalUSD > 0 ? `Pay $${totalUSD} via Cash.app ↗` : 'Pay via Cash.app ↗';
+              modalCashappBox.style.display = 'block';
+            } else {
+              modalCashappBox.style.display = 'none';
+            }
           }
 
           // Dynamic pre-filled PayPal.me amount (paypal.me/user/amountUSD)
-          if (profileData.paypal_me && modalPaypalBox && modalPaypalLink) {
-            const cleanPaypal = profileData.paypal_me.replace(/\/+$/, '');
-            modalPaypalLink.href = totalUSD > 0 ? `${cleanPaypal}/${totalUSD}USD` : cleanPaypal;
-            modalPaypalLink.textContent = totalUSD > 0 ? `Send $${totalUSD} via PayPal ↗` : 'Send via PayPal ↗';
-            modalPaypalBox.style.display = 'block';
+          if (modalPaypalBox) {
+            if (profileData.paypal_me && profileData.paypal_me.trim() && modalPaypalLink) {
+              const cleanPaypal = profileData.paypal_me.trim().replace(/\/+$/, '');
+              modalPaypalLink.href = totalUSD > 0 ? `${cleanPaypal}/${totalUSD}USD` : cleanPaypal;
+              modalPaypalLink.textContent = totalUSD > 0 ? `Send $${totalUSD} via PayPal ↗` : 'Send via PayPal ↗';
+              modalPaypalBox.style.display = 'block';
+            } else {
+              modalPaypalBox.style.display = 'none';
+            }
           }
 
           if (tributeModal) {
@@ -1223,45 +1270,65 @@
 
       // 100% Anonymous Throne Wishlist & Direct Cash Tributes
       const throneWishlist = Array.isArray(profileData.wishlist) ? profileData.wishlist.find(w => (w.url && w.url.includes('throne.com')) || (typeof w === 'string' && w.includes('throne.com'))) : null;
-      const throneUrl = profileData.throne_url || (throneWishlist ? (typeof throneWishlist === 'object' ? throneWishlist.url : throneWishlist) : null);
-      if (throneUrl && modalThroneBox && modalThroneLink) {
-        modalThroneLink.href = throneUrl;
-        modalThroneBox.style.display = 'block';
+      const throneUrl = (profileData.throne_url && profileData.throne_url.trim()) ? profileData.throne_url.trim() : (throneWishlist ? (typeof throneWishlist === 'object' ? throneWishlist.url : throneWishlist) : null);
+      if (modalThroneBox) {
+        if (throneUrl && modalThroneLink) {
+          modalThroneLink.href = throneUrl;
+          modalThroneBox.style.display = 'block';
+        } else {
+          modalThroneBox.style.display = 'none';
+        }
       }
 
       // 100% Anonymous Ko-fi (UK / Global)
-      if (profileData.kofi && modalKofiBox && modalKofiLink) {
-        const cleanKofi = profileData.kofi.replace(/^https?:\/\/(www\.)?ko-fi\.com\//, '').replace(/\/+$/, '');
-        modalKofiLink.href = `https://ko-fi.com/${cleanKofi}`;
-        modalKofiBox.style.display = 'block';
+      if (modalKofiBox) {
+        if (profileData.kofi && profileData.kofi.trim() && modalKofiLink) {
+          const cleanKofi = profileData.kofi.trim().replace(/^https?:\/\/(www\.)?ko-fi\.com\//, '').replace(/\/+$/, '');
+          modalKofiLink.href = `https://ko-fi.com/${cleanKofi}`;
+          modalKofiBox.style.display = 'block';
+        } else {
+          modalKofiBox.style.display = 'none';
+        }
       }
 
       // Revolut.me (UK & EU)
-      if (profileData.revolut_me && modalRevolutBox && modalRevolutLink) {
-        const cleanRev = profileData.revolut_me.replace(/^https?:\/\/(www\.)?revolut\.me\//, '').replace(/\/+$/, '');
-        modalRevolutLink.href = `https://revolut.me/${cleanRev}`;
-        modalRevolutBox.style.display = 'block';
+      if (modalRevolutBox) {
+        if (profileData.revolut_me && profileData.revolut_me.trim() && modalRevolutLink) {
+          const cleanRev = profileData.revolut_me.trim().replace(/^https?:\/\/(www\.)?revolut\.me\//, '').replace(/\/+$/, '');
+          modalRevolutLink.href = `https://revolut.me/${cleanRev}`;
+          modalRevolutBox.style.display = 'block';
+        } else {
+          modalRevolutBox.style.display = 'none';
+        }
       }
 
       // Anonymous Cash App ($cashtag - US)
-      if (profileData.cashapp && modalCashappBox && modalCashappTag && modalCashappLink) {
-        const cleanTag = profileData.cashapp.startsWith('$') ? profileData.cashapp : `$${profileData.cashapp}`;
-        modalCashappTag.textContent = cleanTag;
-        modalCashappLink.href = `https://cash.app/${cleanTag}`;
-        modalCashappBox.style.display = 'block';
-        if (copyCashappBtn) {
-          copyCashappBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(cleanTag);
-            copyCashappBtn.textContent = '✓ Copied!';
-            setTimeout(() => { copyCashappBtn.textContent = '📋 Copy'; }, 2000);
-          });
+      if (modalCashappBox) {
+        if (profileData.cashapp && profileData.cashapp.trim() && modalCashappTag && modalCashappLink) {
+          const cleanTag = profileData.cashapp.trim().startsWith('$') ? profileData.cashapp.trim() : `$${profileData.cashapp.trim()}`;
+          modalCashappTag.textContent = cleanTag;
+          modalCashappLink.href = `https://cash.app/${cleanTag}`;
+          modalCashappBox.style.display = 'block';
+          if (copyCashappBtn) {
+            copyCashappBtn.onclick = () => {
+              navigator.clipboard.writeText(cleanTag);
+              copyCashappBtn.textContent = '✓ Copied!';
+              setTimeout(() => { copyCashappBtn.textContent = '📋 Copy'; }, 2000);
+            };
+          }
+        } else {
+          modalCashappBox.style.display = 'none';
         }
       }
 
       // Optional PayPal.me
-      if (profileData.paypal_me && modalPaypalBox && modalPaypalLink) {
-        modalPaypalLink.href = profileData.paypal_me;
-        modalPaypalBox.style.display = 'block';
+      if (modalPaypalBox) {
+        if (profileData.paypal_me && profileData.paypal_me.trim() && modalPaypalLink) {
+          modalPaypalLink.href = profileData.paypal_me.trim();
+          modalPaypalBox.style.display = 'block';
+        } else {
+          modalPaypalBox.style.display = 'none';
+        }
       }
 
       if (openTributeBtn && tributeModal) {

@@ -391,13 +391,40 @@
         });
       });
 
+      // Merge local storage profile updates for instant cross-tab sync
+      try {
+        allProfiles.forEach((p, idx) => {
+          const cached = localStorage.getItem('cc_profile_edit_' + (p.id || '').toLowerCase()) ||
+                         localStorage.getItem('cc_profile_edit_' + (p.avatar_uuid || '').toLowerCase()) ||
+                         localStorage.getItem('cc_profile_edit_' + (p.sl_username || '').toLowerCase());
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (parsed && (parsed.id === p.id || parsed.avatar_uuid === p.avatar_uuid || parsed.sl_username === p.sl_username)) {
+              allProfiles[idx] = { ...allProfiles[idx], ...parsed };
+            }
+          }
+        });
+      } catch(e) {}
+
       renderProfiles();
 
-      // Fetch dynamic in-world live statuses & subscriptions in background and update cards
+      // Fetch dynamic in-world live statuses, updated profiles & subscriptions in background
       fetch('/.netlify/functions/update-profile')
         .then(res => res.ok ? res.json() : null)
         .then(liveData => {
           if (liveData) {
+            if (liveData.profiles) {
+              Object.keys(liveData.profiles).forEach(k => {
+                const customP = liveData.profiles[k];
+                if (!customP || !customP.id) return;
+                const existingIdx = allProfiles.findIndex(p => p.id === customP.id || p.avatar_uuid === customP.avatar_uuid || (p.sl_username && p.sl_username === customP.sl_username));
+                if (existingIdx !== -1) {
+                  allProfiles[existingIdx] = { ...allProfiles[existingIdx], ...customP };
+                } else if (customP.name) {
+                  allProfiles.push(customP);
+                }
+              });
+            }
             if (liveData.statuses) {
               allProfiles.forEach(p => {
                 const liveEntry = (p.avatar_uuid && liveData.statuses[p.avatar_uuid.toLowerCase()]) ||
