@@ -1024,9 +1024,15 @@
         window.openPaymentModalWithQuote = function() {
           const tributeModal = document.getElementById('tribute-modal');
           const modalName = document.getElementById('tribute-modal-name');
+          const modalThroneBox = document.getElementById('modal-throne-box');
+          const modalThroneLink = document.getElementById('modal-throne-link');
+          const modalKofiBox = document.getElementById('modal-kofi-box');
           const modalKofiLink = document.getElementById('modal-kofi-link');
+          const modalRevolutBox = document.getElementById('modal-revolut-box');
           const modalRevolutLink = document.getElementById('modal-revolut-link');
+          const modalCashappBox = document.getElementById('modal-cashapp-box');
           const modalCashappLink = document.getElementById('modal-cashapp-link');
+          const modalPaypalBox = document.getElementById('modal-paypal-box');
           const modalPaypalLink = document.getElementById('modal-paypal-link');
 
           const totalL$ = window.currentQuoteTotal || 0;
@@ -1037,32 +1043,44 @@
             modalName.textContent = totalL$ > 0 ? `Settle Deposit (L$${totalL$.toLocaleString()} / ~£${totalGBP} / ~$${totalUSD})` : `Send Tribute to ${profileData.name}`;
           }
 
+          // Throne
+          const throneWishlist = Array.isArray(profileData.wishlist) ? profileData.wishlist.find(w => (w.url && w.url.includes('throne.com')) || (typeof w === 'string' && w.includes('throne.com'))) : null;
+          const throneUrl = profileData.throne_url || (throneWishlist ? (typeof throneWishlist === 'object' ? throneWishlist.url : throneWishlist) : null);
+          if (throneUrl && modalThroneBox && modalThroneLink) {
+            modalThroneLink.href = throneUrl;
+            modalThroneBox.style.display = 'block';
+          }
+
           // Dynamic pre-filled Ko-fi link
-          if (profileData.kofi && modalKofiLink) {
+          if (profileData.kofi && modalKofiBox && modalKofiLink) {
             const cleanKofi = profileData.kofi.replace(/^https?:\/\/(www\.)?ko-fi\.com\//, '').replace(/\/+$/, '');
             modalKofiLink.href = `https://ko-fi.com/${cleanKofi}`;
             modalKofiLink.textContent = totalGBP > 0 ? `☕ Pay £${totalGBP} via Ko-fi ↗` : '☕ Pay via Ko-fi ↗';
+            modalKofiBox.style.display = 'block';
           }
 
           // Dynamic pre-filled Revolut.me link
-          if (profileData.revolut_me && modalRevolutLink) {
+          if (profileData.revolut_me && modalRevolutBox && modalRevolutLink) {
             const cleanRev = profileData.revolut_me.replace(/^https?:\/\/(www\.)?revolut\.me\//, '').replace(/\/+$/, '');
             modalRevolutLink.href = totalGBP > 0 ? `https://revolut.me/${cleanRev}/${totalGBP}gbp` : `https://revolut.me/${cleanRev}`;
             modalRevolutLink.textContent = totalGBP > 0 ? `Send £${totalGBP} via Revolut ↗` : 'Send via Revolut ↗';
+            modalRevolutBox.style.display = 'block';
           }
 
           // Dynamic pre-filled Cash App amount (cash.app/$tag/amount)
-          if (profileData.cashapp && modalCashappLink) {
+          if (profileData.cashapp && modalCashappBox && modalCashappLink) {
             const cleanTag = profileData.cashapp.startsWith('$') ? profileData.cashapp : `$${profileData.cashapp}`;
             modalCashappLink.href = totalUSD > 0 ? `https://cash.app/${cleanTag}/${totalUSD}` : `https://cash.app/${cleanTag}`;
             modalCashappLink.textContent = totalUSD > 0 ? `Pay $${totalUSD} via Cash.app ↗` : 'Pay via Cash.app ↗';
+            modalCashappBox.style.display = 'block';
           }
 
           // Dynamic pre-filled PayPal.me amount (paypal.me/user/amountUSD)
-          if (profileData.paypal_me && modalPaypalLink) {
+          if (profileData.paypal_me && modalPaypalBox && modalPaypalLink) {
             const cleanPaypal = profileData.paypal_me.replace(/\/+$/, '');
             modalPaypalLink.href = totalUSD > 0 ? `${cleanPaypal}/${totalUSD}USD` : cleanPaypal;
             modalPaypalLink.textContent = totalUSD > 0 ? `Send $${totalUSD} via PayPal ↗` : 'Send via PayPal ↗';
+            modalPaypalBox.style.display = 'block';
           }
 
           if (tributeModal) {
