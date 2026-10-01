@@ -1,16 +1,15 @@
 // CC_Directory_Kiosk.lsl
 // [Control & Chaos] In-World Directory & Dominant Profile Sync Kiosk
-// Enables Dominants to manage their web profile, toggle live availability, and launch their private web editor.
+// Enables Dominants / Subscribers to manage their web profile, toggle live availability, and launch their private web editor.
 
-string WEB_PORTAL_URL   = "https://controlandchaos.com/directory/edit/";
-string UPDATE_API_URL   = "https://controlandchaos.com/.netlify/functions/update-profile";
+string WEB_PORTAL_URL   = "https://controlandchaos.co.uk/directory/edit/";
+string UPDATE_API_URL   = "https://controlandchaos.co.uk/.netlify/functions/update-profile";
 
 // Security Shared Secret (Must match SECRET_KEY in netlify/functions/update-profile.js)
 string SECRET_KEY       = "CC_DIRECTORY_SECRET_2026_GOLD";
 
-integer DIALOG_CHAN     = -882910;
-integer gDialogListen   = 0;
-key gActiveUser         = NULL_KEY;
+// Dialog handles & tracking
+list   gActiveListens   = []; // [key agent, integer channel, integer listenHandle, integer expiry]
 
 // Generates a daily rolling cryptographic token for the avatar
 string GenerateToken(key agent) {
@@ -18,11 +17,31 @@ string GenerateToken(key agent) {
     return llGetSubString(llMD5String((string)agent + ":" + (string)dayNumber + ":" + SECRET_KEY, 0), 0, 15);
 }
 
+// Generates a unique dialog channel per avatar UUID
+integer GetUserChannel(key agent) {
+    return (integer)("0x" + llGetSubString((string)agent, 0, 6)) | 0x80000000;
+}
+
+InitKiosk() {
+    // Force touch action on root and all linked child prims
+    llSetClickAction(CLICK_ACTION_TOUCH);
+    if (llGetNumberOfPrims() > 1) {
+        llSetLinkPrimitiveParamsFast(LINK_SET, [PRIM_CLICK_ACTION, CLICK_ACTION_TOUCH]);
+    }
+    
+    // Set hovertext
+    llSetText("👑 Control & Chaos\n✨ Dominant Directory & Rate Card Portal\n[ Touch to Edit Profile ]", <0.83, 0.69, 0.22>, 1.0);
+}
+
 LaunchWebEditor(key agent) {
     string token = GenerateToken(agent);
     string fullUrl = WEB_PORTAL_URL + "?uuid=" + (string)agent + "&token=" + token;
+    
+    // Primary popup via llLoadURL
     llLoadURL(agent, "✨ Control & Chaos: Open your Private Profile & Rate Card Editor", fullUrl);
-    llRegionSayTo(agent, 0, "👑 [DIRECTORY] Private Editor link dispatched. Check your viewer prompt or browser!");
+    
+    // Chat fallback in case the avatar's viewer blocks LoadURL popups
+    llRegionSayTo(agent, 0, "👑 [DIRECTORY] Private Editor link: " + fullUrl);
 }
 
 SendQuickStatusUpdate(key agent, string newStatus) {
@@ -37,9 +56,19 @@ SendQuickStatusUpdate(key agent, string newStatus) {
 }
 
 ShowMenu(key agent) {
-    gActiveUser = agent;
-    if (gDialogListen != 0) llListenRemove(gDialogListen);
-    gDialogListen = llListen(DIALOG_CHAN, "", agent, "");
+    integer channel = GetUserChannel(agent);
+    
+    // Clean up any existing listen for this avatar
+    integer idx = llListFindList(gActiveListens, [agent]);
+    if (idx != -1) {
+        integer oldHandle = llList2Integer(gActiveListens, idx + 2);
+        llListenRemove(oldHandle);
+        gActiveListens = llDeleteSubList(gActiveListens, idx, idx + 3);
+    }
+    
+    integer handle = llListen(channel, "", agent, "");
+    integer expiry = llGetUnixTime() + 60;
+    gActiveListens += [agent, channel, handle, expiry];
     
     string name = llGetDisplayName(agent);
     if (name == "" || name == "???") name = llKey2Name(agent);
@@ -53,15 +82,25 @@ ShowMenu(key agent) {
         "🟡 By Appt",    "📋 My Profile", "❌ Cancel"
     ];
     
-    llDialog(agent, prompt, buttons, DIALOG_CHAN);
-    llSetTimerEvent(60.0);
+    llRegionSayTo(agent, 0, "👑 [DIRECTORY] Opening menu for " + name + "...");
+    llDialog(agent, prompt, buttons, channel);
+    llSetTimerEvent(10.0);
 }
 
 default {
     state_entry() {
-        llSetClickAction(CLICK_ACTION_TOUCH);
-        llSetText("👑 Control & Chaos\n✨ Dominant Directory & Rate Card Portal\n[ Touch to Edit Profile ]", <0.83, 0.69, 0.22>, 1.0);
-        llOwnerSay("✨ [DIRECTORY KIOSK] Initialized and active. Click / touch object to open menu!");
+        InitKiosk();
+        llOwnerSay("✨ [DIRECTORY KIOSK] Initialized and ready. Touch object to test!");
+    }
+
+    on_rez(integer start_param) {
+        llResetScript();
+    }
+
+    changed(integer change) {
+        if (change & (CHANGED_OWNER | CHANGED_LINK)) {
+            llResetScript();
+        }
     }
 
     touch_start(integer total_number) {
@@ -70,11 +109,16 @@ default {
     }
 
     listen(integer channel, string name, key id, string message) {
-        if (channel != DIALOG_CHAN || id != gActiveUser) return;
+        integer idx = llListFindList(gActiveListens, [id]);
+        if (idx == -1) return;
         
-        if (gDialogListen != 0) llListenRemove(gDialogListen);
-        gDialogListen = 0;
-        llSetTimerEvent(0.0);
+        integer expectedChan = llList2Integer(gActiveListens, idx + 1);
+        if (channel != expectedChan) return;
+        
+        // Remove listener
+        integer handle = llList2Integer(gActiveListens, idx + 2);
+        llListenRemove(handle);
+        gActiveListens = llDeleteSubList(gActiveListens, idx, idx + 3);
         
         if (message == "🌐 Web Editor") {
             LaunchWebEditor(id);
@@ -89,23 +133,38 @@ default {
             SendQuickStatusUpdate(id, "By Appointment Only");
         }
         else if (message == "📋 My Profile") {
-            string token = GenerateToken(id);
-            string previewUrl = "https://controlandchaos.com/directory/?uuid=" + (string)id;
+            string previewUrl = "https://controlandchaos.co.uk/directory/?uuid=" + (string)id;
             llLoadURL(id, "View Public Directory Profile", previewUrl);
+            llRegionSayTo(id, 0, "📋 [DIRECTORY] Public profile: " + previewUrl);
+        }
+        else if (message == "❌ Cancel") {
+            llRegionSayTo(id, 0, "❌ Menu closed.");
         }
     }
 
     http_response(key request_id, integer status, list metadata, string body) {
         if (status == 200 || status == 201) {
-            llRegionSayTo(gActiveUser, 0, "✅ [DIRECTORY] Status updated successfully on controlandchaos.com!");
+            llOwnerSay("✅ [DIRECTORY KIOSK] Status update processed successfully (Code " + (string)status + ").");
         } else {
-            llRegionSayTo(gActiveUser, 0, "ℹ️ Status recorded (Code " + (string)status + "). Use '🌐 Web Editor' for full profile updates.");
+            llOwnerSay("ℹ️ [DIRECTORY KIOSK] Status update returned response code: " + (string)status);
         }
     }
 
     timer() {
-        if (gDialogListen != 0) llListenRemove(gDialogListen);
-        gDialogListen = 0;
-        llSetTimerEvent(0.0);
+        integer now = llGetUnixTime();
+        integer i = 0;
+        while (i < llGetListLength(gActiveListens)) {
+            integer expiry = llList2Integer(gActiveListens, i + 3);
+            if (now >= expiry) {
+                integer handle = llList2Integer(gActiveListens, i + 2);
+                llListenRemove(handle);
+                gActiveListens = llDeleteSubList(gActiveListens, i, i + 3);
+            } else {
+                i += 4;
+            }
+        }
+        if (llGetListLength(gActiveListens) == 0) {
+            llSetTimerEvent(0.0);
+        }
     }
 }

@@ -15,7 +15,7 @@ This system allows verified Dominants and Service Providers to **manage and upda
 [ llLoadURL() One-Click Magic Link ]
             │
             ▼
-[ Web Editor: controlandchaos.com/directory/edit/ ]
+[ Web Editor: controlandchaos.co.uk/directory/edit/ ]
   • Live Availability Toggle (🟢 Available / 🔴 Busy / 🟡 By Appt)
   • Rates & Service Builder
   • Specialties & Hardware Badges
@@ -54,7 +54,7 @@ This system allows verified Dominants and Service Providers to **manage and upda
 ### 2. How Dominants Use It
 1. When a Dominant clicks the in-world kiosk, a dialog menu appears:
    * **`[🌐 Web Editor]`**: Sends a one-click `llLoadURL()` to their private editor:
-     `https://controlandchaos.com/directory/edit/?uuid=<AVATAR_UUID>&token=<DAILY_TOKEN>`
+     `https://controlandchaos.co.uk/directory/edit/?uuid=<AVATAR_UUID>&token=<DAILY_TOKEN>`
    * **`[🟢 Available]` / `[🔴 Busy]` / `[🟡 By Appt]`**: Instantly changes their status tag on the website with 1 click right from Second Life!
    * **`[📋 My Profile]`**: Opens their public rate card page.
 
@@ -81,6 +81,6 @@ This system allows verified Dominants and Service Providers to **manage and upda
 ## 💡 Manual Admin Access
 If you ever want to open a specific profile editor manually without logging into Second Life, you can open:
 ```text
-https://controlandchaos.com/directory/edit/?uuid=alexis-vane&token=CC_DIRECTORY_SECRET_2026_GOLD
+https://controlandchaos.co.uk/directory/edit/?uuid=alexis-vane&token=CC_DIRECTORY_SECRET_2026_GOLD
 ```
 *(Or click "Enter Access Key Manually" on the edit page and type your secret key).*

@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dominant Profile &amp; Rate Card Editor | Control &amp; Chaos</title>
+  <title>Self-Service Profile &amp; Rate Card Editor | Control &amp; Chaos</title>
   <meta name="description"
-    content="Self-service profile and rate card editor for Control &amp; Chaos verified Dominants and Service Providers.">
+    content="Self-service rate card, live availability, and profile editor for Control &amp; Chaos verified Dominants, Escorts, and Service Providers.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,29 +17,42 @@
   <link rel="stylesheet" href="/styles.css">
 
   <style>
-    .editor-grid {
+    :root {
+      --editor-bg: #0c0b0e;
+      --editor-card: #141217;
+      --editor-card-border: rgba(212, 175, 55, 0.2);
+      --editor-card-hover: rgba(212, 175, 55, 0.35);
+      --editor-input-bg: #0a090c;
+    }
+
+    .editor-layout {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.35fr 0.95fr;
       gap: 32px;
       align-items: start;
     }
 
-    @media (max-width: 1024px) {
-      .editor-grid {
+    @media (max-width: 1100px) {
+      .editor-layout {
         grid-template-columns: 1fr;
       }
     }
 
-    .editor-section {
-      background: #101016;
-      border: 1px solid rgba(212, 175, 55, 0.22);
+    .editor-card {
+      background: var(--editor-card);
+      border: 1px solid var(--editor-card-border);
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 24px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: border-color 0.2s ease;
     }
 
-    .section-header {
+    .editor-card:hover {
+      border-color: var(--editor-card-hover);
+    }
+
+    .editor-card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -48,10 +61,136 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
+    .editor-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .editor-card-title span.icon {
+      font-size: 1.3rem;
+    }
+
+    .editor-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .editor-tab-btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .editor-tab-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+      color: #fff;
+      border-color: rgba(212, 175, 55, 0.3);
+    }
+
+    .editor-tab-btn.active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(184, 134, 11, 0.15) 100%);
+      border-color: #d4af37;
+      color: #ffd700;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gold-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--editor-input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: #d4af37;
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .form-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Status Pills */
     .status-pills {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+      margin-bottom: 12px;
     }
 
     .status-pill {
@@ -61,18 +200,20 @@
       background: rgba(255, 255, 255, 0.04);
       color: #ccc;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       transition: all 0.2s ease;
+      user-select: none;
     }
 
     .status-pill.active {
-      background: rgba(212, 175, 55, 0.18);
+      background: rgba(212, 175, 55, 0.2);
       border-color: #d4af37;
       color: #ffd700;
       box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
     }
 
+    /* Tag Clouds */
     .tag-cloud-selector {
       display: flex;
       flex-wrap: wrap;
@@ -92,18 +233,24 @@
     }
 
     .tag-choice.selected {
-      background: rgba(212, 175, 55, 0.2);
+      background: rgba(212, 175, 55, 0.22);
       border-color: #d4af37;
       color: #ffd700;
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
     }
 
-    .rate-card-item-box {
-      background: #09090d;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Repeater Items */
+    .repeater-item-box {
+      background: #0d0c10;
+      border: 1px solid rgba(255, 255, 255, 0.09);
       border-radius: 8px;
       padding: 16px;
       margin-bottom: 12px;
       position: relative;
+    }
+
+    .repeater-item-box:hover {
+      border-color: rgba(212, 175, 55, 0.25);
     }
 
     .btn-delete-item {
@@ -117,11 +264,82 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.75rem;
+      transition: all 0.2s ease;
     }
 
+    .btn-delete-item:hover {
+      background: rgba(239, 68, 68, 0.35);
+      color: #fff;
+    }
+
+    .btn-add-repeater {
+      padding: 8px 16px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 6px;
+      color: #ffd700;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-add-repeater:hover {
+      background: rgba(212, 175, 55, 0.25);
+      border-color: #d4af37;
+    }
+
+    .img-preview-thumb {
+      width: 100%;
+      height: 90px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      background: #000;
+      margin-top: 8px;
+      display: block;
+    }
+
+    /* Live Preview Sticky */
     .preview-sticky {
       position: sticky;
-      top: 100px;
+      top: 90px;
+    }
+
+    .preview-card {
+      background: #09090d;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .preview-banner {
+      height: 120px;
+      background-size: cover;
+      background-position: center;
+      background-color: #1a171e;
+      position: relative;
+    }
+
+    .preview-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 3px solid #d4af37;
+      object-fit: cover;
+      position: absolute;
+      bottom: -24px;
+      left: 20px;
+      background: #111;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .preview-content {
+      padding: 34px 20px 20px;
     }
   </style>
 </head>
@@ -137,10 +355,10 @@
     <div class="container">
       <span class="section-tag tag-gold mb-10">SELF-SERVICE DIRECTORY PORTAL</span>
       <h1 class="hero-title hero-title-subpage">
-        DOMINANT <span class="gold-gradient-text">PROFILE EDITOR</span>
+        PROFILE &amp; <span class="gold-gradient-text">RATE CARD EDITOR</span>
       </h1>
       <p class="hero-description">
-        Manage your official directory profile, live availability status, and rate card without waiting on site updates.
+        Manage your official directory profile, live availability status, photos, limits, and full rate card menu.
       </p>
     </div>
   </header>
@@ -149,20 +367,27 @@
     <div class="container">
 
       <!-- Authentication / Access Status Banner -->
-      <div id="auth-banner" class="editor-section" style="display: none;">
-        <div class="flex-between align-center">
+      <div id="auth-banner" class="editor-card" style="display: none; background: linear-gradient(135deg, #181520 0%, #100e16 100%);">
+        <div class="flex-between align-center flex-wrap gap-12">
           <div>
-            <h3 class="card-title font-md text-gold m-0">🔑 Authenticated as <span id="auth-user-name">Dominant</span></h3>
-            <p class="card-desc font-xs m-0" id="auth-user-uuid">UUID: checking...</p>
+            <h3 class="editor-card-title text-gold m-0">
+              <span class="icon">👑</span> Authenticated as <span id="auth-user-name">Dominant</span>
+            </h3>
+            <p class="font-xs text-muted m-0 mt-4" id="auth-user-uuid">UUID: checking...</p>
           </div>
-          <span class="section-tag tag-emerald m-0">✓ VERIFIED ACCESS</span>
+          <div class="flex-row align-center gap-10">
+            <a href="#" id="view-live-profile-btn" target="_blank" class="btn btn-secondary btn-sm">
+              <span>👁️</span> View Live Profile
+            </a>
+            <span class="section-tag tag-emerald m-0">✓ VERIFIED ACCESS</span>
+          </div>
         </div>
       </div>
 
       <!-- Access Gate (Shown if token/uuid missing) -->
-      <div id="access-gate" class="editor-section" style="text-align: center; padding: 48px 24px;">
+      <div id="access-gate" class="editor-card" style="text-align: center; padding: 48px 24px;">
         <div style="font-size: 3rem; margin-bottom: 16px;">👑</div>
-        <h2 class="card-title font-lg mb-10">Private Dominant Portal</h2>
+        <h2 class="card-title font-lg mb-10">Private Profile Portal</h2>
         <p class="card-desc mb-24 max-w-600 mx-auto font-sm">
           To update your profile, touch the <strong>Directory Portal Kiosk</strong> in-world at the Control &amp; Chaos
           Estate Office to generate your one-click verified access link.
@@ -179,177 +404,403 @@
       </div>
 
       <!-- Main Editor UI (Shown when authenticated) -->
-      <div id="editor-container" class="editor-grid" style="display: none;">
+      <div id="editor-container" class="editor-layout" style="display: none;">
 
-        <!-- Left Column: Form Controls -->
+        <!-- Left Column: Form Controls & Tabs -->
         <div>
 
-          <!-- Section 1: Live Status -->
-          <div class="editor-section">
-            <div class="section-header">
-              <h3 class="card-title font-md m-0">🟢 Live Sim Availability</h3>
-              <span class="font-xs text-muted">Updates in real time</span>
-            </div>
-            <p class="card-desc font-xs mb-14">Choose your active availability for website visitors:</p>
-            <div class="status-pills" id="status-pills-container">
-              <div class="status-pill active" data-status="Available / In-World">🟢 Available / In-World</div>
-              <div class="status-pill" data-status="Busy / In Session">🔴 Busy / In Session</div>
-              <div class="status-pill" data-status="By Appointment Only">🟡 By Appointment Only</div>
-              <div class="status-pill" data-status="VIP Lounge Active">🍸 VIP Lounge Active</div>
-            </div>
+          <!-- Editor Navigation Tabs -->
+          <div class="editor-tabs">
+            <button class="editor-tab-btn active" onclick="switchTab('tab-identity')">
+              <span>👤</span> Identity &amp; Role
+            </button>
+            <button class="editor-tab-btn" onclick="switchTab('tab-media')">
+              <span>📸</span> Photos &amp; Visuals
+            </button>
+            <button class="editor-tab-btn" onclick="switchTab('tab-bio')">
+              <span>📝</span> Bio &amp; Tags
+            </button>
+            <button class="editor-tab-btn" onclick="switchTab('tab-rates')">
+              <span>🪙</span> Rate Cards &amp; Menus
+            </button>
+            <button class="editor-tab-btn" onclick="switchTab('tab-tech')">
+              <span>⚡</span> Tech &amp; Boundaries
+            </button>
+            <button class="editor-tab-btn" onclick="switchTab('tab-socials')">
+              <span>🎁</span> Wishlists &amp; Reviews
+            </button>
           </div>
 
-          <!-- Section 2: Identity & Basics -->
-          <div class="editor-section">
-            <div class="section-header">
-              <h3 class="card-title font-md m-0">👤 Identity &amp; Titles</h3>
+          <!-- ================= TAB 1: IDENTITY & ROLE ================= -->
+          <div id="tab-identity" class="tab-content active">
+
+            <!-- Live Status -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🟢</span> Live Sim Availability</h3>
+                <span class="font-xs text-muted">Updates in real time</span>
+              </div>
+              <p class="font-xs text-muted mb-12">Select your current active status for website visitors:</p>
+              <div class="status-pills" id="status-pills-container">
+                <div class="status-pill active" data-status="Available">🟢 Available</div>
+                <div class="status-pill" data-status="Available / In-World">🟢 Available / In-World</div>
+                <div class="status-pill" data-status="Busy / In Session">🔴 Busy / In Session</div>
+                <div class="status-pill" data-status="By Appointment Only">🟡 By Appointment Only</div>
+                <div class="status-pill" data-status="VIP Lounge Active">🍸 VIP Lounge Active</div>
+              </div>
+              <div class="form-group mb-0">
+                <label class="form-label" for="edit-custom-status">Custom Availability Note (Optional)</label>
+                <input type="text" id="edit-custom-status" class="form-input" placeholder="e.g. In-world today from 2 PM to 8 PM SLT">
+              </div>
             </div>
-            <div class="form-grid-2col">
+
+            <!-- Identity Basics -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">👤</span> Identity &amp; Titles</h3>
+              </div>
+              
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-name">Display Name *</label>
+                  <input type="text" id="edit-name" class="form-input" placeholder="Mistress Alexis Vane" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-username">Second Life Username *</label>
+                  <input type="text" id="edit-username" class="form-input" placeholder="alexis.vane" required>
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-role-type">Role Badge Type</label>
+                  <select id="edit-role-type" class="form-select">
+                    <option value="domme">👑 Dominant / Domme</option>
+                    <option value="sub">⛓️ Submissive / Escort / FinSub</option>
+                    <option value="switch">🎭 Switch / Performer</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-role">Role Subtitle *</label>
+                  <input type="text" id="edit-role" class="form-input" placeholder="Financial Domme & Luxury Companion">
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-rate">Starting Rate</label>
+                  <input type="text" id="edit-rate" class="form-input" placeholder="L$3,000 / hr">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-location">Location on Sim</label>
+                  <input type="text" id="edit-location" class="form-input" placeholder="Control & Chaos VIP Lounge">
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-slurl">SLurl / Landmark Link</label>
+                  <input type="text" id="edit-slurl" class="form-input" placeholder="secondlife://Chaos%20Manor/128/142/23">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-email">Contact Email (Optional)</label>
+                  <input type="email" id="edit-email" class="form-input" placeholder="bookings@example.com">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================= TAB 2: MEDIA & GALLERY ================= -->
+          <div id="tab-media" class="tab-content">
+            
+            <!-- Avatar & Hero Banner -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🖼️</span> Cover Banner &amp; Avatar Photo</h3>
+              </div>
+              
               <div class="form-group">
-                <label class="form-label" for="edit-name">Display Name *</label>
-                <input type="text" id="edit-name" class="form-input" placeholder="Mistress Alexis Vane" required>
+                <label class="form-label" for="edit-avatar-img">Avatar Headshot Photo URL</label>
+                <input type="text" id="edit-avatar-img" class="form-input" placeholder="https://images.unsplash.com/... or /assets/uploads/photo.jpg">
+                <div class="form-hint">Square photo recommended. Appears as your circle avatar.</div>
+                <img id="preview-avatar-thumb" class="img-preview-thumb" style="width: 70px; height: 70px; border-radius: 50%;" src="" alt="Avatar Preview" onerror="this.style.display='none'">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="edit-banner-img">Hero Cover Banner Image URL</label>
+                <input type="text" id="edit-banner-img" class="form-input" placeholder="https://images.unsplash.com/... or /assets/uploads/banner.jpg">
+                <div class="form-hint">Wide luxury banner (e.g. 1920x600 px) for profile header background.</div>
+                <img id="preview-banner-thumb" class="img-preview-thumb" src="" alt="Banner Preview" onerror="this.style.display='none'">
+              </div>
+            </div>
+
+            <!-- Photo Lookbook Gallery -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">📸</span> Photo Gallery &amp; Lookbook</h3>
+                <button type="button" onclick="addGalleryItem()" class="btn-add-repeater">
+                  <span>+</span> Add Photo
+                </button>
+              </div>
+              <div id="gallery-repeater-container">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================= TAB 3: BIO & TAGS ================= -->
+          <div id="tab-bio" class="tab-content">
+            
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">📝</span> Bio &amp; Philosophy</h3>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="edit-tagline">Header Tagline Quote</label>
+                <input type="text" id="edit-tagline" class="form-input" placeholder="Unapologetic luxury and psychological draining.">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="edit-about-title">About Section Title</label>
+                <input type="text" id="edit-about-title" class="form-input" placeholder="About & Philosophy">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="edit-about">Full About Bio (Multi-paragraph)</label>
+                <textarea id="edit-about" class="form-textarea" rows="7" placeholder="Describe your background, session style, house rules, and tribute protocol..."></textarea>
+              </div>
+            </div>
+
+            <!-- Specialty Tags -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🏷️</span> Specialty Search Tags</h3>
+              </div>
+              <p class="font-xs text-muted mb-10">Click to toggle your specialties or type custom tags below:</p>
+              
+              <div class="tag-cloud-selector" id="tag-selector-box">
+                <span class="tag-choice">FinDom</span>
+                <span class="tag-choice">VIP Escort</span>
+                <span class="tag-choice">Lovense Toy Control</span>
+                <span class="tag-choice">Vow Collar Certified</span>
+                <span class="tag-choice">RLV Restraints</span>
+                <span class="tag-choice">Air Taxes</span>
+                <span class="tag-choice">High Society</span>
+                <span class="tag-choice">FemDom</span>
+                <span class="tag-choice">Goddess Worship</span>
+                <span class="tag-choice">Sissy Training</span>
+                <span class="tag-choice">Chastity Oversight</span>
+                <span class="tag-choice">Debt Contract</span>
+                <span class="tag-choice">Humiliation</span>
+                <span class="tag-choice">Pet Play</span>
+              </div>
+
+              <div class="form-group mt-16 mb-0">
+                <label class="form-label" for="edit-custom-tags">Additional Custom Tags (Comma-separated)</label>
+                <input type="text" id="edit-custom-tags" class="form-input" placeholder="e.g. Latex Fashion, Voice Only, Spanking">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================= TAB 4: RATE CARDS & SERVICES ================= -->
+          <div id="tab-rates" class="tab-content">
+            
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🪙</span> Categorized Rate Cards &amp; Menus</h3>
+                <button type="button" onclick="addRateCategory()" class="btn-add-repeater">
+                  <span>+</span> Add Rate Category
+                </button>
+              </div>
+              <p class="font-xs text-muted mb-16">
+                Group your services into categories (e.g. 🪙 FinDom, 👗 Escort &amp; Galas, 🔒 RLV Restraints).
+              </p>
+              <div id="categories-builder-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================= TAB 5: TECH & BOUNDARIES ================= -->
+          <div id="tab-tech" class="tab-content">
+            
+            <!-- Hardware & Compatibility -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">⚡</span> Hardware &amp; Tech Compatibility</h3>
+                <button type="button" onclick="addHardwareItem()" class="btn-add-repeater">
+                  <span>+</span> Add Device
+                </button>
+              </div>
+              <div id="hardware-repeater-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Hard Limits & Boundaries -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🚫</span> Hard Limits &amp; Boundaries</h3>
+                <button type="button" onclick="addHardLimit()" class="btn-add-repeater">
+                  <span>+</span> Add Limit
+                </button>
+              </div>
+              <p class="font-xs text-muted mb-12">Explicitly list actions, themes, or boundaries you do not participate in:</p>
+              <div id="limits-repeater-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- How to Book Protocol -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">📜</span> How to Book Protocol Steps</h3>
+                <button type="button" onclick="addBookingStep()" class="btn-add-repeater">
+                  <span>+</span> Add Step
+                </button>
+              </div>
+              <p class="font-xs text-muted mb-12">Step-by-step instructions for prospective clients/subs:</p>
+              <div id="protocol-repeater-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================= TAB 6: WISHLIST, SOCIALS & REVIEWS ================= -->
+          <div id="tab-socials" class="tab-content">
+            
+            <!-- Wishlist -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🎁</span> Wishlist &amp; Tributes</h3>
+                <button type="button" onclick="addWishlistItem()" class="btn-add-repeater">
+                  <span>+</span> Add Wishlist Link
+                </button>
+              </div>
+              <div id="wishlist-repeater-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🌐</span> Socials &amp; External Links</h3>
+                <button type="button" onclick="addSocialLink()" class="btn-add-repeater">
+                  <span>+</span> Add Social Link
+                </button>
+              </div>
+              <div id="socials-repeater-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Client Reviews -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">⭐</span> Client Reviews &amp; Testimonials</h3>
+                <button type="button" onclick="addReviewItem()" class="btn-add-repeater">
+                  <span>+</span> Add Review
+                </button>
+              </div>
+              <div id="reviews-repeater-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- SEO & Discord Card Meta -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🔍</span> SEO &amp; Discord / Twitter Share Card</h3>
               </div>
               <div class="form-group">
-                <label class="form-label" for="edit-username">Second Life Username *</label>
-                <input type="text" id="edit-username" class="form-input" placeholder="alexis.vane" required>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="edit-role">Role Title *</label>
-              <input type="text" id="edit-role" class="form-input" placeholder="Financial Domme & Luxury Companion">
-            </div>
-
-            <div class="form-grid-2col">
-              <div class="form-group">
-                <label class="form-label" for="edit-rate">Starting Rate</label>
-                <input type="text" id="edit-rate" class="form-input" placeholder="L$2,500 / hr">
+                <label class="form-label" for="edit-seo-title">Custom Social Card Title</label>
+                <input type="text" id="edit-seo-title" class="form-input" placeholder="Alek Zane — Luxury Rate Card & Services">
               </div>
               <div class="form-group">
-                <label class="form-label" for="edit-location">Primary Location / Sim</label>
-                <input type="text" id="edit-location" class="form-input" placeholder="Control & Chaos VIP Skybox">
+                <label class="form-label" for="edit-seo-desc">Custom Social Card Description</label>
+                <textarea id="edit-seo-desc" class="form-textarea" rows="2" placeholder="View verified Second Life rates, Lovense toy controls, and book direct."></textarea>
               </div>
             </div>
+
           </div>
 
-          <!-- Section 3: Biography & Tagline -->
-          <div class="editor-section">
-            <div class="section-header">
-              <h3 class="card-title font-md m-0">📝 Biography &amp; Tagline</h3>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="edit-tagline">Header Tagline</label>
-              <input type="text" id="edit-tagline" class="form-input"
-                placeholder="Unapologetic luxury and psychological draining.">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="edit-about">Full About &amp; Expectations</label>
-              <textarea id="edit-about" class="form-textarea" rows="6"
-                placeholder="Describe your session style, house rules, and tribute protocol..."></textarea>
-            </div>
-          </div>
-
-          <!-- Section 4: Specialty Tags & Badges -->
-          <div class="editor-section">
-            <div class="section-header">
-              <h3 class="card-title font-md m-0">🏷️ Specialties &amp; Hardware Support</h3>
-            </div>
-            <label class="form-label">Click to toggle your specialties:</label>
-            <div class="tag-cloud-selector" id="tag-selector-box">
-              <span class="tag-choice">FinDom</span>
-              <span class="tag-choice">VIP Escort</span>
-              <span class="tag-choice">Lovense Toy Control</span>
-              <span class="tag-choice">Vow Collar Certified</span>
-              <span class="tag-choice">RLV Restraints</span>
-              <span class="tag-choice">Air Taxes</span>
-              <span class="tag-choice">High Society</span>
-              <span class="tag-choice">FemDom</span>
-              <span class="tag-choice">Goddess Worship</span>
-              <span class="tag-choice">Sissy Training</span>
-              <span class="tag-choice">Chastity Oversight</span>
-            </div>
-
-            <div class="mt-16">
-              <label class="form-label">Hardware &amp; System Compatibility:</label>
-              <div class="flex-row flex-wrap gap-16 mt-8">
-                <label class="form-checkbox-label">
-                  <input type="checkbox" id="hw-vow-collar" checked> <span>⛓️ Vow Collar</span>
-                </label>
-                <label class="form-checkbox-label">
-                  <input type="checkbox" id="hw-lovense" checked> <span>⚡ Lovense Toys</span>
-                </label>
-                <label class="form-checkbox-label">
-                  <input type="checkbox" id="hw-rlv" checked> <span>🔒 RLV Restraints</span>
-                </label>
-                <label class="form-checkbox-label">
-                  <input type="checkbox" id="hw-experience" checked> <span>🌐 Experience Ready</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 5: Rate Card Builder -->
-          <div class="editor-section">
-            <div class="section-header">
-              <h3 class="card-title font-md m-0">🪙 Rate Card &amp; Services</h3>
-              <button onclick="addNewServiceItem()" class="btn btn-secondary btn-sm">
-                <span>+</span> Add Service Item
-              </button>
-            </div>
-            <div id="services-builder-container">
-              <!-- Dynamically populated -->
-            </div>
-          </div>
-
-          <!-- Action Bar -->
-          <div class="editor-section" style="background: linear-gradient(180deg, #181824 0%, #101018 100%);">
+          <!-- Save / Publish Action Bar -->
+          <div class="editor-card" style="background: linear-gradient(180deg, #181824 0%, #101018 100%); border-color: var(--gold-bright);">
             <div class="flex-between align-center flex-wrap gap-12">
               <button onclick="saveProfile()" id="save-btn" class="btn btn-gold btn-lg w-100 flex-center">
                 <span>💾</span> Save &amp; Publish Profile
               </button>
             </div>
-            <div id="save-feedback" class="form-feedback-box mt-14"></div>
+            <div id="save-feedback" class="form-feedback-box mt-14" style="display:none;"></div>
           </div>
 
         </div>
 
-        <!-- Right Column: Live Sticky Preview -->
+        <!-- Right Column: Live Sticky Rate Card Preview -->
         <div class="preview-sticky">
-          <div class="editor-section">
-            <div class="section-header">
-              <h3 class="card-title font-md m-0">👀 Live Rate Card Preview</h3>
-              <span class="section-tag font-2xs m-0">INSTANT PREVIEW</span>
-            </div>
-
-            <!-- Mini Preview Card -->
-            <div class="card p-22" style="background: #09090d; border: 1px solid rgba(212,175,55,0.3);">
-              <div class="flex-between align-start mb-12">
-                <div>
-                  <span class="section-tag font-2xs m-0 mb-6" id="prev-status">🟢 AVAILABLE / IN-WORLD</span>
-                  <h2 class="card-title font-lg m-0" id="prev-name">Mistress Alexis Vane</h2>
-                  <p class="font-xs text-gold m-0 mt-4" id="prev-role">Financial Domme & Luxury Companion</p>
-                </div>
-                <div class="font-xl">👑</div>
+          <div class="editor-card p-0">
+            <div class="preview-card">
+              
+              <!-- Banner & Avatar -->
+              <div class="preview-banner" id="prev-banner-bg">
+                <img src="/assets/uploads/default-avatar.jpg" class="preview-avatar" id="prev-avatar-img" alt="Avatar" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'">
               </div>
 
-              <p class="card-desc font-xs mb-14" id="prev-tagline">
-                Unapologetic luxury and psychological draining.
-              </p>
+              <!-- Content -->
+              <div class="preview-content">
+                <div class="flex-between align-start mb-8">
+                  <div>
+                    <span class="section-tag font-2xs m-0 mb-6" id="prev-status">🟢 AVAILABLE</span>
+                    <h2 class="card-title font-lg m-0 text-white" id="prev-name">Mistress Alexis Vane</h2>
+                    <p class="font-xs text-gold m-0 mt-4" id="prev-role">Financial Domme &amp; Luxury Companion</p>
+                  </div>
+                  <div class="font-xl" id="prev-role-badge">👑</div>
+                </div>
 
-              <div class="p-12 mb-14" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
-                <div class="flex-between font-xs">
-                  <span class="text-muted">Starting Rate:</span>
-                  <strong class="text-gold" id="prev-rate">L$2,500 / hr</strong>
+                <p class="card-desc font-xs mb-14" id="prev-tagline">
+                  Unapologetic luxury and psychological draining.
+                </p>
+
+                <!-- Quick Stats Box -->
+                <div class="p-12 mb-14" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
+                  <div class="flex-between font-xs mb-6">
+                    <span class="text-muted">Starting Rate:</span>
+                    <strong class="text-gold" id="prev-rate">L$3,000 / hr</strong>
+                  </div>
+                  <div class="flex-between font-xs mb-6">
+                    <span class="text-muted">Location:</span>
+                    <span id="prev-location" class="text-right">Control &amp; Chaos VIP</span>
+                  </div>
+                  <div class="flex-between font-xs">
+                    <span class="text-muted">SL Username:</span>
+                    <span id="prev-username">alexis.vane</span>
+                  </div>
                 </div>
-                <div class="flex-between font-xs mt-6">
-                  <span class="text-muted">SL Username:</span>
-                  <span id="prev-username">alexis.vane</span>
+
+                <!-- Live Services Preview -->
+                <div class="font-xs">
+                  <div class="text-gold font-mono uppercase font-2xs mb-8" style="letter-spacing: 0.08em;">Rate Preview</div>
+                  <div id="prev-services-list" style="display:flex; flex-direction:column; gap:6px;">
+                    <!-- Live preview of service tiers -->
+                  </div>
                 </div>
+
+                <!-- Live Tags Preview -->
+                <div class="mt-14 pt-12" style="border-top: 1px solid rgba(255,255,255,0.08);">
+                  <div id="prev-tags-list" style="display:flex; flex-wrap:wrap; gap:5px;">
+                    <!-- Live preview of tags -->
+                  </div>
+                </div>
+
               </div>
 
-              <div id="prev-services-list" class="font-xs">
-                <!-- Live preview of service tiers -->
-              </div>
             </div>
           </div>
         </div>
@@ -368,12 +819,15 @@
     let authUUID = null;
     let authToken = null;
 
-    // Default Services Template if new
-    let servicesList = [
-      { name: "1-on-1 Drain & Humiliation Session", price: "L$3,000", unit: "per hour", desc: "Intensive financial discipline, psychological drain triggers, and live tribute milestones." },
-      { name: "Instant Wallet Cleanout / Wipeout", price: "L$10,000+", unit: "flat tribute", desc: "For submissives seeking profound surrender and total financial ruin." },
-      { name: "VIP Event Escort & Gala Arm Candy", price: "L$5,000", unit: "per hour (2h min)", desc: "Formal high-society public escorting for sim galas and private estates." }
-    ];
+    // Complex State Repositories
+    let rateCategories = [];
+    let galleryItems = [];
+    let hardwareItems = [];
+    let hardLimitsList = [];
+    let bookingStepsList = [];
+    let wishlistItems = [];
+    let socialLinksList = [];
+    let reviewsList = [];
 
     document.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
@@ -384,6 +838,17 @@
         initEditor(authUUID, authToken);
       }
     });
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.editor-tab-btn').forEach(el => el.classList.remove('active'));
+
+      const targetTab = document.getElementById(tabId);
+      if (targetTab) targetTab.classList.add('active');
+
+      const activeBtn = Array.from(document.querySelectorAll('.editor-tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+    }
 
     function promptManualToken() {
       const uuid = prompt("Enter your Second Life Avatar UUID or Username:");
@@ -396,46 +861,107 @@
       document.getElementById('access-gate').style.display = 'none';
       document.getElementById('auth-banner').style.display = 'block';
       document.getElementById('editor-container').style.display = 'grid';
-
       document.getElementById('auth-user-uuid').innerText = `UUID: ${uuid}`;
 
       try {
-        const res = await fetch('/directory/profiles.json');
-        const profiles = await res.json();
-        currentProfile = profiles.find(p => p.avatar_uuid === uuid || p.id === uuid || p.sl_username === uuid);
+        let loaded = false;
+        
+        // 1. Try fetching individual JSON first
+        try {
+          const resSingle = await fetch(`/directory/profiles/${uuid}.json?v=${Date.now()}`);
+          if (resSingle.ok) {
+            currentProfile = await resSingle.json();
+            loaded = true;
+          }
+        } catch(e) {}
+
+        // 2. Fallback to combined profiles.json
+        if (!loaded) {
+          const resAll = await fetch(`/directory/profiles.json?v=${Date.now()}`);
+          if (resAll.ok) {
+            const profiles = await resAll.json();
+            currentProfile = profiles.find(p => p.avatar_uuid === uuid || p.id === uuid || p.sl_username === uuid);
+          }
+        }
 
         if (currentProfile) {
           populateForm(currentProfile);
         } else {
-          // Initialize a fresh profile for this avatar
+          // Fresh profile template
           currentProfile = {
             id: uuid.toLowerCase().replace(/[^a-z0-9]/g, '-'),
             name: "Dominant " + uuid.substring(0, 6),
             sl_username: uuid,
             avatar_uuid: uuid,
+            role_type: "domme",
             role: "Verified Dominant",
             status: "Available / In-World",
-            starting_rate: "L$2,500 / hr",
-            tagline: "High-status protocol and discipline.",
-            about: "Welcome to my official Control & Chaos rate card.",
-            tags: ["FinDom", "Vow Collar Certified", "RLV Restraints"]
+            starting_rate: "L$3,000 / hr",
+            location: "Control & Chaos VIP Lounge",
+            slurl: "secondlife://Chaos%20Manor/128/142/23",
+            tagline: "High-status protocol and psychological discipline.",
+            about_title: "About & Philosophy",
+            about: "Welcome to my official Control & Chaos profile and rate card.",
+            tags: ["FinDom", "Vow Collar Certified", "RLV Restraints", "VIP Escort"],
+            rate_categories: [
+              {
+                category_name: "🪙 Financial Domination (FinDom)",
+                category_desc: "Live psychological draining, debt accumulation, and tribute milestones.",
+                services: [
+                  { name: "1-on-1 Drain & Humiliation Session", price: "L$3,000", unit: "per hour", desc: "Intensive financial discipline and tribute milestones." },
+                  { name: "Instant Wallet Cleanout", price: "L$10,000+", unit: "single tribute", desc: "Complete wallet surrender ceremony." }
+                ]
+              }
+            ],
+            hardware_compat: [
+              { name: "Lovense Toy Control", icon: "🔌", badge_text: "Synced" },
+              { name: "Firestorm RLV Restraints", icon: "🔒", badge_text: "Ready" },
+              { name: "Vow Collar Certified", icon: "⛓️", badge_text: "Certified" }
+            ],
+            hard_limits: [
+              "No non-consensual limits — all play is strictly adult consensual roleplay.",
+              "Respect OOC boundaries and personal time zones."
+            ],
+            booking_protocol: [
+              "1. Contact me via Second Life IM or Note card.",
+              "2. Settle initial tribute deposit prior to session confirmation."
+            ]
           };
           populateForm(currentProfile);
         }
       } catch (err) {
-        console.warn("Could not load profiles.json, starting fresh", err);
+        console.warn("Could not load profile, initializing default", err);
       }
     }
 
     function populateForm(p) {
       document.getElementById('auth-user-name').innerText = p.name || p.sl_username;
+      
+      const liveLink = document.getElementById('view-live-profile-btn');
+      if (liveLink) liveLink.href = `/profile/${p.id || authUUID}/`;
+
+      // Identity Tab
       document.getElementById('edit-name').value = p.name || '';
       document.getElementById('edit-username').value = p.sl_username || '';
+      document.getElementById('edit-role-type').value = p.role_type || 'domme';
       document.getElementById('edit-role').value = p.role || '';
       document.getElementById('edit-rate').value = p.starting_rate || '';
       document.getElementById('edit-location').value = p.location || '';
+      document.getElementById('edit-slurl').value = p.slurl || '';
+      document.getElementById('edit-email').value = p.contact_email || '';
+
+      // Media Tab
+      document.getElementById('edit-avatar-img').value = p.avatar_image || '';
+      document.getElementById('edit-banner-img').value = p.banner_image || '';
+
+      // Bio Tab
       document.getElementById('edit-tagline').value = p.tagline || '';
+      document.getElementById('edit-about-title').value = p.about_title || 'About & Philosophy';
       document.getElementById('edit-about').value = p.about || '';
+
+      // SEO Tab
+      document.getElementById('edit-seo-title').value = p.seo_title || '';
+      document.getElementById('edit-seo-desc').value = p.seo_description || '';
 
       // Status Pills
       document.querySelectorAll('.status-pill').forEach(pill => {
@@ -449,6 +975,10 @@
 
       // Tags
       const activeTags = p.tags || [];
+      const standardTagChoices = Array.from(document.querySelectorAll('.tag-choice')).map(t => t.innerText.trim());
+      const customTagsList = activeTags.filter(t => !standardTagChoices.includes(t));
+      document.getElementById('edit-custom-tags').value = customTagsList.join(', ');
+
       document.querySelectorAll('.tag-choice').forEach(t => {
         t.classList.toggle('selected', activeTags.includes(t.innerText.trim()));
         t.onclick = () => {
@@ -457,113 +987,517 @@
         };
       });
 
-      // Extract services if available
-      if (p.rate_categories && p.rate_categories.length > 0) {
-        servicesList = p.rate_categories[0].services || servicesList;
-      }
-      renderServicesBuilder();
-      updatePreview();
+      // Populate Arrays
+      rateCategories = p.rate_categories || [];
+      galleryItems = p.gallery || [];
+      hardwareItems = p.hardware_compat || [];
+      hardLimitsList = (p.hard_limits || []).map(l => typeof l === 'object' ? l.limit : l);
+      bookingStepsList = (p.booking_protocol || []).map(s => typeof s === 'object' ? s.step : s);
+      wishlistItems = p.wishlist || [];
+      socialLinksList = p.social_links || [];
+      reviewsList = p.reviews || [];
+
+      renderAllRepeaters();
       attachInputListeners();
+      updatePreview();
     }
 
-    function renderServicesBuilder() {
-      const container = document.getElementById('services-builder-container');
-      container.innerHTML = servicesList.map((s, idx) => `
-        <div class="rate-card-item-box">
-          <button onclick="removeServiceItem(${idx})" class="btn-delete-item">✕ Remove</button>
-          <div class="form-grid-2col mb-10">
+    /* ================= REPEATERS RENDERING ================= */
+
+    function renderAllRepeaters() {
+      renderRateCategories();
+      renderGallery();
+      renderHardware();
+      renderHardLimits();
+      renderBookingProtocol();
+      renderWishlist();
+      renderSocials();
+      renderReviews();
+    }
+
+    // Rate Categories
+    function renderRateCategories() {
+      const container = document.getElementById('categories-builder-container');
+      if (!rateCategories.length) {
+        container.innerHTML = '<p class="font-xs text-muted">No rate categories added yet. Click "+ Add Rate Category" to begin.</p>';
+        return;
+      }
+      container.innerHTML = rateCategories.map((cat, catIdx) => `
+        <div class="repeater-item-box" style="border: 1px solid rgba(212,175,55,0.3); background: #110f15; margin-bottom: 20px;">
+          <button type="button" onclick="removeRateCategory(${catIdx})" class="btn-delete-item">✕ Remove Category</button>
+          
+          <div class="form-grid-2 mb-10">
             <div>
-              <label class="form-label font-2xs">Service Name</label>
-              <input type="text" class="form-input font-xs" value="${s.name}" oninput="servicesList[${idx}].name = this.value; updatePreview();">
+              <label class="form-label font-2xs">Category Title</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(cat.category_name || '')}" placeholder="🪙 Financial Domination" oninput="rateCategories[${catIdx}].category_name = this.value; updatePreview();">
             </div>
             <div>
-              <label class="form-label font-2xs">Price & Billing Unit</label>
-              <div class="flex-row gap-6">
-                <input type="text" class="form-input font-xs" value="${s.price}" placeholder="L$3,000" oninput="servicesList[${idx}].price = this.value; updatePreview();">
-                <input type="text" class="form-input font-xs" value="${s.unit}" placeholder="/ hr" oninput="servicesList[${idx}].unit = this.value; updatePreview();">
-              </div>
+              <label class="form-label font-2xs">Category Subtitle / Description</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(cat.category_desc || '')}" placeholder="Short intro to this tier..." oninput="rateCategories[${catIdx}].category_desc = this.value;">
             </div>
           </div>
-          <div>
-            <label class="form-label font-2xs">Description</label>
-            <input type="text" class="form-input font-xs" value="${s.desc || ''}" oninput="servicesList[${idx}].desc = this.value; updatePreview();">
+
+          <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
+            <div class="flex-between align-center mb-10">
+              <span class="font-2xs text-gold uppercase font-mono">Services in this Category</span>
+              <button type="button" onclick="addServiceToCat(${catIdx})" class="btn-add-repeater" style="padding: 4px 10px; font-size: 0.75rem;">+ Add Service</button>
+            </div>
+            
+            <div id="cat-services-${catIdx}">
+              ${(cat.services || []).map((srv, srvIdx) => `
+                <div class="repeater-item-box" style="background: #09080c; margin-bottom: 8px;">
+                  <button type="button" onclick="removeServiceFromCat(${catIdx}, ${srvIdx})" class="btn-delete-item">✕</button>
+                  <div class="form-grid-2 mb-8">
+                    <div>
+                      <label class="form-label font-2xs">Service Name</label>
+                      <input type="text" class="form-input font-xs" value="${escapeHtml(srv.name || '')}" placeholder="1-on-1 Drain" oninput="rateCategories[${catIdx}].services[${srvIdx}].name = this.value; updatePreview();">
+                    </div>
+                    <div>
+                      <label class="form-label font-2xs">Price & Unit</label>
+                      <div class="flex-row gap-6">
+                        <input type="text" class="form-input font-xs" value="${escapeHtml(srv.price || '')}" placeholder="L$3,000" oninput="rateCategories[${catIdx}].services[${srvIdx}].price = this.value; updatePreview();">
+                        <input type="text" class="form-input font-xs" value="${escapeHtml(srv.unit || '')}" placeholder="per hour" oninput="rateCategories[${catIdx}].services[${srvIdx}].unit = this.value; updatePreview();">
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="form-label font-2xs">Description</label>
+                    <input type="text" class="form-input font-xs" value="${escapeHtml(srv.desc || '')}" placeholder="Detailed explanation of what this includes..." oninput="rateCategories[${catIdx}].services[${srvIdx}].desc = this.value;">
+                  </div>
+                </div>
+              `).join('')}
+            </div>
           </div>
         </div>
       `).join('');
     }
 
-    function addNewServiceItem() {
-      servicesList.push({ name: "Custom Session", price: "L$2,500", unit: "per hour", desc: "Private tailored discipline." });
-      renderServicesBuilder();
+    function addRateCategory() {
+      rateCategories.push({
+        category_name: "🪙 New Service Category",
+        category_desc: "Custom session offerings.",
+        services: [{ name: "Standard Session", price: "L$2,500", unit: "per hour", desc: "Private tailored experience." }]
+      });
+      renderRateCategories();
       updatePreview();
     }
 
-    function removeServiceItem(idx) {
-      servicesList.splice(idx, 1);
-      renderServicesBuilder();
+    function removeRateCategory(idx) {
+      rateCategories.splice(idx, 1);
+      renderRateCategories();
       updatePreview();
     }
+
+    function addServiceToCat(catIdx) {
+      if (!rateCategories[catIdx].services) rateCategories[catIdx].services = [];
+      rateCategories[catIdx].services.push({ name: "Custom Service", price: "L$2,500", unit: "per hour", desc: "Details here..." });
+      renderRateCategories();
+      updatePreview();
+    }
+
+    function removeServiceFromCat(catIdx, srvIdx) {
+      rateCategories[catIdx].services.splice(srvIdx, 1);
+      renderRateCategories();
+      updatePreview();
+    }
+
+    // Gallery
+    function renderGallery() {
+      const container = document.getElementById('gallery-repeater-container');
+      if (!galleryItems.length) {
+        container.innerHTML = '<p class="font-xs text-muted">No lookbook photos added. Click "+ Add Photo".</p>';
+        return;
+      }
+      container.innerHTML = galleryItems.map((item, idx) => `
+        <div class="repeater-item-box">
+          <button type="button" onclick="removeGalleryItem(${idx})" class="btn-delete-item">✕</button>
+          <div class="form-grid-3 mb-8">
+            <div>
+              <label class="form-label font-2xs">Photo Title</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(item.title || '')}" placeholder="Gala Look" oninput="galleryItems[${idx}].title = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">Category Tag</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(item.category || '')}" placeholder="VIP Escort" oninput="galleryItems[${idx}].category = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">Emoji Icon</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(item.icon || '📸')}" placeholder="👗" oninput="galleryItems[${idx}].icon = this.value;">
+            </div>
+          </div>
+          <div>
+            <label class="form-label font-2xs">Image URL (Upload or Web)</label>
+            <input type="text" class="form-input font-xs" value="${escapeHtml(item.image || '')}" placeholder="https://..." oninput="galleryItems[${idx}].image = this.value;">
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addGalleryItem() {
+      galleryItems.push({ title: "Lookbook Photo", category: "VIP Escort", icon: "👗", image: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80" });
+      renderGallery();
+    }
+
+    function removeGalleryItem(idx) {
+      galleryItems.splice(idx, 1);
+      renderGallery();
+    }
+
+    // Hardware Compatibility
+    function renderHardware() {
+      const container = document.getElementById('hardware-repeater-container');
+      if (!hardwareItems.length) {
+        container.innerHTML = '<p class="font-xs text-muted">No hardware badges added. Click "+ Add Device".</p>';
+        return;
+      }
+      container.innerHTML = hardwareItems.map((item, idx) => `
+        <div class="repeater-item-box">
+          <button type="button" onclick="removeHardwareItem(${idx})" class="btn-delete-item">✕</button>
+          <div class="form-grid-3">
+            <div>
+              <label class="form-label font-2xs">Device / System Name</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(item.name || '')}" placeholder="Lovense Toy Control" oninput="hardwareItems[${idx}].name = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">Status Badge Text</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(item.badge_text || '')}" placeholder="Synced / Ready" oninput="hardwareItems[${idx}].badge_text = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">Icon Emoji</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(item.icon || '⚡')}" placeholder="🔌" oninput="hardwareItems[${idx}].icon = this.value;">
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addHardwareItem() {
+      hardwareItems.push({ name: "Lovense Toy Control", badge_text: "Synced", icon: "🔌" });
+      renderHardware();
+    }
+
+    function removeHardwareItem(idx) {
+      hardwareItems.splice(idx, 1);
+      renderHardware();
+    }
+
+    // Hard Limits
+    function renderHardLimits() {
+      const container = document.getElementById('limits-repeater-container');
+      if (!hardLimitsList.length) {
+        container.innerHTML = '<p class="font-xs text-muted">No hard limits listed. Click "+ Add Limit".</p>';
+        return;
+      }
+      container.innerHTML = hardLimitsList.map((limit, idx) => `
+        <div class="repeater-item-box" style="padding: 10px 14px;">
+          <button type="button" onclick="removeHardLimit(${idx})" class="btn-delete-item">✕</button>
+          <input type="text" class="form-input font-xs" style="width: calc(100% - 35px);" value="${escapeHtml(limit)}" placeholder="e.g. No scat, no non-consensual play..." oninput="hardLimitsList[${idx}] = this.value;">
+        </div>
+      `).join('');
+    }
+
+    function addHardLimit() {
+      hardLimitsList.push("Respect OOC boundaries and personal time zones.");
+      renderHardLimits();
+    }
+
+    function removeHardLimit(idx) {
+      hardLimitsList.splice(idx, 1);
+      renderHardLimits();
+    }
+
+    // Booking Protocol Steps
+    function renderBookingProtocol() {
+      const container = document.getElementById('protocol-repeater-container');
+      if (!bookingStepsList.length) {
+        container.innerHTML = '<p class="font-xs text-muted">No protocol steps listed. Click "+ Add Step".</p>';
+        return;
+      }
+      container.innerHTML = bookingStepsList.map((step, idx) => `
+        <div class="repeater-item-box" style="padding: 10px 14px;">
+          <button type="button" onclick="removeBookingStep(${idx})" class="btn-delete-item">✕</button>
+          <input type="text" class="form-input font-xs" style="width: calc(100% - 35px);" value="${escapeHtml(step)}" placeholder="e.g. 1. Send note card in-world..." oninput="bookingStepsList[${idx}] = this.value;">
+        </div>
+      `).join('');
+    }
+
+    function addBookingStep() {
+      bookingStepsList.push(`${bookingStepsList.length + 1}. Send note card in-world with date & requested service.`);
+      renderBookingProtocol();
+    }
+
+    function removeBookingStep(idx) {
+      bookingStepsList.splice(idx, 1);
+      renderBookingProtocol();
+    }
+
+    // Wishlist
+    function renderWishlist() {
+      const container = document.getElementById('wishlist-repeater-container');
+      if (!wishlistItems.length) {
+        container.innerHTML = '<p class="font-xs text-muted">No wishlist links added. Click "+ Add Wishlist Link".</p>';
+        return;
+      }
+      container.innerHTML = wishlistItems.map((w, idx) => `
+        <div class="repeater-item-box">
+          <button type="button" onclick="removeWishlistItem(${idx})" class="btn-delete-item">✕</button>
+          <div class="form-grid-2 mb-8">
+            <div>
+              <label class="form-label font-2xs">Platform / Title</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(w.title || '')}" placeholder="Throne Tribute Wishlist" oninput="wishlistItems[${idx}].title = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">URL Link</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(w.url || '')}" placeholder="https://throne.com/..." oninput="wishlistItems[${idx}].url = this.value;">
+            </div>
+          </div>
+          <div>
+            <label class="form-label font-2xs">Note / Description</label>
+            <input type="text" class="form-input font-xs" value="${escapeHtml(w.note || '')}" placeholder="Haute couture gowns, furnishings & tribute gifts" oninput="wishlistItems[${idx}].note = this.value;">
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addWishlistItem() {
+      wishlistItems.push({ title: "Throne Tribute Wishlist", url: "https://throne.com/", note: "Tribute gifts & luxury fashion" });
+      renderWishlist();
+    }
+
+    function removeWishlistItem(idx) {
+      wishlistItems.splice(idx, 1);
+      renderWishlist();
+    }
+
+    // Socials
+    function renderSocials() {
+      const container = document.getElementById('socials-repeater-container');
+      if (!socialLinksList.length) {
+        container.innerHTML = '<p class="font-xs text-muted">No social links added. Click "+ Add Social Link".</p>';
+        return;
+      }
+      const platforms = ["Discord", "Flickr", "Twitter / X", "Instagram", "TikTok", "Telegram", "Website", "Other"];
+      container.innerHTML = socialLinksList.map((s, idx) => `
+        <div class="repeater-item-box">
+          <button type="button" onclick="removeSocialLink(${idx})" class="btn-delete-item">✕</button>
+          <div class="form-grid-3">
+            <div>
+              <label class="form-label font-2xs">Platform</label>
+              <select class="form-select font-xs" onchange="socialLinksList[${idx}].platform = this.value;">
+                ${platforms.map(p => `<option value="${p}" ${s.platform === p ? 'selected' : ''}>${p}</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <label class="form-label font-2xs">Handle / Display Text</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(s.handle || '')}" placeholder="@MistressAlexisSL" oninput="socialLinksList[${idx}].handle = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">URL Link</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(s.url || '')}" placeholder="https://..." oninput="socialLinksList[${idx}].url = this.value;">
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addSocialLink() {
+      socialLinksList.push({ platform: "Discord", handle: "User#0001", url: "https://discord.gg/" });
+      renderSocials();
+    }
+
+    function removeSocialLink(idx) {
+      socialLinksList.splice(idx, 1);
+      renderSocials();
+    }
+
+    // Reviews
+    function renderReviews() {
+      const container = document.getElementById('reviews-repeater-container');
+      if (!reviewsList.length) {
+        container.innerHTML = '<p class="font-xs text-muted">No reviews added. Click "+ Add Review".</p>';
+        return;
+      }
+      container.innerHTML = reviewsList.map((r, idx) => `
+        <div class="repeater-item-box">
+          <button type="button" onclick="removeReviewItem(${idx})" class="btn-delete-item">✕</button>
+          <div class="form-grid-2 mb-8">
+            <div>
+              <label class="form-label font-2xs">Client Name</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(r.client || '')}" placeholder="Lord_Kael Resident" oninput="reviewsList[${idx}].client = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">Stars</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(r.stars || '★★★★★')}" placeholder="★★★★★" oninput="reviewsList[${idx}].stars = this.value;">
+            </div>
+          </div>
+          <div>
+            <label class="form-label font-2xs">Testimonial Comment</label>
+            <input type="text" class="form-input font-xs" value="${escapeHtml(r.comment || '')}" placeholder="Feedback and tribute experience..." oninput="reviewsList[${idx}].comment = this.value;">
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addReviewItem() {
+      reviewsList.push({ client: "Client Resident", stars: "★★★★★", comment: "Exceptional discipline and commanding presence." });
+      renderReviews();
+    }
+
+    function removeReviewItem(idx) {
+      reviewsList.splice(idx, 1);
+      renderReviews();
+    }
+
+    /* ================= LISTENERS & LIVE PREVIEW ================= */
 
     function attachInputListeners() {
-      ['edit-name', 'edit-role', 'edit-tagline', 'edit-rate', 'edit-username'].forEach(id => {
+      const inputs = [
+        'edit-name', 'edit-username', 'edit-role-type', 'edit-role', 'edit-rate', 
+        'edit-location', 'edit-tagline', 'edit-avatar-img', 'edit-banner-img', 'edit-custom-tags'
+      ];
+      inputs.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.addEventListener('input', updatePreview);
+        if (el) {
+          el.addEventListener('input', updatePreview);
+          el.addEventListener('change', updatePreview);
+        }
       });
     }
 
     function updatePreview() {
-      const activeStatus = document.querySelector('.status-pill.active');
-      document.getElementById('prev-status').innerText = activeStatus ? activeStatus.innerText : '🟢 AVAILABLE';
-      document.getElementById('prev-name').innerText = document.getElementById('edit-name').value || 'Dominant Name';
-      document.getElementById('prev-role').innerText = document.getElementById('edit-role').value || 'Role Title';
-      document.getElementById('prev-tagline').innerText = document.getElementById('edit-tagline').value || 'Tagline here...';
-      document.getElementById('prev-rate').innerText = document.getElementById('edit-rate').value || 'L$2,500 / hr';
-      document.getElementById('prev-username').innerText = document.getElementById('edit-username').value || 'resident.username';
+      const activeStatusPill = document.querySelector('.status-pill.active');
+      const customStatus = document.getElementById('edit-custom-status')?.value;
+      const statusText = customStatus || (activeStatusPill ? activeStatusPill.innerText : '🟢 AVAILABLE');
+      
+      const name = document.getElementById('edit-name')?.value || 'Dominant Name';
+      const role = document.getElementById('edit-role')?.value || 'Role Title';
+      const tagline = document.getElementById('edit-tagline')?.value || 'Tagline quote...';
+      const rate = document.getElementById('edit-rate')?.value || 'L$3,000 / hr';
+      const location = document.getElementById('edit-location')?.value || 'Control & Chaos';
+      const username = document.getElementById('edit-username')?.value || 'resident.username';
+      const roleType = document.getElementById('edit-role-type')?.value || 'domme';
+      
+      const avatarUrl = document.getElementById('edit-avatar-img')?.value;
+      const bannerUrl = document.getElementById('edit-banner-img')?.value;
 
+      document.getElementById('prev-status').innerText = statusText.toUpperCase();
+      document.getElementById('prev-name').innerText = name;
+      document.getElementById('prev-role').innerText = role;
+      document.getElementById('prev-tagline').innerText = tagline;
+      document.getElementById('prev-rate').innerText = rate;
+      document.getElementById('prev-location').innerText = location;
+      document.getElementById('prev-username').innerText = username;
+
+      // Role Badge Icon
+      const badgeIcon = roleType === 'domme' ? '👑' : (roleType === 'sub' ? '⛓️' : '🎭');
+      document.getElementById('prev-role-badge').innerText = badgeIcon;
+
+      // Preview Thumbnails
+      const prevAvatarImg = document.getElementById('prev-avatar-img');
+      const prevAvatarThumb = document.getElementById('preview-avatar-thumb');
+      if (avatarUrl) {
+        if (prevAvatarImg) prevAvatarImg.src = avatarUrl;
+        if (prevAvatarThumb) { prevAvatarThumb.src = avatarUrl; prevAvatarThumb.style.display = 'block'; }
+      }
+
+      const prevBannerBg = document.getElementById('prev-banner-bg');
+      const prevBannerThumb = document.getElementById('preview-banner-thumb');
+      if (bannerUrl) {
+        if (prevBannerBg) prevBannerBg.style.backgroundImage = `url('${bannerUrl}')`;
+        if (prevBannerThumb) { prevBannerThumb.src = bannerUrl; prevBannerThumb.style.display = 'block'; }
+      }
+
+      // Services Preview
       const prevServices = document.getElementById('prev-services-list');
-      prevServices.innerHTML = servicesList.map(s => `
-        <div class="flex-between py-6" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span>${s.name}</span>
-          <span class="text-gold font-mono">${s.price} <span class="text-muted font-2xs">${s.unit}</span></span>
-        </div>
-      `).join('');
+      const allServices = [];
+      rateCategories.forEach(cat => {
+        (cat.services || []).forEach(srv => allServices.push(srv));
+      });
+
+      if (allServices.length) {
+        prevServices.innerHTML = allServices.slice(0, 4).map(s => `
+          <div class="flex-between py-4" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <span class="text-white">${s.name || 'Service'}</span>
+            <span class="text-gold font-mono">${s.price || ''} <span class="text-muted font-2xs">${s.unit || ''}</span></span>
+          </div>
+        `).join('');
+      } else {
+        prevServices.innerHTML = '<span class="text-muted font-2xs">No services configured yet.</span>';
+      }
+
+      // Tags Preview
+      const prevTags = document.getElementById('prev-tags-list');
+      const selectedTags = Array.from(document.querySelectorAll('.tag-choice.selected')).map(el => el.innerText.trim());
+      const customTagsRaw = document.getElementById('edit-custom-tags')?.value || '';
+      const customTags = customTagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+      const totalTags = [...new Set([...selectedTags, ...customTags])];
+
+      if (totalTags.length) {
+        prevTags.innerHTML = totalTags.slice(0, 6).map(t => `
+          <span class="section-tag font-2xs m-0" style="padding: 2px 8px; font-size: 0.65rem;">${t}</span>
+        `).join('');
+      } else {
+        prevTags.innerHTML = '';
+      }
     }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    /* ================= SAVE & PUBLISH ================= */
 
     async function saveProfile() {
       const btn = document.getElementById('save-btn');
       const feedback = document.getElementById('save-feedback');
 
       btn.disabled = true;
-      btn.innerHTML = '<span>⏳</span> Saving & Publishing...';
+      btn.innerHTML = '<span>⏳</span> Saving & Publishing Profile...';
+      feedback.style.display = 'none';
 
       const selectedTags = Array.from(document.querySelectorAll('.tag-choice.selected')).map(el => el.innerText.trim());
-      const activeStatus = document.querySelector('.status-pill.active')?.getAttribute('data-status') || 'Available / In-World';
+      const customTagsRaw = document.getElementById('edit-custom-tags')?.value || '';
+      const customTags = customTagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+      const totalTags = [...new Set([...selectedTags, ...customTags])];
 
-      const payloadData = {
+      const activeStatusPill = document.querySelector('.status-pill.active');
+      const customStatus = document.getElementById('edit-custom-status')?.value;
+      const finalStatus = customStatus || (activeStatusPill ? activeStatusPill.getAttribute('data-status') : 'Available');
+
+      const profilePayload = {
         id: currentProfile?.id || authUUID.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+        avatar_uuid: authUUID,
         name: document.getElementById('edit-name').value,
         sl_username: document.getElementById('edit-username').value,
-        avatar_uuid: authUUID,
+        role_type: document.getElementById('edit-role-type').value,
         role: document.getElementById('edit-role').value,
-        status: activeStatus,
-        tagline: document.getElementById('edit-tagline').value,
-        about: document.getElementById('edit-about').value,
+        status: finalStatus,
         starting_rate: document.getElementById('edit-rate').value,
         location: document.getElementById('edit-location').value,
-        tags: selectedTags,
-        hardware_compat: {
-          vow_collar: document.getElementById('hw-vow-collar').checked,
-          lovense: document.getElementById('hw-lovense').checked,
-          rlv: document.getElementById('hw-rlv').checked,
-          experience: document.getElementById('hw-experience').checked
-        },
-        rate_categories: [
-          {
-            category_name: "🪙 Services & Rates",
-            category_desc: "Standard session offerings and tribute milestones.",
-            services: servicesList
-          }
-        ]
+        slurl: document.getElementById('edit-slurl').value,
+        contact_email: document.getElementById('edit-email').value,
+        
+        avatar_image: document.getElementById('edit-avatar-img').value,
+        banner_image: document.getElementById('edit-banner-img').value,
+
+        tagline: document.getElementById('edit-tagline').value,
+        about_title: document.getElementById('edit-about-title').value || 'About & Philosophy',
+        about: document.getElementById('edit-about').value,
+        tags: totalTags,
+
+        rate_categories: rateCategories,
+        gallery: galleryItems,
+        hardware_compat: hardwareItems,
+        hard_limits: hardLimitsList,
+        booking_protocol: bookingStepsList,
+        wishlist: wishlistItems,
+        social_links: socialLinksList,
+        reviews: reviewsList,
+
+        seo_title: document.getElementById('edit-seo-title').value,
+        seo_description: document.getElementById('edit-seo-desc').value,
+        seo_image: document.getElementById('edit-banner-img').value || document.getElementById('edit-avatar-img').value
       };
 
       try {
@@ -574,18 +1508,21 @@
             uuid: authUUID,
             token: authToken || 'CC_DIRECTORY_SECRET_2026_GOLD',
             action: 'save_profile',
-            profileData: payloadData,
-            status: activeStatus
+            profileData: profilePayload,
+            status: finalStatus
           })
         });
+
+        const result = await response.json();
 
         btn.disabled = false;
         btn.innerHTML = '<span>✓</span> Saved Successfully!';
 
+        feedback.style.display = 'block';
         feedback.className = 'form-feedback-box success';
         feedback.innerHTML = `
-          <strong>✓ Profile Saved &amp; Synced!</strong><br>
-          Your rate card and live status have been updated. Changes are reflected across Control &amp; Chaos directory pages.
+          <strong>✓ Profile &amp; Rate Card Published!</strong><br>
+          Your rate card, live availability status, photos, and boundary settings are saved and updated live across the Control &amp; Chaos directory.
         `;
 
         setTimeout(() => {
@@ -594,10 +1531,11 @@
       } catch (err) {
         btn.disabled = false;
         btn.innerHTML = '<span>💾</span> Save &amp; Publish Profile';
+        feedback.style.display = 'block';
         feedback.className = 'form-feedback-box';
         feedback.style.borderColor = '#ef4444';
         feedback.style.color = '#f87171';
-        feedback.innerHTML = `<strong>Error saving profile.</strong> Please contact sim tech support at Los Pengos.`;
+        feedback.innerHTML = `<strong>Error saving profile.</strong> Please check your connection or contact sim tech support at Los Pengos.`;
       }
     }
   </script>
