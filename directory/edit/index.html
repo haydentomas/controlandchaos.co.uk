@@ -2206,6 +2206,7 @@
 
         const blobStatus = result.profile && result.profile._blob_saved ? '💾 Persisted to cloud storage' : '⚠️ In-memory only (may not persist across restarts)';
         const storeAvail = result.profile && result.profile._store_available ? 'Store: ✓' : 'Store: ✗';
+        const storeErr = (result.profile && result.profile._store_error) ? ` (${result.profile._store_error})` : '';
 
         btn.disabled = false;
         btn.innerHTML = '<span>✓</span> Saved Successfully!';
@@ -2217,7 +2218,7 @@
         feedback.innerHTML = `
           <strong>✓ Profile &amp; Rate Card Published!</strong><br>
           Your rate card, live availability status, photos, and boundary settings are saved and updated live across the Control &amp; Chaos directory.<br>
-          <span style="font-size:0.75rem; opacity:0.7;">${blobStatus} | ${storeAvail}</span>
+          <span style="font-size:0.75rem; opacity:0.8;">${blobStatus} | ${storeAvail}${storeErr}</span>
         `;
 
         setTimeout(() => {

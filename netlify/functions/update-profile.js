@@ -80,19 +80,42 @@ let gTributeGoals = {
 let gCustomProfiles = {};
 
 let getStore;
+let connectLambda;
+let blobImportError = null;
 try {
-  ({ getStore } = require('@netlify/blobs'));
-} catch (e) {}
+  const blobsModule = require('@netlify/blobs');
+  getStore = blobsModule.getStore;
+  connectLambda = blobsModule.connectLambda;
+} catch (e) {
+  blobImportError = e.message;
+}
 
-function getProfilesStore() {
+let lastStoreError = null;
+
+function getProfilesStore(event) {
+  if (connectLambda && event) {
+    try {
+      connectLambda(event);
+    } catch (e) {
+      lastStoreError = 'connectLambda error: ' + e.message;
+    }
+  }
+
   if (getStore) {
     try {
-      return getStore({ name: 'directory-profiles', consistency: 'strong' });
-    } catch (e) {
+      const store = getStore({ name: 'directory-profiles', consistency: 'strong' });
+      if (store) return store;
+    } catch (e1) {
+      lastStoreError = 'getStore with consistency failed: ' + e1.message;
       try {
-        return getStore('directory-profiles');
-      } catch (err) {}
+        const store = getStore('directory-profiles');
+        if (store) return store;
+      } catch (e2) {
+        lastStoreError = 'getStore name failed: ' + e2.message;
+      }
     }
+  } else {
+    lastStoreError = 'getStore function not imported. Import error: ' + blobImportError;
   }
   return null;
 }
@@ -211,7 +234,7 @@ exports.handler = async (event) => {
     const targetId = (query.id || query.uuid || query.slug || query.username || '').toLowerCase().trim();
     let foundProfile = null;
 
-    const store = getProfilesStore();
+    const store = getProfilesStore(event);
 
     if (targetId) {
       if (gCustomProfiles[targetId]) {
@@ -285,6 +308,11 @@ exports.handler = async (event) => {
         statuses: gLiveStatuses,
         subscriptions: gSubscriptions,
         tributeGoals: gTributeGoals,
+        blobDebug: {
+          storeAvailable: !!store,
+          lastStoreError,
+          blobImportError
+        },
         timestamp: new Date().toISOString()
       })
     };
@@ -478,7 +506,7 @@ exports.handler = async (event) => {
       }
 
       // Save to Netlify Blobs for cross-container and cross-restart permanent persistence
-      const store = getProfilesStore();
+      const store = getProfilesStore(event);
       let blobSaved = false;
       if (store) {
         try {
@@ -503,6 +531,7 @@ exports.handler = async (event) => {
             console.warn('[SAVE_PROFILE] Store has no setJSON or set method. Available methods:', Object.keys(store));
           }
         } catch (blobErr) {
+          lastStoreError = 'Blobs save write error: ' + blobErr.message;
           console.warn('[BLOBS STORAGE WARNING]', blobErr.message, blobErr.stack);
         }
       } else {
@@ -524,6 +553,7 @@ exports.handler = async (event) => {
       // Include blob persistence status in response
       profileData._blob_saved = blobSaved;
       profileData._store_available = !!store;
+      profileData._store_error = lastStoreError;
     }
 
     // Return success response
