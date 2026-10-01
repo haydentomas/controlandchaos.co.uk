@@ -493,38 +493,54 @@
 
       <!-- Authentication / Access Status Banner -->
       <div id="auth-banner" class="editor-card" style="display: none; background: linear-gradient(135deg, #181520 0%, #100e16 100%);">
-        <div class="flex-between align-center flex-wrap gap-12">
-          <div>
-            <h3 class="editor-card-title text-gold m-0">
-              <span class="icon">👑</span> Authenticated as <span id="auth-user-name">Dominant</span>
-            </h3>
-            <p class="font-xs text-muted m-0 mt-4" id="auth-user-uuid">UUID: checking...</p>
+        <div class="flex-between align-center flex-wrap gap-14">
+          <div class="flex-row align-center gap-12 flex-wrap">
+            <div>
+              <h3 class="editor-card-title text-gold m-0">
+                <span class="icon">👑</span> <span id="auth-mode-title">Authenticated Profile</span>: <span id="auth-user-name">Dominant</span>
+              </h3>
+              <p class="font-xs text-muted m-0 mt-4" id="auth-user-uuid">UUID: checking...</p>
+            </div>
+            
+            <!-- Admin Multi-Profile Switcher Dropdown (Visible in Admin Mode) -->
+            <div id="admin-profile-switcher-wrap" style="display: none; padding-left: 12px; border-left: 1px solid rgba(212,175,55,0.2);">
+              <label class="form-label font-2xs text-gold mb-2" style="font-size: 0.7rem;">SWITCH PROFILE (ADMIN):</label>
+              <select id="admin-profile-select" class="form-select font-xs" onchange="onAdminProfileSelect(this.value)" style="background: #09080d; border-color: rgba(212,175,55,0.4); color: #ffd700; font-weight: 600; padding: 6px 12px; width: auto; min-width: 220px;">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
           </div>
+
           <div class="flex-row align-center gap-10">
             <a href="#" id="view-live-profile-btn" target="_blank" class="btn btn-secondary btn-sm">
               <span>👁️</span> Open Live Profile Page
             </a>
-            <span class="section-tag tag-emerald m-0">✓ VERIFIED ACCESS</span>
+            <button id="admin-logout-btn" onclick="logoutAdmin()" class="btn btn-secondary btn-sm" style="display: none; color: #f87171; border-color: rgba(239,68,68,0.3);">
+              <span>🚪</span> Log Out Admin
+            </button>
+            <span class="section-tag tag-emerald m-0" id="auth-badge">✓ VERIFIED ACCESS</span>
           </div>
         </div>
       </div>
 
-      <!-- Access Gate (Shown if token/uuid missing) -->
+      <!-- Access Gate (Shown if token/uuid missing and not admin) -->
       <div id="access-gate" class="editor-card" style="text-align: center; padding: 48px 24px;">
         <div style="font-size: 3rem; margin-bottom: 16px;">👑</div>
-        <h2 class="card-title font-lg mb-10">Private Profile Portal</h2>
+        <h2 class="card-title font-lg mb-10">Control &amp; Chaos Profile Studio</h2>
         <p class="card-desc mb-24 max-w-600 mx-auto font-sm">
-          To update your profile, touch the <strong>Directory Portal Kiosk</strong> in-world at the Control &amp; Chaos
-          Estate Office to generate your one-click verified access link.
+          Log in with your Master Admin Key or touch the <strong>Directory Kiosk</strong> in-world at the Control &amp; Chaos Estate Office to edit your rate card and live status.
         </p>
         <div class="flex-center gap-12 flex-wrap">
-          <a href="http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000" target="_blank" rel="noopener"
-            class="btn btn-gold btn-md">
-            <span>📍</span> Teleport to Kiosk (Los Pengos)
-          </a>
-          <button onclick="promptManualToken()" class="btn btn-secondary btn-md">
-            <span>🔑</span> Enter Access Key Manually
+          <button onclick="loginAsAdmin()" class="btn btn-gold btn-md">
+            <span>👑</span> Master Admin Login (All Profiles)
           </button>
+          <button onclick="promptManualToken()" class="btn btn-secondary btn-md">
+            <span>🔑</span> Enter Avatar Token Manually
+          </button>
+          <a href="http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000" target="_blank" rel="noopener"
+            class="btn btn-secondary btn-md">
+            <span>📍</span> Teleport to Kiosk (SL)
+          </a>
         </div>
       </div>
 
@@ -1019,8 +1035,10 @@
   <script src="/app.js"></script>
   <script>
     let currentProfile = null;
+    let allDirectoryProfiles = [];
     let authUUID = null;
     let authToken = null;
+    let isAdminMode = false;
 
     // Complex State Repositories
     let rateCategories = [];
@@ -1032,15 +1050,140 @@
     let socialLinksList = [];
     let reviewsList = [];
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const params = new URLSearchParams(window.location.search);
-      authUUID = params.get('uuid') || params.get('id');
-      authToken = params.get('token');
+      const urlId = params.get('uuid') || params.get('id');
+      const urlToken = params.get('token');
+      const isAdminParam = params.get('admin') === 'true' || urlToken === 'CC_DIRECTORY_SECRET_2026_GOLD';
+      const hasStoredAdmin = localStorage.getItem('cc_admin_session') === 'true';
 
-      if (authUUID) {
-        initEditor(authUUID, authToken);
+      if (isAdminParam || hasStoredAdmin) {
+        // Admin Master Mode
+        isAdminMode = true;
+        authToken = 'CC_DIRECTORY_SECRET_2026_GOLD';
+        localStorage.setItem('cc_admin_session', 'true');
+        await initAdminMode(urlId);
+      } else if (urlId) {
+        // Avatar-Specific Mode (from Kiosk)
+        authUUID = urlId;
+        authToken = urlToken;
+        await initEditor(urlId, urlToken);
       }
     });
+
+    function loginAsAdmin() {
+      const key = prompt("Enter Master Admin Key:", "CC_DIRECTORY_SECRET_2026_GOLD");
+      if (!key) return;
+      if (key.trim() === "CC_DIRECTORY_SECRET_2026_GOLD") {
+        isAdminMode = true;
+        authToken = "CC_DIRECTORY_SECRET_2026_GOLD";
+        localStorage.setItem('cc_admin_session', 'true');
+        initAdminMode();
+      } else {
+        alert("Invalid Master Admin Key.");
+      }
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem('cc_admin_session');
+      window.location.href = window.location.pathname;
+    }
+
+    async function initAdminMode(preferredId) {
+      document.getElementById('access-gate').style.display = 'none';
+      document.getElementById('auth-banner').style.display = 'block';
+      document.getElementById('view-mode-bar').style.display = 'flex';
+      document.getElementById('editor-container').style.display = 'grid';
+      
+      document.getElementById('auth-mode-title').innerText = 'Master Admin Studio';
+      document.getElementById('admin-profile-switcher-wrap').style.display = 'block';
+      document.getElementById('admin-logout-btn').style.display = 'inline-flex';
+      document.getElementById('auth-badge').innerText = '👑 MASTER ADMIN';
+
+      try {
+        const res = await fetch(`/directory/profiles.json?v=${Date.now()}`);
+        if (res.ok) {
+          allDirectoryProfiles = await res.json();
+        }
+      } catch(e) {
+        console.warn("Could not load profiles.json", e);
+      }
+
+      const select = document.getElementById('admin-profile-select');
+      select.innerHTML = '';
+
+      allDirectoryProfiles.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id || p.avatar_uuid;
+        opt.innerText = `${p.name || p.id} (${p.role_type === 'domme' ? '👑 Domme' : '⛓️ Sub'})`;
+        select.appendChild(opt);
+      });
+
+      // Add "Create New Profile" option
+      const newOpt = document.createElement('option');
+      newOpt.value = '__NEW_PROFILE__';
+      newOpt.innerText = '➕ Create New Profile...';
+      select.appendChild(newOpt);
+
+      let target = allDirectoryProfiles[0];
+      if (preferredId) {
+        target = allDirectoryProfiles.find(p => p.id === preferredId || p.avatar_uuid === preferredId || p.sl_username === preferredId) || target;
+      }
+
+      if (target) {
+        select.value = target.id || target.avatar_uuid;
+        authUUID = target.avatar_uuid || target.id;
+        currentProfile = target;
+        document.getElementById('auth-user-uuid').innerText = `Editing: ${target.name} [${target.id}]`;
+        populateForm(target);
+      } else {
+        createNewProfileSlate();
+      }
+    }
+
+    function onAdminProfileSelect(val) {
+      if (val === '__NEW_PROFILE__') {
+        createNewProfileSlate();
+      } else {
+        const p = allDirectoryProfiles.find(item => item.id === val || item.avatar_uuid === val);
+        if (p) {
+          authUUID = p.avatar_uuid || p.id;
+          currentProfile = p;
+          document.getElementById('auth-user-uuid').innerText = `Editing: ${p.name} [${p.id}]`;
+          populateForm(p);
+        }
+      }
+    }
+
+    function createNewProfileSlate() {
+      const newId = 'provider-' + Math.floor(1000 + Math.random() * 9000);
+      authUUID = newId;
+      currentProfile = {
+        id: newId,
+        name: "New Service Provider",
+        sl_username: "username.resident",
+        avatar_uuid: "",
+        role_type: "domme",
+        role: "Luxury Companion",
+        status: "Available / In-World",
+        starting_rate: "L$3,000 / hr",
+        location: "Control & Chaos VIP Lounge",
+        slurl: "secondlife://Chaos%20Manor/128/142/23",
+        tagline: "Unapologetic luxury and high-status companionship.",
+        about_title: "About & Philosophy",
+        about: "Welcome to my official rate card.",
+        tags: ["FinDom", "VIP Escort", "Lovense Toy Control"],
+        rate_categories: [
+          {
+            category_name: "🪙 Standard Sessions",
+            category_desc: "Bespoke companion & discipline tiers.",
+            services: [{ name: "1-on-1 Session", price: "L$3,000", unit: "per hour", desc: "Private tailored experience." }]
+          }
+        ]
+      };
+      document.getElementById('auth-user-uuid').innerText = `Creating New Profile: [${newId}]`;
+      populateForm(currentProfile);
+    }
 
     function setLayoutMode(mode) {
       const container = document.getElementById('editor-container');
