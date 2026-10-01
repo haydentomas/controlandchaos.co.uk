@@ -1017,6 +1017,18 @@
                 <label class="form-label" for="edit-seo-desc">Custom Social Card Description</label>
                 <textarea id="edit-seo-desc" class="form-textarea" rows="2" placeholder="View verified Second Life rates, Lovense toy controls, and book direct."></textarea>
               </div>
+              <div class="form-group mb-0">
+                <div class="flex-between align-center mb-6">
+                  <label class="form-label m-0" for="edit-seo-img">Custom OG / Social Share Card Image URL</label>
+                  <div class="flex-row gap-6">
+                    <button type="button" onclick="useBannerForOg()" class="btn-secondary" style="padding: 2px 8px; font-size: 0.7rem; cursor: pointer;">🖼️ Use Banner</button>
+                    <button type="button" onclick="useAvatarForOg()" class="btn-secondary" style="padding: 2px 8px; font-size: 0.7rem; cursor: pointer;">👤 Use Avatar</button>
+                  </div>
+                </div>
+                <input type="text" id="edit-seo-img" class="form-input" placeholder="https://.../social-card.jpg or /assets/uploads/me.jpg" oninput="updateOgPreview()">
+                <div class="form-hint">Image preview shown on Discord embeds, Twitter/X cards, Telegram &amp; iMessage (1200×630 recommended).</div>
+                <img id="preview-og-thumb" class="img-preview-thumb mt-8" style="max-height: 140px; width: auto; border-radius: 6px; display: none; object-fit: cover;" src="" alt="Social Card Preview" onerror="this.style.display='none'">
+              </div>
             </div>
 
           </div>
@@ -1498,6 +1510,8 @@
       // SEO Tab
       document.getElementById('edit-seo-title').value = p.seo_title || '';
       document.getElementById('edit-seo-desc').value = p.seo_description || '';
+      document.getElementById('edit-seo-img').value = p.seo_image || '';
+      updateOgPreview();
 
       // Status Pills
       document.querySelectorAll('.status-pill').forEach(pill => {
@@ -1903,16 +1917,52 @@
 
     /* ================= LISTENERS & LIVE PREVIEW ================= */
 
+    function useBannerForOg() {
+      const bannerVal = document.getElementById('edit-banner-img')?.value;
+      if (bannerVal) {
+        document.getElementById('edit-seo-img').value = bannerVal;
+        updateOgPreview();
+      }
+    }
+
+    function useAvatarForOg() {
+      const avatarVal = document.getElementById('edit-avatar-img')?.value;
+      if (avatarVal) {
+        document.getElementById('edit-seo-img').value = avatarVal;
+        updateOgPreview();
+      }
+    }
+
+    function updateOgPreview() {
+      const ogVal = document.getElementById('edit-seo-img')?.value;
+      const thumb = document.getElementById('preview-og-thumb');
+      if (thumb) {
+        if (ogVal && ogVal.trim()) {
+          thumb.src = ogVal.trim();
+          thumb.style.display = 'block';
+        } else {
+          thumb.style.display = 'none';
+        }
+      }
+    }
+
     function attachInputListeners() {
       const inputs = [
         'edit-name', 'edit-username', 'edit-role-type', 'edit-role', 'edit-rate', 
-        'edit-location', 'edit-tagline', 'edit-about-title', 'edit-about', 'edit-avatar-img', 'edit-banner-img', 'edit-custom-tags'
+        'edit-location', 'edit-tagline', 'edit-about-title', 'edit-about', 'edit-avatar-img', 'edit-banner-img', 'edit-custom-tags',
+        'edit-seo-title', 'edit-seo-desc', 'edit-seo-img'
       ];
       inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-          el.addEventListener('input', updatePreview);
-          el.addEventListener('change', updatePreview);
+          el.addEventListener('input', () => {
+            if (id === 'edit-seo-img') updateOgPreview();
+            updatePreview();
+          });
+          el.addEventListener('change', () => {
+            if (id === 'edit-seo-img') updateOgPreview();
+            updatePreview();
+          });
         }
       });
     }
@@ -2122,7 +2172,7 @@
 
         seo_title: document.getElementById('edit-seo-title').value,
         seo_description: document.getElementById('edit-seo-desc').value,
-        seo_image: document.getElementById('edit-banner-img').value || document.getElementById('edit-avatar-img').value
+        seo_image: document.getElementById('edit-seo-img').value || document.getElementById('edit-banner-img').value || document.getElementById('edit-avatar-img').value
       };
 
       currentProfile = profilePayload;
