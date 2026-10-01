@@ -467,6 +467,8 @@ exports.handler = async (event) => {
       const pId = (profileData.id || cleanId || cleanUuid).toLowerCase().trim();
       const pUsername = (profileData.sl_username || '').toLowerCase().trim();
       
+      console.log(`[SAVE_PROFILE] Saving profile: uuid=${cleanUuid}, id=${pId}, username=${pUsername}, role=${profileData.role}`);
+      
       gCustomProfiles[cleanUuid] = profileData;
       gCustomProfiles[pId] = profileData;
       if (pUsername) gCustomProfiles[pUsername] = profileData;
@@ -477,6 +479,7 @@ exports.handler = async (event) => {
 
       // Save to Netlify Blobs for cross-container and cross-restart permanent persistence
       const store = getProfilesStore();
+      let blobSaved = false;
       if (store) {
         try {
           if (store.setJSON) {
@@ -485,6 +488,8 @@ exports.handler = async (event) => {
             if (pUsername) await store.setJSON(pUsername, profileData);
             if (profileData.avatar_uuid) await store.setJSON(profileData.avatar_uuid.toLowerCase().trim(), profileData);
             await store.setJSON('all_profiles', gCustomProfiles);
+            blobSaved = true;
+            console.log(`[SAVE_PROFILE] Blobs saved via setJSON for keys: ${cleanUuid}, ${pId}, ${pUsername}`);
           } else if (store.set) {
             const dataStr = JSON.stringify(profileData);
             await store.set(cleanUuid, dataStr);
@@ -492,10 +497,16 @@ exports.handler = async (event) => {
             if (pUsername) await store.set(pUsername, dataStr);
             if (profileData.avatar_uuid) await store.set(profileData.avatar_uuid.toLowerCase().trim(), dataStr);
             await store.set('all_profiles', JSON.stringify(gCustomProfiles));
+            blobSaved = true;
+            console.log(`[SAVE_PROFILE] Blobs saved via set for keys: ${cleanUuid}, ${pId}, ${pUsername}`);
+          } else {
+            console.warn('[SAVE_PROFILE] Store has no setJSON or set method. Available methods:', Object.keys(store));
           }
         } catch (blobErr) {
-          console.warn('[BLOBS STORAGE WARNING]', blobErr.message);
+          console.warn('[BLOBS STORAGE WARNING]', blobErr.message, blobErr.stack);
         }
+      } else {
+        console.warn('[SAVE_PROFILE] No Blobs store available - data saved to in-memory only');
       }
 
       // Update Tribute Goal in-memory cache if provided
@@ -509,6 +520,10 @@ exports.handler = async (event) => {
       subEntry.published = true;
       gSubscriptions[cleanUuid] = subEntry;
       gSubscriptions[pId] = subEntry;
+
+      // Include blob persistence status in response
+      profileData._blob_saved = blobSaved;
+      profileData._store_available = !!store;
     }
 
     // Return success response

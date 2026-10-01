@@ -613,9 +613,13 @@
           const netData = await netlifyRes.json();
           if (netData.profile) {
             profileData = { ...(profileData || {}), ...netData.profile };
-          } else if (netData.profiles && (netData.profiles[profileId.toLowerCase()] || (profileData && profileData.avatar_uuid && netData.profiles[profileData.avatar_uuid.toLowerCase()]))) {
-            const pFromMap = netData.profiles[profileId.toLowerCase()] || (profileData && profileData.avatar_uuid && netData.profiles[profileData.avatar_uuid.toLowerCase()]);
-            profileData = { ...(profileData || {}), ...pFromMap };
+          } else if (netData.profiles) {
+            const pFromMap = netData.profiles[profileId.toLowerCase()] || 
+              (profileData && profileData.avatar_uuid && netData.profiles[profileData.avatar_uuid.toLowerCase()]) ||
+              (profileData && profileData.sl_username && netData.profiles[profileData.sl_username.toLowerCase()]);
+            if (pFromMap) {
+              profileData = { ...(profileData || {}), ...pFromMap };
+            }
           }
         }
       } catch(e) {}

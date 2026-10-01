@@ -414,12 +414,24 @@
         .then(liveData => {
           if (liveData) {
             if (liveData.profiles) {
+              const processed = new Set();
               Object.keys(liveData.profiles).forEach(k => {
                 const customP = liveData.profiles[k];
                 if (!customP || !customP.id) return;
-                const existingIdx = allProfiles.findIndex(p => p.id === customP.id || p.avatar_uuid === customP.avatar_uuid || (p.sl_username && p.sl_username === customP.sl_username));
+                // Deduplicate: only process each unique profile object once
+                const profileKey = customP.id || customP.avatar_uuid || customP.sl_username;
+                if (processed.has(profileKey)) return;
+                processed.add(profileKey);
+                
+                const existingIdx = allProfiles.findIndex(p => 
+                  p.id === customP.id || 
+                  p.id === k ||
+                  p.avatar_uuid === customP.avatar_uuid || 
+                  p.avatar_uuid === k ||
+                  (p.sl_username && (p.sl_username === customP.sl_username || p.sl_username === k))
+                );
                 if (existingIdx !== -1) {
-                  allProfiles[existingIdx] = { ...allProfiles[existingIdx], ...customP };
+                  allProfiles[existingIdx] = customP;
                 } else if (customP.name) {
                   allProfiles.push(customP);
                 }
