@@ -185,6 +185,17 @@ ShowTierInfo(key agent) {
     llRegionSayTo(agent, 0, info);
 }
 
+// Helper: Deliver Package / Rate Card items stored in Kiosk inventory
+DeliverSubscriberPackage(key buyer) {
+    integer invCount = llGetInventoryNumber(INVENTORY_OBJECT);
+    integer i;
+    for (i = 0; i < invCount; i++) {
+        string objName = llGetInventoryName(INVENTORY_OBJECT, i);
+        llGiveInventory(buyer, objName);
+        llRegionSayTo(buyer, 0, "🎁 [DELIVERY] Delivered '" + objName + "' to your inventory.");
+    }
+}
+
 default {
     state_entry() {
         InitKiosk();
@@ -231,6 +242,7 @@ default {
         if (name == "" || name == "???") name = llKey2Name(giver);
         
         llRegionSayTo(giver, 0, "💎 [DIRECTORY] Payment of L$" + (string)amount + " received from " + name + "! Unlocking " + tierName + "...");
+        DeliverSubscriberPackage(giver);
         SendSubscriptionRegistration(giver, tierName, amount, durationDays);
         LaunchWebEditor(giver);
     }
@@ -275,6 +287,7 @@ default {
             }
             else if (message == "🎁 Owner Free" && id == llGetOwner()) {
                 llRegionSayTo(id, 0, "👑 [OWNER GRANT] Unlocking lifetime access for your avatar...");
+                DeliverSubscriberPackage(id);
                 SendSubscriptionRegistration(id, "Tier 3 Royal Lifetime (Owner Grant)", 0, 36500);
                 LaunchWebEditor(id);
             }
