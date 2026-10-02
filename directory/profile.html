@@ -2066,6 +2066,9 @@
       }
 
       window.switchProfileTab = function(tabName) {
+        const isVipCreator = profileData.is_vip === true || profileData.plan === 'vip';
+        if (tabName === 'feed' && !isVipCreator) return;
+
         const btnRatecard = document.getElementById('tab-btn-ratecard');
         const btnFeed = document.getElementById('tab-btn-feed');
         const paneRatecard = document.getElementById('tab-pane-ratecard');
@@ -2258,8 +2261,17 @@
         }
       };
 
-      // Initialize Feed
-      renderFeed();
+      // Conditional VIP tab display
+      const isVipCreator = profileData.is_vip === true || profileData.plan === 'vip';
+      const tabsNav = document.getElementById('profile-tabs-nav');
+      if (tabsNav) {
+        tabsNav.style.display = isVipCreator ? 'flex' : 'none';
+      }
+
+      // Initialize Feed if VIP
+      if (isVipCreator) {
+        renderFeed();
+      }
 
     });
   </script>

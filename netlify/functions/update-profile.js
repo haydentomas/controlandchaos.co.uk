@@ -938,6 +938,10 @@ exports.handler = async (event) => {
         profileData.revolut_me = '';
         profileData.cashapp = '';
         profileData.paypal_me = '';
+        profileData.posts = [];
+        profileData.fan_tier_price = '';
+        profileData.fan_tier_desc = '';
+        profileData.fan_slurl = '';
       }
       const pId = publicSlug;
       const pUsername = (profileData.sl_username || '').toLowerCase().trim();

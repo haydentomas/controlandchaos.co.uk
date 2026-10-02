@@ -601,7 +601,7 @@
               <span>🎁</span> Wishlists &amp; Reviews
             </button>
             <button class="editor-tab-btn" onclick="switchTab('tab-feed')">
-              <span>📱</span> Exclusive Feed
+              <span>📱</span> Exclusive Feed <span style="font-size: 0.65rem; background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; padding: 1px 5px; border-radius: 4px; font-weight: 800; margin-left: 4px;">VIP</span>
             </button>
           </div>
 
@@ -1083,46 +1083,61 @@
 
           </div>
 
-          <!-- ================= TAB 7: EXCLUSIVE FEED & FAN CLUB ================= -->
+          <!-- ================= TAB 7: EXCLUSIVE FEED & FAN CLUB (VIP ONLY) ================= -->
           <div id="tab-feed" class="tab-content">
-            <div class="editor-card">
-              <div class="editor-card-header">
-                <h3 class="editor-card-title"><span class="icon">💎</span> Fan Club &amp; Subscriber Pass Settings</h3>
-                <span class="section-tag tag-gold font-2xs m-0">MONTHLY SUB TIER</span>
-              </div>
-              <p class="font-xs text-muted mb-16">
-                Define the monthly tribute fee required to unlock your restricted posts, audio sessions, and lookbooks.
-                Fans pay you directly in-world via your subscriber vendor or kiosk.
+            <!-- VIP Locked Upgrade Banner (Shown for Basic Plan creators) -->
+            <div id="feed-vip-locked-banner" class="editor-card" style="display:none; text-align:center; padding:36px 20px; border:1px solid rgba(212,175,55,0.4); background:radial-gradient(ellipse at center, rgba(212,175,55,0.12) 0%, rgba(17,15,21,0.95) 70%);">
+              <div style="font-size:44px; margin-bottom:12px;">👑</div>
+              <h3 style="font-family:var(--font-heading); font-size:22px; color:var(--gold-bright); margin-bottom:8px;">VIP Exclusive Feed &amp; Lookbooks</h3>
+              <p class="font-xs text-muted" style="max-width:520px; margin:0 auto 20px; line-height:1.6;">
+                Publishing restricted lookbooks, uncensored audio decrees, private task assignments, and collecting monthly L$ tribute passes from your subscribers is exclusively available to <strong>VIP Tier Listings</strong>.
               </p>
-              <div class="form-grid-2 mb-12">
-                <div>
-                  <label class="form-label font-2xs" for="edit-fan-tier-price">Monthly Subscription Fee</label>
-                  <input type="text" id="edit-fan-tier-price" class="form-input font-xs" placeholder="L$1,500 / month">
-                </div>
-                <div>
-                  <label class="form-label font-2xs" for="edit-fan-slurl">In-World Subscriber Terminal SLurl</label>
-                  <input type="text" id="edit-fan-slurl" class="form-input font-xs" placeholder="secondlife://Chaos%20Manor/128/142/23">
-                </div>
-              </div>
-              <div class="form-group mb-0">
-                <label class="form-label font-2xs" for="edit-fan-tier-desc">Membership Benefits Summary</label>
-                <input type="text" id="edit-fan-tier-desc" class="form-input font-xs" placeholder="Unlocks all locked lookbooks, uncensored audio notes, and direct priority decrees.">
-              </div>
+              <a id="feed-upgrade-link" href="/directory/checkout/" class="btn btn-gold btn-sm" style="display:inline-flex; align-items:center; gap:8px; padding:10px 22px; font-weight:700;">
+                <span>⚡</span> Upgrade Listing to VIP Pass
+              </a>
             </div>
 
-            <!-- Feed Post Composer / Manager -->
-            <div class="editor-card">
-              <div class="editor-card-header">
-                <h3 class="editor-card-title"><span class="icon">📱</span> Exclusive Feed Posts</h3>
-                <button type="button" onclick="addFeedPost()" class="btn btn-gold btn-sm" style="padding: 6px 14px; font-size: 0.78rem;">
-                  <span>➕</span> Create New Post
-                </button>
+            <!-- VIP Unlocked Controls (Shown for VIP Plan creators & Admins) -->
+            <div id="feed-vip-unlocked-content">
+              <div class="editor-card">
+                <div class="editor-card-header">
+                  <h3 class="editor-card-title"><span class="icon">💎</span> Fan Club &amp; Subscriber Pass Settings</h3>
+                  <span class="section-tag tag-gold font-2xs m-0">MONTHLY SUB TIER</span>
+                </div>
+                <p class="font-xs text-muted mb-16">
+                  Define the monthly tribute fee required to unlock your restricted posts, audio sessions, and lookbooks.
+                  Fans pay you directly in-world via your subscriber vendor or kiosk.
+                </p>
+                <div class="form-grid-2 mb-12">
+                  <div>
+                    <label class="form-label font-2xs" for="edit-fan-tier-price">Monthly Subscription Fee</label>
+                    <input type="text" id="edit-fan-tier-price" class="form-input font-xs" placeholder="L$1,500 / month">
+                  </div>
+                  <div>
+                    <label class="form-label font-2xs" for="edit-fan-slurl">In-World Subscriber Terminal SLurl</label>
+                    <input type="text" id="edit-fan-slurl" class="form-input font-xs" placeholder="secondlife://Chaos%20Manor/128/142/23">
+                  </div>
+                </div>
+                <div class="form-group mb-0">
+                  <label class="form-label font-2xs" for="edit-fan-tier-desc">Membership Benefits Summary</label>
+                  <input type="text" id="edit-fan-tier-desc" class="form-input font-xs" placeholder="Unlocks all locked lookbooks, uncensored audio notes, and direct priority decrees.">
+                </div>
               </div>
-              <p class="font-xs text-muted mb-16">
-                Publish updates, photo sets, voice notes, tasks, and teasers. Choose whether each post is <strong>Locked (Subscribers Only)</strong> or <strong>Public Preview</strong>.
-              </p>
-              <div id="feed-posts-repeater-container">
-                <!-- Populated dynamically via renderFeedPosts() -->
+
+              <!-- Feed Post Composer / Manager -->
+              <div class="editor-card">
+                <div class="editor-card-header">
+                  <h3 class="editor-card-title"><span class="icon">📱</span> Exclusive Feed Posts</h3>
+                  <button type="button" onclick="addFeedPost()" class="btn btn-gold btn-sm" style="padding: 6px 14px; font-size: 0.78rem;">
+                    <span>➕</span> Create New Post
+                  </button>
+                </div>
+                <p class="font-xs text-muted mb-16">
+                  Publish updates, photo sets, voice notes, tasks, and teasers. Choose whether each post is <strong>Locked (Subscribers Only)</strong> or <strong>Public Preview</strong>.
+                </p>
+                <div id="feed-posts-repeater-container">
+                  <!-- Populated dynamically via renderFeedPosts() -->
+                </div>
               </div>
             </div>
           </div>
@@ -1736,6 +1751,26 @@
       document.getElementById('edit-fan-tier-price').value = p.fan_tier_price || 'L$1,500 / month';
       document.getElementById('edit-fan-tier-desc').value = p.fan_tier_desc || 'Unlocks all restricted lookbooks, uncensored audio notes, and direct priority decrees.';
       document.getElementById('edit-fan-slurl').value = p.fan_slurl || p.slurl || 'secondlife://Chaos%20Manor/128/142/23';
+
+      // VIP Lock Check for Exclusive Feed
+      const isVipTier = isAdminMode || p.is_vip === true || p.plan === 'vip';
+      const vipLockedBanner = document.getElementById('feed-vip-locked-banner');
+      const vipUnlockedContent = document.getElementById('feed-vip-unlocked-content');
+      const feedUpgradeLink = document.getElementById('feed-upgrade-link');
+
+      if (feedUpgradeLink) {
+        feedUpgradeLink.href = `/directory/checkout/?uuid=${encodeURIComponent(p.avatar_uuid || authUUID || p.id)}&name=${encodeURIComponent(p.name || '')}&tier=vip`;
+      }
+
+      if (vipLockedBanner && vipUnlockedContent) {
+        if (isVipTier) {
+          vipLockedBanner.style.display = 'none';
+          vipUnlockedContent.style.display = 'block';
+        } else {
+          vipLockedBanner.style.display = 'block';
+          vipUnlockedContent.style.display = 'none';
+        }
+      }
 
       renderAllRepeaters();
       attachInputListeners();
