@@ -103,70 +103,41 @@
         </p>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; max-width: 860px; margin: 0 auto;">
-        <!-- Standard Tier -->
-        <div class="card card-flex-column" style="background: rgba(18, 16, 22, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 28px;">
-          <div class="card-icon" style="font-size: 28px; margin-bottom: 12px;">📄</div>
-          <h3 class="card-title" style="font-size: 1.3rem; margin-bottom: 4px;">Standard Listing</h3>
-          <div class="card-price-badge font-lg mb-12" style="font-size: 1.5rem; font-weight: 800; color: #fff;">L$1,000 <span class="font-xs text-muted" style="font-size: 0.85rem; font-weight: 400;">/ month</span></div>
-          <p class="card-desc card-body-grow" style="color: #94a3b8; font-size: 0.88rem; line-height: 1.6; margin-bottom: 20px;">
-            Full searchable directory profile, custom service menu &amp; rates card, SL IM link, direct booking inquiry form, and verified rank badge.
-          </p>
-          <ul style="list-style: none; padding: 0; margin: 0 0 24px; font-size: 0.82rem; color: #cbd5e1; line-height: 1.8;">
-            <li>✓ Searchable profile &amp; rate card</li>
-            <li>✓ Direct Second Life IM integration</li>
-            <li>✓ Custom service menu pricing</li>
-            <li style="color: #64748b; text-decoration: line-through;">✗ Exclusive Feed &amp; Lookbooks</li>
-            <li style="color: #64748b; text-decoration: line-through;">✗ In-World Fan Club Passes</li>
-          </ul>
-          <button type="button" onclick="openKioskModal('Standard Listing', 'L$1,000 / month', 'Full searchable directory profile, custom service menu & rates card, and verified rank badge.')" class="btn btn-secondary btn-sm mt-auto" style="width: 100%; text-align: center; justify-content: center;">Get Standard Listing &rarr;</button>
-        </div>
-
-        <!-- VIP Featured Tier -->
-        <div class="card card-highlight-gold card-flex-column" style="background: linear-gradient(180deg, rgba(30, 25, 18, 0.98) 0%, rgba(18, 16, 22, 0.98) 100%); border: 1px solid var(--gold-bright); border-radius: 16px; padding: 28px; box-shadow: 0 0 35px rgba(212, 175, 55, 0.15); position: relative;">
-          <div class="flex-between align-center mb-8">
-            <div class="card-icon" style="font-size: 28px; margin-bottom: 0;">👑</div>
-            <span class="section-tag tag-gold font-2xs m-0" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; font-weight: 800; border: none; padding: 3px 10px;">MOST POPULAR</span>
-          </div>
-          <h3 class="card-title" style="font-size: 1.3rem; margin-bottom: 4px; color: var(--gold-bright);">VIP Featured Listing</h3>
-          <div class="card-price-badge font-lg mb-12" style="font-size: 1.5rem; font-weight: 800; color: #ffd700;">L$2,500 <span class="font-xs text-muted" style="font-size: 0.85rem; font-weight: 400; color: var(--gold-muted);">/ month</span></div>
-          <p class="card-desc card-body-grow" style="color: #e2e8f0; font-size: 0.88rem; line-height: 1.6; margin-bottom: 20px;">
-            Top-tier placement, verified VIP gold badge, and full access to publish exclusive lookbooks, voice decrees, and sell monthly subscriber passes.
-          </p>
-          <ul style="list-style: none; padding: 0; margin: 0 0 24px; font-size: 0.82rem; color: #fef08a; line-height: 1.8;">
-            <li>✓ <strong>All Standard Listing features</strong></li>
-            <li>✓ <strong>🔒 Exclusive Feed &amp; Lookbooks</strong></li>
-            <li>✓ <strong>💎 In-World Fan Club &amp; Monthly Passes</strong></li>
-            <li>✓ <strong>🎙️ Voice Decrees &amp; Audio Player</strong></li>
-            <li>✓ <strong>🌐 Connect Custom Domain (e.g. yourname.com)</strong></li>
-            <li>✓ <strong>⭐ Top directory placement &amp; featured badge</strong></li>
-          </ul>
-          <button type="button" onclick="openKioskModal('VIP Featured Listing', 'L$2,500 / month', 'Top placement, VIP gold badge, exclusive feed lookbooks, and in-world subscriber pass monetization.')" class="btn btn-gold btn-sm mt-auto" style="width: 100%; text-align: center; justify-content: center; font-weight: 700;">Get VIP Listing &rarr;</button>
-        </div>
-      </div>
-
-      <!-- Luxury Feature-by-Feature Comparison Table -->
-      <div style="margin-top: 50px; max-width: 960px; margin-left: auto; margin-right: auto;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <h3 style="font-family: var(--font-heading); font-size: 1.5rem; color: #fff; margin-bottom: 6px;">Compare Plans &amp; Capabilities</h3>
-          <p class="text-muted font-xs">Every tool and monetization power included in each directory package.</p>
-        </div>
-
-        <div style="background: rgba(14, 12, 18, 0.95); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 16px; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.7);">
+      <!-- Unified Luxury Master Pricing & Comparison Matrix -->
+      <div style="max-width: 960px; margin: 0 auto;">
+        <div style="background: rgba(14, 12, 18, 0.95); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(212,175,55,0.12);">
           <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem;">
               <thead>
-                <tr style="background: rgba(25, 20, 32, 0.9); border-bottom: 2px solid rgba(212, 175, 55, 0.3);">
-                  <th style="padding: 18px 20px; color: #94a3b8; font-weight: 700; width: 46%;">Plan Features</th>
-                  <th style="padding: 18px 16px; text-align: center; color: #fff; width: 27%;">
-                    <div style="font-size: 1rem; font-weight: 800;">Standard</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8; font-family: var(--font-mono); font-weight: 400;">L$1,000 / mo</div>
+                <!-- Top Main Tier Summary & Action Row -->
+                <tr style="background: rgba(22, 18, 28, 0.98); border-bottom: 2px solid rgba(212, 175, 55, 0.35);">
+                  <th style="padding: 28px 24px; color: #94a3b8; font-weight: 700; width: 44%; vertical-align: bottom;">
+                    <div style="font-size: 1.25rem; font-family: var(--font-heading); color: #fff; margin-bottom: 4px;">Choose Your Listing</div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; font-weight: 400; line-height: 1.4;">Instant in-world activation via Lindens (L$). Cancel or upgrade anytime.</div>
                   </th>
-                  <th style="padding: 18px 16px; text-align: center; color: #ffd700; width: 27%; background: rgba(212, 175, 55, 0.08); border-left: 1px solid rgba(212, 175, 55, 0.2); border-right: 1px solid rgba(212, 175, 55, 0.2);">
-                    <div style="font-size: 1rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                      <span>👑</span> VIP Featured
+                  
+                  <!-- Standard Column Header -->
+                  <th style="padding: 28px 20px 24px; text-align: center; color: #fff; width: 28%; vertical-align: top; background: rgba(255,255,255,0.01);">
+                    <div style="font-size: 24px; margin-bottom: 6px;">📄</div>
+                    <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-heading); color: #fff;">Standard</div>
+                    <div style="font-size: 1.5rem; font-weight: 900; color: #fff; margin: 6px 0 2px; font-family: var(--font-mono);">
+                      L$1,000 <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 400;">/ mo</span>
                     </div>
-                    <div style="font-size: 0.8rem; color: #ffd700; font-family: var(--font-mono); font-weight: 700;">L$2,500 / mo</div>
+                    <div style="font-size: 0.76rem; color: #94a3b8; margin-bottom: 16px; font-weight: 400; min-height: 32px;">Searchable profile &amp; rate card menu</div>
+                    <button type="button" onclick="openKioskModal('Standard Listing', 'L$1,000 / month', 'Full searchable directory profile, custom service menu & rates card, and verified rank badge.')" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center; font-size: 0.82rem; padding: 9px 12px;">Get Standard &rarr;</button>
+                  </th>
+
+                  <!-- VIP Featured Column Header (Highlight) -->
+                  <th style="padding: 24px 20px 24px; text-align: center; color: #ffd700; width: 28%; vertical-align: top; background: linear-gradient(180deg, rgba(212, 175, 55, 0.16) 0%, rgba(26, 21, 14, 0.95) 100%); border-left: 1px solid rgba(212, 175, 55, 0.35); border-right: 1px solid rgba(212, 175, 55, 0.35); position: relative;">
+                    <div style="margin-bottom: 6px;">
+                      <span class="section-tag tag-gold font-2xs m-0" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; font-weight: 900; border: none; padding: 2px 8px; font-size: 0.68rem; letter-spacing: 0.05em;">👑 MOST POPULAR</span>
+                    </div>
+                    <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-heading); color: var(--gold-bright);">VIP Featured</div>
+                    <div style="font-size: 1.5rem; font-weight: 900; color: #ffd700; margin: 6px 0 2px; font-family: var(--font-mono);">
+                      L$2,500 <span style="font-size: 0.8rem; color: var(--gold-muted); font-weight: 400;">/ mo</span>
+                    </div>
+                    <div style="font-size: 0.76rem; color: #fef08a; margin-bottom: 16px; font-weight: 500; min-height: 32px;">Custom domain, exclusive feed &amp; fan passes</div>
+                    <button type="button" onclick="openKioskModal('VIP Featured Listing', 'L$2,500 / month', 'Top placement, VIP gold badge, exclusive feed lookbooks, and in-world subscriber pass monetization.')" class="btn btn-gold btn-sm" style="width: 100%; justify-content: center; font-weight: 800; font-size: 0.82rem; padding: 9px 12px; box-shadow: 0 0 15px rgba(212,175,55,0.3);">Get VIP Listing &rarr;</button>
                   </th>
                 </tr>
               </thead>
