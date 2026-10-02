@@ -38,75 +38,11 @@
       }
     }
 
-    /* View Switcher Controls */
-    .view-mode-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 20px;
-      padding: 10px 16px;
-      background: #100e15;
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 10px;
-    }
-
-    .view-mode-btns {
-      display: flex;
-      gap: 6px;
-    }
-
-    .view-mode-btn {
-      padding: 6px 14px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-
-    .view-mode-btn:hover {
-      background: rgba(212, 175, 55, 0.1);
-      color: #fff;
-    }
-
-    .view-mode-btn.active {
-      background: rgba(212, 175, 55, 0.25);
-      border-color: #d4af37;
-      color: #ffd700;
-    }
-
-    /* Dynamic Layout Modes */
+    /* Full-Width Spacious Editor Layout */
     .editor-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 36px;
-      align-items: start;
-      transition: grid-template-columns 0.3s ease;
-    }
-
-    .editor-layout.mode-focus-form {
-      grid-template-columns: 1.4fr 0.7fr;
-    }
-
-    .editor-layout.mode-focus-preview {
-      grid-template-columns: 0.7fr 1.3fr;
-    }
-
-    @media (max-width: 1200px) {
-
-      .editor-layout,
-      .editor-layout.mode-focus-form,
-      .editor-layout.mode-focus-preview {
-        grid-template-columns: 1fr;
-      }
+      max-width: 1040px;
+      margin: 0 auto;
+      width: 100%;
     }
 
     .editor-card {
@@ -378,99 +314,6 @@
       display: block;
     }
 
-    /* ==========================================================================
-       LUXURY LIVE SHOWCASE PREVIEW CARD (RIGHT COLUMN)
-       ========================================================================== */
-    .preview-sticky-wrapper {
-      position: sticky;
-      top: 90px;
-      max-height: calc(100vh - 110px);
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .preview-showcase-card {
-      background: #110f14;
-      border: 1px solid rgba(212, 175, 55, 0.35);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
-    }
-
-    .preview-header-bar {
-      padding: 12px 18px;
-      background: #181520;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .preview-hero-banner {
-      height: 180px;
-      background-size: cover;
-      background-position: center;
-      background-color: #1a171e;
-      position: relative;
-    }
-
-    .preview-hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(17, 15, 20, 0.92) 100%);
-    }
-
-    .preview-avatar-wrap {
-      position: absolute;
-      bottom: -32px;
-      left: 24px;
-      z-index: 2;
-    }
-
-    .preview-avatar-img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 3px solid #d4af37;
-      object-fit: cover;
-      background: #111;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.3);
-    }
-
-    .preview-showcase-body {
-      padding: 42px 24px 24px;
-    }
-
-    .preview-price-tag {
-      font-family: var(--font-heading);
-      font-weight: 800;
-      color: var(--gold-bright);
-      font-size: 1.05rem;
-    }
-
-    .preview-service-row {
-      padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.025);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 8px;
-      margin-bottom: 8px;
-      transition: all 0.2s ease;
-    }
-
-    .preview-service-row:hover {
-      border-color: rgba(212, 175, 55, 0.3);
-      background: rgba(212, 175, 55, 0.04);
-    }
-
-    .pulse-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 6px;
-      background: #10b981;
-      box-shadow: 0 0 8px #10b981;
-    }
   </style>
 </head>
 
@@ -522,8 +365,11 @@
           </div>
 
           <div class="flex-row align-center gap-10">
+            <button onclick="saveProfile()" class="btn btn-gold btn-sm" style="font-weight: 700; box-shadow: 0 0 12px rgba(212,175,55,0.25);">
+              <span>💾</span> Save Profile
+            </button>
             <a href="#" id="view-live-profile-btn" target="_blank" class="btn btn-secondary btn-sm">
-              <span>👁️</span> Open Live Profile Page
+              <span>👁️</span> View Live Profile ↗
             </a>
             <button id="admin-logout-btn" onclick="logoutAdmin()" class="btn btn-secondary btn-sm"
               style="display: none; color: #f87171; border-color: rgba(239,68,68,0.3);">
@@ -556,28 +402,10 @@
         </div>
       </div>
 
-      <!-- View Switcher Controls (Above Grid) -->
-      <div id="view-mode-bar" class="view-mode-bar" style="display: none;">
-        <div class="flex-row align-center gap-8 font-xs text-muted">
-          <span>🖥️ Workspace Layout:</span>
-        </div>
-        <div class="view-mode-btns">
-          <button class="view-mode-btn active" onclick="setLayoutMode('split')" id="btn-layout-split">
-            <span>⚖️</span> 50/50 Balanced
-          </button>
-          <button class="view-mode-btn" onclick="setLayoutMode('focus-form')" id="btn-layout-form">
-            <span>📝</span> Focus Form (70/30)
-          </button>
-          <button class="view-mode-btn" onclick="setLayoutMode('focus-preview')" id="btn-layout-prev">
-            <span>👀</span> Showcase Card (35/65)
-          </button>
-        </div>
-      </div>
-
       <!-- Main Editor UI (Shown when authenticated) -->
       <div id="editor-container" class="editor-layout" style="display: none;">
 
-        <!-- Left Column: Form Controls & Tabs -->
+        <!-- Main Form Column & Tabs -->
         <div id="editor-form-col">
 
           <!-- Editor Navigation Tabs -->
@@ -1187,140 +1015,7 @@
           </div>
 
         </div>
-
-        <!-- Right Column: Luxury Live Showcase Rate Card Preview -->
-        <div id="editor-prev-col" class="preview-sticky-wrapper">
-          <div class="preview-showcase-card">
-
-            <!-- Preview Top Control Bar -->
-            <div class="preview-header-bar">
-              <div class="flex-row align-center gap-8">
-                <span class="font-xs font-bold text-gold uppercase font-mono" style="letter-spacing: 0.08em;">
-                  ✨ Live Public Showcase
-                </span>
-              </div>
-              <span class="section-tag font-2xs m-0"
-                style="background: rgba(212,175,55,0.15); border-color:#d4af37; color:#ffd700;">
-                LIVE PREVIEW
-              </span>
-            </div>
-
-            <!-- Hero Cover Banner -->
-            <div class="preview-hero-banner" id="prev-banner-bg">
-              <div class="preview-hero-overlay"></div>
-              <div class="preview-avatar-wrap">
-                <img src="/assets/uploads/default-avatar.jpg" class="preview-avatar-img" id="prev-avatar-img"
-                  alt="Avatar"
-                  onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'">
-              </div>
-            </div>
-
-            <!-- Showcase Body -->
-            <div class="preview-showcase-body">
-
-              <!-- Identity Header -->
-              <div class="flex-between align-start mb-12 flex-wrap gap-8">
-                <div>
-                  <div class="flex-row align-center gap-6 mb-6">
-                    <span class="pulse-dot" id="prev-pulse-dot"></span>
-                    <span class="section-tag font-2xs m-0" id="prev-status">AVAILABLE</span>
-                    <span class="font-xs" id="prev-role-badge">👑</span>
-                  </div>
-                  <h2 class="card-title font-xl m-0 text-white" id="prev-name"
-                    style="font-size: 1.5rem; font-weight: 800;">
-                    Mistress Alexis Vane
-                  </h2>
-                  <p class="font-xs text-gold m-0 mt-4" id="prev-role">
-                    Financial Domme &amp; Luxury Companion
-                  </p>
-                </div>
-                <div class="text-right">
-                  <span class="font-2xs text-muted uppercase font-mono block">Starting Rate</span>
-                  <span class="preview-price-tag" id="prev-rate">L$3,000 / hr</span>
-                </div>
-              </div>
-
-              <!-- Tagline Quote -->
-              <div class="p-10 mb-16"
-                style="background: rgba(212,175,55,0.06); border-left: 3px solid #d4af37; border-radius: 0 6px 6px 0;">
-                <p class="font-xs italic m-0 text-primary" id="prev-tagline">
-                  "Unapologetic luxury and psychological draining."
-                </p>
-              </div>
-
-              <!-- Quick Facts Grid -->
-              <div class="grid grid-3 gap-8 p-12 mb-18"
-                style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;">
-                <div>
-                  <span class="font-2xs text-muted uppercase font-mono block">Location</span>
-                  <strong class="font-xs text-white" id="prev-location">Control &amp; Chaos</strong>
-                </div>
-                <div>
-                  <span class="font-2xs text-muted uppercase font-mono block">SL Username</span>
-                  <strong class="font-xs text-gold font-mono" id="prev-username">alexis.vane</strong>
-                </div>
-                <div>
-                  <span class="font-2xs text-muted uppercase font-mono block">Hardware Sync</span>
-                  <strong class="font-xs text-emerald" id="prev-hw-summary">⚡ Ready</strong>
-                </div>
-              </div>
-
-              <!-- About Bio Preview -->
-              <div class="mb-18">
-                <span class="font-2xs text-gold uppercase font-mono block mb-6" id="prev-about-title"
-                  style="letter-spacing: 0.08em;">
-                  About &amp; Philosophy
-                </span>
-                <p class="font-xs text-muted m-0" id="prev-about-text" style="line-height: 1.6; white-space: pre-line;">
-                  Welcome to my official profile and rate card.
-                </p>
-              </div>
-
-              <!-- Live Categorized Rate Cards -->
-              <div class="mb-18">
-                <div class="flex-between align-center mb-8">
-                  <span class="font-2xs text-gold uppercase font-mono" style="letter-spacing: 0.08em;">
-                    🪙 Menu &amp; Service Rates
-                  </span>
-                  <span class="font-2xs text-muted" id="prev-srv-count">0 items</span>
-                </div>
-                <div id="prev-services-list" style="display: flex; flex-direction: column; gap: 8px;">
-                  <!-- Live preview of service tiers -->
-                </div>
-              </div>
-
-              <!-- Hardware Compatibility Badges -->
-              <div class="mb-18" id="prev-hw-container" style="display: none;">
-                <span class="font-2xs text-gold uppercase font-mono block mb-6" style="letter-spacing: 0.08em;">
-                  ⚡ Tech &amp; Hardware Compatibility
-                </span>
-                <div id="prev-hw-badges" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
-              </div>
-
-              <!-- Hard Limits Preview -->
-              <div class="mb-18 p-12" id="prev-limits-container"
-                style="display: none; background: rgba(139,30,45,0.15); border: 1px solid rgba(139,30,45,0.35); border-radius: 8px;">
-                <span class="font-2xs uppercase font-mono block mb-6" style="color: #ffb8c2; letter-spacing: 0.08em;">
-                  🚫 Hard Limits &amp; Boundaries
-                </span>
-                <ul id="prev-limits-list"
-                  style="padding-left: 16px; margin: 0; font-size: 0.78rem; color: #eee; line-height: 1.5;"></ul>
-              </div>
-
-              <!-- Tags Preview -->
-              <div class="pt-12" style="border-top: 1px solid rgba(255,255,255,0.08);">
-                <div id="prev-tags-list" style="display:flex; flex-wrap:wrap; gap:6px;">
-                  <!-- Live preview of tags -->
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-        </div>
-
       </div>
-
     </div>
   </main>
 
@@ -1388,8 +1083,7 @@
     async function initAdminMode(preferredId) {
       document.getElementById('access-gate').style.display = 'none';
       document.getElementById('auth-banner').style.display = 'block';
-      document.getElementById('view-mode-bar').style.display = 'flex';
-      document.getElementById('editor-container').style.display = 'grid';
+      document.getElementById('editor-container').style.display = 'block';
 
       document.getElementById('auth-mode-title').innerText = 'Master Admin Studio';
       document.getElementById('admin-profile-switcher-wrap').style.display = 'block';
@@ -1515,27 +1209,6 @@
       populateForm(currentProfile);
     }
 
-    function setLayoutMode(mode) {
-      const container = document.getElementById('editor-container');
-      const btnSplit = document.getElementById('btn-layout-split');
-      const btnForm = document.getElementById('btn-layout-form');
-      const btnPrev = document.getElementById('btn-layout-prev');
-
-      [btnSplit, btnForm, btnPrev].forEach(b => b.classList.remove('active'));
-
-      container.classList.remove('mode-focus-form', 'mode-focus-preview');
-
-      if (mode === 'focus-form') {
-        container.classList.add('mode-focus-form');
-        btnForm.classList.add('active');
-      } else if (mode === 'focus-preview') {
-        container.classList.add('mode-focus-preview');
-        btnPrev.classList.add('active');
-      } else {
-        btnSplit.classList.add('active');
-      }
-    }
-
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.editor-tab-btn').forEach(el => el.classList.remove('active'));
@@ -1557,8 +1230,7 @@
     async function initEditor(uuid, token) {
       document.getElementById('access-gate').style.display = 'none';
       document.getElementById('auth-banner').style.display = 'block';
-      document.getElementById('view-mode-bar').style.display = 'flex';
-      document.getElementById('editor-container').style.display = 'grid';
+      document.getElementById('editor-container').style.display = 'block';
       document.getElementById('auth-user-uuid').innerText = `UUID: ${uuid}`;
 
       try {
@@ -2171,15 +1843,15 @@
       const container = document.getElementById('feed-posts-repeater-container');
       if (!container) return;
       if (!postsList.length) {
-        container.innerHTML = '<p class="font-xs text-muted" style="padding: 12px 0;">No feed posts yet. Click "+ Create New Post" above to share exclusive content with your subscribers.</p>';
+        container.innerHTML = '<p class="font-xs text-muted" style="padding: 12px 0;">No feed posts yet. Click "➕ Create New Post" above to share exclusive content with your subscribers.</p>';
         return;
       }
       container.innerHTML = postsList.map((post, idx) => `
-        <div class="repeater-item-box" style="border: 1px solid ${post.is_locked ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.1)'}; background: #110f15; margin-bottom: 18px; position: relative;">
+        <div class="repeater-item-box" id="feed-post-card-${idx}" style="border: 1px solid ${post.is_locked ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.1)'}; background: #110f15; margin-bottom: 18px; position: relative;">
           <button type="button" onclick="removeFeedPost(${idx})" class="btn-delete-item" title="Delete Post">✕ Delete</button>
           
           <div class="flex-row align-center gap-8 mb-12 flex-wrap">
-            <span class="section-tag ${post.is_locked ? 'tag-gold' : 'tag-emerald'} font-2xs m-0">
+            <span id="post-lock-badge-${idx}" class="section-tag ${post.is_locked ? 'tag-gold' : 'tag-emerald'} font-2xs m-0">
               ${post.is_locked ? '🔒 SUBSCRIBERS ONLY' : '🌍 PUBLIC PREVIEW'}
             </span>
             <span class="font-2xs text-muted font-mono">${post.timestamp || 'Just now'}</span>
@@ -2197,7 +1869,7 @@
             </div>
             <div>
               <label class="form-label font-2xs">Access Lock</label>
-              <select class="form-select font-xs" onchange="postsList[${idx}].is_locked = (this.value === 'locked'); renderFeedPosts();">
+              <select class="form-select font-xs" onchange="updatePostLock(${idx}, this.value)">
                 <option value="locked" ${post.is_locked ? 'selected' : ''}>🔒 Subscribers Only</option>
                 <option value="public" ${!post.is_locked ? 'selected' : ''}>🌍 Public Free Preview</option>
               </select>
@@ -2228,6 +1900,20 @@
       `).join('');
     }
 
+    function updatePostLock(idx, val) {
+      const isLocked = (val === 'locked');
+      postsList[idx].is_locked = isLocked;
+      const badge = document.getElementById(`post-lock-badge-${idx}`);
+      const card = document.getElementById(`feed-post-card-${idx}`);
+      if (badge) {
+        badge.className = `section-tag ${isLocked ? 'tag-gold' : 'tag-emerald'} font-2xs m-0`;
+        badge.innerText = isLocked ? '🔒 SUBSCRIBERS ONLY' : '🌍 PUBLIC PREVIEW';
+      }
+      if (card) {
+        card.style.borderColor = isLocked ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.1)';
+      }
+    }
+
     function addFeedPost() {
       postsList.unshift({
         id: 'post-' + Date.now(),
@@ -2250,7 +1936,7 @@
       }
     }
 
-    /* ================= LISTENERS & LIVE PREVIEW ================= */
+    /* ================= LISTENERS & STATE ================= */
 
     function useBannerForOg() {
       const bannerVal = document.getElementById('edit-banner-img')?.value;
@@ -2292,146 +1978,16 @@
         if (el) {
           el.addEventListener('input', () => {
             if (id === 'edit-seo-img') updateOgPreview();
-            updatePreview();
           });
           el.addEventListener('change', () => {
             if (id === 'edit-seo-img') updateOgPreview();
-            updatePreview();
           });
         }
       });
     }
 
     function updatePreview() {
-      const activeStatusPill = document.querySelector('.status-pill.active');
-      const customStatus = document.getElementById('edit-custom-status')?.value;
-      const statusText = customStatus || (activeStatusPill ? activeStatusPill.getAttribute('data-status') : 'Available');
-
-      const name = document.getElementById('edit-name')?.value || 'Dominant Name';
-      const role = document.getElementById('edit-role')?.value || 'Role Title';
-      const tagline = document.getElementById('edit-tagline')?.value || 'Tagline quote...';
-      const aboutTitle = document.getElementById('edit-about-title')?.value || 'About & Philosophy';
-      const aboutText = document.getElementById('edit-about')?.value || 'Welcome to my official profile and rate card.';
-      const rate = document.getElementById('edit-rate')?.value || 'L$3,000 / hr';
-      const location = document.getElementById('edit-location')?.value || 'Control & Chaos';
-      const username = document.getElementById('edit-username')?.value || 'resident.username';
-      const roleType = document.getElementById('edit-role-type')?.value || 'domme';
-
-      const avatarUrl = document.getElementById('edit-avatar-img')?.value;
-      const bannerUrl = document.getElementById('edit-banner-img')?.value;
-
-      // Status & Pulse
-      const prevStatus = document.getElementById('prev-status');
-      const pulseDot = document.getElementById('prev-pulse-dot');
-      if (prevStatus) prevStatus.innerText = statusText.toUpperCase();
-      if (pulseDot) {
-        if (statusText.toLowerCase().includes('busy')) {
-          pulseDot.style.background = '#ef4444';
-          pulseDot.style.boxShadow = '0 0 8px #ef4444';
-        } else if (statusText.toLowerCase().includes('appt')) {
-          pulseDot.style.background = '#f59e0b';
-          pulseDot.style.boxShadow = '0 0 8px #f59e0b';
-        } else {
-          pulseDot.style.background = '#10b981';
-          pulseDot.style.boxShadow = '0 0 8px #10b981';
-        }
-      }
-
-      document.getElementById('prev-name').innerText = name;
-      document.getElementById('prev-role').innerText = role;
-      document.getElementById('prev-tagline').innerText = `"${tagline}"`;
-      document.getElementById('prev-about-title').innerText = aboutTitle;
-      document.getElementById('prev-about-text').innerText = aboutText;
-      document.getElementById('prev-rate').innerText = rate;
-      document.getElementById('prev-location').innerText = location;
-      document.getElementById('prev-username').innerText = username;
-
-      // Role Badge Icon
-      const badgeIcon = roleType === 'domme' ? '👑' : (roleType === 'sub' ? '⛓️' : '🎭');
-      document.getElementById('prev-role-badge').innerText = badgeIcon;
-
-      // Preview Thumbnails
-      const prevAvatarImg = document.getElementById('prev-avatar-img');
-      const prevAvatarThumb = document.getElementById('preview-avatar-thumb');
-      if (avatarUrl) {
-        if (prevAvatarImg) prevAvatarImg.src = avatarUrl;
-        if (prevAvatarThumb) { prevAvatarThumb.src = avatarUrl; prevAvatarThumb.style.display = 'block'; }
-      }
-
-      const prevBannerBg = document.getElementById('prev-banner-bg');
-      const prevBannerThumb = document.getElementById('preview-banner-thumb');
-      if (bannerUrl) {
-        if (prevBannerBg) prevBannerBg.style.backgroundImage = `url('${bannerUrl}')`;
-        if (prevBannerThumb) { prevBannerThumb.src = bannerUrl; prevBannerThumb.style.display = 'block'; }
-      }
-
-      // Services Preview
-      const prevServices = document.getElementById('prev-services-list');
-      const srvCountLabel = document.getElementById('prev-srv-count');
-      const allServices = [];
-      rateCategories.forEach(cat => {
-        (cat.services || []).forEach(srv => allServices.push({ ...srv, catName: cat.category_name }));
-      });
-
-      if (srvCountLabel) srvCountLabel.innerText = `${allServices.length} services`;
-
-      if (allServices.length) {
-        prevServices.innerHTML = allServices.map(s => `
-          <div class="preview-service-row">
-            <div class="flex-between align-center mb-4">
-              <span class="font-xs font-bold text-white">${escapeHtml(s.name || 'Service')}</span>
-              <span class="font-xs font-mono font-bold text-gold">${escapeHtml(s.price || '')} <span class="font-2xs text-muted">${escapeHtml(s.unit || '')}</span></span>
-            </div>
-            ${s.desc ? `<p class="font-2xs text-muted m-0" style="line-height:1.4;">${escapeHtml(s.desc)}</p>` : ''}
-          </div>
-        `).join('');
-      } else {
-        prevServices.innerHTML = '<div class="p-12 text-center text-muted font-xs" style="border:1px dashed rgba(255,255,255,0.1); border-radius:6px;">No rate categories or services configured yet.</div>';
-      }
-
-      // Hardware Badges Preview
-      const hwContainer = document.getElementById('prev-hw-container');
-      const hwBadges = document.getElementById('prev-hw-badges');
-      const hwSummary = document.getElementById('prev-hw-summary');
-      if (hardwareItems.length) {
-        hwContainer.style.display = 'block';
-        if (hwSummary) hwSummary.innerText = `⚡ ${hardwareItems.length} Synced`;
-        hwBadges.innerHTML = hardwareItems.map(h => `
-          <span class="section-tag font-2xs m-0" style="padding: 3px 8px; font-size: 0.72rem; background: rgba(255,255,255,0.04); border-color: rgba(212,175,55,0.3); color: #fff;">
-            ${h.icon || '⚡'} ${h.name} <span class="text-gold" style="font-size:0.65rem;">[${h.badge_text || 'Ready'}]</span>
-          </span>
-        `).join('');
-      } else {
-        hwContainer.style.display = 'none';
-        if (hwSummary) hwSummary.innerText = 'Standard';
-      }
-
-      // Hard Limits Preview
-      const limitsContainer = document.getElementById('prev-limits-container');
-      const limitsList = document.getElementById('prev-limits-list');
-      if (hardLimitsList.length) {
-        limitsContainer.style.display = 'block';
-        limitsList.innerHTML = hardLimitsList.map(l => `<li>${escapeHtml(l)}</li>`).join('');
-      } else {
-        limitsContainer.style.display = 'none';
-      }
-
-      // Tags Preview
-      const prevTags = document.getElementById('prev-tags-list');
-      const selectedTags = Array.from(document.querySelectorAll('.tag-choice.selected')).map(el => el.innerText.trim());
-      const customTagsRaw = document.getElementById('edit-custom-tags')?.value || '';
-      const customTags = customTagsRaw.split(',').map(t => t.trim()).filter(Boolean);
-      const totalTags = [...new Set([...selectedTags, ...customTags])];
-
-      if (totalTags.length) {
-        prevTags.innerHTML = totalTags.map(t => `
-          <span class="section-tag font-2xs m-0" style="padding: 2px 8px; font-size: 0.68rem; background: rgba(212,175,55,0.1); border-color: rgba(212,175,55,0.3); color: #ffd700;">
-            ${t}
-          </span>
-        `).join('');
-      } else {
-        prevTags.innerHTML = '';
-      }
+      // Streamlined full-width layout; live preview moved to direct profile viewing
     }
 
     function escapeHtml(str) {
