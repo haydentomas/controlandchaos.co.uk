@@ -41,17 +41,17 @@
 
     /* Modern 2-Column Sidebar + Main Panel Dashboard Layout */
     .editor-dashboard-grid {
-      display: grid;
-      grid-template-columns: 290px 1fr;
-      gap: 28px;
+      display: grid !important;
+      grid-template-columns: 280px 1fr !important;
+      gap: 24px;
       align-items: start;
       width: 100%;
       box-sizing: border-box;
     }
 
-    @media (max-width: 992px) {
+    @media (max-width: 768px) {
       .editor-dashboard-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
         gap: 20px;
       }
     }
@@ -1183,7 +1183,7 @@
     async function initAdminMode(preferredId) {
       document.getElementById('access-gate').style.display = 'none';
       document.getElementById('auth-banner').style.display = 'block';
-      document.getElementById('editor-container').style.display = 'block';
+      document.getElementById('editor-container').style.display = 'grid';
 
       document.getElementById('auth-mode-title').innerText = 'Master Admin Studio';
       document.getElementById('admin-profile-switcher-wrap').style.display = 'block';
@@ -1333,7 +1333,7 @@
     async function initEditor(uuid, token) {
       document.getElementById('access-gate').style.display = 'none';
       document.getElementById('auth-banner').style.display = 'block';
-      document.getElementById('editor-container').style.display = 'block';
+      document.getElementById('editor-container').style.display = 'grid';
       document.getElementById('auth-user-uuid').innerText = `UUID: ${uuid}`;
 
       try {
