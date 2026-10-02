@@ -177,25 +177,25 @@
                 <span style="font-size:12px; color:var(--text-muted); display:block;">Estimated Total:</span>
                 <span id="calc-total-quote" style="font-family:var(--font-heading); font-size:24px; font-weight:900; color:var(--gold-bright);">L$0</span>
               </div>
-              <a href="#booking-inquiry-section" id="calc-book-cta" class="btn btn-gold btn-sm">
+              <a href="#booking-enquiry-section" id="calc-book-cta" class="btn btn-gold btn-sm">
                 <span>💬</span> Book with this Quote
               </a>
             </div>
           </div>
 
-          <!-- Direct Contact & Booking Inquiry Section (Inside Main Column) -->
-          <div id="booking-inquiry-section" class="card" style="padding: 28px 24px; background: linear-gradient(175deg, #1a1715 0%, #100f0d 100%); border: 1px solid var(--gold-border);">
+          <!-- Direct Contact & Booking Enquiry Section (Inside Main Column) -->
+          <div id="booking-enquiry-section" class="card" style="padding: 28px 24px; background: linear-gradient(175deg, #1a1715 0%, #100f0d 100%); border: 1px solid var(--gold-border);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px; margin-bottom:20px;">
               <div>
-                <span class="section-tag tag-gold" style="margin-bottom:6px;">DIRECT INQUIRY</span>
-                <h2 style="font-family:var(--font-heading); font-size:22px; font-weight:800; color:var(--gold-bright); margin:0;" id="inquiry-header-title">
+                <span class="section-tag tag-gold" style="margin-bottom:6px;">DIRECT ENQUIRY</span>
+                <h2 style="font-family:var(--font-heading); font-size:22px; font-weight:800; color:var(--gold-bright); margin:0;" id="enquiry-header-title">
                   Request a Session or Booking
                 </h2>
                 <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">
                   Not in Second Life right now? Send your session request directly below.
                 </p>
               </div>
-              <div id="inquiry-quick-links" style="display:flex; gap:8px; flex-wrap:wrap;">
+              <div id="enquiry-quick-links" style="display:flex; gap:8px; flex-wrap:wrap;">
                 <!-- Direct links injected here -->
               </div>
             </div>
@@ -228,13 +228,6 @@
                   Preferred Date &amp; Time
                 </label>
                 <input type="text" name="preferred_time" placeholder="e.g. Saturday 2:00 PM SLT" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
-              </div>
-
-              <div>
-                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
-                  Service / Package
-                </label>
-                <input type="text" name="requested_service" id="form-service-input" placeholder="e.g. 1-on-1 Session" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
               </div>
 
               <div style="grid-column: 1 / -1;">
@@ -562,7 +555,7 @@
               <a href="${profileData.slurl || 'secondlife://Chaos%20Manor/128/128/23'}" class="btn btn-secondary btn-sm">
                 📍 Teleport to Skybox
               </a>
-              <a href="#booking-inquiry-section" class="btn btn-secondary btn-sm" style="border-color:var(--gold-border);">
+              <a href="#booking-enquiry-section" class="btn btn-secondary btn-sm" style="border-color:var(--gold-border);">
                 ✉️ Book Session
               </a>
             </div>
@@ -646,7 +639,7 @@
           }
         });
 
-        // Sync quote calculation and prefill booking inquiry form
+        // Sync quote calculation and prefill booking enquiry form
         function updateQuoteAndForm() {
           let total = 0;
           let selectedItems = [];
@@ -695,7 +688,7 @@
           bookCta.addEventListener('click', (e) => {
             e.preventDefault();
             updateQuoteAndForm();
-            const formSection = document.getElementById('booking-inquiry-section');
+            const formSection = document.getElementById('booking-enquiry-section');
             if (formSection) {
               formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
@@ -987,8 +980,8 @@
       const formEscortName = document.getElementById('form-escort-name');
       const formEscortId = document.getElementById('form-escort-id');
       const formEscortEmail = document.getElementById('form-escort-email');
-      const inquiryHeader = document.getElementById('inquiry-header-title');
-      const inquiryLinks = document.getElementById('inquiry-quick-links');
+      const inquiryHeader = document.getElementById('enquiry-header-title');
+      const inquiryLinks = document.getElementById('enquiry-quick-links');
 
       if (formEscortName) formEscortName.value = profileData.name;
       if (formEscortId) formEscortId.value = profileData.id;
@@ -1003,9 +996,9 @@
         `;
         if (profileData.contact_email) {
           linksHtml += `
-            <a href="mailto:${profileData.contact_email}?subject=Booking Inquiry for ${encodeURIComponent(profileData.name)}" class="btn btn-secondary btn-sm">
+            <button type="button" id="email-direct-btn" class="btn btn-secondary btn-sm" onclick="handleEmailDirectClick()" style="cursor:pointer;">
               <span>📧</span> Email Direct
-            </a>
+            </button>
           `;
         }
         inquiryLinks.innerHTML = linksHtml;
@@ -1036,7 +1029,7 @@
             if (response.ok) {
               if (formStatus) {
                 formStatus.style.color = '#10b981';
-                formStatus.innerHTML = `✅ <strong>Inquiry Sent!</strong> ${profileData.name} will be notified with your session details.`;
+                formStatus.innerHTML = `✅ <strong>Enquiry Sent!</strong> ${profileData.name} will be notified with your session details.`;
               }
               bookingForm.reset();
               if (submitBtn) submitBtn.innerHTML = '<span>✅</span> Request Received';
@@ -1046,7 +1039,7 @@
           } catch (err) {
             if (formStatus) {
               formStatus.style.color = 'var(--gold-bright)';
-              formStatus.innerHTML = `✨ <strong>Inquiry Recorded!</strong> If you are in-world, you can also send a direct SL IM to <strong>${profileData.sl_username || profileData.name}</strong>.`;
+              formStatus.innerHTML = `✨ <strong>Enquiry Recorded!</strong> If you are in-world, you can also send a direct SL IM to <strong>${profileData.sl_username || profileData.name}</strong>.`;
             }
             if (submitBtn) submitBtn.innerHTML = '<span>✉️</span> Submit Booking Request';
             if (submitBtn) submitBtn.disabled = false;
