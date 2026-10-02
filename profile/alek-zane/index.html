@@ -604,37 +604,9 @@
 
         </div>
 
-        <!-- Right Column: Tribute Goal, Gallery, Patrons, Hardware, Limits, How to Book & Reviews -->
+        <!-- Right Column: Gallery, Patrons, Hardware, Limits, How to Book & Reviews -->
         <div id="profile-sidebar">
 
-          <!-- Tribute & Tip Goal Progress Card -->
-          <div class="card" id="profile-tribute-card" style="margin-bottom: 30px; display: none; border-color: rgba(212,175,55,0.4); background: linear-gradient(165deg, #1c1813 0%, #120f0c 100%); box-shadow: 0 8px 24px rgba(0,0,0,0.6);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-              <h3 class="card-title" id="tribute-goal-title" style="font-size: 17px; margin: 0; color: var(--gold-bright); display: flex; align-items: center; gap: 8px;">
-                <span>🎯</span> <span id="tribute-goal-name">Tribute Goal</span>
-              </h3>
-              <span class="sub-badge sub-active" id="tribute-goal-badge" style="font-size: 10.5px; padding: 2px 8px;">Active Goal</span>
-            </div>
-
-            <div style="margin-bottom: 14px;">
-              <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 13px; margin-bottom: 6px;">
-                <span style="color: #fff; font-weight: 700;" id="tribute-current-txt">L$0</span>
-                <span style="color: var(--gold-muted);" id="tribute-target-txt">L$0 Goal</span>
-              </div>
-              <div style="width: 100%; height: 10px; background: rgba(0,0,0,0.6); border-radius: 9999px; overflow: hidden; border: 1px solid var(--gold-border-subtle);">
-                <div id="tribute-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #d4af37 0%, #f5eedc 100%); box-shadow: 0 0 12px rgba(212,175,55,0.6); transition: width 0.8s ease;"></div>
-              </div>
-              <div style="display: flex; justify-content: space-between; font-size: 11px; font-family: var(--font-mono); color: var(--gold-bright); margin-top: 4px;">
-                <span id="tribute-pct-txt">0% Funded</span>
-                <span style="color: var(--text-dim);">Real-Time Grid Sync</span>
-              </div>
-            </div>
-
-            <button id="open-tribute-modal-btn" class="btn btn-gold btn-sm" style="width:100%; justify-content:center; font-size:13px; font-weight:800; padding:10px 16px; box-shadow:0 0 15px rgba(212,175,55,0.3); cursor:pointer;">
-              <span>💎</span> Send Tribute
-            </button>
-          </div>
-          
           <!-- Visual Lookbook / Photo Gallery -->
           <div class="card" style="margin-bottom: 30px;" id="profile-gallery-card">
             <h3 class="card-title" id="profile-gallery-title" style="font-size: 20px; margin-bottom: 16px;">📸 Gallery</h3>
@@ -1071,26 +1043,6 @@
                 }
               }
             }
-            if (d.tributeGoals) {
-              const liveGoal = (profileData.avatar_uuid && d.tributeGoals[profileData.avatar_uuid.toLowerCase()]) ||
-                               (profileData.id && d.tributeGoals[profileData.id.toLowerCase()]) ||
-                               (profileData.sl_username && d.tributeGoals[profileData.sl_username.toLowerCase()]);
-              if (liveGoal) {
-                const cur = liveGoal.current_amount || 0;
-                const tar = liveGoal.target_amount || (profileData.tribute_goal && profileData.tribute_goal.target_amount) || 10000;
-                const sym = liveGoal.currency || 'L$';
-                const pct = Math.min(100, Math.round((cur / (tar || 1)) * 100));
-
-                const curTxt = document.getElementById('tribute-current-txt');
-                const tarTxt = document.getElementById('tribute-target-txt');
-                const pctTxt = document.getElementById('tribute-pct-txt');
-                const pBar = document.getElementById('tribute-progress-bar');
-                if (curTxt) curTxt.textContent = `${sym}${cur.toLocaleString()}`;
-                if (tarTxt) tarTxt.textContent = `${sym}${tar.toLocaleString()} Goal`;
-                if (pctTxt) pctTxt.textContent = `${pct}% Funded`;
-                if (pBar) pBar.style.width = `${pct}%`;
-              }
-            }
           }
         })
         .catch(() => {});
@@ -1520,35 +1472,7 @@
         }
       }
 
-      // 5.5 Render Tribute & Tip Goal Progress Card
-      const tributeCard = document.getElementById('profile-tribute-card');
-      const tg = profileData.tribute_goal;
-      if (tributeCard && tg && (tg.active !== false)) {
-        const goalName = document.getElementById('tribute-goal-name');
-        const curTxt = document.getElementById('tribute-current-txt');
-        const tarTxt = document.getElementById('tribute-target-txt');
-        const pctTxt = document.getElementById('tribute-pct-txt');
-        const pBar = document.getElementById('tribute-progress-bar');
-        const supContainer = document.getElementById('tribute-supporters-container');
-        const supList = document.getElementById('tribute-supporters-list');
-
-        const cur = tg.current_amount || tg.current || 0;
-        const tar = tg.target_amount || tg.target || 10000;
-        const sym = tg.currency || 'L$';
-        const pct = Math.min(100, Math.round((cur / (tar || 1)) * 100));
-
-        if (goalName) goalName.textContent = tg.title || 'Tribute Goal';
-        if (curTxt) curTxt.textContent = `${sym}${cur.toLocaleString()}`;
-        if (tarTxt) tarTxt.textContent = `${sym}${tar.toLocaleString()} Goal`;
-        if (pctTxt) pctTxt.textContent = `${pct}% Funded`;
-        if (pBar) {
-          setTimeout(() => { pBar.style.width = `${pct}%`; }, 150);
-        }
-
-        tributeCard.style.display = 'block';
-      }
-
-      // Setup Interactive Tribute Modal
+      // Setup Interactive Tribute Links & Modals
       const tributeModal = document.getElementById('tribute-modal');
       const openTributeBtn = document.getElementById('open-tribute-modal-btn');
       const closeTributeBtn = document.getElementById('tribute-modal-close');

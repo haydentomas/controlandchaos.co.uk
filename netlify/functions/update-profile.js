@@ -30,34 +30,6 @@ let gLiveStatuses = {
 // Subscription entitlements are loaded from Blobs; process memory is only a cache.
 let gSubscriptions = {};
 
-// In-Memory Real-Time Tribute Goal Progress Cache
-let gTributeGoals = {
-  "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec": {
-    title: "Formal Gala Menswear & Collar Upgrades",
-    target_amount: 30000,
-    current_amount: 18500,
-    currency: "L$"
-  },
-  "alek-zane": {
-    title: "Formal Gala Menswear & Collar Upgrades",
-    target_amount: 30000,
-    current_amount: 18500,
-    currency: "L$"
-  },
-  "e8d64b18-3a9b-4b2e-a5b6-c9a8e7d6f5a1": {
-    title: "VIP Penthouse Renovation & Designer Corset",
-    target_amount: 50000,
-    current_amount: 32500,
-    currency: "L$"
-  },
-  "alexis-vane": {
-    title: "VIP Penthouse Renovation & Designer Corset",
-    target_amount: 50000,
-    current_amount: 32500,
-    currency: "L$"
-  }
-};
-
 // In-Memory Real-Time Custom Profiles Cache (Updated dynamically via Studio Editor)
 let gCustomProfiles = {};
 
@@ -353,7 +325,7 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  // Support GET request to retrieve all live in-world statuses, dynamic profiles, subscriptions, and tribute goals
+  // Support GET request to retrieve all live in-world statuses, dynamic profiles, and subscriptions
   if (event.httpMethod === 'GET') {
     const query = event.queryStringParameters || {};
     const targetId = (query.id || query.uuid || query.slug || query.username || '').toLowerCase().trim();
@@ -511,7 +483,6 @@ exports.handler = async (event) => {
         profiles: gCustomProfiles,
         statuses: gLiveStatuses,
         subscriptions: gSubscriptions,
-        tributeGoals: gTributeGoals,
         blobDebug: {
           storeAvailable: !!store,
           lastStoreError,
@@ -575,7 +546,6 @@ exports.handler = async (event) => {
         delete gSubscriptions[k];
         delete gCustomProfiles[k];
         delete gLiveStatuses[k];
-        delete gTributeGoals[k];
       });
 
       if (store) {
@@ -812,69 +782,6 @@ exports.handler = async (event) => {
       };
     }
 
-    // 5. Add Tribute / Tip Sync (from In-World Tip Jar, Throne, Cash App, or Web Confirmation)
-    if (action === 'add_tribute') {
-      const rawAmountStr = String(payload.amount || '500').trim();
-      const donor = payload.tributor || payload.donor || payload.username || 'Anonymous Supporter';
-      const method = payload.method || 'Tribute';
-      const badge = payload.badge || (method ? `💎 ${method}` : '💎 Tributor');
-
-      const existingGoal = gTributeGoals[cleanUuid] || gTributeGoals[cleanId] || {
-        title: 'Tribute Goal',
-        target_amount: 30000,
-        current_amount: 0,
-        currency: 'L$',
-        supporters: []
-      };
-
-      const goalCurrency = existingGoal.currency || 'L$';
-      let addedToGoal = 0;
-      let displayAmount = '';
-
-      const isDollarInput = rawAmountStr.includes('$') && !rawAmountStr.toLowerCase().includes('l$');
-      const isPoundInput = rawAmountStr.includes('£');
-      const numericVal = parseFloat(rawAmountStr.replace(/[^0-9\.]/g, '')) || 0;
-
-      if (goalCurrency === 'L$') {
-        if (isDollarInput) {
-          addedToGoal = Math.round(numericVal * 250); // ~$1 = L$250
-          displayAmount = `$${numericVal.toFixed(0)} (~L$${addedToGoal.toLocaleString()})`;
-        } else if (isPoundInput) {
-          addedToGoal = Math.round(numericVal * 315); // ~£1 = L$315
-          displayAmount = `£${numericVal.toFixed(0)} (~L$${addedToGoal.toLocaleString()})`;
-        } else {
-          addedToGoal = Math.round(numericVal);
-          displayAmount = `L$${addedToGoal.toLocaleString()}`;
-        }
-      } else if (goalCurrency === '$' || goalCurrency === 'USD') {
-        if (rawAmountStr.toLowerCase().includes('l$')) {
-          addedToGoal = Math.round((numericVal / 250) * 100) / 100;
-          displayAmount = `$${addedToGoal.toFixed(2)}`;
-        } else {
-          addedToGoal = numericVal;
-          displayAmount = `$${numericVal.toFixed(2)}`;
-        }
-      } else {
-        addedToGoal = numericVal;
-        displayAmount = `${goalCurrency}${numericVal.toLocaleString()}`;
-      }
-
-      existingGoal.current_amount = (existingGoal.current_amount || 0) + addedToGoal;
-      if (!Array.isArray(existingGoal.supporters)) existingGoal.supporters = [];
-      existingGoal.supporters.unshift({
-        name: donor,
-        amount: displayAmount,
-        badge: badge
-      });
-      existingGoal.supporters = existingGoal.supporters.slice(0, 5); // Keep top 5
-
-      gTributeGoals[cleanUuid] = existingGoal;
-      if (cleanId) gTributeGoals[cleanId] = existingGoal;
-      if (KNOWN_AVATARS[cleanUuid]) {
-        KNOWN_AVATARS[cleanUuid].forEach(alias => { gTributeGoals[alias.toLowerCase()] = existingGoal; });
-      }
-    }
-
     // 6. Save & Publish Full Profile Data (from Studio Editor /directory/edit/)
     if (action === 'save_profile' && profileData) {
       const store = getProfilesStore(event);
@@ -932,7 +839,6 @@ exports.handler = async (event) => {
         profileData.social_links = [];
         profileData.reviews = [];
         profileData.hardware_compat = [];
-        profileData.tribute_goal = null;
         profileData.throne_url = '';
         profileData.kofi = '';
         profileData.revolut_me = '';
@@ -1008,12 +914,6 @@ exports.handler = async (event) => {
         console.warn('[SAVE_PROFILE] No Blobs store available - data saved to in-memory only');
       }
 
-      // Update Tribute Goal in-memory cache if provided
-      if (profileData.tribute_goal) {
-        gTributeGoals[cleanUuid] = profileData.tribute_goal;
-        gTributeGoals[pId] = profileData.tribute_goal;
-      }
-
       // Include blob persistence status in response
       profileData._blob_saved = blobSaved;
       profileData._store_available = !!store;
@@ -1026,13 +926,12 @@ exports.handler = async (event) => {
       headers,
       body: JSON.stringify({
         success: true,
-        message: 'Profile / subscription / tribute update received and processed successfully.',
+        message: 'Profile / subscription update received and processed successfully.',
         timestamp: new Date().toISOString(),
         uuid: uuid,
         status: status || 'updated',
         liveStatuses: gLiveStatuses,
         subscriptions: gSubscriptions,
-        tributeGoals: gTributeGoals,
         profile: profileData || gCustomProfiles[cleanUuid] || null
       })
     };
