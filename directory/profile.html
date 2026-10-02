@@ -362,49 +362,8 @@
           <p style="font-size:11.5px; color:var(--text-muted); margin:0 0 10px 0; line-height:1.4;">Send direct cash tributes or gifts securely without exchanging real names or billing info.</p>
           <a id="modal-throne-link" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width:100%; justify-content:center; font-size:11.5px; padding:8px 12px;">🎁 Open Throne Page ↗</a>
         </div>
-
-        <!-- 3. Ko-fi (UK / Global - Apple Pay, Card, PayPal, 0% Fee) -->
-        <div id="modal-kofi-box" style="display:none; background:rgba(28,24,20,0.9); border:1px solid rgba(255,95,95,0.35); border-radius:10px; padding:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <strong style="color:#ff7675; font-size:14px; display:flex; align-items:center; gap:6px;">☕ Ko-fi Page (Card / Apple Pay)</strong>
-            <span style="font-size:9.5px; color:#4ade80; font-family:var(--font-mono);">0% Platform Fee</span>
-          </div>
-          <p style="font-size:11.5px; color:var(--text-muted); margin:0 0 10px 0; line-height:1.4;">Send instant card, Apple Pay, Google Pay, or PayPal tips without sharing legal details.</p>
-          <a id="modal-kofi-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center; font-size:11.5px; padding:8px 12px; border-color:rgba(255,95,95,0.4); color:#ff7675;">☕ Pay via Ko-fi ↗</a>
         </div>
-
-        <!-- 4. Revolut.me (UK & Europe Instant Pay) -->
-        <div id="modal-revolut-box" style="display:none; background:rgba(28,24,20,0.9); border:1px solid rgba(0,117,255,0.35); border-radius:10px; padding:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <strong style="color:#60a5fa; font-size:14px; display:flex; align-items:center; gap:6px;">⚡ Revolut.me</strong>
-            <span style="font-size:9.5px; color:#60a5fa; font-family:var(--font-mono);">UK &amp; EU Instant</span>
-          </div>
-          <a id="modal-revolut-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center; font-size:11px; padding:7px 10px; border-color:rgba(0,117,255,0.4); color:#60a5fa;">Send via Revolut ↗</a>
-        </div>
-
-        <!-- 5. PayPal.me -->
-        <div id="modal-paypal-box" style="display:none; background:rgba(28,24,20,0.9); border:1px solid var(--gold-border-subtle); border-radius:10px; padding:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <strong style="color:#93c5fd; font-size:14px; display:flex; align-items:center; gap:6px;">💳 PayPal.me</strong>
-          </div>
-          <a id="modal-paypal-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center; font-size:11px; padding:6px 10px;">Send via PayPal ↗</a>
-        </div>
-
-        <!-- 6. Cash App ($cashtag - US Only) -->
-        <div id="modal-cashapp-box" style="display:none; background:rgba(28,24,20,0.9); border:1px solid rgba(34,197,94,0.3); border-radius:10px; padding:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <strong style="color:#4ade80; font-size:14px; display:flex; align-items:center; gap:6px;">💲 Cash App ($cashtag)</strong>
-            <span style="font-size:9.5px; color:#4ade80; font-family:var(--font-mono);">US Mobile</span>
-          </div>
-          <div style="display:flex; align-items:center; justify-content:space-between; background:#0e0c0a; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:6px 10px; margin-bottom:10px;">
-            <span style="font-family:var(--font-mono); font-size:12.5px; color:#4ade80; font-weight:700;" id="modal-cashapp-tag">$cashtag</span>
-            <button id="copy-cashapp-btn" style="background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:#4ade80; border-radius:4px; font-size:10.5px; font-family:var(--font-mono); padding:3px 8px; cursor:pointer;">📋 Copy</button>
-          </div>
-          <a id="modal-cashapp-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center; font-size:11px; padding:6px 10px; border-color:rgba(34,197,94,0.4); color:#4ade80;">Pay via Cash.app ↗</a>
-        </div>
-
       </div>
-    </div>
   </div>
 
   <!-- Profile Hero & Cover Header -->
@@ -1333,14 +1292,6 @@
           const modalName = document.getElementById('tribute-modal-name');
           const modalThroneBox = document.getElementById('modal-throne-box');
           const modalThroneLink = document.getElementById('modal-throne-link');
-          const modalKofiBox = document.getElementById('modal-kofi-box');
-          const modalKofiLink = document.getElementById('modal-kofi-link');
-          const modalRevolutBox = document.getElementById('modal-revolut-box');
-          const modalRevolutLink = document.getElementById('modal-revolut-link');
-          const modalCashappBox = document.getElementById('modal-cashapp-box');
-          const modalCashappLink = document.getElementById('modal-cashapp-link');
-          const modalPaypalBox = document.getElementById('modal-paypal-box');
-          const modalPaypalLink = document.getElementById('modal-paypal-link');
 
           const totalL$ = window.currentQuoteTotal || 0;
           const totalUSD = window.currentQuoteUSD || (totalL$ > 0 ? Math.round(totalL$ / 250) : 0);
@@ -1358,54 +1309,6 @@
               modalThroneBox.style.display = 'block';
             } else {
               modalThroneBox.style.display = 'none';
-            }
-          }
-
-          // Dynamic pre-filled Ko-fi link ($ USD)
-          if (modalKofiBox) {
-            if (profileData.kofi && profileData.kofi.trim() && modalKofiLink) {
-              const cleanKofi = profileData.kofi.trim().replace(/^https?:\/\/(www\.)?ko-fi\.com\//, '').replace(/\/+$/, '');
-              modalKofiLink.href = `https://ko-fi.com/${cleanKofi}`;
-              modalKofiLink.textContent = totalUSD > 0 ? `☕ Pay $${totalUSD} via Ko-fi ↗` : '☕ Pay via Ko-fi ↗';
-              modalKofiBox.style.display = 'block';
-            } else {
-              modalKofiBox.style.display = 'none';
-            }
-          }
-
-          // Dynamic pre-filled Revolut.me link ($ USD)
-          if (modalRevolutBox) {
-            if (profileData.revolut_me && profileData.revolut_me.trim() && modalRevolutLink) {
-              const cleanRev = profileData.revolut_me.trim().replace(/^https?:\/\/(www\.)?revolut\.me\//, '').replace(/\/+$/, '');
-              modalRevolutLink.href = totalUSD > 0 ? `https://revolut.me/${cleanRev}/${totalUSD}usd` : `https://revolut.me/${cleanRev}`;
-              modalRevolutLink.textContent = totalUSD > 0 ? `Send $${totalUSD} via Revolut ↗` : 'Send via Revolut ↗';
-              modalRevolutBox.style.display = 'block';
-            } else {
-              modalRevolutBox.style.display = 'none';
-            }
-          }
-
-          // Dynamic pre-filled Cash App amount (cash.app/$tag/amount)
-          if (modalCashappBox) {
-            if (profileData.cashapp && profileData.cashapp.trim() && modalCashappLink) {
-              const cleanTag = profileData.cashapp.trim().startsWith('$') ? profileData.cashapp.trim() : `$${profileData.cashapp.trim()}`;
-              modalCashappLink.href = totalUSD > 0 ? `https://cash.app/${cleanTag}/${totalUSD}` : `https://cash.app/${cleanTag}`;
-              modalCashappLink.textContent = totalUSD > 0 ? `Pay $${totalUSD} via Cash.app ↗` : 'Pay via Cash.app ↗';
-              modalCashappBox.style.display = 'block';
-            } else {
-              modalCashappBox.style.display = 'none';
-            }
-          }
-
-          // Dynamic pre-filled PayPal.me amount (paypal.me/user/amountUSD)
-          if (modalPaypalBox) {
-            if (profileData.paypal_me && profileData.paypal_me.trim() && modalPaypalLink) {
-              const cleanPaypal = profileData.paypal_me.trim().replace(/\/+$/, '');
-              modalPaypalLink.href = totalUSD > 0 ? `${cleanPaypal}/${totalUSD}USD` : cleanPaypal;
-              modalPaypalLink.textContent = totalUSD > 0 ? `Send $${totalUSD} via PayPal ↗` : 'Send via PayPal ↗';
-              modalPaypalBox.style.display = 'block';
-            } else {
-              modalPaypalBox.style.display = 'none';
             }
           }
 
@@ -1474,16 +1377,6 @@
 
       const modalThroneBox = document.getElementById('modal-throne-box');
       const modalThroneLink = document.getElementById('modal-throne-link');
-      const modalKofiBox = document.getElementById('modal-kofi-box');
-      const modalKofiLink = document.getElementById('modal-kofi-link');
-      const modalRevolutBox = document.getElementById('modal-revolut-box');
-      const modalRevolutLink = document.getElementById('modal-revolut-link');
-      const modalCashappBox = document.getElementById('modal-cashapp-box');
-      const modalCashappTag = document.getElementById('modal-cashapp-tag');
-      const copyCashappBtn = document.getElementById('copy-cashapp-btn');
-      const modalCashappLink = document.getElementById('modal-cashapp-link');
-      const modalPaypalBox = document.getElementById('modal-paypal-box');
-      const modalPaypalLink = document.getElementById('modal-paypal-link');
 
       if (modalName) modalName.textContent = `Send Tribute to ${profileData.name}`;
       if (modalSlUsername) modalSlUsername.textContent = `@${profileData.sl_username || profileData.id}`;
@@ -1524,57 +1417,6 @@
           modalThroneBox.style.display = 'block';
         } else {
           modalThroneBox.style.display = 'none';
-        }
-      }
-
-      // 100% Anonymous Ko-fi (UK / Global)
-      if (modalKofiBox) {
-        if (profileData.kofi && profileData.kofi.trim() && modalKofiLink) {
-          const cleanKofi = profileData.kofi.trim().replace(/^https?:\/\/(www\.)?ko-fi\.com\//, '').replace(/\/+$/, '');
-          modalKofiLink.href = `https://ko-fi.com/${cleanKofi}`;
-          modalKofiBox.style.display = 'block';
-        } else {
-          modalKofiBox.style.display = 'none';
-        }
-      }
-
-      // Revolut.me (UK & EU)
-      if (modalRevolutBox) {
-        if (profileData.revolut_me && profileData.revolut_me.trim() && modalRevolutLink) {
-          const cleanRev = profileData.revolut_me.trim().replace(/^https?:\/\/(www\.)?revolut\.me\//, '').replace(/\/+$/, '');
-          modalRevolutLink.href = `https://revolut.me/${cleanRev}`;
-          modalRevolutBox.style.display = 'block';
-        } else {
-          modalRevolutBox.style.display = 'none';
-        }
-      }
-
-      // Anonymous Cash App ($cashtag - US)
-      if (modalCashappBox) {
-        if (profileData.cashapp && profileData.cashapp.trim() && modalCashappTag && modalCashappLink) {
-          const cleanTag = profileData.cashapp.trim().startsWith('$') ? profileData.cashapp.trim() : `$${profileData.cashapp.trim()}`;
-          modalCashappTag.textContent = cleanTag;
-          modalCashappLink.href = `https://cash.app/${cleanTag}`;
-          modalCashappBox.style.display = 'block';
-          if (copyCashappBtn) {
-            copyCashappBtn.onclick = () => {
-              navigator.clipboard.writeText(cleanTag);
-              copyCashappBtn.textContent = '✓ Copied!';
-              setTimeout(() => { copyCashappBtn.textContent = '📋 Copy'; }, 2000);
-            };
-          }
-        } else {
-          modalCashappBox.style.display = 'none';
-        }
-      }
-
-      // Optional PayPal.me
-      if (modalPaypalBox) {
-        if (profileData.paypal_me && profileData.paypal_me.trim() && modalPaypalLink) {
-          modalPaypalLink.href = profileData.paypal_me.trim();
-          modalPaypalBox.style.display = 'block';
-        } else {
-          modalPaypalBox.style.display = 'none';
         }
       }
 

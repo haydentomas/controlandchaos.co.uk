@@ -840,10 +840,6 @@ exports.handler = async (event) => {
         profileData.reviews = [];
         profileData.hardware_compat = [];
         profileData.throne_url = '';
-        profileData.kofi = '';
-        profileData.revolut_me = '';
-        profileData.cashapp = '';
-        profileData.paypal_me = '';
         profileData.posts = [];
         profileData.fan_tier_price = '';
         profileData.fan_tier_desc = '';

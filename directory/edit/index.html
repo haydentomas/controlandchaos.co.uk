@@ -933,46 +933,20 @@
           <!-- ================= TAB 6: WISHLIST, SOCIALS & REVIEWS ================= -->
           <div id="tab-socials" class="tab-content">
 
-            <!-- Privacy-Safe Tributes & Payment Options -->
+            <!-- Privacy-Safe Throne Tribute & Wishlist -->
             <div class="editor-card">
               <div class="editor-card-header">
-                <h3 class="editor-card-title"><span class="icon">🔒</span> Privacy-Safe Payment &amp; Tribute Links</h3>
+                <h3 class="editor-card-title"><span class="icon">👑</span> Throne Wishlist &amp; Anonymous Tributes</h3>
                 <span class="section-tag tag-emerald font-2xs m-0">100% PSEUDONYMOUS</span>
               </div>
               <p class="font-xs text-muted mb-16">
-                Protect your real legal identity. Tributes sent via Throne, Ko-fi, and Revolut do not reveal your real
-                name or billing address to clients.
+                Protect your real legal identity. Tributes and gifts sent via Throne never reveal your real name or billing address to clients.
               </p>
 
-              <div class="form-grid-2 mb-16">
-                <div class="form-group mb-0">
-                  <label class="form-label" for="edit-throne-url">Throne Wishlist &amp; Cash Tribute URL</label>
-                  <input type="text" id="edit-throne-url" class="form-input" placeholder="https://throne.com/username">
-                  <div class="form-hint">👑 100% private. Cash tributes and gifts (UK £, US $, EU €).</div>
-                </div>
-                <div class="form-group mb-0">
-                  <label class="form-label" for="edit-kofi">Ko-fi URL / Username (UK &amp; Worldwide)</label>
-                  <input type="text" id="edit-kofi" class="form-input" placeholder="https://ko-fi.com/username">
-                  <div class="form-hint">☕ 0% fee tips &amp; tributes. Accepts Card, Apple Pay, PayPal.</div>
-                </div>
-              </div>
-
-              <div class="form-grid-3">
-                <div class="form-group">
-                  <label class="form-label" for="edit-revolut-me">Revolut.me Link (UK / EU)</label>
-                  <input type="text" id="edit-revolut-me" class="form-input" placeholder="https://revolut.me/username">
-                  <div class="form-hint">⚡ Instant card / mobile payments.</div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="edit-paypal-me">PayPal.me URL</label>
-                  <input type="text" id="edit-paypal-me" class="form-input" placeholder="https://paypal.me/username">
-                  <div class="form-hint">💳 Universal payment link.</div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="edit-cashapp">Cash App $cashtag (US Only)</label>
-                  <input type="text" id="edit-cashapp" class="form-input" placeholder="$YourCashtag">
-                  <div class="form-hint">💲 US mobile instant link.</div>
-                </div>
+              <div class="form-group mb-0">
+                <label class="form-label" for="edit-throne-url">Throne Wishlist &amp; Cash Tribute URL</label>
+                <input type="text" id="edit-throne-url" class="form-input" placeholder="https://throne.com/username">
+                <div class="form-hint">👑 100% private. Cash tributes and gifts (USD $, GBP £, EUR €).</div>
               </div>
             </div>
 
@@ -1637,10 +1611,6 @@
 
       // Privacy Payment Settings
       document.getElementById('edit-throne-url').value = p.throne_url || '';
-      document.getElementById('edit-kofi').value = p.kofi || '';
-      document.getElementById('edit-revolut-me').value = p.revolut_me || '';
-      document.getElementById('edit-cashapp').value = p.cashapp || '';
-      document.getElementById('edit-paypal-me').value = p.paypal_me || '';
 
       // Populate Arrays
       rateCategories = p.rate_categories || [];
@@ -2358,10 +2328,6 @@
         posts: postsList,
         // Privacy Tributes & Payment Links
         throne_url: document.getElementById('edit-throne-url')?.value || '',
-        kofi: document.getElementById('edit-kofi')?.value || '',
-        revolut_me: document.getElementById('edit-revolut-me')?.value || '',
-        cashapp: document.getElementById('edit-cashapp')?.value || '',
-        paypal_me: document.getElementById('edit-paypal-me')?.value || '',
 
         seo_title: document.getElementById('edit-seo-title').value,
         seo_description: document.getElementById('edit-seo-desc').value,
