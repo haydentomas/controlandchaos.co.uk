@@ -477,20 +477,21 @@
       font-family: var(--font-mono, monospace);
       font-weight: 700;
       background: #0f0d14;
-      border: 1px solid rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.18);
       color: #94a3b8;
       cursor: pointer;
+      user-select: none;
       transition: all 0.2s ease;
     }
     .btn-avail-day:hover {
-      border-color: rgba(212,175,55,0.5);
+      border-color: rgba(212,175,55,0.6);
       color: #fff;
     }
     .btn-avail-day.active {
-      background: rgba(212,175,55,0.2);
-      border-color: #d4af37;
-      color: #ffd700;
-      box-shadow: 0 0 10px rgba(212,175,55,0.25);
+      background: rgba(212,175,55,0.22) !important;
+      border-color: #d4af37 !important;
+      color: #ffd700 !important;
+      box-shadow: 0 0 12px rgba(212,175,55,0.3) !important;
     }
 
   </style>
@@ -757,15 +758,15 @@
               <div class="form-group mb-16">
                 <label class="form-label">Available Days of the Week</label>
                 <div class="flex-row gap-8 flex-wrap" id="avail-days-container">
-                  <button type="button" class="btn-avail-day active" data-day="Monday">Mon</button>
-                  <button type="button" class="btn-avail-day active" data-day="Tuesday">Tue</button>
-                  <button type="button" class="btn-avail-day active" data-day="Wednesday">Wed</button>
-                  <button type="button" class="btn-avail-day active" data-day="Thursday">Thu</button>
-                  <button type="button" class="btn-avail-day active" data-day="Friday">Fri</button>
-                  <button type="button" class="btn-avail-day active" data-day="Saturday">Sat</button>
-                  <button type="button" class="btn-avail-day active" data-day="Sunday">Sun</button>
+                  <button type="button" class="btn-avail-day active" data-day="Monday" onclick="toggleAvailDay(this)">Mon</button>
+                  <button type="button" class="btn-avail-day active" data-day="Tuesday" onclick="toggleAvailDay(this)">Tue</button>
+                  <button type="button" class="btn-avail-day active" data-day="Wednesday" onclick="toggleAvailDay(this)">Wed</button>
+                  <button type="button" class="btn-avail-day active" data-day="Thursday" onclick="toggleAvailDay(this)">Thu</button>
+                  <button type="button" class="btn-avail-day active" data-day="Friday" onclick="toggleAvailDay(this)">Fri</button>
+                  <button type="button" class="btn-avail-day active" data-day="Saturday" onclick="toggleAvailDay(this)">Sat</button>
+                  <button type="button" class="btn-avail-day active" data-day="Sunday" onclick="toggleAvailDay(this)">Sun</button>
                 </div>
-                <div class="form-hint">Click days to toggle Active vs Offline.</div>
+                <div class="form-hint">Click days to toggle Active (Gold) vs Offline.</div>
               </div>
 
               <div class="form-group mb-0">
@@ -1352,6 +1353,11 @@
     let socialLinksList = [];
     let reviewsList = [];
     let postsList = [];
+
+    function toggleAvailDay(btn) {
+      btn.classList.toggle('active');
+      if (typeof updatePreview === 'function') updatePreview();
+    }
 
     document.addEventListener('DOMContentLoaded', async () => {
       const params = new URLSearchParams(window.location.search);
