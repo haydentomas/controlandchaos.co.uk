@@ -1135,6 +1135,11 @@
                 <p class="font-xs text-muted mb-16">
                   Publish updates, photo sets, voice notes, tasks, and teasers. Choose whether each post is <strong>Locked (Subscribers Only)</strong> or <strong>Public Preview</strong>.
                 </p>
+                <div id="feed-posts-repeater-container">
+                  <!-- Dynamically populated posts -->
+                </div>
+              </div>
+
               <!-- VIP Custom Vanity Domain Manager -->
               <div class="editor-card" style="border-color: rgba(212,175,55,0.45); background: linear-gradient(180deg, #14111d 0%, #0d0b13 100%);">
                 <div class="editor-card-header">
@@ -1170,11 +1175,11 @@
             </div>
           </div>
 
-          <!-- Save / Publish Action Bar -->
+          <!-- Save / Publish Action Bar (Always visible across all tabs!) -->
           <div class="editor-card"
-            style="background: linear-gradient(180deg, #181824 0%, #101018 100%); border-color: var(--gold-bright);">
+            style="background: linear-gradient(180deg, #181824 0%, #101018 100%); border: 1px solid var(--gold-bright); margin-top: 24px; position: sticky; bottom: 16px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
             <div class="flex-between align-center flex-wrap gap-12">
-              <button onclick="saveProfile()" id="save-btn" class="btn btn-gold btn-lg w-100 flex-center">
+              <button onclick="saveProfile()" id="save-btn" class="btn btn-gold btn-lg w-100 flex-center" style="font-weight: 800; font-size: 1.05rem; padding: 14px 20px; box-shadow: 0 4px 20px rgba(212,175,55,0.35);">
                 <span>💾</span> Save &amp; Publish Profile
               </button>
             </div>
