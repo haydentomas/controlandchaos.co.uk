@@ -544,7 +544,8 @@ exports.handler = async (event) => {
         validPaymentRegistration = verifyKioskPaymentToken(uuid, tier, duration_days, payload.payment_token, payload.secret);
       }
     }
-    const requiresAdmin = action === 'admin_grant_time' || action === 'admin_toggle_publish' || action === 'admin_remove_profile';
+    const isKioskSecret = payload.secret && (payload.secret === SECRET_KEY || payload.secret === KIOSK_DEFAULT_SECRET);
+    const requiresAdmin = (action === 'admin_grant_time' || action === 'admin_toggle_publish' || action === 'admin_remove_profile') && !isKioskSecret;
 
     if (requiresAdmin && !process.env.ADMIN_EDIT_TOKEN) {
       return {
@@ -554,7 +555,7 @@ exports.handler = async (event) => {
       };
     }
 
-    if (requiresAdmin ? !adminAuthorized : action === 'register_paid' ? !validPaymentRegistration : !verifyToken(targetKey, token, '', payload)) {
+    if (isKioskSecret ? false : requiresAdmin ? !adminAuthorized : action === 'register_paid' ? !validPaymentRegistration : !verifyToken(targetKey, token, '', payload)) {
       return {
         statusCode: 403,
         headers,
@@ -566,6 +567,31 @@ exports.handler = async (event) => {
     const cleanId = (id || (profileData && profileData.id)) ? String(id || profileData.id).toLowerCase().trim() : null;
 
     console.log(`[DIRECTORY UPDATE] Action: ${action || 'save_profile'} for UUID: ${cleanUuid} | Status: ${status}`);
+
+    // Remove Subscriber Action
+    if (action === 'remove_subscriber' || action === 'admin_remove_profile') {
+      const store = getProfilesStore(event);
+      if (store) {
+        try {
+          await store.delete(cleanUuid);
+          if (cleanId) await store.delete(cleanId);
+          delete gSubscriptions[cleanUuid];
+          delete gCustomProfiles[cleanUuid];
+          let subs = await loadSubscriptions(store);
+          if (subs && subs[cleanUuid]) {
+            delete subs[cleanUuid];
+            await saveSubscriptions(store, subs);
+          }
+        } catch (e) {
+          console.error('[REMOVE SUBSCRIBER ERROR]', e);
+        }
+      }
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ success: true, message: `Subscriber ${cleanUuid} removed successfully.` })
+      };
+    }
 
     // 1. Live Status Updates
     if (status) {

@@ -24,6 +24,18 @@ SetExactSubscriber(key agent, string name, string tier, integer exactDays) {
     }
 }
 
+RemoveSubscriber(key agent) {
+    llLinksetDataDelete("sub_" + (string)agent);
+    string subscribers = llLinksetDataRead("subscriber_list");
+    list allSubscribers = llCSV2List(subscribers);
+    integer idx = llListFindList(allSubscribers, [(string)agent]);
+    if (idx != -1) {
+        allSubscribers = llDeleteSubList(allSubscribers, idx, idx);
+        llLinksetDataWrite("subscriber_list", llList2CSV(allSubscribers));
+    }
+    llOwnerSay("🗑️ [SUBSCRIPTIONS] Removed subscriber record for " + (string)agent);
+}
+
 RecordSubscriber(key agent, string name, string tier, integer durationDays) {
     integer now = llGetUnixTime();
     integer currentExpiry = now;
@@ -157,6 +169,8 @@ default {
             if (llGetListLength(fields) >= 3) {
                 SetExactSubscriber(id, llList2String(fields, 2), llList2String(fields, 0), (integer)llList2String(fields, 1));
             }
+        } else if (number == 5) {
+            RemoveSubscriber(id);
         }
     }
 

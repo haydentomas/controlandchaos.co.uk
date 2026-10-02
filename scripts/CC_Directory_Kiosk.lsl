@@ -162,6 +162,22 @@ key SendSubscriptionRegistration(key agent, string tierName, integer amount, int
     return SendSubscriptionRegistrationHTTP(agent, tierName, amount, durationDays);
 }
 
+key SendRemoveSubscriberHTTP(key agent) {
+    string token = GenerateToken(agent);
+    string payload = "{" +
+        "\"action\":\"remove_subscriber\"," +
+        "\"uuid\":\"" + (string)agent + "\"," +
+        "\"token\":\"" + token + "\"," +
+        "\"secret\":\"" + SECRET_KEY + "\"" +
+    "}";
+    
+    llRegionSayTo(llGetOwner(), 0, "🗑️ Purging subscriber " + (string)agent + " from controlandchaos.co.uk cloud database...");
+    return llHTTPRequest(UPDATE_API_URL, [
+        HTTP_METHOD, "POST",
+        HTTP_MIMETYPE, "application/json"
+    ], payload);
+}
+
 DeliverSubscriberPackage(key buyer) {
     integer invCount = llGetInventoryNumber(INVENTORY_OBJECT);
     integer i;
@@ -308,9 +324,9 @@ ShowAdminPanel(key agent) {
                     "Manage active listings, grant complimentary time, trigger reminder audits, or configure pricing:";
                     
     list buttons = [
-        "📋 List Subs",    "⏳ Set Days",    "🎁 Grant +30d",
-        "👑 Grant VIP",    "🔔 Run Audit",    "⚙️ Config Tiers",
-        "🌐 Web Admin",    "⬅️ Main Menu",   "❌ Close"
+        "📋 List Subs",    "⏳ Set Days",    "🗑️ Remove Sub",
+        "🎁 Grant +30d",    "👑 Grant VIP",    "🔔 Run Audit",
+        "⚙️ Config Tiers",  "🌐 Web Admin",    "❌ Close"
     ];
     
     llDialog(agent, prompt, buttons, channel);
@@ -484,6 +500,21 @@ default {
                 
                 llOwnerSay("⏳ Set exact subscription for " + targetName + " (" + (string)targetKey + ") to " + (string)days + " days.");
             }
+            else if (gOwnerConfiguring == 10) { // Remove Subscriber
+                key targetKey = (key)cleanVal;
+                string targetName = llKey2Name(targetKey);
+                if (targetName == "" || targetName == "???") targetName = llGetDisplayName(targetKey);
+                if (targetName == "") targetName = cleanVal;
+                
+                // 1. Remove from local LinksetData
+                llMessageLinked(LINK_SET, 5, "", targetKey);
+                
+                // 2. Remove from Netlify cloud database
+                key deleteRequest = SendRemoveSubscriberHTTP(targetKey);
+                gPendingRegistrationRequests += [deleteRequest, targetKey];
+                
+                llOwnerSay("🗑️ Purged subscriber " + targetName + " (" + cleanVal + ") from kiosk and cloud.");
+            }
             gOwnerConfiguring = 0;
             InitKiosk();
             ShowAdminPanel(id);
@@ -527,6 +558,12 @@ default {
                 integer h = llListen(chan, "", id, "");
                 gActiveListens += [id, chan, h, llGetUnixTime() + 60, "TEXTBOX_CONFIG"];
                 llTextBox(id, "Enter Avatar UUID and days (e.g. UUID:30) or just paste UUID for 30 days:", chan);
+            }
+            else if (message == "🗑️ Remove Sub") {
+                gOwnerConfiguring = 10;
+                integer h = llListen(chan, "", id, "");
+                gActiveListens += [id, chan, h, llGetUnixTime() + 60, "TEXTBOX_CONFIG"];
+                llTextBox(id, "🗑️ [REMOVE SUBSCRIBER]\nEnter avatar UUID to delete from kiosk and cloud database:", chan);
             }
             else if (message == "🎁 Grant +30d") {
                 gOwnerConfiguring = 7;
