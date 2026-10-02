@@ -2074,6 +2074,7 @@
           if (btnFeed) btnFeed.classList.add('active');
           if (paneRatecard) paneRatecard.style.display = 'none';
           if (paneFeed) paneFeed.style.display = 'block';
+          renderFeed();
         } else {
           if (btnFeed) btnFeed.classList.remove('active');
           if (btnRatecard) btnRatecard.classList.add('active');
@@ -2115,6 +2116,8 @@
       };
 
       function renderFeed() {
+        if (!profileData) return;
+        const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
         const posts = (Array.isArray(profileData.posts) && profileData.posts.length > 0) ? profileData.posts : defaultSamplePosts;
         const feedStream = document.getElementById('feed-posts-stream');
         const feedBadge = document.getElementById('tab-feed-badge');

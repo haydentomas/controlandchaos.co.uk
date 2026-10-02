@@ -114,6 +114,195 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.8);
       object-fit: contain;
     }
+
+    /* Profile Tabs Navigation */
+    .profile-tabs-nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 35px;
+      border-bottom: 1px solid var(--gold-border-subtle);
+      padding-bottom: 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .profile-tabs-nav::-webkit-scrollbar { display: none; }
+    .profile-tab-btn {
+      background: rgba(22, 19, 16, 0.7);
+      border: 1px solid var(--gold-border-subtle);
+      color: var(--text-muted);
+      padding: 12px 24px;
+      border-radius: 9999px;
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+    .profile-tab-btn:hover {
+      border-color: var(--gold-border);
+      color: #fff;
+      background: rgba(36, 30, 24, 0.85);
+      transform: translateY(-1px);
+    }
+    .profile-tab-btn.active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(184, 154, 88, 0.08) 100%);
+      border-color: var(--gold-bright);
+      color: var(--gold-bright);
+      box-shadow: 0 4px 16px rgba(212, 175, 55, 0.18);
+    }
+    .tab-badge {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--gold-bright);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+    .tab-badge-locked {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Exclusive Feed Layout */
+    .feed-container {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .feed-fan-hero {
+      background: linear-gradient(145deg, rgba(28, 23, 17, 0.92) 0%, rgba(16, 13, 10, 0.96) 100%);
+      border: 1px solid var(--gold-border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+    .feed-fan-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .feed-post-card {
+      background: linear-gradient(160deg, rgba(22, 19, 16, 0.95) 0%, rgba(14, 12, 10, 0.98) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 16px;
+      margin-bottom: 30px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+    .feed-post-card:hover {
+      border-color: rgba(212, 175, 55, 0.45);
+    }
+    .feed-post-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .feed-post-body {
+      padding: 20px 22px;
+    }
+    .feed-post-media-wrap {
+      position: relative;
+      background: #080706;
+      max-height: 580px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .feed-post-media-img {
+      width: 100%;
+      height: auto;
+      max-height: 580px;
+      object-fit: cover;
+      display: block;
+    }
+    .feed-locked-overlay {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(24px);
+      background: rgba(10, 8, 7, 0.75);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      text-align: center;
+      z-index: 10;
+    }
+    .feed-locked-padlock {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border: 1px solid var(--gold-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 14px;
+      box-shadow: 0 0 24px rgba(212, 175, 55, 0.3);
+      animation: pulseGold 3s infinite;
+    }
+    @keyframes pulseGold {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+      50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
+    }
+    .feed-post-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 22px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      background: rgba(12, 10, 8, 0.4);
+    }
+    .feed-like-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      transition: color 0.2s ease, transform 0.15s ease;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+    .feed-like-btn:hover {
+      color: #ff6b81;
+      background: rgba(255, 107, 129, 0.08);
+      transform: scale(1.05);
+    }
+    .feed-like-btn.liked {
+      color: #ff4757;
+    }
+    .feed-like-btn.liked span.heart-icon {
+      animation: heartPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
   </style>
 </head>
 <body>
@@ -231,13 +420,20 @@
   <main class="section" style="padding: 60px 0;">
     <div class="container">
       
-      <!-- Top Action Bar & Hardware Support Badges -->
-      <div id="profile-toolbar" style="margin-bottom: 40px;">
-        <!-- Injected dynamically -->
+      <!-- Segmented Profile View Tabs -->
+      <div class="profile-tabs-nav" id="profile-tabs-nav">
+        <button class="profile-tab-btn active" id="tab-btn-ratecard" onclick="switchProfileTab('ratecard')">
+          <span>📋</span> Rate Card &amp; Bio
+        </button>
+        <button class="profile-tab-btn" id="tab-btn-feed" onclick="switchProfileTab('feed')">
+          <span>🔒</span> Exclusive Feed <span class="tab-badge" id="tab-feed-badge">3</span>
+        </button>
       </div>
 
-      <!-- Two-Column Layout: Left (About, Rate Categories, Custom Blocks, Booking Calc) | Right (Gallery, Hardware, Limits, How to Book, Reviews, Socials) -->
-      <div style="display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 40px; align-items: start;" id="profile-main-layout">
+      <!-- Tab Pane 1: Rate Card & Bio Layout -->
+      <div id="tab-pane-ratecard">
+        <!-- Two-Column Layout: Left (About, Rate Categories, Custom Blocks, Booking Calc) | Right (Gallery, Hardware, Limits, How to Book, Reviews, Socials) -->
+        <div style="display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 40px; align-items: start;" id="profile-main-layout">
         
         <!-- Left Column: Bio, Categorized Rate Cards & Custom Sections -->
         <div>
@@ -509,8 +705,102 @@
 
         </div>
 
+      </div>
+      <!-- End Tab Pane 1: Rate Card -->
+
+      <!-- Tab Pane 2: Creator Feed Wall -->
+      <div id="tab-pane-feed" style="display: none;">
+        <div class="feed-container">
+          
+          <!-- Fan Club Hero & Perks Banner -->
+          <div class="feed-fan-hero" id="feed-hero-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+              <div>
+                <div class="font-xs text-gold font-mono" style="letter-spacing: 0.1em; text-transform: uppercase;">👑 CREATOR INNER CIRCLE</div>
+                <h3 style="font-family: var(--font-heading); font-size: 24px; color: #fff; margin: 4px 0 8px;" id="feed-hero-domme-name">Exclusive Feed &amp; Lookbooks</h3>
+                <p style="font-size: 13.5px; color: var(--text-muted); margin: 0; max-width: 500px;" id="feed-hero-desc">
+                  Unlock private photoshoots, uncensored session previews, audio voice notes, and daily obedience tasks.
+                </p>
+              </div>
+              <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                <div style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: var(--gold-bright);" id="feed-hero-price">
+                  L$1,500 <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); font-weight: 400;">/ month</span>
+                </div>
+                <button class="btn btn-gold btn-sm" onclick="openSubscribeModal()" id="feed-hero-sub-btn">
+                  <span>🔒</span> Unlock Inner Circle
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feed Posts Stream Container -->
+          <div id="feed-posts-stream">
+            <!-- Rendered dynamically via JS -->
+          </div>
+
+        </div>
+      </div>
+      <!-- End Tab Pane 2 -->
+
     </div>
   </main>
+
+  <!-- Fan Club Subscribe & Teleport Modal -->
+  <div id="feed-subscribe-modal" class="lightbox-overlay" style="display:none; z-index:9999; backdrop-filter:blur(10px); background:rgba(10,8,7,0.85); align-items:center; justify-content:center; position:fixed; inset:0;">
+    <div style="background:linear-gradient(165deg, #1e1812 0%, #100d0a 100%); border:1px solid var(--gold-border); border-radius:18px; padding:32px 28px; max-width:520px; width:92%; max-height:90vh; overflow-y:auto; box-shadow:0 24px 70px rgba(0,0,0,0.95); position:relative;">
+      <button onclick="closeSubscribeModal()" style="position:absolute; top:16px; right:18px; background:none; border:none; color:var(--text-muted); font-size:26px; cursor:pointer; line-height:1;">&times;</button>
+      
+      <div style="text-align:center; margin-bottom:24px;">
+        <div style="font-size:38px; margin-bottom:6px;">👑</div>
+        <h3 style="font-family:var(--font-heading); font-size:24px; font-weight:900; color:var(--gold-bright); margin:0;" id="sub-modal-domme-title">Join The Inner Circle</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-top:6px;">Get full uncensored access to private photo sets, voice notes &amp; tasks</p>
+      </div>
+
+      <!-- Perks Checklist -->
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(212,175,55,0.2); border-radius:12px; padding:16px 18px; margin-bottom:22px;">
+        <div style="font-size:12px; font-family:var(--font-mono); color:var(--gold-bright); font-weight:700; margin-bottom:8px;">💎 INCLUDED MEMBERSHIP PERKS:</div>
+        <ul style="margin:0; padding-left:20px; font-size:13px; color:#e7e5e4; line-height:1.7;">
+          <li>📸 Full uncensored photoshoots &amp; lookbooks</li>
+          <li>🎙️ Exclusive voice audio notes &amp; session previews</li>
+          <li>📜 Daily obedience tasks &amp; protocol rules</li>
+          <li>❤️ Interactive liking &amp; priority in-world booking</li>
+        </ul>
+      </div>
+
+      <!-- Option 1: In-World SLurl Teleport & Terminal -->
+      <div style="background:rgba(24,20,16,0.9); border:1px solid var(--gold-border); border-radius:12px; padding:16px 18px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <strong style="color:var(--gold-bright); font-size:14px; display:flex; align-items:center; gap:6px;">📍 In-World SL Terminal (Instant Unlock)</strong>
+          <span style="font-size:10px; color:#4ade80; font-family:var(--font-mono); font-weight:700;" id="sub-modal-price-badge">L$1,500 / 30d</span>
+        </div>
+        <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.45;">
+          Teleport to the in-world terminal to pay L$ and unlock this web feed instantly.
+        </p>
+        <a id="sub-modal-slurl-btn" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width:100%; justify-content:center; font-size:12px; padding:9px 14px;">
+          <span>📍</span> Teleport in Second Life ↗
+        </a>
+      </div>
+
+      <!-- Option 2: Direct SL Contact -->
+      <div style="background:rgba(18,15,12,0.8); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:14px 18px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <div style="font-size:13px; color:#fff; font-weight:700;">Direct Inquiry / IM</div>
+          <div style="font-size:11.5px; color:var(--text-muted); font-family:var(--font-mono);" id="sub-modal-username">@username</div>
+        </div>
+        <a id="sub-modal-im-link" href="#" target="_blank" class="btn btn-secondary btn-sm" style="font-size:11px; padding:6px 12px;">
+          <span>💬</span> Message in SL
+        </a>
+      </div>
+
+      <!-- Option 3: Quick Token Unlock / Test -->
+      <div style="text-align:center; padding-top:10px; border-top:1px solid rgba(255,255,255,0.06);">
+        <button type="button" onclick="simulateFanUnlock()" style="background:none; border:none; color:var(--gold-muted); font-size:11px; font-family:var(--font-mono); text-decoration:underline; cursor:pointer;">
+          ✨ Already subscribed in-world? Click here to unlock preview
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <!-- Image Lightbox Modal -->
   <div class="lightbox-modal" id="gallery-lightbox" onclick="closeLightbox(event)">
@@ -629,6 +919,27 @@
       } catch(e) {}
 
       if (!profileData) return;
+
+      const liveResponse = await fetch(`/.netlify/functions/update-profile?v=${Date.now()}`, { cache: 'no-store' }).catch(() => null);
+      const liveData = liveResponse && liveResponse.ok ? await liveResponse.json().catch(() => null) : null;
+      const entitlement = liveData && liveData.subscriptions && (
+        (profileData.avatar_uuid && liveData.subscriptions[profileData.avatar_uuid.toLowerCase()]) ||
+        (profileData.id && liveData.subscriptions[profileData.id.toLowerCase()]) ||
+        (profileData.sl_username && liveData.subscriptions[profileData.sl_username.toLowerCase()])
+      );
+      const profileExpiry = profileData.expires_at ? new Date(profileData.expires_at).getTime() : 0;
+      const subscriptionExpired = entitlement
+        ? entitlement.published === false || (!entitlement.is_vip && (!entitlement.expires_at || new Date(entitlement.expires_at).getTime() <= Date.now()))
+        : profileData.published === false || (!!profileData.avatar_uuid && !entitlement) || (profileExpiry > 0 && profileExpiry <= Date.now());
+      if (subscriptionExpired) {
+        const banner = document.getElementById('profile-renewal-banner');
+        const link = document.getElementById('profile-renewal-link');
+        const main = document.querySelector('main.section');
+        if (main) main.style.display = 'none';
+        if (banner) banner.style.display = 'block';
+        if (link) link.href = `/directory/checkout/?uuid=${encodeURIComponent(profileData.avatar_uuid || profileData.id)}&name=${encodeURIComponent(profileData.name || '')}`;
+        return;
+      }
 
       const canonicalSlug = profileSlugFor(profileData) || profileId;
       if (canonicalSlug !== profileId) {
@@ -1699,11 +2010,243 @@
               formStatus.style.color = 'var(--gold-bright)';
               formStatus.innerHTML = `✨ <strong>Inquiry Recorded!</strong> If you are in-world, you can also send a direct SL IM to <strong>${profileData.sl_username || profileData.name}</strong>.`;
             }
-            if (submitBtn) submitBtn.innerHTML = '<span>✉️</span> Submit Booking Request';
-            if (submitBtn) submitBtn.disabled = false;
+          } finally {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              if (submitBtn.innerHTML.includes('Sending')) submitBtn.innerHTML = '<span>✉️</span> Submit Booking Request';
+            }
           }
         });
       }
+
+      // 14. Creator Fan Club & Exclusive Posts Wall Renderer
+      const defaultSamplePosts = [
+        {
+          id: "post_sample_1",
+          tag: "📸 Exclusive Lookbook",
+          type: "photo",
+          title: "Latex High-Society Gala — Private Set",
+          content: "A few unreleased frames from last night's private ballroom shoot. Full 4K set and session rules unlocked below.",
+          media_url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80",
+          is_locked: true,
+          likes: 28,
+          timestamp: "2 hours ago"
+        },
+        {
+          id: "post_sample_2",
+          tag: "🎙️ Audio Note",
+          type: "audio",
+          title: "Evening Calibration & Posture Check",
+          content: "Listen to tonight's voice instruction. All owned subs are expected to maintain formal posture during your evening duties.",
+          media_url: "",
+          is_locked: true,
+          likes: 19,
+          timestamp: "Yesterday"
+        },
+        {
+          id: "post_sample_3",
+          tag: "📜 Daily Protocol",
+          type: "task",
+          title: "Daily Tithe & Kneeling Discipline",
+          content: "1. 20 minutes upright kneeling upon waking.\n2. Inspection of collar lock.\n3. Complete submission of morning reflection.",
+          media_url: "",
+          is_locked: false,
+          likes: 34,
+          timestamp: "3 days ago"
+        }
+      ];
+
+      function isFanUnlocked() {
+        const uId = (profileData.avatar_uuid || profileData.id || '').toLowerCase();
+        return localStorage.getItem('cc_fan_unlocked_' + uId) === '1';
+      }
+
+      window.switchProfileTab = function(tabName) {
+        const btnRatecard = document.getElementById('tab-btn-ratecard');
+        const btnFeed = document.getElementById('tab-btn-feed');
+        const paneRatecard = document.getElementById('tab-pane-ratecard');
+        const paneFeed = document.getElementById('tab-pane-feed');
+
+        if (tabName === 'feed') {
+          if (btnRatecard) btnRatecard.classList.remove('active');
+          if (btnFeed) btnFeed.classList.add('active');
+          if (paneRatecard) paneRatecard.style.display = 'none';
+          if (paneFeed) paneFeed.style.display = 'block';
+          renderFeed();
+        } else {
+          if (btnFeed) btnFeed.classList.remove('active');
+          if (btnRatecard) btnRatecard.classList.add('active');
+          if (paneFeed) paneFeed.style.display = 'none';
+          if (paneRatecard) paneRatecard.style.display = 'block';
+        }
+      };
+
+      window.openSubscribeModal = function() {
+        const modal = document.getElementById('feed-subscribe-modal');
+        if (modal) {
+          modal.style.display = 'flex';
+          const title = document.getElementById('sub-modal-domme-title');
+          const user = document.getElementById('sub-modal-username');
+          const price = document.getElementById('sub-modal-price-badge');
+          const slurlBtn = document.getElementById('sub-modal-slurl-btn');
+          const imLink = document.getElementById('sub-modal-im-link');
+
+          if (title) title.textContent = `Unlock ${profileData.name}'s Inner Circle`;
+          if (user) user.textContent = `@${profileData.sl_username || profileData.id}`;
+          if (price) price.textContent = `${profileData.fan_tier_price || 'L$1,500'} / 30d`;
+          if (slurlBtn) slurlBtn.href = profileData.slurl || 'http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000';
+          if (imLink) imLink.href = `secondlife:///app/agent/${profileData.avatar_uuid}/im`;
+        }
+      };
+
+      window.closeSubscribeModal = function() {
+        const modal = document.getElementById('feed-subscribe-modal');
+        if (modal) modal.style.display = 'none';
+      };
+
+      window.simulateFanUnlock = function() {
+        const uId = (profileData.avatar_uuid || profileData.id || '').toLowerCase();
+        const cur = localStorage.getItem('cc_fan_unlocked_' + uId) === '1';
+        localStorage.setItem('cc_fan_unlocked_' + uId, cur ? '0' : '1');
+        closeSubscribeModal();
+        renderFeed();
+        alert(cur ? '🔒 Switched to Unsubscribed Preview (Locked View)' : '👑 Unlocked Inner Circle Preview (All media visible)!');
+      };
+
+      function renderFeed() {
+        if (!profileData) return;
+        const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
+        const posts = (Array.isArray(profileData.posts) && profileData.posts.length > 0) ? profileData.posts : defaultSamplePosts;
+        const feedStream = document.getElementById('feed-posts-stream');
+        const feedBadge = document.getElementById('tab-feed-badge');
+        const heroDomme = document.getElementById('feed-hero-domme-name');
+        const heroPrice = document.getElementById('feed-hero-price');
+        const heroSubBtn = document.getElementById('feed-hero-sub-btn');
+
+        if (feedBadge) feedBadge.textContent = posts.length;
+        if (heroDomme) heroDomme.textContent = `${profileData.name}'s Inner Circle`;
+        if (heroPrice) heroPrice.innerHTML = `${profileData.fan_tier_price || 'L$1,500'} <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); font-weight: 400;">/ month</span>`;
+
+        const unlocked = isFanUnlocked();
+        if (heroSubBtn) {
+          if (unlocked) {
+            heroSubBtn.className = 'btn btn-secondary btn-sm';
+            heroSubBtn.innerHTML = '<span>🟢</span> Active Member Pass';
+            heroSubBtn.onclick = () => alert('You have active VIP member access to this creator.');
+          } else {
+            heroSubBtn.className = 'btn btn-gold btn-sm';
+            heroSubBtn.innerHTML = '<span>🔒</span> Unlock Inner Circle';
+            heroSubBtn.onclick = openSubscribeModal;
+          }
+        }
+
+        if (!feedStream) return;
+        feedStream.innerHTML = '';
+
+        posts.forEach((post, pIdx) => {
+          const card = document.createElement('div');
+          card.className = 'feed-post-card';
+          
+          const isLocked = post.is_locked && !unlocked;
+          const likedKey = `cc_liked_${profileData.id}_${post.id || pIdx}`;
+          const isLiked = localStorage.getItem(likedKey) === '1';
+          const likesCount = (post.likes || 0) + (isLiked ? 1 : 0);
+
+          let mediaHtml = '';
+          if (post.media_url) {
+            if (isLocked) {
+              mediaHtml = `
+                <div class="feed-post-media-wrap">
+                  <img src="${post.media_url}" alt="Locked Media" class="feed-post-media-img" style="filter: blur(28px) brightness(0.5); transform: scale(1.15);">
+                  <div class="feed-locked-overlay">
+                    <div class="feed-locked-padlock">🔒</div>
+                    <div style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: var(--gold-bright); margin-bottom: 6px;">
+                      Subscriber-Only Media Set
+                    </div>
+                    <p style="font-size: 12.5px; color: #d6d3d1; max-width: 380px; margin: 0 0 16px; line-height: 1.5;">
+                      Join ${profileData.name}'s Inner Circle to unlock this uncensored lookbook and full creator archive.
+                    </p>
+                    <button class="btn btn-gold btn-sm" onclick="openSubscribeModal()">
+                      <span>💎</span> Unlock for ${profileData.fan_tier_price || 'L$1,500'}
+                    </button>
+                  </div>
+                </div>
+              `;
+            } else {
+              mediaHtml = `
+                <div class="feed-post-media-wrap" style="cursor: pointer;" onclick="openLightbox('${post.media_url}', '${encodeURIComponent(post.title || '')}', '${post.tag || 'Lookbook'}')">
+                  <img src="${post.media_url}" alt="${post.title || 'Feed Image'}" class="feed-post-media-img">
+                </div>
+              `;
+            }
+          }
+
+          card.innerHTML = `
+            <div class="feed-post-header">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="avatar-icon-circle" style="width: 38px; height: 38px; font-size: 16px;">
+                  ${isDomme ? '👑' : '🩷'}
+                </div>
+                <div>
+                  <div style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 800; color: #fff;">
+                    ${profileData.name}
+                  </div>
+                  <div style="font-family: var(--font-mono); font-size: 11px; color: var(--gold-muted);">
+                    @${profileData.sl_username || profileData.id} • ${post.timestamp || 'Recent'}
+                  </div>
+                </div>
+              </div>
+              <span class="tag-pill-badge" style="font-size: 10.5px; border-color: rgba(212,175,55,0.3); color: var(--gold-bright);">
+                ${post.tag || '✨ Post'}
+              </span>
+            </div>
+
+            <div class="feed-post-body">
+              ${post.title ? `<h4 style="font-family: var(--font-heading); font-size: 17px; color: var(--gold-bright); margin: 0 0 8px;">${post.title}</h4>` : ''}
+              <div style="font-size: 14px; color: var(--text-primary); line-height: 1.65; white-space: pre-line;">
+                ${post.content || ''}
+              </div>
+            </div>
+
+            ${mediaHtml}
+
+            <div class="feed-post-footer">
+              <button class="feed-like-btn ${isLiked ? 'liked' : ''}" onclick="togglePostLike('${profileData.id}', '${post.id || pIdx}', this)">
+                <span class="heart-icon">${isLiked ? '❤️' : '🤍'}</span>
+                <span class="likes-num">${likesCount}</span>
+              </button>
+              <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+                ${post.is_locked ? '<span style="color: #f59e0b;">🔒 Member Exclusive</span>' : '<span style="color: #4ade80;">🌐 Public Post</span>'}
+              </div>
+            </div>
+          `;
+
+          feedStream.appendChild(card);
+        });
+      }
+
+      window.togglePostLike = function(pId, postId, btn) {
+        const key = `cc_liked_${pId}_${postId}`;
+        const isLiked = localStorage.getItem(key) === '1';
+        const numEl = btn.querySelector('.likes-num');
+        const heartEl = btn.querySelector('.heart-icon');
+        let count = parseInt(numEl.textContent, 10) || 0;
+
+        if (isLiked) {
+          localStorage.removeItem(key);
+          btn.classList.remove('liked');
+          heartEl.textContent = '🤍';
+          numEl.textContent = Math.max(0, count - 1);
+        } else {
+          localStorage.setItem(key, '1');
+          btn.classList.add('liked');
+          heartEl.textContent = '❤️';
+          numEl.textContent = count + 1;
+        }
+      };
+
+      // Initialize Feed
+      renderFeed();
 
     });
   </script>
