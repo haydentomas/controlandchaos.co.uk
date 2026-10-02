@@ -167,7 +167,7 @@ exports.handler = async (event, context) => {
 
     console.log(`🚀 Sending email via Resend to: ${escortEmail} from: ${fromEmail}`);
 
-    const resendResponse = await fetch('https://api.resend.com/emails', {
+    let resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${resendApiKey}`,
@@ -176,7 +176,31 @@ exports.handler = async (event, context) => {
       body: JSON.stringify(emailPayload)
     });
 
-    const resendData = await resendResponse.json();
+    let resendData = await resendResponse.json();
+
+    // Sandbox mode handling: If unverified domain cannot send to external recipient,
+    // fallback to admin registered email so test submissions don't fail during testing
+    if (!resendResponse.ok && resendData && resendData.message && resendData.message.includes('only send testing emails to your own email address')) {
+      console.warn('⚠️ Resend is currently in Sandbox mode. Fallback sending test notification to admin email...');
+      // Extract the allowed testing email from Resend error message if present (e.g. hello@pixaful.com)
+      const allowedMatch = resendData.message.match(/\(([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\)/);
+      const fallbackRecipient = (allowedMatch && allowedMatch[1]) || adminEmail;
+
+      if (fallbackRecipient) {
+        emailPayload.to = [fallbackRecipient];
+        emailPayload.subject = `[SANDBOX TEST for ${escortName}] ` + emailPayload.subject;
+        
+        resendResponse = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(emailPayload)
+        });
+        resendData = await resendResponse.json();
+      }
+    }
 
     if (!resendResponse.ok) {
       console.error('❌ Resend API Error:', resendData);
