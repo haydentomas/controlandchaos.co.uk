@@ -571,15 +571,55 @@ exports.handler = async (event) => {
     // Remove Subscriber Action
     if (action === 'remove_subscriber' || action === 'admin_remove_profile') {
       const store = getProfilesStore(event);
+      const keysToDelete = new Set([cleanUuid]);
+      if (cleanId) keysToDelete.add(cleanId);
+      if (uuid) keysToDelete.add(String(uuid).toLowerCase().trim());
+      if (id) keysToDelete.add(String(id).toLowerCase().trim());
+
+      // Remove from memory
+      keysToDelete.forEach(k => {
+        delete gSubscriptions[k];
+        delete gCustomProfiles[k];
+        delete gLiveStatuses[k];
+        delete gTributeGoals[k];
+      });
+
       if (store) {
         try {
-          await store.delete(cleanUuid);
-          if (cleanId) await store.delete(cleanId);
-          delete gSubscriptions[cleanUuid];
-          delete gCustomProfiles[cleanUuid];
+          for (const k of Array.from(keysToDelete)) {
+            try { await store.delete(k); } catch(e) {}
+            try { await store.delete('sub_' + k); } catch(e) {}
+          }
+
+          // Purge from all_profiles index
+          let storedProfiles = null;
+          try {
+            storedProfiles = await store.get('all_profiles', { type: 'json' });
+            if (!storedProfiles) {
+              const raw = await store.get('all_profiles');
+              if (raw && typeof raw === 'string') storedProfiles = JSON.parse(raw);
+            }
+          } catch(e) {}
+
+          if (storedProfiles && typeof storedProfiles === 'object') {
+            Object.keys(storedProfiles).forEach(k => {
+              const p = storedProfiles[k];
+              const pUuid = p && p.avatar_uuid ? String(p.avatar_uuid).toLowerCase().trim() : '';
+              const pId = p && p.id ? String(p.id).toLowerCase().trim() : '';
+              const pUser = p && p.sl_username ? String(p.sl_username).toLowerCase().trim() : '';
+              if (keysToDelete.has(k) || keysToDelete.has(pUuid) || keysToDelete.has(pId) || keysToDelete.has(pUser)) {
+                delete storedProfiles[k];
+              }
+            });
+            await store.setJSON('all_profiles', storedProfiles);
+          }
+
+          // Purge from all_subscriptions index
           let subs = await loadSubscriptions(store);
-          if (subs && subs[cleanUuid]) {
-            delete subs[cleanUuid];
+          if (subs && typeof subs === 'object') {
+            Object.keys(subs).forEach(k => {
+              if (keysToDelete.has(k)) delete subs[k];
+            });
             await saveSubscriptions(store, subs);
           }
         } catch (e) {
@@ -589,7 +629,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ success: true, message: `Subscriber ${cleanUuid} removed successfully.` })
+        body: JSON.stringify({ success: true, message: `Subscriber ${cleanUuid} purged successfully.` })
       };
     }
 
