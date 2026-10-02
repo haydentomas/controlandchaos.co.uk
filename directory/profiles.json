@@ -240,7 +240,8 @@
       "3. Once accepted, tribute the session retainer via Mistress Alexis's Tribute Jar at Control & Chaos or direct transfer.",
       "4. Enjoy an unforgettable immersion experience."
     ],
-    "starting_rate": "L$2,500 / hr"
+    "starting_rate": "L$2,500 / hr",
+    "slug": "mistress-alexis-vane"
   },
   {
     "hardware_title": "My Toys",
@@ -463,6 +464,7 @@
       "2. State your Second Life timezone and preferred venue.",
       "3. Settle retainer via Tribute Jar at Control & Chaos before session starts."
     ],
-    "starting_rate": "L$3,000 / hr"
+    "starting_rate": "L$3,000 / hr",
+    "slug": "alek-zane"
   }
 ]

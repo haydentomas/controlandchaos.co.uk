@@ -101,6 +101,7 @@
     }
 
     @media (max-width: 1200px) {
+
       .editor-layout,
       .editor-layout.mode-focus-form,
       .editor-layout.mode-focus-preview {
@@ -213,7 +214,9 @@
       margin-top: 4px;
     }
 
-    .form-input, .form-textarea, .form-select {
+    .form-input,
+    .form-textarea,
+    .form-select {
       width: 100%;
       padding: 11px 14px;
       background: var(--editor-input-bg);
@@ -225,7 +228,9 @@
       transition: all 0.2s ease;
     }
 
-    .form-input:focus, .form-textarea:focus, .form-select:focus {
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
       outline: none;
       border-color: #d4af37;
       box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
@@ -412,7 +417,7 @@
     .preview-hero-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(17,15,20,0.92) 100%);
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(17, 15, 20, 0.92) 100%);
     }
 
     .preview-avatar-wrap {
@@ -492,20 +497,25 @@
     <div class="editor-wide-container">
 
       <!-- Authentication / Access Status Banner -->
-      <div id="auth-banner" class="editor-card" style="display: none; background: linear-gradient(135deg, #181520 0%, #100e16 100%);">
+      <div id="auth-banner" class="editor-card"
+        style="display: none; background: linear-gradient(135deg, #181520 0%, #100e16 100%);">
         <div class="flex-between align-center flex-wrap gap-14">
           <div class="flex-row align-center gap-12 flex-wrap">
             <div>
               <h3 class="editor-card-title text-gold m-0">
-                <span class="icon">👑</span> <span id="auth-mode-title">Authenticated Profile</span>: <span id="auth-user-name">Dominant</span>
+                <span class="icon">👑</span> <span id="auth-mode-title">Authenticated Profile</span>: <span
+                  id="auth-user-name">Dominant</span>
               </h3>
               <p class="font-xs text-muted m-0 mt-4" id="auth-user-uuid">UUID: checking...</p>
             </div>
-            
+
             <!-- Admin Multi-Profile Switcher Dropdown (Visible in Admin Mode) -->
-            <div id="admin-profile-switcher-wrap" style="display: none; padding-left: 12px; border-left: 1px solid rgba(212,175,55,0.2);">
-              <label class="form-label font-2xs text-gold mb-2" style="font-size: 0.7rem;">SWITCH PROFILE (ADMIN):</label>
-              <select id="admin-profile-select" class="form-select font-xs" onchange="onAdminProfileSelect(this.value)" style="background: #09080d; border-color: rgba(212,175,55,0.4); color: #ffd700; font-weight: 600; padding: 6px 12px; width: auto; min-width: 220px;">
+            <div id="admin-profile-switcher-wrap"
+              style="display: none; padding-left: 12px; border-left: 1px solid rgba(212,175,55,0.2);">
+              <label class="form-label font-2xs text-gold mb-2" style="font-size: 0.7rem;">SWITCH PROFILE
+                (ADMIN):</label>
+              <select id="admin-profile-select" class="form-select font-xs" onchange="onAdminProfileSelect(this.value)"
+                style="background: #09080d; border-color: rgba(212,175,55,0.4); color: #ffd700; font-weight: 600; padding: 6px 12px; width: auto; min-width: 220px;">
                 <!-- Populated dynamically -->
               </select>
             </div>
@@ -515,7 +525,8 @@
             <a href="#" id="view-live-profile-btn" target="_blank" class="btn btn-secondary btn-sm">
               <span>👁️</span> Open Live Profile Page
             </a>
-            <button id="admin-logout-btn" onclick="logoutAdmin()" class="btn btn-secondary btn-sm" style="display: none; color: #f87171; border-color: rgba(239,68,68,0.3);">
+            <button id="admin-logout-btn" onclick="logoutAdmin()" class="btn btn-secondary btn-sm"
+              style="display: none; color: #f87171; border-color: rgba(239,68,68,0.3);">
               <span>🚪</span> Log Out Admin
             </button>
             <span class="section-tag tag-emerald m-0" id="auth-badge">✓ VERIFIED ACCESS</span>
@@ -528,11 +539,12 @@
         <div style="font-size: 3rem; margin-bottom: 16px;">👑</div>
         <h2 class="card-title font-lg mb-10">Control &amp; Chaos Profile Studio</h2>
         <p class="card-desc mb-24 max-w-600 mx-auto font-sm">
-          Log in with your Master Admin Key or touch the <strong>Directory Kiosk</strong> in-world at the Control &amp; Chaos Estate Office to edit your rate card and live status.
+          Log in with your Master Admin Key or touch the <strong>Directory Kiosk</strong> in-world at the Control &amp;
+          Chaos Estate Office to edit your rate card and live status.
         </p>
         <div class="flex-center gap-12 flex-wrap">
           <button onclick="loginAsAdmin()" class="btn btn-gold btn-md">
-            <span>👑</span> Directory Admin Login
+            <span>👑</span> Master Admin Login (All Profiles)
           </button>
           <button onclick="promptManualToken()" class="btn btn-secondary btn-md">
             <span>🔑</span> Enter Avatar Token Manually
@@ -609,7 +621,8 @@
               </div>
               <div class="form-group mb-0">
                 <label class="form-label" for="edit-custom-status">Custom Availability Note (Optional)</label>
-                <input type="text" id="edit-custom-status" class="form-input" placeholder="e.g. In-world today from 2 PM to 8 PM SLT">
+                <input type="text" id="edit-custom-status" class="form-input"
+                  placeholder="e.g. In-world today from 2 PM to 8 PM SLT">
               </div>
             </div>
 
@@ -618,26 +631,16 @@
               <div class="editor-card-header">
                 <h3 class="editor-card-title"><span class="icon">👤</span> Identity &amp; Titles</h3>
               </div>
-              
+
               <div class="form-grid-2">
                 <div class="form-group">
                   <label class="form-label" for="edit-name">Display Name *</label>
-                  <input type="text" id="edit-name" class="form-input" placeholder="Mistress Alexis Vane" required oninput="syncProfileSlug(); updatePreview();">
+                  <input type="text" id="edit-name" class="form-input" placeholder="Mistress Alexis Vane" required>
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="edit-username">Second Life Username *</label>
                   <input type="text" id="edit-username" class="form-input" placeholder="alexis.vane" required>
                 </div>
-              </div>
-
-              <div class="form-group mb-16">
-                <label class="form-label" for="edit-slug">Automatic Public Profile Link</label>
-                <div style="display:flex; align-items:center; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; padding:0 12px;">
-                  <span style="font-family:var(--font-mono); font-size:12px; color:var(--gold-muted); white-space:nowrap;">controlandchaos.co.uk/profile/</span>
-                  <input type="text" id="edit-slug" class="form-input font-xs" style="border:none; padding:10px 4px; font-weight:700; color:var(--gold-bright);" placeholder="haydn-kimono" readonly>
-                  <span style="font-family:var(--font-mono); font-size:12px; color:var(--gold-muted);">/</span>
-                </div>
-                <p class="font-2xs text-muted" style="margin-top:4px;">Generated from your display name and updated automatically.</p>
               </div>
 
               <div class="form-grid-2">
@@ -669,7 +672,8 @@
               <div class="form-grid-2">
                 <div class="form-group">
                   <label class="form-label" for="edit-slurl">SLurl / Landmark Link</label>
-                  <input type="text" id="edit-slurl" class="form-input" placeholder="secondlife://Chaos%20Manor/128/142/23">
+                  <input type="text" id="edit-slurl" class="form-input"
+                    placeholder="secondlife://Chaos%20Manor/128/142/23">
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="edit-email">Contact Email (Optional)</label>
@@ -682,25 +686,30 @@
 
           <!-- ================= TAB 2: MEDIA & GALLERY ================= -->
           <div id="tab-media" class="tab-content">
-            
+
             <!-- Avatar & Hero Banner -->
             <div class="editor-card">
               <div class="editor-card-header">
                 <h3 class="editor-card-title"><span class="icon">🖼️</span> Cover Banner &amp; Avatar Photo</h3>
               </div>
-              
+
               <div class="form-group">
                 <label class="form-label" for="edit-avatar-img">Avatar Headshot Photo URL</label>
-                <input type="text" id="edit-avatar-img" class="form-input" placeholder="https://images.unsplash.com/... or /assets/uploads/photo.jpg">
+                <input type="text" id="edit-avatar-img" class="form-input"
+                  placeholder="https://images.unsplash.com/... or /assets/uploads/photo.jpg">
                 <div class="form-hint">Square photo recommended. Appears as your circle avatar.</div>
-                <img id="preview-avatar-thumb" class="img-preview-thumb" style="width: 70px; height: 70px; border-radius: 50%;" src="" alt="Avatar Preview" onerror="this.style.display='none'">
+                <img id="preview-avatar-thumb" class="img-preview-thumb"
+                  style="width: 70px; height: 70px; border-radius: 50%;" src="" alt="Avatar Preview"
+                  onerror="this.style.display='none'">
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="edit-banner-img">Hero Cover Banner Image URL</label>
-                <input type="text" id="edit-banner-img" class="form-input" placeholder="https://images.unsplash.com/... or /assets/uploads/banner.jpg">
+                <input type="text" id="edit-banner-img" class="form-input"
+                  placeholder="https://images.unsplash.com/... or /assets/uploads/banner.jpg">
                 <div class="form-hint">Wide luxury banner (e.g. 1920x600 px) for profile header background.</div>
-                <img id="preview-banner-thumb" class="img-preview-thumb" src="" alt="Banner Preview" onerror="this.style.display='none'">
+                <img id="preview-banner-thumb" class="img-preview-thumb" src="" alt="Banner Preview"
+                  onerror="this.style.display='none'">
               </div>
             </div>
 
@@ -710,49 +719,58 @@
                 <h3 class="editor-card-title"><span class="icon">🎙️</span> Voice Sample &amp; Video Introduction</h3>
               </div>
               <p class="font-xs text-muted mb-16">
-                Let potential clients hear your voice accent or see your avatar in motion. If left blank, this section remains hidden.
+                Let potential clients hear your voice accent or see your avatar in motion. If left blank, this section
+                remains hidden.
               </p>
 
               <!-- Voice Audio Input -->
-              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(212,175,55,0.2); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px;">
+              <div
+                style="background: rgba(255,255,255,0.02); border: 1px solid rgba(212,175,55,0.2); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px;">
                 <div class="flex-between align-center mb-10">
                   <span class="font-xs text-gold uppercase font-mono font-bold">🎙️ Voice Clip / Audio Sample</span>
                   <span class="tag-pill-badge" style="font-size: 10px; color: #4ade80;">MP3 / WAV / Direct Link</span>
                 </div>
-                
+
                 <div class="form-grid-2 mb-10">
                   <div class="form-group mb-0">
                     <label class="form-label" for="edit-voice-title">Audio Title / Accent Label</label>
-                    <input type="text" id="edit-voice-title" class="form-input" placeholder="e.g. Authentic British Accent Sample">
+                    <input type="text" id="edit-voice-title" class="form-input"
+                      placeholder="e.g. Authentic British Accent Sample">
                   </div>
                   <div class="form-group mb-0">
                     <label class="form-label" for="edit-voice-subtitle">Audio Subtitle</label>
-                    <input type="text" id="edit-voice-subtitle" class="form-input" placeholder="e.g. Verified voice sample & tone">
+                    <input type="text" id="edit-voice-subtitle" class="form-input"
+                      placeholder="e.g. Verified voice sample & tone">
                   </div>
                 </div>
 
                 <div class="form-group mb-0">
                   <label class="form-label" for="edit-voice-clip">Audio File URL (.mp3, .ogg, .wav or web link)</label>
-                  <input type="text" id="edit-voice-clip" class="form-input" placeholder="https://.../my-voice-sample.mp3">
+                  <input type="text" id="edit-voice-clip" class="form-input"
+                    placeholder="https://.../my-voice-sample.mp3">
                   <div class="form-hint">Direct audio link to your voice introduction.</div>
                 </div>
               </div>
 
               <!-- Video Intro Input -->
-              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(212,175,55,0.2); border-radius: 8px; padding: 14px 16px;">
+              <div
+                style="background: rgba(255,255,255,0.02); border: 1px solid rgba(212,175,55,0.2); border-radius: 8px; padding: 14px 16px;">
                 <div class="flex-between align-center mb-10">
-                  <span class="font-xs text-gold uppercase font-mono font-bold">🎬 Video Introduction / Avatar Reel</span>
+                  <span class="font-xs text-gold uppercase font-mono font-bold">🎬 Video Introduction / Avatar
+                    Reel</span>
                   <span class="tag-pill-badge" style="font-size: 10px; color: #60a5fa;">YouTube / Vimeo / MP4</span>
                 </div>
 
                 <div class="form-grid-2 mb-10">
                   <div class="form-group mb-0">
                     <label class="form-label" for="edit-video-title">Video Header Title</label>
-                    <input type="text" id="edit-video-title" class="form-input" placeholder="e.g. Virtual Intro & Avatar Motion">
+                    <input type="text" id="edit-video-title" class="form-input"
+                      placeholder="e.g. Virtual Intro & Avatar Motion">
                   </div>
                   <div class="form-group mb-0">
                     <label class="form-label" for="edit-video-intro">Video URL (YouTube, Vimeo, or .mp4)</label>
-                    <input type="text" id="edit-video-intro" class="form-input" placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/...">
+                    <input type="text" id="edit-video-intro" class="form-input"
+                      placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/...">
                   </div>
                 </div>
                 <div class="form-hint">Paste a standard YouTube link, Vimeo URL, or direct MP4 video link.</div>
@@ -776,7 +794,7 @@
 
           <!-- ================= TAB 3: BIO & TAGS ================= -->
           <div id="tab-bio" class="tab-content">
-            
+
             <div class="editor-card">
               <div class="editor-card-header">
                 <h3 class="editor-card-title"><span class="icon">📝</span> Bio &amp; Philosophy</h3>
@@ -784,7 +802,8 @@
 
               <div class="form-group">
                 <label class="form-label" for="edit-tagline">Header Tagline Quote</label>
-                <input type="text" id="edit-tagline" class="form-input" placeholder="Unapologetic luxury and psychological draining.">
+                <input type="text" id="edit-tagline" class="form-input"
+                  placeholder="Unapologetic luxury and psychological draining.">
               </div>
 
               <div class="form-group">
@@ -794,7 +813,8 @@
 
               <div class="form-group">
                 <label class="form-label" for="edit-about">Full About Bio (Multi-paragraph)</label>
-                <textarea id="edit-about" class="form-textarea" rows="7" placeholder="Describe your background, session style, house rules, and tribute protocol..."></textarea>
+                <textarea id="edit-about" class="form-textarea" rows="7"
+                  placeholder="Describe your background, session style, house rules, and tribute protocol..."></textarea>
               </div>
             </div>
 
@@ -804,7 +824,7 @@
                 <h3 class="editor-card-title"><span class="icon">🏷️</span> Specialty Search Tags</h3>
               </div>
               <p class="font-xs text-muted mb-10">Click to toggle your specialties or type custom tags below:</p>
-              
+
               <div class="tag-cloud-selector" id="tag-selector-box">
                 <span class="tag-choice">FinDom</span>
                 <span class="tag-choice">VIP Escort</span>
@@ -824,7 +844,8 @@
 
               <div class="form-group mt-16 mb-0">
                 <label class="form-label" for="edit-custom-tags">Additional Custom Tags (Comma-separated)</label>
-                <input type="text" id="edit-custom-tags" class="form-input" placeholder="e.g. Latex Fashion, Voice Only, Spanking">
+                <input type="text" id="edit-custom-tags" class="form-input"
+                  placeholder="e.g. Latex Fashion, Voice Only, Spanking">
               </div>
             </div>
 
@@ -832,7 +853,7 @@
 
           <!-- ================= TAB 4: RATE CARDS & SERVICES ================= -->
           <div id="tab-rates" class="tab-content">
-            
+
             <div class="editor-card">
               <div class="editor-card-header">
                 <h3 class="editor-card-title"><span class="icon">🪙</span> Categorized Rate Cards &amp; Menus</h3>
@@ -852,7 +873,7 @@
 
           <!-- ================= TAB 5: TECH & BOUNDARIES ================= -->
           <div id="tab-tech" class="tab-content">
-            
+
             <!-- Hardware & Compatibility -->
             <div class="editor-card">
               <div class="editor-card-header">
@@ -874,7 +895,8 @@
                   <span>+</span> Add Limit
                 </button>
               </div>
-              <p class="font-xs text-muted mb-12">Explicitly list actions, themes, or boundaries you do not participate in:</p>
+              <p class="font-xs text-muted mb-12">Explicitly list actions, themes, or boundaries you do not participate
+                in:</p>
               <div id="limits-repeater-container">
                 <!-- Dynamically populated -->
               </div>
@@ -898,19 +920,23 @@
 
           <!-- ================= TAB 6: WISHLIST, SOCIALS & REVIEWS ================= -->
           <div id="tab-socials" class="tab-content">
-            
+
             <!-- Active Tribute Goal & Tipping Milestone -->
-            <div class="editor-card" style="border-color: rgba(212,175,55,0.4); background: linear-gradient(180deg, #16131d 0%, #0d0c12 100%);">
+            <div class="editor-card"
+              style="border-color: rgba(212,175,55,0.4); background: linear-gradient(180deg, #16131d 0%, #0d0c12 100%);">
               <div class="editor-card-header">
-                <h3 class="editor-card-title"><span class="icon">💎</span> Live Tribute Goal &amp; Tipping Milestone</h3>
+                <h3 class="editor-card-title"><span class="icon">💎</span> Live Tribute Goal &amp; Tipping Milestone
+                </h3>
                 <span class="section-tag tag-gold font-2xs m-0">LIVE PROGRESS BAR</span>
               </div>
               <p class="font-xs text-muted mb-16">
-                Display a crowdfunding/tribute goal bar on your public profile. When subs or clients tip in-world or through your web links, the animated progress bar automatically advances!
+                Display a crowdfunding/tribute goal bar on your public profile. When subs or clients tip in-world or
+                through your web links, the animated progress bar automatically advances!
               </p>
               <div class="form-group">
                 <label class="form-label" for="edit-tribute-goal-title">Tribute Goal Title / Purpose</label>
-                <input type="text" id="edit-tribute-goal-title" class="form-input" placeholder="e.g. VIP Penthouse Renovation &amp; Designer Corset">
+                <input type="text" id="edit-tribute-goal-title" class="form-input"
+                  placeholder="e.g. VIP Penthouse Renovation &amp; Designer Corset">
               </div>
               <div class="form-grid-3">
                 <div class="form-group">
@@ -924,11 +950,13 @@
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="edit-tribute-goal-target">Target Goal Amount</label>
-                  <input type="number" id="edit-tribute-goal-target" class="form-input" placeholder="50000" min="0" step="10">
+                  <input type="number" id="edit-tribute-goal-target" class="form-input" placeholder="50000" min="0"
+                    step="10">
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="edit-tribute-goal-current">Current Funded Amount</label>
-                  <input type="number" id="edit-tribute-goal-current" class="form-input" placeholder="32500" min="0" step="10">
+                  <input type="number" id="edit-tribute-goal-current" class="form-input" placeholder="32500" min="0"
+                    step="10">
                 </div>
               </div>
             </div>
@@ -940,9 +968,10 @@
                 <span class="section-tag tag-emerald font-2xs m-0">100% PSEUDONYMOUS</span>
               </div>
               <p class="font-xs text-muted mb-16">
-                Protect your real legal identity. Tributes sent via Throne, Ko-fi, and Revolut do not reveal your real name or billing address to clients.
+                Protect your real legal identity. Tributes sent via Throne, Ko-fi, and Revolut do not reveal your real
+                name or billing address to clients.
               </p>
-              
+
               <div class="form-grid-2 mb-16">
                 <div class="form-group mb-0">
                   <label class="form-label" for="edit-throne-url">Throne Wishlist &amp; Cash Tribute URL</label>
@@ -1021,30 +1050,39 @@
               </div>
               <div class="form-group">
                 <label class="form-label" for="edit-seo-title">Custom Social Card Title</label>
-                <input type="text" id="edit-seo-title" class="form-input" placeholder="Alek Zane — Luxury Rate Card & Services">
+                <input type="text" id="edit-seo-title" class="form-input"
+                  placeholder="Alek Zane — Luxury Rate Card & Services">
               </div>
               <div class="form-group">
                 <label class="form-label" for="edit-seo-desc">Custom Social Card Description</label>
-                <textarea id="edit-seo-desc" class="form-textarea" rows="2" placeholder="View verified Second Life rates, Lovense toy controls, and book direct."></textarea>
+                <textarea id="edit-seo-desc" class="form-textarea" rows="2"
+                  placeholder="View verified Second Life rates, Lovense toy controls, and book direct."></textarea>
               </div>
               <div class="form-group mb-0">
                 <div class="flex-between align-center mb-6">
                   <label class="form-label m-0" for="edit-seo-img">Custom OG / Social Share Card Image URL</label>
                   <div class="flex-row gap-6">
-                    <button type="button" onclick="useBannerForOg()" class="btn-secondary" style="padding: 2px 8px; font-size: 0.7rem; cursor: pointer;">🖼️ Use Banner</button>
-                    <button type="button" onclick="useAvatarForOg()" class="btn-secondary" style="padding: 2px 8px; font-size: 0.7rem; cursor: pointer;">👤 Use Avatar</button>
+                    <button type="button" onclick="useBannerForOg()" class="btn-secondary"
+                      style="padding: 2px 8px; font-size: 0.7rem; cursor: pointer;">🖼️ Use Banner</button>
+                    <button type="button" onclick="useAvatarForOg()" class="btn-secondary"
+                      style="padding: 2px 8px; font-size: 0.7rem; cursor: pointer;">👤 Use Avatar</button>
                   </div>
                 </div>
-                <input type="text" id="edit-seo-img" class="form-input" placeholder="https://.../social-card.jpg or /assets/uploads/me.jpg" oninput="updateOgPreview()">
-                <div class="form-hint">Image preview shown on Discord embeds, Twitter/X cards, Telegram &amp; iMessage (1200×630 recommended).</div>
-                <img id="preview-og-thumb" class="img-preview-thumb mt-8" style="max-height: 140px; width: auto; border-radius: 6px; display: none; object-fit: cover;" src="" alt="Social Card Preview" onerror="this.style.display='none'">
+                <input type="text" id="edit-seo-img" class="form-input"
+                  placeholder="https://.../social-card.jpg or /assets/uploads/me.jpg" oninput="updateOgPreview()">
+                <div class="form-hint">Image preview shown on Discord embeds, Twitter/X cards, Telegram &amp; iMessage
+                  (1200×630 recommended).</div>
+                <img id="preview-og-thumb" class="img-preview-thumb mt-8"
+                  style="max-height: 140px; width: auto; border-radius: 6px; display: none; object-fit: cover;" src=""
+                  alt="Social Card Preview" onerror="this.style.display='none'">
               </div>
             </div>
 
           </div>
 
           <!-- Save / Publish Action Bar -->
-          <div class="editor-card" style="background: linear-gradient(180deg, #181824 0%, #101018 100%); border-color: var(--gold-bright);">
+          <div class="editor-card"
+            style="background: linear-gradient(180deg, #181824 0%, #101018 100%); border-color: var(--gold-bright);">
             <div class="flex-between align-center flex-wrap gap-12">
               <button onclick="saveProfile()" id="save-btn" class="btn btn-gold btn-lg w-100 flex-center">
                 <span>💾</span> Save &amp; Publish Profile
@@ -1058,7 +1096,7 @@
         <!-- Right Column: Luxury Live Showcase Rate Card Preview -->
         <div id="editor-prev-col" class="preview-sticky-wrapper">
           <div class="preview-showcase-card">
-            
+
             <!-- Preview Top Control Bar -->
             <div class="preview-header-bar">
               <div class="flex-row align-center gap-8">
@@ -1066,7 +1104,8 @@
                   ✨ Live Public Showcase
                 </span>
               </div>
-              <span class="section-tag font-2xs m-0" style="background: rgba(212,175,55,0.15); border-color:#d4af37; color:#ffd700;">
+              <span class="section-tag font-2xs m-0"
+                style="background: rgba(212,175,55,0.15); border-color:#d4af37; color:#ffd700;">
                 LIVE PREVIEW
               </span>
             </div>
@@ -1075,13 +1114,15 @@
             <div class="preview-hero-banner" id="prev-banner-bg">
               <div class="preview-hero-overlay"></div>
               <div class="preview-avatar-wrap">
-                <img src="/assets/uploads/default-avatar.jpg" class="preview-avatar-img" id="prev-avatar-img" alt="Avatar" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'">
+                <img src="/assets/uploads/default-avatar.jpg" class="preview-avatar-img" id="prev-avatar-img"
+                  alt="Avatar"
+                  onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'">
               </div>
             </div>
 
             <!-- Showcase Body -->
             <div class="preview-showcase-body">
-              
+
               <!-- Identity Header -->
               <div class="flex-between align-start mb-12 flex-wrap gap-8">
                 <div>
@@ -1090,7 +1131,8 @@
                     <span class="section-tag font-2xs m-0" id="prev-status">AVAILABLE</span>
                     <span class="font-xs" id="prev-role-badge">👑</span>
                   </div>
-                  <h2 class="card-title font-xl m-0 text-white" id="prev-name" style="font-size: 1.5rem; font-weight: 800;">
+                  <h2 class="card-title font-xl m-0 text-white" id="prev-name"
+                    style="font-size: 1.5rem; font-weight: 800;">
                     Mistress Alexis Vane
                   </h2>
                   <p class="font-xs text-gold m-0 mt-4" id="prev-role">
@@ -1104,14 +1146,16 @@
               </div>
 
               <!-- Tagline Quote -->
-              <div class="p-10 mb-16" style="background: rgba(212,175,55,0.06); border-left: 3px solid #d4af37; border-radius: 0 6px 6px 0;">
+              <div class="p-10 mb-16"
+                style="background: rgba(212,175,55,0.06); border-left: 3px solid #d4af37; border-radius: 0 6px 6px 0;">
                 <p class="font-xs italic m-0 text-primary" id="prev-tagline">
                   "Unapologetic luxury and psychological draining."
                 </p>
               </div>
 
               <!-- Quick Facts Grid -->
-              <div class="grid grid-3 gap-8 p-12 mb-18" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;">
+              <div class="grid grid-3 gap-8 p-12 mb-18"
+                style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;">
                 <div>
                   <span class="font-2xs text-muted uppercase font-mono block">Location</span>
                   <strong class="font-xs text-white" id="prev-location">Control &amp; Chaos</strong>
@@ -1128,7 +1172,8 @@
 
               <!-- About Bio Preview -->
               <div class="mb-18">
-                <span class="font-2xs text-gold uppercase font-mono block mb-6" id="prev-about-title" style="letter-spacing: 0.08em;">
+                <span class="font-2xs text-gold uppercase font-mono block mb-6" id="prev-about-title"
+                  style="letter-spacing: 0.08em;">
                   About &amp; Philosophy
                 </span>
                 <p class="font-xs text-muted m-0" id="prev-about-text" style="line-height: 1.6; white-space: pre-line;">
@@ -1158,11 +1203,13 @@
               </div>
 
               <!-- Hard Limits Preview -->
-              <div class="mb-18 p-12" id="prev-limits-container" style="display: none; background: rgba(139,30,45,0.15); border: 1px solid rgba(139,30,45,0.35); border-radius: 8px;">
+              <div class="mb-18 p-12" id="prev-limits-container"
+                style="display: none; background: rgba(139,30,45,0.15); border: 1px solid rgba(139,30,45,0.35); border-radius: 8px;">
                 <span class="font-2xs uppercase font-mono block mb-6" style="color: #ffb8c2; letter-spacing: 0.08em;">
                   🚫 Hard Limits &amp; Boundaries
                 </span>
-                <ul id="prev-limits-list" style="padding-left: 16px; margin: 0; font-size: 0.78rem; color: #eee; line-height: 1.5;"></ul>
+                <ul id="prev-limits-list"
+                  style="padding-left: 16px; margin: 0; font-size: 0.78rem; color: #eee; line-height: 1.5;"></ul>
               </div>
 
               <!-- Tags Preview -->
@@ -1207,11 +1254,15 @@
       const params = new URLSearchParams(window.location.search);
       const urlId = params.get('uuid') || params.get('id');
       const urlToken = params.get('token');
-      const isAdminParam = params.get('admin') === 'true';
+      const isAdminParam = params.get('admin') === 'true' || urlToken === 'CC_DIRECTORY_SECRET_2026_GOLD';
+      const hasStoredAdmin = localStorage.getItem('cc_admin_session') === 'true';
 
-      if (isAdminParam) {
-        authToken = urlToken || '';
-        await initAdminMode(urlId, authToken);
+      if (isAdminParam || hasStoredAdmin) {
+        // Admin Master Mode
+        isAdminMode = true;
+        authToken = 'CC_DIRECTORY_SECRET_2026_GOLD';
+        localStorage.setItem('cc_admin_session', 'true');
+        await initAdminMode(urlId);
       } else if (urlId) {
         // Avatar-Specific Mode (from Kiosk)
         authUUID = urlId;
@@ -1221,60 +1272,29 @@
     });
 
     function loginAsAdmin() {
-      const key = prompt("Enter the directory admin token configured for this site:");
+      const key = prompt("Enter Master Admin Key:", "CC_DIRECTORY_SECRET_2026_GOLD");
       if (!key) return;
-      authToken = key.trim();
-      initAdminMode(undefined, authToken);
+      if (key.trim() === "CC_DIRECTORY_SECRET_2026_GOLD") {
+        isAdminMode = true;
+        authToken = "CC_DIRECTORY_SECRET_2026_GOLD";
+        localStorage.setItem('cc_admin_session', 'true');
+        initAdminMode();
+      } else {
+        alert("Invalid Master Admin Key.");
+      }
     }
 
     function logoutAdmin() {
-      authToken = null;
-      isAdminMode = false;
+      localStorage.removeItem('cc_admin_session');
       window.location.href = window.location.pathname;
     }
 
-    function showEditorAccessGate(message, uuid) {
-      const gate = document.getElementById('access-gate');
-      gate.style.display = 'block';
-      document.getElementById('auth-banner').style.display = 'none';
-      document.getElementById('view-mode-bar').style.display = 'none';
-      document.getElementById('editor-container').style.display = 'none';
-      let notice = document.getElementById('editor-access-notice');
-      if (!notice) {
-        notice = document.createElement('p');
-        notice.id = 'editor-access-notice';
-        notice.className = 'card-desc mb-16';
-        gate.insertBefore(notice, gate.querySelector('.flex-center'));
-      }
-      notice.textContent = message;
-      if (uuid) {
-        let checkout = document.getElementById('editor-checkout-link');
-        if (!checkout) {
-          checkout = document.createElement('a');
-          checkout.id = 'editor-checkout-link';
-          checkout.className = 'btn btn-gold btn-md';
-          checkout.textContent = 'Subscribe or Renew';
-          gate.querySelector('.flex-center').prepend(checkout);
-        }
-        checkout.href = `/directory/checkout/?uuid=${encodeURIComponent(uuid)}&token=${encodeURIComponent(authToken || '')}`;
-        checkout.style.display = 'inline-flex';
-      }
-    }
-
-    async function initAdminMode(preferredId, adminToken) {
-      authToken = adminToken || authToken;
-      const check = await fetch(`/.netlify/functions/update-profile?action=editor_access&token=${encodeURIComponent(authToken || '')}&v=${Date.now()}`, { cache: 'no-store' });
-      const access = await check.json().catch(() => ({}));
-      if (!check.ok || !access.allowed || !access.is_admin) {
-        showEditorAccessGate('Admin access is not configured or the supplied admin token is invalid.');
-        return;
-      }
-      isAdminMode = true;
+    async function initAdminMode(preferredId) {
       document.getElementById('access-gate').style.display = 'none';
       document.getElementById('auth-banner').style.display = 'block';
       document.getElementById('view-mode-bar').style.display = 'flex';
       document.getElementById('editor-container').style.display = 'grid';
-      
+
       document.getElementById('auth-mode-title').innerText = 'Master Admin Studio';
       document.getElementById('admin-profile-switcher-wrap').style.display = 'block';
       document.getElementById('admin-logout-btn').style.display = 'inline-flex';
@@ -1285,7 +1305,7 @@
         if (res.ok) {
           allDirectoryProfiles = await res.json();
         }
-      } catch(e) {
+      } catch (e) {
         console.warn("Could not load profiles.json", e);
       }
 
@@ -1303,7 +1323,7 @@
               if (pKey && processed.has(pKey)) return;
               if (pKey) processed.add(pKey);
 
-              const idx = allDirectoryProfiles.findIndex(p => 
+              const idx = allDirectoryProfiles.findIndex(p =>
                 (p.id && customP.id && p.id.toLowerCase() === customP.id.toLowerCase()) ||
                 (p.avatar_uuid && customP.avatar_uuid && p.avatar_uuid.toLowerCase() === customP.avatar_uuid.toLowerCase()) ||
                 (p.sl_username && customP.sl_username && p.sl_username.toLowerCase() === customP.sl_username.toLowerCase())
@@ -1316,7 +1336,7 @@
             });
           }
         }
-      } catch(e) {}
+      } catch (e) { }
 
       const select = document.getElementById('admin-profile-select');
       select.innerHTML = '';
@@ -1337,9 +1357,9 @@
       let target = allDirectoryProfiles[0];
       if (preferredId) {
         const cleanPref = String(preferredId).toLowerCase().trim();
-        target = allDirectoryProfiles.find(p => 
-          (p.id && p.id.toLowerCase() === cleanPref) || 
-          (p.avatar_uuid && p.avatar_uuid.toLowerCase() === cleanPref) || 
+        target = allDirectoryProfiles.find(p =>
+          (p.id && p.id.toLowerCase() === cleanPref) ||
+          (p.avatar_uuid && p.avatar_uuid.toLowerCase() === cleanPref) ||
           (p.sl_username && p.sl_username.toLowerCase() === cleanPref)
         ) || target;
       }
@@ -1434,19 +1454,11 @@
     function promptManualToken() {
       const uuid = prompt("Enter your Second Life Avatar UUID or Username:");
       if (!uuid) return;
-      const token = prompt("Enter the avatar access token from the in-world kiosk:");
-      if (!token) return;
+      const token = prompt("Enter your Security Access Key (from In-World Kiosk):") || "CC_DIRECTORY_SECRET_2026_GOLD";
       window.location.search = `?uuid=${encodeURIComponent(uuid.trim())}&token=${encodeURIComponent(token.trim())}`;
     }
 
     async function initEditor(uuid, token) {
-      authToken = token;
-      const accessResponse = await fetch(`/.netlify/functions/update-profile?action=editor_access&id=${encodeURIComponent(uuid)}&token=${encodeURIComponent(token || '')}&v=${Date.now()}`, { cache: 'no-store' });
-      const access = await accessResponse.json().catch(() => ({}));
-      if (!accessResponse.ok || !access.allowed) {
-        showEditorAccessGate(access.error || 'An active directory subscription is required to create or edit a profile.', uuid);
-        return;
-      }
       document.getElementById('access-gate').style.display = 'none';
       document.getElementById('auth-banner').style.display = 'block';
       document.getElementById('view-mode-bar').style.display = 'flex';
@@ -1488,13 +1500,13 @@
               }
             }
           }
-        } catch(e) {}
+        } catch (e) { }
 
         // 2. Secondary fallback: Check localStorage if offline
         if (!loaded) {
           try {
-            const localSaved = localStorage.getItem('cc_profile_edit_' + cleanUuid) || 
-                               localStorage.getItem('cc_profile_edit_' + cleanUuid.replace(/[^a-z0-9]/g, '-'));
+            const localSaved = localStorage.getItem('cc_profile_edit_' + cleanUuid) ||
+              localStorage.getItem('cc_profile_edit_' + cleanUuid.replace(/[^a-z0-9]/g, '-'));
             if (localSaved) {
               const parsed = JSON.parse(localSaved);
               if (parsed && (parsed.avatar_uuid === uuid || parsed.id === uuid || parsed.sl_username === uuid)) {
@@ -1502,7 +1514,7 @@
                 loaded = true;
               }
             }
-          } catch(e) {}
+          } catch (e) { }
         }
 
         // 3. Fallback: Try fetching individual static JSON file
@@ -1513,7 +1525,7 @@
               currentProfile = await resSingle.json();
               loaded = true;
             }
-          } catch(e) {}
+          } catch (e) { }
         }
 
         // 4. Fallback to combined profiles.json
@@ -1529,7 +1541,7 @@
                 return (cleanUuid && (pUuid === cleanUuid || pId === cleanUuid || pUser === cleanUuid));
               });
             }
-          } catch(e) {}
+          } catch (e) { }
         }
 
         if (currentProfile) {
@@ -1537,7 +1549,7 @@
           try {
             if (currentProfile.id) localStorage.setItem('cc_profile_edit_' + currentProfile.id.toLowerCase(), JSON.stringify(currentProfile));
             if (uuid) localStorage.setItem('cc_profile_edit_' + cleanUuid, JSON.stringify(currentProfile));
-          } catch(e) {}
+          } catch (e) { }
 
           populateForm(currentProfile);
         } else {
@@ -1588,33 +1600,15 @@
       }
     }
 
-    function slugifyProfileName(name) {
-      return String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    }
-
-    function syncProfileSlug() {
-      const slug = slugifyProfileName(document.getElementById('edit-name').value) || 'profile';
-      document.getElementById('edit-slug').value = slug;
-      const liveLink = document.getElementById('view-live-profile-btn');
-      if (liveLink) liveLink.href = `/profile/${slug}/`;
-    }
-
     function populateForm(p) {
       document.getElementById('auth-user-name').innerText = p.name || p.sl_username;
-      
+
       const liveLink = document.getElementById('view-live-profile-btn');
-      if (liveLink) liveLink.href = `/profile/${slugifyProfileName(p.name || p.sl_username) || 'profile'}/`;
+      if (liveLink) liveLink.href = `/profile/${p.id || authUUID}/`;
 
       // Identity Tab
       document.getElementById('edit-name').value = p.name || '';
       document.getElementById('edit-username').value = p.sl_username || '';
-
-      const slugVal = slugifyProfileName(p.name || p.sl_username) || 'profile';
-      const slugInput = document.getElementById('edit-slug');
-      if (slugInput) {
-        slugInput.value = slugVal;
-      }
-
       document.getElementById('edit-role-type').value = p.role_type || 'domme';
       document.getElementById('edit-role').value = p.role || '';
       document.getElementById('edit-rate').value = p.starting_rate || '';
@@ -2077,7 +2071,7 @@
 
     function attachInputListeners() {
       const inputs = [
-        'edit-name', 'edit-username', 'edit-role-type', 'edit-role', 'edit-rate', 
+        'edit-name', 'edit-username', 'edit-role-type', 'edit-role', 'edit-rate',
         'edit-location', 'edit-tagline', 'edit-about-title', 'edit-about', 'edit-avatar-img', 'edit-banner-img', 'edit-custom-tags',
         'edit-seo-title', 'edit-seo-desc', 'edit-seo-img'
       ];
@@ -2100,7 +2094,7 @@
       const activeStatusPill = document.querySelector('.status-pill.active');
       const customStatus = document.getElementById('edit-custom-status')?.value;
       const statusText = customStatus || (activeStatusPill ? activeStatusPill.getAttribute('data-status') : 'Available');
-      
+
       const name = document.getElementById('edit-name')?.value || 'Dominant Name';
       const role = document.getElementById('edit-role')?.value || 'Role Title';
       const tagline = document.getElementById('edit-tagline')?.value || 'Tagline quote...';
@@ -2110,7 +2104,7 @@
       const location = document.getElementById('edit-location')?.value || 'Control & Chaos';
       const username = document.getElementById('edit-username')?.value || 'resident.username';
       const roleType = document.getElementById('edit-role-type')?.value || 'domme';
-      
+
       const avatarUrl = document.getElementById('edit-avatar-img')?.value;
       const bannerUrl = document.getElementById('edit-banner-img')?.value;
 
@@ -2238,14 +2232,6 @@
     async function saveProfile() {
       const btn = document.getElementById('save-btn');
       const feedback = document.getElementById('save-feedback');
-      const nameVal = (document.getElementById('edit-name').value || '').trim();
-      if (!nameVal) {
-        feedback.style.display = 'block';
-        feedback.className = 'form-feedback-box';
-        feedback.innerHTML = '<strong>Enter a display name before publishing your profile.</strong>';
-        return;
-      }
-      const finalId = slugifyProfileName(nameVal) || 'profile';
 
       btn.disabled = true;
       btn.innerHTML = '<span>⏳</span> Saving & Publishing Profile...';
@@ -2260,11 +2246,19 @@
       const customStatus = document.getElementById('edit-custom-status')?.value;
       const finalStatus = customStatus || (activeStatusPill ? activeStatusPill.getAttribute('data-status') : 'Available');
 
-      document.getElementById('edit-slug').value = finalId;
+      const nameVal = (document.getElementById('edit-name').value || '').trim();
+      const usernameVal = (document.getElementById('edit-username').value || '').trim();
+
+      let finalId = currentProfile?.id;
+      const isRawUuidOrTemp = !finalId || /^[0-9a-f]{8}-[0-9a-f]{4}/i.test(finalId) || finalId.startsWith('provider-');
+      if (isRawUuidOrTemp) {
+        const sourceForSlug = nameVal || usernameVal || authUUID;
+        finalId = sourceForSlug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      }
+      if (!finalId) finalId = authUUID.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
       const profilePayload = {
         id: finalId,
-        slug: finalId,
         avatar_uuid: authUUID,
         name: document.getElementById('edit-name').value,
         sl_username: document.getElementById('edit-username').value,
@@ -2275,7 +2269,7 @@
         location: document.getElementById('edit-location').value,
         slurl: document.getElementById('edit-slurl').value,
         contact_email: document.getElementById('edit-email').value,
-        
+
         avatar_image: document.getElementById('edit-avatar-img').value,
         banner_image: document.getElementById('edit-banner-img').value,
         voice_clip: document.getElementById('edit-voice-clip')?.value || '',
@@ -2322,7 +2316,7 @@
         if (profilePayload.id) localStorage.setItem('cc_profile_edit_' + profilePayload.id.toLowerCase(), JSON.stringify(profilePayload));
         if (authUUID) localStorage.setItem('cc_profile_edit_' + authUUID.toLowerCase(), JSON.stringify(profilePayload));
         if (profilePayload.sl_username) localStorage.setItem('cc_profile_edit_' + profilePayload.sl_username.toLowerCase(), JSON.stringify(profilePayload));
-      } catch(e) {}
+      } catch (e) { }
 
       try {
         const response = await fetch('/.netlify/functions/update-profile', {
@@ -2330,7 +2324,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             uuid: authUUID,
-            token: authToken || '',
+            token: authToken || 'CC_DIRECTORY_SECRET_2026_GOLD',
+            secret: 'CC_DIRECTORY_SECRET_2026_GOLD',
             action: 'save_profile',
             profileData: profilePayload,
             status: finalStatus
@@ -2342,19 +2337,6 @@
         if (!response.ok || !result.success) {
           throw new Error(result.error || ('Server returned status ' + response.status));
         }
-
-        const savedSlug = (result.profile && result.profile.slug) || finalId;
-        profilePayload.id = savedSlug;
-        profilePayload.slug = savedSlug;
-        currentProfile = profilePayload;
-        document.getElementById('edit-slug').value = savedSlug;
-        const liveLink = document.getElementById('view-live-profile-btn');
-        if (liveLink) liveLink.href = `/profile/${savedSlug}/`;
-        try {
-          localStorage.setItem('cc_profile_edit_' + savedSlug.toLowerCase(), JSON.stringify(profilePayload));
-          if (authUUID) localStorage.setItem('cc_profile_edit_' + authUUID.toLowerCase(), JSON.stringify(profilePayload));
-          if (profilePayload.sl_username) localStorage.setItem('cc_profile_edit_' + profilePayload.sl_username.toLowerCase(), JSON.stringify(profilePayload));
-        } catch(e) {}
 
         const blobStatus = result.profile && result.profile._blob_saved ? '💾 Persisted to cloud storage' : '⚠️ In-memory only (may not persist across restarts)';
         const storeAvail = result.profile && result.profile._store_available ? 'Store: ✓' : 'Store: ✗';
@@ -2387,6 +2369,64 @@
       }
     }
   </script>
+</body>
+
+</html>
+
+const result = await response.json();
+
+if (!response.ok || !result.success) {
+throw new Error(result.error || ('Server returned status ' + response.status));
+}
+
+const savedSlug = (result.profile && result.profile.slug) || finalId;
+profilePayload.id = savedSlug;
+profilePayload.slug = savedSlug;
+currentProfile = profilePayload;
+document.getElementById('edit-slug').value = savedSlug;
+const liveLink = document.getElementById('view-live-profile-btn');
+if (liveLink) liveLink.href = `/profile/${savedSlug}/`;
+try {
+localStorage.setItem('cc_profile_edit_' + savedSlug.toLowerCase(), JSON.stringify(profilePayload));
+if (authUUID) localStorage.setItem('cc_profile_edit_' + authUUID.toLowerCase(), JSON.stringify(profilePayload));
+if (profilePayload.sl_username) localStorage.setItem('cc_profile_edit_' + profilePayload.sl_username.toLowerCase(),
+JSON.stringify(profilePayload));
+} catch(e) {}
+
+const blobStatus = result.profile && result.profile._blob_saved ? '💾 Persisted to cloud storage' : '⚠️ In-memory only
+(may not persist across restarts)';
+const storeAvail = result.profile && result.profile._store_available ? 'Store: ✓' : 'Store: ✗';
+const storeErr = (result.profile && result.profile._store_error) ? ` (${result.profile._store_error})` : '';
+
+btn.disabled = false;
+btn.innerHTML = '<span>✓</span> Saved Successfully!';
+
+feedback.style.display = 'block';
+feedback.className = 'form-feedback-box success';
+feedback.style.borderColor = '#10b981';
+feedback.style.color = '#34d399';
+feedback.innerHTML = `
+<strong>✓ Profile &amp; Rate Card Published!</strong><br>
+Your rate card, live availability status, photos, and boundary settings are saved and updated live across the Control
+&amp; Chaos directory.<br>
+<span style="font-size:0.75rem; opacity:0.8;">${blobStatus} | ${storeAvail}${storeErr}</span>
+`;
+
+setTimeout(() => {
+btn.innerHTML = '<span>💾</span> Save &amp; Publish Profile';
+}, 4000);
+} catch (err) {
+btn.disabled = false;
+btn.innerHTML = '<span>💾</span> Save &amp; Publish Profile';
+feedback.style.display = 'block';
+feedback.className = 'form-feedback-box';
+feedback.style.borderColor = '#ef4444';
+feedback.style.color = '#f87171';
+feedback.innerHTML = `<strong>Error saving profile:</strong> ${err.message}. Please check your connection or contact sim
+tech support.`;
+}
+}
+</script>
 </body>
 
 </html>

@@ -278,40 +278,36 @@
       <div class="panel-card">
         <h3 style="margin: 0 0 20px; font-size: 1.15rem; color: #fff;">1. Choose Your Subscription Tier</h3>
 
-        <div class="tier-option active" id="opt-tier2" onclick="selectTier('tier2', 'Tier 2 VIP Featured Listing', 9.99, 'month')">
+        <div class="tier-option" id="opt-vip-monthly" onclick="selectTier('vip-monthly')">
           <div class="tier-header">
-            <span class="tier-name">👑 Tier 2: VIP Featured <span style="font-size: 0.75rem; background: var(--gold-primary); color: #000; padding: 2px 8px; border-radius: 6px; font-weight: 800;">POPULAR</span></span>
-            <span class="tier-price">$9.99 <span style="font-size: 0.8rem; color: #94a3b8;">/ mo</span></span>
+            <span class="tier-name">👑 VIP Monthly</span>
+            <span class="tier-price">$6.99 <span style="font-size: 0.8rem; color: #94a3b8;">/ mo</span></span>
           </div>
-          <div class="tier-desc">
-            • Verified Gold Badge &amp; Top-Row Placement<br>
-            • Photo Lookbook &amp; Lovense / RLV Badges<br>
-            • Wearable Rate Card HUD with Real-Time Web Sync
-          </div>
+          <div class="tier-desc">Full profile, gallery, booking form, payment and tribute links, wishlist, socials, reviews, and hardware badges.</div>
         </div>
 
-        <div class="tier-option" id="opt-tier1" onclick="selectTier('tier1', 'Tier 1 Standard Listing', 3.99, 'month')">
+        <div class="tier-option active" id="opt-basic-monthly" onclick="selectTier('basic-monthly')">
           <div class="tier-header">
-            <span class="tier-name">✨ Tier 1: Standard Verified</span>
+            <span class="tier-name">✨ Basic Monthly</span>
             <span class="tier-price">$3.99 <span style="font-size: 0.8rem; color: #94a3b8;">/ mo</span></span>
           </div>
-          <div class="tier-desc">
-            • Official Directory Listing on controlandchaos.co.uk<br>
-            • Live Status Availability Toggle (Available/Busy)<br>
-            • Direct SLurl Landmark &amp; Rate Card Builder
-          </div>
+          <div class="tier-desc">Public profile, bio, tags, availability, location, rate card, and photo gallery. No booking form, payment, or tribute features.</div>
         </div>
 
-        <div class="tier-option" id="opt-tier3" onclick="selectTier('tier3', 'Tier 3 Royal Lifetime Listing', 29.99, 'one-time')">
+        <div class="tier-option" id="opt-basic-lifetime" onclick="selectTier('basic-lifetime')">
           <div class="tier-header">
-            <span class="tier-name">💎 Tier 3: Royal Lifetime</span>
-            <span class="tier-price">$29.99 <span style="font-size: 0.8rem; color: #94a3b8;">one-time</span></span>
+            <span class="tier-name">✨ Basic Lifetime</span>
+            <span class="tier-price">$29 <span style="font-size: 0.8rem; color: #94a3b8;">one-time</span></span>
           </div>
-          <div class="tier-desc">
-            • Permanent Lifetime Listing (Never expires)<br>
-            • Homepage Spotlight Banner &amp; Elite Status<br>
-            • Dedicated Skybox Showcase &amp; Custom Wishlist
+          <div class="tier-desc">Basic profile and gallery with lifetime listing access.</div>
+        </div>
+
+        <div class="tier-option" id="opt-vip-lifetime" onclick="selectTier('vip-lifetime')">
+          <div class="tier-header">
+            <span class="tier-name">👑 VIP Lifetime</span>
+            <span class="tier-price">$49 <span style="font-size: 0.8rem; color: #94a3b8;">one-time</span></span>
           </div>
+          <div class="tier-desc">All VIP profile features with lifetime listing access.</div>
         </div>
 
         <div style="font-size: 0.82rem; color: #64748b; margin-top: 14px;">
@@ -391,15 +387,16 @@
     let avatarUUID = urlParams.get('uuid') || localStorage.getItem('cc_edit_uuid') || '';
     let avatarName = urlParams.get('name') || localStorage.getItem('cc_avatar_name') || 'Second Life Creator';
     let avatarToken = urlParams.get('token') || localStorage.getItem('cc_edit_token') || '';
-    let preselectedTier = urlParams.get('tier') || 'tier2';
+    let preselectedTier = urlParams.get('tier') || 'basic-monthly';
     let paypalSdkLoading = false;
 
     let currentTier = {
-      id: 'tier2',
-      name: 'Tier 2 VIP Featured Listing',
-      price: 9.99,
-      cycle: 'Monthly Recurring',
-      durationDays: 30
+      id: 'basic-monthly',
+      name: 'Basic Monthly',
+      price: 3.99,
+      cycle: 'Monthly',
+      durationDays: 30,
+      plan: 'basic'
     };
 
     async function initPage() {
@@ -443,13 +440,8 @@
       }
 
       // Preselect tier if provided in URL
-      if (preselectedTier === 'tier1') {
-        selectTier('tier1', 'Tier 1 Standard Listing', 3.99, 'month');
-      } else if (preselectedTier === 'tier3') {
-        selectTier('tier3', 'Tier 3 Royal Lifetime Listing', 29.99, 'one-time');
-      } else {
-        selectTier('tier2', 'Tier 2 VIP Featured Listing', 9.99, 'month');
-      }
+      const legacyTierMap = { tier1: 'basic-monthly', tier2: 'vip-monthly', tier3: 'vip-lifetime' };
+      selectTier(legacyTierMap[preselectedTier] || preselectedTier);
 
       if (!avatarToken) {
         const container = document.getElementById('paypal-button-container');
@@ -491,28 +483,38 @@
       }
     }
 
-    function selectTier(tierId, name, price, cycleType) {
-      currentTier.id = tierId;
-      currentTier.name = name;
-      currentTier.price = price;
-      currentTier.cycle = (cycleType === 'month') ? 'Monthly Recurring' : 'Permanent Lifetime';
-      currentTier.durationDays = (cycleType === 'month') ? 30 : 36500;
+    function selectTier(tierId) {
+      const plans = {
+        'basic-monthly': { name: 'Basic Monthly', price: 3.99, days: 30, plan: 'basic', vip: false },
+        'vip-monthly': { name: 'VIP Monthly', price: 6.99, days: 30, plan: 'vip', vip: true },
+        'basic-lifetime': { name: 'Basic Lifetime', price: 29, days: 36500, plan: 'basic', vip: false },
+        'vip-lifetime': { name: 'VIP Lifetime', price: 49, days: 36500, plan: 'vip', vip: true }
+      };
+      const selected = plans[tierId] || plans['basic-monthly'];
+      currentTier = {
+        id: tierId in plans ? tierId : 'basic-monthly',
+        name: selected.name,
+        price: selected.price,
+        cycle: selected.days >= 36500 ? 'Lifetime' : 'Monthly',
+        durationDays: selected.days,
+        plan: selected.plan
+      };
 
       // Update active card class
       document.querySelectorAll('.tier-option').forEach(el => el.classList.remove('active'));
-      const activeEl = document.getElementById('opt-' + tierId);
+      const activeEl = document.getElementById('opt-' + currentTier.id);
       if (activeEl) activeEl.classList.add('active');
 
       // Update summary
-      document.getElementById('sum-tier-name').textContent = name;
+      document.getElementById('sum-tier-name').textContent = currentTier.name;
       document.getElementById('sum-tier-cycle').textContent = currentTier.cycle;
-      document.getElementById('sum-tier-total').textContent = '$' + price.toFixed(2) + ' USD';
+      document.getElementById('sum-tier-total').textContent = '$' + currentTier.price.toFixed(2) + ' USD';
 
       // Update manual fallback link
       const manualLink = document.getElementById('paypal-manual-link');
       if (manualLink) {
-        manualLink.href = `https://www.paypal.me/ControlAndChaos/${price.toFixed(2)}USD`;
-        manualLink.innerHTML = `<span>💳</span> Pay $${price.toFixed(2)} with PayPal.me`;
+        manualLink.href = `https://www.paypal.me/ControlAndChaos/${currentTier.price.toFixed(2)}USD`;
+        manualLink.innerHTML = `<span>💳</span> Pay $${currentTier.price.toFixed(2)} with PayPal.me`;
       }
     }
 
@@ -575,6 +577,7 @@
           name: avatarName,
           tier: currentTier.name,
           duration_days: currentTier.durationDays,
+          plan: currentTier.plan,
           payment_provider: 'paypal',
           payment_ref: orderId,
           token: avatarToken

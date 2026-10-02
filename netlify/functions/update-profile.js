@@ -3,6 +3,12 @@ const crypto = require('crypto');
 // Shared Secret (Must match SECRET_KEY in CC_Directory_Kiosk.lsl)
 const KIOSK_DEFAULT_SECRET = "CC_DIRECTORY_SECRET_2026_GOLD";
 const SECRET_KEY = process.env.DIRECTORY_SECRET_KEY || KIOSK_DEFAULT_SECRET;
+const SUBSCRIPTION_PLANS = {
+  'Basic Monthly': { amount: '3.99', days: 30, is_vip: false, is_lifetime: false, plan: 'basic' },
+  'VIP Monthly': { amount: '6.99', days: 30, is_vip: true, is_lifetime: false, plan: 'vip' },
+  'Basic Lifetime': { amount: '29.00', days: 36500, is_vip: false, is_lifetime: true, plan: 'basic' },
+  'VIP Lifetime': { amount: '49.00', days: 36500, is_vip: true, is_lifetime: true, plan: 'vip' }
+};
 
 // Known avatar mappings (UUID <-> Slugs <-> Usernames)
 const KNOWN_AVATARS = {
@@ -175,9 +181,16 @@ function verifyToken(uuid, token, secret, payload) {
 
 function isSubscriptionActive(subscription) {
   if (!subscription || subscription.published === false) return false;
-  if (subscription.is_vip === true) return true;
+  if (isLifetimeSubscription(subscription)) return true;
   const expiry = subscription.expires_at ? new Date(subscription.expires_at).getTime() : 0;
   return Number.isFinite(expiry) && expiry > Date.now();
+}
+
+function isLifetimeSubscription(subscription) {
+  if (!subscription) return false;
+  if (subscription.is_lifetime === true) return true;
+  const legacyTier = String(subscription.tier || '').toLowerCase();
+  return subscription.is_vip === true && (legacyTier.includes('royal lifetime') || legacyTier.includes('vip lifetime'));
 }
 
 async function loadSubscriptions(store) {
@@ -247,7 +260,8 @@ async function persistSubscription(store, uuid, subscription) {
 }
 
 function verifyKioskPaymentToken(uuid, tier, durationDays, paymentToken) {
-  if (!uuid || !paymentToken || !tier || !durationDays) return false;
+  const plan = SUBSCRIPTION_PLANS[tier];
+  if (!uuid || !paymentToken || !plan || Number(durationDays) !== plan.days) return false;
   const nowSeconds = Math.floor(Date.now() / 1000);
   const currentDay = Math.floor(nowSeconds / 86400);
   const secretsToCheck = [...new Set([SECRET_KEY, KIOSK_DEFAULT_SECRET])];
@@ -262,12 +276,7 @@ function verifyKioskPaymentToken(uuid, tier, durationDays, paymentToken) {
 }
 
 async function verifyPayPalOrder(orderId, tier, durationDays) {
-  const tiers = {
-    'Tier 1 Standard Listing': { amount: '3.99', days: 30 },
-    'Tier 2 VIP Featured Listing': { amount: '9.99', days: 30 },
-    'Tier 3 Royal Lifetime Listing': { amount: '29.99', days: 36500 }
-  };
-  const expected = tiers[tier];
+  const expected = SUBSCRIPTION_PLANS[tier];
   const clientId = process.env.PAYPAL_CLIENT_ID;
   const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
   if (!expected || !orderId || !clientId || !clientSecret || Number(durationDays) !== expected.days) return false;
@@ -328,13 +337,14 @@ exports.handler = async (event) => {
       await loadSubscriptions(store);
       const subscription = await loadSubscriptionFor(store, targetId);
       const expiry = subscription && subscription.expires_at ? new Date(subscription.expires_at).getTime() : 0;
-      const isVip = !!(subscription && subscription.is_vip === true);
-      const daysLeft = !authorized || isVip || !Number.isFinite(expiry) ? 0 : Math.max(0, Math.ceil((expiry - Date.now()) / 86400000));
-      const active = !!(authorized && subscription && subscription.published !== false && (isVip || daysLeft > 0));
+      const isLifetime = isLifetimeSubscription(subscription);
+      const isVip = !!(subscription && (subscription.plan === 'vip' || subscription.is_vip === true || /vip|royal lifetime/i.test(subscription.tier || '')));
+      const daysLeft = !authorized || isLifetime || !Number.isFinite(expiry) ? 0 : Math.max(0, Math.ceil((expiry - Date.now()) / 86400000));
+      const active = !!(authorized && subscription && subscription.published !== false && (isLifetime || daysLeft > 0));
       return {
         statusCode: authorized ? 200 : 403,
         headers,
-        body: JSON.stringify({ success: authorized, active, days_left: daysLeft, is_vip: authorized && isVip })
+        body: JSON.stringify({ success: authorized, active, days_left: daysLeft, is_vip: authorized && isVip, is_lifetime: authorized && isLifetime, plan: subscription && subscription.plan || (isVip ? 'vip' : 'basic') })
       };
     }
 
@@ -439,11 +449,37 @@ exports.handler = async (event) => {
       } catch(e) {}
     }
 
+    let targetSubscription = null;
+    let targetDaysLeft = 0;
+    let targetIsVip = false;
+    let targetIsActive = false;
+
+    if (targetId) {
+      targetSubscription = await loadSubscriptionFor(store, targetId) ||
+                           (foundProfile && foundProfile.avatar_uuid && await loadSubscriptionFor(store, foundProfile.avatar_uuid)) ||
+                           gSubscriptions[targetId] ||
+                           (foundProfile && foundProfile.avatar_uuid && gSubscriptions[foundProfile.avatar_uuid.toLowerCase()]) || null;
+
+      if (targetSubscription) {
+        targetIsVip = !!(targetSubscription.is_vip || targetSubscription.lifetime || (targetSubscription.tier && (targetSubscription.tier.includes('Lifetime') || targetSubscription.tier.includes('Royal'))));
+        targetIsActive = targetIsVip || (targetSubscription.expires_at && new Date(targetSubscription.expires_at).getTime() > Date.now());
+        if (targetIsVip) {
+          targetDaysLeft = 36500;
+        } else if (targetSubscription.expires_at) {
+          targetDaysLeft = Math.max(0, Math.ceil((new Date(targetSubscription.expires_at).getTime() - Date.now()) / 86400000));
+        }
+      }
+    }
+
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
+        active: targetIsActive,
+        days_left: targetDaysLeft,
+        is_vip: targetIsVip,
+        subscription: targetSubscription,
         profile: foundProfile,
         profiles: gCustomProfiles,
         statuses: gLiveStatuses,
@@ -539,16 +575,26 @@ exports.handler = async (event) => {
     if (action === 'register_paid') {
       const store = getProfilesStore(event);
       await loadSubscriptions(store);
-      const dur = duration_days || (tier && tier.includes('3') ? 3650 : 30);
+      const plan = SUBSCRIPTION_PLANS[tier];
+      if (!plan || Number(duration_days) !== plan.days || (payload.plan && payload.plan !== plan.plan)) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: 'Unknown subscription package or duration. Select Basic Monthly, VIP Monthly, Basic Lifetime, or VIP Lifetime.' })
+        };
+      }
+      const dur = plan.days;
       const current = await loadSubscriptionFor(store, cleanUuid);
       const currentExpiry = current && current.expires_at ? new Date(current.expires_at).getTime() : 0;
       const expiryBase = Math.max(Date.now(), Number.isFinite(currentExpiry) ? currentExpiry : 0);
       const expiry = new Date(expiryBase + (dur * 86400000)).toISOString();
       const subEntry = {
-        tier: tier || 'Tier 1 Standard',
+        tier: tier || 'Basic Monthly',
+        plan: plan ? plan.plan : (current && current.plan) || 'basic',
         published: true,
-        is_vip: (dur >= 3650),
-        expires_at: expiry,
+        is_vip: plan ? plan.is_vip : !!(current && current.is_vip),
+        is_lifetime: plan ? plan.is_lifetime : (current ? isLifetimeSubscription(current) : dur >= 3650),
+        expires_at: plan ? (plan.is_lifetime ? null : expiry) : (dur >= 3650 ? null : expiry),
         updated_at: new Date().toISOString()
       };
 
@@ -580,6 +626,8 @@ exports.handler = async (event) => {
       const existing = (await loadSubscriptionFor(store, cleanUuid)) || gSubscriptions[cleanId] || { published: true, tier: 'Tier 1 Standard' };
       if (is_vip) {
         existing.is_vip = true;
+        existing.is_lifetime = true;
+        existing.plan = 'vip';
         existing.expires_at = '2030-12-31T23:59:59Z';
       } else {
         const currentExp = existing.expires_at ? new Date(existing.expires_at).getTime() : Date.now();
@@ -744,7 +792,7 @@ exports.handler = async (event) => {
     if (action === 'save_profile' && profileData) {
       const store = getProfilesStore(event);
       await loadSubscriptions(store);
-      const subscription = gSubscriptions[cleanUuid];
+      const subscription = await loadSubscriptionFor(store, cleanUuid);
       if (!adminAuthorized && !isSubscriptionActive(subscription)) {
         return {
           statusCode: 402,
@@ -786,9 +834,24 @@ exports.handler = async (event) => {
       profileData.slug = publicSlug;
       profileData.id = publicSlug;
       profileData.published = true;
-      profileData.is_vip = !!(subscription && subscription.is_vip);
+      profileData.plan = subscription && subscription.plan || (subscription && subscription.is_vip ? 'vip' : 'basic');
+      profileData.is_vip = profileData.plan === 'vip';
+      profileData.is_lifetime = isLifetimeSubscription(subscription);
       profileData.expires_at = subscription && subscription.expires_at;
       profileData.managed_subscription = true;
+      if (profileData.plan !== 'vip') {
+        profileData.booking_protocol = [];
+        profileData.wishlist = [];
+        profileData.social_links = [];
+        profileData.reviews = [];
+        profileData.hardware_compat = [];
+        profileData.tribute_goal = null;
+        profileData.throne_url = '';
+        profileData.kofi = '';
+        profileData.revolut_me = '';
+        profileData.cashapp = '';
+        profileData.paypal_me = '';
+      }
       const pId = publicSlug;
       const pUsername = (profileData.sl_username || '').toLowerCase().trim();
 
