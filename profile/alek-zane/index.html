@@ -476,31 +476,23 @@
                 <span id="calc-total-quote" style="font-family:var(--font-heading); font-size:24px; font-weight:900; color:var(--gold-bright);">L$0</span>
               </div>
               <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                <a href="#booking-enquiry-section" id="calc-book-cta" class="btn btn-secondary btn-sm">
+                <a href="#booking-enquiry-section" id="calc-book-cta" class="btn btn-gold btn-sm" style="font-weight:700; box-shadow:0 0 14px rgba(212,175,55,0.35);">
                   <span>💬</span> Book with this Quote
                 </a>
-                <button type="button" class="btn btn-gold btn-sm" onclick="openPaymentModalWithQuote()" style="font-weight:800; box-shadow:0 0 14px rgba(212,175,55,0.35); cursor:pointer;">
-                  <span>💎</span> Pay / Settle Quote
-                </button>
               </div>
             </div>
           </div>
 
           <!-- Direct Contact & Booking Enquiry Section (Inside Main Column) -->
           <div id="booking-enquiry-section" class="card" style="padding: 28px 24px; background: linear-gradient(175deg, #1a1715 0%, #100f0d 100%); border: 1px solid var(--gold-border);">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px; margin-bottom:20px;">
-              <div>
-                <span class="section-tag tag-gold" style="margin-bottom:6px;">DIRECT ENQUIRY</span>
-                <h2 style="font-family:var(--font-heading); font-size:22px; font-weight:800; color:var(--gold-bright); margin:0;" id="enquiry-header-title">
-                  Request a Session or Booking
-                </h2>
-                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">
-                  Not in Second Life right now? Send your session request directly below.
-                </p>
-              </div>
-              <div id="enquiry-quick-links" style="display:flex; gap:8px; flex-wrap:wrap;">
-                <!-- Direct links injected here -->
-              </div>
+            <div style="margin-bottom:20px;">
+              <span class="section-tag tag-gold" style="margin-bottom:6px;">DIRECT ENQUIRY</span>
+              <h2 style="font-family:var(--font-heading); font-size:22px; font-weight:800; color:var(--gold-bright); margin:0;" id="enquiry-header-title">
+                Request a Session or Booking
+              </h2>
+              <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">
+                Fill in your session details and choose how you would like to send your enquiry.
+              </p>
             </div>
 
             <form name="escort-booking" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" id="booking-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px;">
@@ -516,14 +508,14 @@
                 <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
                   Your Name / SL Username *
                 </label>
-                <input type="text" name="client_name" required placeholder="e.g. Master_Orion Resident" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
+                <input type="text" name="client_name" id="booking-client-name" required placeholder="e.g. Master_Orion Resident" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
               </div>
 
               <div>
                 <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
                   Your Contact (Discord/Email/SL) *
                 </label>
-                <input type="text" name="client_contact" required placeholder="e.g. username#1234 or email" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
+                <input type="text" name="client_contact" id="booking-client-contact" required placeholder="e.g. username#1234 or email" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
               </div>
 
               <!-- Available Schedule Info Badge -->
@@ -556,15 +548,44 @@
                 <textarea name="message" id="form-message-input" rows="6" placeholder="Describe your scenario, Lovense/RLV preferences, or event..." style="width:100%; min-height:145px; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px; line-height:1.6; resize:vertical; font-family:inherit;"></textarea>
               </div>
 
-              <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:6px;">
-                <div id="booking-form-status" style="font-size:13px; color:var(--gold-bright);"></div>
-                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                  <button type="submit" class="btn btn-secondary btn-sm" id="booking-submit-btn" style="padding:10px 18px; font-size:12.5px;">
-                    <span>✉️</span> Request More Info / Send Enquiry
-                  </button>
-                  <button type="button" class="btn btn-gold btn-sm" id="booking-pay-now-btn" onclick="openPaymentModalWithQuote()" style="padding:10px 20px; font-size:13px; font-weight:800; box-shadow:0 0 16px rgba(212,175,55,0.35); cursor:pointer;">
-                    <span>💎</span> Pay / Settle Deposit (<span id="pay-now-btn-amount">Quote</span>)
-                  </button>
+              <!-- Option 2: Send Method Selector -->
+              <div style="grid-column: 1 / -1; margin-top: 4px;">
+                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:8px; text-transform:uppercase;">
+                  Choose How to Send Your Enquiry
+                </label>
+                <div class="send-method-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px;">
+                  <label class="send-method-card" id="send-method-web-label" style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:rgba(212,175,55,0.1); border:1px solid var(--gold-bright); border-radius:8px; cursor:pointer; transition:all 0.2s;">
+                    <input type="radio" name="send_method" value="web" checked onchange="updateSendMethodUI()" style="accent-color:var(--gold-bright); cursor:pointer;">
+                    <div>
+                      <div style="font-size:13px; font-weight:700; color:#fff;">🌐 Direct Web Send</div>
+                      <div style="font-size:11px; color:var(--text-muted);">Instant submission to provider</div>
+                    </div>
+                  </label>
+                  <label class="send-method-card" id="send-method-email-label" style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:8px; cursor:pointer; transition:all 0.2s;">
+                    <input type="radio" name="send_method" value="email" onchange="updateSendMethodUI()" style="accent-color:var(--gold-bright); cursor:pointer;">
+                    <div>
+                      <div style="font-size:13px; font-weight:700; color:#fff;">📧 My Email App</div>
+                      <div style="font-size:11px; color:var(--text-muted);">Opens Gmail / Outlook / Mail</div>
+                    </div>
+                  </label>
+                  <label class="send-method-card" id="send-method-sl-label" style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:8px; cursor:pointer; transition:all 0.2s;">
+                    <input type="radio" name="send_method" value="sl" onchange="updateSendMethodUI()" style="accent-color:var(--gold-bright); cursor:pointer;">
+                    <div>
+                      <div style="font-size:13px; font-weight:700; color:#fff;">💬 Second Life IM</div>
+                      <div style="font-size:11px; color:var(--text-muted);">Opens SL IM &amp; copies notes</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div style="grid-column: 1 / -1; margin-top:8px;">
+                <div id="booking-form-status" style="font-size:13.5px; margin-bottom:10px; text-align:center;"></div>
+                <button type="submit" class="btn btn-gold" id="booking-submit-btn" style="width:100%; padding:14px 20px; font-size:14.5px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 0 20px rgba(212,175,55,0.25); cursor:pointer;">
+                  <span>✉️</span> Submit Booking Enquiry
+                </button>
+                <div style="margin-top:12px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px; color:var(--text-muted); text-align:center;">
+                  <span>🛡️</span>
+                  <span><strong>No upfront payment required.</strong> Session fees in Lindens (L$) are arranged and settled directly in-world once your date and time are confirmed by the provider.</span>
                 </div>
               </div>
             </form>
@@ -750,7 +771,89 @@
 
   <script src="/app.js"></script>
   <script>
-    function openLightbox(imgSrc, title, category) {
+
+    window.currentProfile = null;
+
+    // Option 2: Send Method Dynamic UI & Execution
+    window.updateSendMethodUI = function() {
+      const selected = document.querySelector('input[name="send_method"]:checked')?.value || 'web';
+      const webCard = document.getElementById('send-method-web-label');
+      const emailCard = document.getElementById('send-method-email-label');
+      const slCard = document.getElementById('send-method-sl-label');
+      const submitBtn = document.getElementById('booking-submit-btn');
+
+      [webCard, emailCard, slCard].forEach(card => {
+        if (!card) return;
+        card.style.background = '#0e0c0b';
+        card.style.borderColor = 'var(--gold-border-subtle)';
+      });
+
+      if (selected === 'web') {
+        if (webCard) {
+          webCard.style.background = 'rgba(212,175,55,0.12)';
+          webCard.style.borderColor = 'var(--gold-bright)';
+        }
+        if (submitBtn) submitBtn.innerHTML = '<span>✉️</span> Submit Booking Enquiry';
+      } else if (selected === 'email') {
+        if (emailCard) {
+          emailCard.style.background = 'rgba(212,175,55,0.12)';
+          emailCard.style.borderColor = 'var(--gold-bright)';
+        }
+        if (submitBtn) submitBtn.innerHTML = '<span>📧</span> Launch Email App with Booking Details';
+      } else if (selected === 'sl') {
+        if (slCard) {
+          slCard.style.background = 'rgba(212,175,55,0.12)';
+          slCard.style.borderColor = 'var(--gold-bright)';
+        }
+        if (submitBtn) submitBtn.innerHTML = '<span>💬</span> Open Second Life IM &amp; Copy Details';
+      }
+    };
+
+    window.formatBookingMessageSummary = function() {
+      const clientName = document.querySelector('input[name="client_name"]')?.value || 'Client';
+      const clientContact = document.querySelector('input[name="client_contact"]')?.value || 'Not provided';
+      const preferredTime = document.getElementById('booking-preferred-time-combined')?.value || 'TBD';
+      const quoteTotal = document.getElementById('form-quote-total')?.value || '';
+      const notes = document.getElementById('form-message-input')?.value || '';
+      const escortName = window.currentProfile?.name || 'Escort';
+
+      let body = `BOOKING ENQUIRY FOR ${escortName.toUpperCase()}\n\n`;
+      body += `Client Name / SL: ${clientName}\n`;
+      body += `Contact Info: ${clientContact}\n`;
+      body += `Requested Date & Time: ${preferredTime}\n`;
+      if (quoteTotal) body += `Estimated Total: ${quoteTotal}\n`;
+      body += `\n--- SESSION NOTES & DETAILS ---\n${notes}\n`;
+      return body;
+    };
+
+    window.handleEmailDirectClick = function() {
+      const escortName = window.currentProfile?.name || 'Escort';
+      const escortEmail = window.currentProfile?.contact_email || 'enquiries@controlandchaos.co.uk';
+      const subject = encodeURIComponent(`Booking Enquiry for ${escortName}`);
+      const body = encodeURIComponent(window.formatBookingMessageSummary());
+      window.location.href = `mailto:${escortEmail}?subject=${subject}&body=${body}`;
+    };
+
+    window.handleSecondLifeImClick = function() {
+      const summaryText = window.formatBookingMessageSummary();
+      const statusDiv = document.getElementById('booking-form-status');
+      
+      // Copy formatted booking details to clipboard
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(summaryText).catch(e => console.error(e));
+      }
+      
+      if (statusDiv) {
+        statusDiv.style.color = '#10b981';
+        statusDiv.innerHTML = '📋 <strong>Booking details copied to clipboard!</strong> Opening Second Life IM...';
+      }
+
+      if (window.currentProfile?.avatar_uuid) {
+        window.location.href = `secondlife:///app/agent/${window.currentProfile.avatar_uuid}/im`;
+      }
+    };
+
+function openLightbox(imgSrc, title, category) {
       const modal = document.getElementById('gallery-lightbox');
       const img = document.getElementById('lightbox-image');
       const cap = document.getElementById('lightbox-caption');
@@ -854,6 +957,7 @@
       } catch(e) {}
 
       if (!profileData) return;
+      window.currentProfile = profileData;
 
       const liveResponse = await fetch(`/.netlify/functions/update-profile?v=${Date.now()}`, { cache: 'no-store' }).catch(() => null);
       const liveData = liveResponse && liveResponse.ok ? await liveResponse.json().catch(() => null) : null;
@@ -1859,7 +1963,7 @@
         inquiryLinks.innerHTML = linksHtml;
       }
 
-      // Handle Netlify Form Submit AJAX
+      // Handle Option 2 Unified Booking Submission
       const bookingForm = document.getElementById('booking-form');
       const formStatus = document.getElementById('booking-form-status');
       const submitBtn = document.getElementById('booking-submit-btn');
@@ -1867,9 +1971,26 @@
       if (bookingForm) {
         bookingForm.addEventListener('submit', async (e) => {
           e.preventDefault();
+          const selectedMethod = document.querySelector('input[name="send_method"]:checked')?.value || 'web';
+
+          if (selectedMethod === 'email') {
+            if (formStatus) {
+              formStatus.style.color = 'var(--gold-bright)';
+              formStatus.innerHTML = '📧 <strong>Opening Email App...</strong> Please send the pre-filled email from your client.';
+            }
+            window.handleEmailDirectClick();
+            return;
+          }
+
+          if (selectedMethod === 'sl') {
+            window.handleSecondLifeImClick();
+            return;
+          }
+
+          // Direct Web Send (Netlify Form POST)
           if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span>⏳</span> Sending Request...';
+            submitBtn.innerHTML = '<span>⏳</span> Sending Enquiry...';
           }
           if (formStatus) formStatus.textContent = '';
 
@@ -1884,22 +2005,22 @@
             if (response.ok) {
               if (formStatus) {
                 formStatus.style.color = '#10b981';
-                formStatus.innerHTML = `✅ <strong>Enquiry Sent!</strong> ${profileData.name} will be notified with your session details.`;
+                formStatus.innerHTML = `✅ <strong>Enquiry Sent Successfully!</strong> ${profileData.name} will review your session notes and get in touch.`;
               }
               bookingForm.reset();
-              if (submitBtn) submitBtn.innerHTML = '<span>✅</span> Request Received';
+              if (submitBtn) submitBtn.innerHTML = '<span>✅</span> Enquiry Received';
             } else {
               throw new Error('Network error');
             }
           } catch (err) {
             if (formStatus) {
               formStatus.style.color = 'var(--gold-bright)';
-              formStatus.innerHTML = `✨ <strong>Enquiry Recorded!</strong> If you are in-world, you can also send a direct SL IM to <strong>${profileData.sl_username || profileData.name}</strong>.`;
+              formStatus.innerHTML = `✨ <strong>Enquiry Logged!</strong> If preferred, you can also reach out via Second Life IM to <strong>${profileData.sl_username || profileData.name}</strong>.`;
             }
           } finally {
             if (submitBtn) {
               submitBtn.disabled = false;
-              if (submitBtn.innerHTML.includes('Sending')) submitBtn.innerHTML = '<span>✉️</span> Submit Booking Request';
+              if (submitBtn.innerHTML.includes('Sending')) submitBtn.innerHTML = '<span>✉️</span> Submit Booking Enquiry';
             }
           }
         });
