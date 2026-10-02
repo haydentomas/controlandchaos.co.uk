@@ -1740,7 +1740,7 @@ function openLightbox(imgSrc, title, category) {
             return;
           }
 
-          // Direct Web Send (Netlify Form POST + Instant Resend Serverless Trigger)
+          // Direct Web Send (Netlify Form POST -> triggers submission-created event)
           if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>⏳</span> Sending Enquiry...';
@@ -1748,31 +1748,24 @@ function openLightbox(imgSrc, title, category) {
           if (formStatus) formStatus.textContent = '';
 
           const formData = new FormData(bookingForm);
-          const formPayload = Object.fromEntries(formData.entries());
 
           try {
-            // 1. Submit to Netlify forms
-            const netlifyPost = fetch('/', {
+            const response = await fetch('/', {
               method: 'POST',
               headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
               body: new URLSearchParams(formData).toString()
-            }).catch(() => {});
+            });
 
-            // 2. Trigger direct Resend dispatch function
-            const resendPost = fetch('/.netlify/functions/send-booking-enquiry', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(formPayload)
-            }).catch(() => {});
-
-            await Promise.allSettled([netlifyPost, resendPost]);
-
-            if (formStatus) {
-              formStatus.style.color = '#10b981';
-              formStatus.innerHTML = `✅ <strong>Enquiry Sent Successfully!</strong> ${profileData.name} will review your session notes and get in touch.`;
+            if (response.ok) {
+              if (formStatus) {
+                formStatus.style.color = '#10b981';
+                formStatus.innerHTML = `✅ <strong>Enquiry Sent Successfully!</strong> ${profileData.name} will review your session notes and get in touch.`;
+              }
+              bookingForm.reset();
+              if (submitBtn) submitBtn.innerHTML = '<span>✅</span> Enquiry Received';
+            } else {
+              throw new Error('Network response not ok');
             }
-            bookingForm.reset();
-            if (submitBtn) submitBtn.innerHTML = '<span>✅</span> Enquiry Received';
           } catch (err) {
             if (formStatus) {
               formStatus.style.color = 'var(--gold-bright)';
