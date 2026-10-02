@@ -371,7 +371,7 @@
 
         // 2. Fetch server subscriptions & live overrides
         try {
-          const res = await fetch('/.netlify/functions/update-profile');
+          const res = await fetch(`/.netlify/functions/update-profile?v=${Date.now()}`, { cache: 'no-store' });
           if (res.ok) {
             const data = await res.json();
             if (data && data.profiles) {

@@ -457,8 +457,8 @@ exports.handler = async (event) => {
       }
     }
 
-    // Try loading all profiles from Blobs store if memory is empty
-    if (Object.keys(gCustomProfiles).length === 0 && store) {
+    // Always load latest all profiles from Blobs store if store is available
+    if (store) {
       try {
         let allStored = await store.get('all_profiles', { type: 'json' });
         if (!allStored) {
