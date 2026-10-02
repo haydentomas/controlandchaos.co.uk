@@ -408,7 +408,7 @@
 
         </div>
 
-        <!-- Right Column: Gallery, Patrons, Hardware, Limits, How to Book & Reviews -->
+        <!-- Right Column: Gallery, Hardware, Limits, How to Book & Reviews -->
         <div id="profile-sidebar">
           
           <!-- Visual Lookbook / Photo Gallery -->
@@ -417,14 +417,6 @@
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="gallery-grid">
               <!-- Gallery items injected here -->
             </div>
-          </div>
-
-          <!-- Verified Patrons & Devoted Kneelers Card -->
-          <div class="card" id="profile-patrons-card" style="margin-bottom: 30px; display: none;">
-            <h3 class="card-title" id="profile-patrons-title" style="font-size: 17px; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
-              <span>👑</span> Verified Patrons &amp; Devoted Kneelers
-            </h3>
-            <div id="patrons-list-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
           </div>
 
           <!-- Hardware & Tech Compatibility Card (Repeater & Dynamic Title) -->
@@ -1321,27 +1313,6 @@
         if (galleryCard && (!profileData.gallery || profileData.gallery.length === 0)) {
           galleryCard.style.display = 'none';
         }
-      }
-
-      // 6.5 Render Verified Patrons & Devoted Kneelers Card
-      const patronsCard = document.getElementById('profile-patrons-card');
-      const patronsContainer = document.getElementById('patrons-list-container');
-      const patronsList = Array.isArray(profileData.patrons) ? profileData.patrons : [];
-
-      if (patronsCard && patronsContainer && patronsList.length > 0) {
-        patronsContainer.innerHTML = patronsList.map(p => `
-          <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:16px;">⛓️</span>
-              <div>
-                <div style="font-family:var(--font-heading); font-size:13.5px; font-weight:700; color:var(--text-primary);">${p.name}</div>
-                <div style="font-size:10.5px; font-family:var(--font-mono); color:var(--gold-muted);">${p.avatar_sl ? `@${p.avatar_sl}` : (p.tier || 'Verified Patron')}</div>
-              </div>
-            </div>
-            ${p.badge ? `<span class="tag-pill-badge" style="font-size:10px; padding:2px 8px; color:#ffd700; border-color:rgba(212,175,55,0.4);">${p.badge}</span>` : ''}
-          </div>
-        `).join('');
-        patronsCard.style.display = 'block';
       }
 
       // 7. Render Hardware & Features Card (Repeater & Dynamic Title)
