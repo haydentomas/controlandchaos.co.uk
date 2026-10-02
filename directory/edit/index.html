@@ -600,6 +600,9 @@
             <button class="editor-tab-btn" onclick="switchTab('tab-socials')">
               <span>🎁</span> Wishlists &amp; Reviews
             </button>
+            <button class="editor-tab-btn" onclick="switchTab('tab-feed')">
+              <span>📱</span> Exclusive Feed
+            </button>
           </div>
 
           <!-- ================= TAB 1: IDENTITY & ROLE ================= -->
@@ -1080,6 +1083,50 @@
 
           </div>
 
+          <!-- ================= TAB 7: EXCLUSIVE FEED & FAN CLUB ================= -->
+          <div id="tab-feed" class="tab-content">
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">💎</span> Fan Club &amp; Subscriber Pass Settings</h3>
+                <span class="section-tag tag-gold font-2xs m-0">MONTHLY SUB TIER</span>
+              </div>
+              <p class="font-xs text-muted mb-16">
+                Define the monthly tribute fee required to unlock your restricted posts, audio sessions, and lookbooks.
+                Fans pay you directly in-world via your subscriber vendor or kiosk.
+              </p>
+              <div class="form-grid-2 mb-12">
+                <div>
+                  <label class="form-label font-2xs" for="edit-fan-tier-price">Monthly Subscription Fee</label>
+                  <input type="text" id="edit-fan-tier-price" class="form-input font-xs" placeholder="L$1,500 / month">
+                </div>
+                <div>
+                  <label class="form-label font-2xs" for="edit-fan-slurl">In-World Subscriber Terminal SLurl</label>
+                  <input type="text" id="edit-fan-slurl" class="form-input font-xs" placeholder="secondlife://Chaos%20Manor/128/142/23">
+                </div>
+              </div>
+              <div class="form-group mb-0">
+                <label class="form-label font-2xs" for="edit-fan-tier-desc">Membership Benefits Summary</label>
+                <input type="text" id="edit-fan-tier-desc" class="form-input font-xs" placeholder="Unlocks all locked lookbooks, uncensored audio notes, and direct priority decrees.">
+              </div>
+            </div>
+
+            <!-- Feed Post Composer / Manager -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">📱</span> Exclusive Feed Posts</h3>
+                <button type="button" onclick="addFeedPost()" class="btn btn-gold btn-sm" style="padding: 6px 14px; font-size: 0.78rem;">
+                  <span>➕</span> Create New Post
+                </button>
+              </div>
+              <p class="font-xs text-muted mb-16">
+                Publish updates, photo sets, voice notes, tasks, and teasers. Choose whether each post is <strong>Locked (Subscribers Only)</strong> or <strong>Public Preview</strong>.
+              </p>
+              <div id="feed-posts-repeater-container">
+                <!-- Populated dynamically via renderFeedPosts() -->
+              </div>
+            </div>
+          </div>
+
           <!-- Save / Publish Action Bar -->
           <div class="editor-card"
             style="background: linear-gradient(180deg, #181824 0%, #101018 100%); border-color: var(--gold-bright);">
@@ -1249,6 +1296,7 @@
     let wishlistItems = [];
     let socialLinksList = [];
     let reviewsList = [];
+    let postsList = [];
 
     document.addEventListener('DOMContentLoaded', async () => {
       const params = new URLSearchParams(window.location.search);
@@ -1682,6 +1730,12 @@
       wishlistItems = p.wishlist || [];
       socialLinksList = p.social_links || [];
       reviewsList = p.reviews || [];
+      postsList = p.posts || [];
+
+      // Fan Club / Subscription Tier
+      document.getElementById('edit-fan-tier-price').value = p.fan_tier_price || 'L$1,500 / month';
+      document.getElementById('edit-fan-tier-desc').value = p.fan_tier_desc || 'Unlocks all restricted lookbooks, uncensored audio notes, and direct priority decrees.';
+      document.getElementById('edit-fan-slurl').value = p.fan_slurl || p.slurl || 'secondlife://Chaos%20Manor/128/142/23';
 
       renderAllRepeaters();
       attachInputListeners();
@@ -1699,6 +1753,7 @@
       renderWishlist();
       renderSocials();
       renderReviews();
+      renderFeedPosts();
     }
 
     // Rate Categories
@@ -2038,6 +2093,90 @@
       renderReviews();
     }
 
+    // Exclusive Feed Posts
+    function renderFeedPosts() {
+      const container = document.getElementById('feed-posts-repeater-container');
+      if (!container) return;
+      if (!postsList.length) {
+        container.innerHTML = '<p class="font-xs text-muted" style="padding: 12px 0;">No feed posts yet. Click "+ Create New Post" above to share exclusive content with your subscribers.</p>';
+        return;
+      }
+      container.innerHTML = postsList.map((post, idx) => `
+        <div class="repeater-item-box" style="border: 1px solid ${post.is_locked ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.1)'}; background: #110f15; margin-bottom: 18px; position: relative;">
+          <button type="button" onclick="removeFeedPost(${idx})" class="btn-delete-item" title="Delete Post">✕ Delete</button>
+          
+          <div class="flex-row align-center gap-8 mb-12 flex-wrap">
+            <span class="section-tag ${post.is_locked ? 'tag-gold' : 'tag-emerald'} font-2xs m-0">
+              ${post.is_locked ? '🔒 SUBSCRIBERS ONLY' : '🌍 PUBLIC PREVIEW'}
+            </span>
+            <span class="font-2xs text-muted font-mono">${post.timestamp || 'Just now'}</span>
+            <span class="font-2xs text-gold ml-auto font-mono">❤️ ${post.likes || 0} Likes</span>
+          </div>
+
+          <div class="form-grid-3 mb-10">
+            <div>
+              <label class="form-label font-2xs">Post Title</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(post.title || '')}" placeholder="VIP Lookbook Teaser" oninput="postsList[${idx}].title = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">Category Tag / Badge</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(post.tag || 'VIP Content')}" placeholder="e.g. VIP Photo, Voice Note, Decree" oninput="postsList[${idx}].tag = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">Access Lock</label>
+              <select class="form-select font-xs" onchange="postsList[${idx}].is_locked = (this.value === 'locked'); renderFeedPosts();">
+                <option value="locked" ${post.is_locked ? 'selected' : ''}>🔒 Subscribers Only</option>
+                <option value="public" ${!post.is_locked ? 'selected' : ''}>🌍 Public Free Preview</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2 mb-10">
+            <div>
+              <label class="form-label font-2xs">Media Attachment URL (Image / Audio / Video)</label>
+              <input type="text" class="form-input font-xs" value="${escapeHtml(post.media_url || '')}" placeholder="https://.../photo.jpg or audio.mp3" oninput="postsList[${idx}].media_url = this.value;">
+            </div>
+            <div>
+              <label class="form-label font-2xs">Media Type</label>
+              <select class="form-select font-xs" onchange="postsList[${idx}].type = this.value;">
+                <option value="image" ${(!post.type || post.type === 'image') ? 'selected' : ''}>📸 Image / Lookbook</option>
+                <option value="audio" ${post.type === 'audio' ? 'selected' : ''}>🎙️ Audio / Voice Note</option>
+                <option value="video" ${post.type === 'video' ? 'selected' : ''}>🎬 Video Clip</option>
+                <option value="text" ${post.type === 'text' ? 'selected' : ''}>📝 Text / Task Only</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group mb-0">
+            <label class="form-label font-2xs">Post Caption / Message / Task Decrees</label>
+            <textarea class="form-textarea font-xs" rows="3" placeholder="Write your post caption, instructions, or submissive decrees..." oninput="postsList[${idx}].content = this.value;">${escapeHtml(post.content || '')}</textarea>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addFeedPost() {
+      postsList.unshift({
+        id: 'post-' + Date.now(),
+        title: "Exclusive Lookbook & Directives",
+        tag: "Exclusive Feed",
+        type: "image",
+        media_url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80",
+        content: "VIP lookbook set for active tier subscribers. Instructions and private protocol details enclosed.",
+        is_locked: true,
+        likes: 0,
+        timestamp: "Just now"
+      });
+      renderFeedPosts();
+    }
+
+    function removeFeedPost(idx) {
+      if (confirm("Delete this feed post?")) {
+        postsList.splice(idx, 1);
+        renderFeedPosts();
+      }
+    }
+
     /* ================= LISTENERS & LIVE PREVIEW ================= */
 
     function useBannerForOg() {
@@ -2290,6 +2429,10 @@
         booking_protocol: bookingStepsList,
         wishlist: wishlistItems,
         social_links: socialLinksList,
+        fan_tier_price: document.getElementById('edit-fan-tier-price')?.value || 'L$1,500',
+        fan_tier_desc: document.getElementById('edit-fan-tier-desc')?.value || '',
+        fan_slurl: document.getElementById('edit-fan-slurl')?.value || '',
+        posts: postsList,
         // Tribute Goal & Privacy Tributes
         tribute_goal: {
           title: document.getElementById('edit-tribute-goal-title')?.value || 'Active Tribute Goal',
@@ -2369,64 +2512,6 @@
       }
     }
   </script>
-</body>
-
-</html>
-
-const result = await response.json();
-
-if (!response.ok || !result.success) {
-throw new Error(result.error || ('Server returned status ' + response.status));
-}
-
-const savedSlug = (result.profile && result.profile.slug) || finalId;
-profilePayload.id = savedSlug;
-profilePayload.slug = savedSlug;
-currentProfile = profilePayload;
-document.getElementById('edit-slug').value = savedSlug;
-const liveLink = document.getElementById('view-live-profile-btn');
-if (liveLink) liveLink.href = `/profile/${savedSlug}/`;
-try {
-localStorage.setItem('cc_profile_edit_' + savedSlug.toLowerCase(), JSON.stringify(profilePayload));
-if (authUUID) localStorage.setItem('cc_profile_edit_' + authUUID.toLowerCase(), JSON.stringify(profilePayload));
-if (profilePayload.sl_username) localStorage.setItem('cc_profile_edit_' + profilePayload.sl_username.toLowerCase(),
-JSON.stringify(profilePayload));
-} catch(e) {}
-
-const blobStatus = result.profile && result.profile._blob_saved ? '💾 Persisted to cloud storage' : '⚠️ In-memory only
-(may not persist across restarts)';
-const storeAvail = result.profile && result.profile._store_available ? 'Store: ✓' : 'Store: ✗';
-const storeErr = (result.profile && result.profile._store_error) ? ` (${result.profile._store_error})` : '';
-
-btn.disabled = false;
-btn.innerHTML = '<span>✓</span> Saved Successfully!';
-
-feedback.style.display = 'block';
-feedback.className = 'form-feedback-box success';
-feedback.style.borderColor = '#10b981';
-feedback.style.color = '#34d399';
-feedback.innerHTML = `
-<strong>✓ Profile &amp; Rate Card Published!</strong><br>
-Your rate card, live availability status, photos, and boundary settings are saved and updated live across the Control
-&amp; Chaos directory.<br>
-<span style="font-size:0.75rem; opacity:0.8;">${blobStatus} | ${storeAvail}${storeErr}</span>
-`;
-
-setTimeout(() => {
-btn.innerHTML = '<span>💾</span> Save &amp; Publish Profile';
-}, 4000);
-} catch (err) {
-btn.disabled = false;
-btn.innerHTML = '<span>💾</span> Save &amp; Publish Profile';
-feedback.style.display = 'block';
-feedback.className = 'form-feedback-box';
-feedback.style.borderColor = '#ef4444';
-feedback.style.color = '#f87171';
-feedback.innerHTML = `<strong>Error saving profile:</strong> ${err.message}. Please check your connection or contact sim
-tech support.`;
-}
-}
-</script>
 </body>
 
 </html>

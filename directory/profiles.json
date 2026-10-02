@@ -253,6 +253,44 @@
     "paypal_me": "https://paypal.me/AlekZaneSL",
     "cashapp": "$AlekZane",
     "role_type": "sub",
+    "fan_tier_price": "L$1,500 / month",
+    "fan_tier_desc": "Full access to private VIP lookbooks, voice note sessions, obedience decrees, and direct IM priority.",
+    "fan_slurl": "https://maps.secondlife.com/secondlife/Los%20Pengos/85/167/3000",
+    "posts": [
+      {
+        "id": "post-1",
+        "tag": "🔒 Exclusive Lookbook",
+        "type": "image",
+        "title": "Private Skybox Protocol & Late Night Session Look",
+        "content": "A peek behind the scenes at our skybox session setup. Full high-resolution album and uncropped photos unlocked for monthly tier patrons.",
+        "media_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
+        "is_locked": true,
+        "likes": 24,
+        "timestamp": "2 hours ago"
+      },
+      {
+        "id": "post-2",
+        "tag": "🎙️ Audio Decree",
+        "type": "audio",
+        "title": "Unfiltered British Voice Note & Daily Protocol Reminder",
+        "content": "A special audio update for my active patrons and Mistresses. Listen to the latest daily briefing and verbal deference recording.",
+        "media_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        "is_locked": false,
+        "likes": 42,
+        "timestamp": "Yesterday"
+      },
+      {
+        "id": "post-3",
+        "tag": "👑 VIP Teaser",
+        "type": "image",
+        "title": "Formal Gala Arm Candy Preview",
+        "content": "Preparing for tonight's formal ballroom event at Control & Chaos Estate. Thank you to everyone supporting my collar and formal menswear tribute goal!",
+        "media_url": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
+        "is_locked": false,
+        "likes": 67,
+        "timestamp": "3 days ago"
+      }
+    ],
     "wishlist": [
       {
         "title": "Throne Tribute Wishlist",
