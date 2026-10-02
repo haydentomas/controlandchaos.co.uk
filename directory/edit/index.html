@@ -61,20 +61,20 @@
       top: 80px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
     }
 
     .sidebar-nav-card {
       background: var(--editor-card);
       border: 1px solid var(--editor-card-border);
       border-radius: 12px;
-      padding: 14px;
+      padding: 16px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
     .sidebar-nav-header {
-      padding: 6px 8px 12px;
-      margin-bottom: 8px;
+      padding: 4px 6px 14px;
+      margin-bottom: 12px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       justify-content: space-between;
@@ -84,22 +84,22 @@
     .editor-sidebar-tabs {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 10px; /* Clear breathing room between all sidebar buttons */
     }
 
     .sidebar-tab-btn {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px 14px;
-      border-radius: 8px;
+      padding: 13px 16px;
+      border-radius: 9px;
       background: rgba(255, 255, 255, 0.02);
-      border: 1px solid transparent;
+      border: 1px solid rgba(255, 255, 255, 0.07);
       color: var(--text-muted);
       font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       text-align: left;
       width: 100%;
       text-decoration: none;
@@ -107,17 +107,17 @@
     }
 
     .sidebar-tab-btn:hover {
-      background: rgba(212, 175, 55, 0.08);
+      background: rgba(212, 175, 55, 0.1);
       color: #fff;
-      border-color: rgba(212, 175, 55, 0.25);
-      transform: translateX(2px);
+      border-color: rgba(212, 175, 55, 0.35);
+      transform: translateX(3px);
     }
 
     .sidebar-tab-btn.active {
-      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(184, 134, 11, 0.12) 100%);
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(184, 134, 11, 0.15) 100%);
       border-color: #d4af37;
       color: #ffd700;
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+      box-shadow: 0 0 18px rgba(212, 175, 55, 0.2);
       font-weight: 700;
     }
 
@@ -149,7 +149,88 @@
       border: 1px solid var(--editor-card-border);
       border-radius: 12px;
       padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px; /* Distinct gap between save and live view buttons */
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Modal Backdrop & Dialog */
+    .editor-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    .editor-modal-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .editor-modal-box {
+      background: #131118;
+      border: 1px solid var(--gold-bright);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 175, 55, 0.25);
+      padding: 26px 28px;
+      position: relative;
+      transform: translateY(20px) scale(0.97);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .editor-modal-backdrop.open .editor-modal-box {
+      transform: translateY(0) scale(1);
+    }
+
+    .editor-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    /* Floating Toast Notification */
+    #save-toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 10000;
+      background: #141219;
+      border: 1px solid #10b981;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      padding: 14px 22px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(-50px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #save-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
     }
 
     .editor-main-panel {
@@ -1056,7 +1137,7 @@
               <div class="editor-card">
                 <div class="editor-card-header">
                   <h3 class="editor-card-title"><span class="icon">📱</span> Exclusive Feed Posts</h3>
-                  <button type="button" onclick="addFeedPost()" class="btn btn-gold btn-sm" style="padding: 6px 14px; font-size: 0.78rem;">
+                  <button type="button" onclick="openCreatePostModal()" class="btn btn-gold btn-sm" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 700; box-shadow: 0 0 12px rgba(212,175,55,0.3);">
                     <span>➕</span> Create New Post
                   </button>
                 </div>
@@ -1103,21 +1184,82 @@
             </div>
           </div>
 
-          <!-- Save / Publish Action Bar (Always visible across all tabs!) -->
-          <div class="editor-card"
-            style="background: linear-gradient(180deg, #181824 0%, #101018 100%); border: 1px solid var(--gold-bright); margin-top: 24px; position: sticky; bottom: 16px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
-            <div class="flex-between align-center flex-wrap gap-12">
-              <button onclick="saveProfile()" id="save-btn" class="btn btn-gold btn-lg w-100 flex-center" style="font-weight: 800; font-size: 1.05rem; padding: 14px 20px; box-shadow: 0 4px 20px rgba(212,175,55,0.35);">
-                <span>💾</span> Save &amp; Publish Profile
-              </button>
-            </div>
-            <div id="save-feedback" class="form-feedback-box mt-14" style="display:none;"></div>
-          </div>
-
         </div>
       </div>
     </div>
   </main>
+
+  <!-- Feed Post Composer Modal Popup -->
+  <div id="feed-post-modal" class="editor-modal-backdrop" onclick="if(event.target===this) closePostModal()">
+    <div class="editor-modal-box">
+      <div class="editor-modal-header">
+        <h3 id="modal-post-title-header" class="editor-card-title m-0">
+          <span class="icon">✨</span> Create Exclusive Feed Post
+        </h3>
+        <button type="button" onclick="closePostModal()" style="background:transparent; border:none; color:#cbd5e1; font-size:1.4rem; cursor:pointer; padding:4px 8px;">✕</button>
+      </div>
+
+      <input type="hidden" id="modal-post-index" value="-1">
+
+      <div class="form-group">
+        <label class="form-label" for="modal-post-title">Post Title *</label>
+        <input type="text" id="modal-post-title" class="form-input" placeholder="e.g. VIP Lookbook Set, Private Audio Decree, Session Teaser" required>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label" for="modal-post-tag">Category Tag / Badge</label>
+          <input type="text" id="modal-post-tag" class="form-input" placeholder="e.g. Lookbook, Decree, Audio, Task">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="modal-post-lock">Access Permission</label>
+          <select id="modal-post-lock" class="form-select">
+            <option value="locked">🔒 Subscribers Only (Fan Pass Required)</option>
+            <option value="public">🌍 Public Free Preview (Visible to All)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label" for="modal-post-type">Media Type</label>
+          <select id="modal-post-type" class="form-select" onchange="onModalMediaTypeChange(this.value)">
+            <option value="image">📸 Image / Lookbook Photo</option>
+            <option value="audio">🎙️ Audio / Voice Note</option>
+            <option value="video">🎬 Video Clip / MP4</option>
+            <option value="text">📝 Text / Task Decrees Only</option>
+          </select>
+        </div>
+        <div class="form-group" id="modal-media-url-wrap">
+          <label class="form-label" for="modal-post-media-url">Media Attachment URL</label>
+          <input type="text" id="modal-post-media-url" class="form-input" placeholder="https://images.unsplash.com/... or mp3/mp4 url" oninput="updateModalMediaThumb(this.value)">
+        </div>
+      </div>
+
+      <div id="modal-media-preview-box" style="display:none; margin-bottom:16px;">
+        <img id="modal-media-thumb" class="img-preview-thumb" style="height:140px; width:100%; border-radius:8px;" src="" alt="Media Preview" onerror="this.style.display='none'">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="modal-post-content">Post Caption / Instructions / Decrees</label>
+        <textarea id="modal-post-content" class="form-textarea" rows="4" placeholder="Write details, protocol decrees, private notes, or tribute requests for your subscribers..."></textarea>
+      </div>
+
+      <div class="flex-between align-center gap-12 mt-20 pt-16" style="border-top: 1px solid rgba(255,255,255,0.08);">
+        <button type="button" onclick="closePostModal()" class="btn btn-secondary btn-sm" style="padding: 10px 18px;">
+          ✕ Cancel
+        </button>
+        <button type="button" onclick="savePostModal()" class="btn btn-gold btn-md" style="font-weight: 700; padding: 10px 24px; box-shadow: 0 0 15px rgba(212,175,55,0.3);">
+          <span>💾</span> Save Post
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Floating Save Toast -->
+  <div id="save-toast">
+    <span>💾</span> Profile &amp; Rate Card Published Live!
+  </div>
 
   <!-- Master Footer Component -->
   <site-footer></site-footer>
@@ -1943,102 +2085,186 @@
       renderReviews();
     }
 
-    // Exclusive Feed Posts
-    function renderFeedPosts() {
-      const container = document.getElementById('feed-posts-repeater-container');
-      if (!container) return;
-      if (!postsList.length) {
-        container.innerHTML = '<p class="font-xs text-muted" style="padding: 12px 0;">No feed posts yet. Click "➕ Create New Post" above to share exclusive content with your subscribers.</p>';
+    // Exclusive Feed Posts & Modal
+    function openCreatePostModal() {
+      document.getElementById('modal-post-title-header').innerHTML = '<span class="icon">✨</span> Create Exclusive Feed Post';
+      document.getElementById('modal-post-index').value = '-1';
+      document.getElementById('modal-post-title').value = '';
+      document.getElementById('modal-post-tag').value = 'VIP Lookbook';
+      document.getElementById('modal-post-lock').value = 'locked';
+      document.getElementById('modal-post-type').value = 'image';
+      document.getElementById('modal-post-media-url').value = '';
+      document.getElementById('modal-post-content').value = '';
+      onModalMediaTypeChange('image');
+      updateModalMediaThumb('');
+      
+      const modal = document.getElementById('feed-post-modal');
+      if (modal) modal.classList.add('open');
+      setTimeout(() => document.getElementById('modal-post-title')?.focus(), 100);
+    }
+
+    function openEditPostModal(idx) {
+      const p = postsList[idx];
+      if (!p) return;
+      document.getElementById('modal-post-title-header').innerHTML = '<span class="icon">✏️</span> Edit Feed Post';
+      document.getElementById('modal-post-index').value = String(idx);
+      document.getElementById('modal-post-title').value = p.title || '';
+      document.getElementById('modal-post-tag').value = p.tag || 'VIP Content';
+      document.getElementById('modal-post-lock').value = p.is_locked ? 'locked' : 'public';
+      document.getElementById('modal-post-type').value = p.type || 'image';
+      document.getElementById('modal-post-media-url').value = p.media_url || '';
+      document.getElementById('modal-post-content').value = p.content || '';
+      onModalMediaTypeChange(p.type || 'image');
+      updateModalMediaThumb(p.media_url || '');
+
+      const modal = document.getElementById('feed-post-modal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function closePostModal() {
+      const modal = document.getElementById('feed-post-modal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function onModalMediaTypeChange(type) {
+      const urlWrap = document.getElementById('modal-media-url-wrap');
+      const urlInput = document.getElementById('modal-post-media-url');
+      if (type === 'text') {
+        if (urlWrap) urlWrap.style.display = 'none';
+        updateModalMediaThumb('');
+      } else {
+        if (urlWrap) urlWrap.style.display = 'block';
+        if (type === 'image') urlInput.placeholder = 'https://images.unsplash.com/... or /assets/uploads/photo.jpg';
+        else if (type === 'audio') urlInput.placeholder = 'https://.../sample.mp3 or podcast episode link';
+        else if (type === 'video') urlInput.placeholder = 'https://.../clip.mp4 or video stream URL';
+        updateModalMediaThumb(urlInput.value);
+      }
+    }
+
+    function updateModalMediaThumb(url) {
+      const box = document.getElementById('modal-media-preview-box');
+      const thumb = document.getElementById('modal-media-thumb');
+      const type = document.getElementById('modal-post-type')?.value || 'image';
+      if (type === 'image' && url && url.trim().startsWith('http')) {
+        thumb.src = url.trim();
+        thumb.style.display = 'block';
+        box.style.display = 'block';
+      } else {
+        box.style.display = 'none';
+        thumb.style.display = 'none';
+      }
+    }
+
+    function savePostModal() {
+      const title = (document.getElementById('modal-post-title').value || '').trim();
+      if (!title) {
+        alert("Please provide a title for this post.");
+        document.getElementById('modal-post-title').focus();
         return;
       }
-      container.innerHTML = postsList.map((post, idx) => `
-        <div class="repeater-item-box" id="feed-post-card-${idx}" style="border: 1px solid ${post.is_locked ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.1)'}; background: #110f15; margin-bottom: 18px; position: relative;">
-          <button type="button" onclick="removeFeedPost(${idx})" class="btn-delete-item" title="Delete Post">✕ Delete</button>
-          
-          <div class="flex-row align-center gap-8 mb-12 flex-wrap">
-            <span id="post-lock-badge-${idx}" class="section-tag ${post.is_locked ? 'tag-gold' : 'tag-emerald'} font-2xs m-0">
-              ${post.is_locked ? '🔒 SUBSCRIBERS ONLY' : '🌍 PUBLIC PREVIEW'}
-            </span>
-            <span class="font-2xs text-muted font-mono">${post.timestamp || 'Just now'}</span>
-            <span class="font-2xs text-gold ml-auto font-mono">❤️ ${post.likes || 0} Likes</span>
-          </div>
+      const idxStr = document.getElementById('modal-post-index').value;
+      const idx = parseInt(idxStr);
+      const tag = document.getElementById('modal-post-tag').value || 'VIP Content';
+      const isLocked = document.getElementById('modal-post-lock').value === 'locked';
+      const type = document.getElementById('modal-post-type').value || 'image';
+      const mediaUrl = document.getElementById('modal-post-media-url').value || '';
+      const content = document.getElementById('modal-post-content').value || '';
 
-          <div class="form-grid-3 mb-10">
-            <div>
-              <label class="form-label font-2xs">Post Title</label>
-              <input type="text" class="form-input font-xs" value="${escapeHtml(post.title || '')}" placeholder="VIP Lookbook Teaser" oninput="postsList[${idx}].title = this.value;">
-            </div>
-            <div>
-              <label class="form-label font-2xs">Category Tag / Badge</label>
-              <input type="text" class="form-input font-xs" value="${escapeHtml(post.tag || 'VIP Content')}" placeholder="e.g. VIP Photo, Voice Note, Decree" oninput="postsList[${idx}].tag = this.value;">
-            </div>
-            <div>
-              <label class="form-label font-2xs">Access Lock</label>
-              <select class="form-select font-xs" onchange="updatePostLock(${idx}, this.value)">
-                <option value="locked" ${post.is_locked ? 'selected' : ''}>🔒 Subscribers Only</option>
-                <option value="public" ${!post.is_locked ? 'selected' : ''}>🌍 Public Free Preview</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-grid-2 mb-10">
-            <div>
-              <label class="form-label font-2xs">Media Attachment URL (Image / Audio / Video)</label>
-              <input type="text" class="form-input font-xs" value="${escapeHtml(post.media_url || '')}" placeholder="https://.../photo.jpg or audio.mp3" oninput="postsList[${idx}].media_url = this.value;">
-            </div>
-            <div>
-              <label class="form-label font-2xs">Media Type</label>
-              <select class="form-select font-xs" onchange="postsList[${idx}].type = this.value;">
-                <option value="image" ${(!post.type || post.type === 'image') ? 'selected' : ''}>📸 Image / Lookbook</option>
-                <option value="audio" ${post.type === 'audio' ? 'selected' : ''}>🎙️ Audio / Voice Note</option>
-                <option value="video" ${post.type === 'video' ? 'selected' : ''}>🎬 Video Clip</option>
-                <option value="text" ${post.type === 'text' ? 'selected' : ''}>📝 Text / Task Only</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group mb-0">
-            <label class="form-label font-2xs">Post Caption / Message / Task Decrees</label>
-            <textarea class="form-textarea font-xs" rows="3" placeholder="Write your post caption, instructions, or submissive decrees..." oninput="postsList[${idx}].content = this.value;">${escapeHtml(post.content || '')}</textarea>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function updatePostLock(idx, val) {
-      const isLocked = (val === 'locked');
-      postsList[idx].is_locked = isLocked;
-      const badge = document.getElementById(`post-lock-badge-${idx}`);
-      const card = document.getElementById(`feed-post-card-${idx}`);
-      if (badge) {
-        badge.className = `section-tag ${isLocked ? 'tag-gold' : 'tag-emerald'} font-2xs m-0`;
-        badge.innerText = isLocked ? '🔒 SUBSCRIBERS ONLY' : '🌍 PUBLIC PREVIEW';
+      if (idx >= 0 && idx < postsList.length) {
+        // Edit existing
+        postsList[idx].title = title;
+        postsList[idx].tag = tag;
+        postsList[idx].is_locked = isLocked;
+        postsList[idx].type = type;
+        postsList[idx].media_url = mediaUrl;
+        postsList[idx].content = content;
+      } else {
+        // Create new
+        postsList.unshift({
+          id: 'post-' + Date.now(),
+          title: title,
+          tag: tag,
+          is_locked: isLocked,
+          type: type,
+          media_url: mediaUrl,
+          content: content,
+          likes: 0,
+          timestamp: 'Just now'
+        });
       }
-      if (card) {
-        card.style.borderColor = isLocked ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.1)';
-      }
-    }
 
-    function addFeedPost() {
-      postsList.unshift({
-        id: 'post-' + Date.now(),
-        title: "Exclusive Lookbook & Directives",
-        tag: "Exclusive Feed",
-        type: "image",
-        media_url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80",
-        content: "VIP lookbook set for active tier subscribers. Instructions and private protocol details enclosed.",
-        is_locked: true,
-        likes: 0,
-        timestamp: "Just now"
-      });
+      closePostModal();
       renderFeedPosts();
+      showToast('Feed post saved! Remember to click 💾 Save Profile.');
     }
 
     function removeFeedPost(idx) {
       if (confirm("Delete this feed post?")) {
         postsList.splice(idx, 1);
         renderFeedPosts();
+        showToast('Feed post removed.');
       }
+    }
+
+    function renderFeedPosts() {
+      const container = document.getElementById('feed-posts-repeater-container');
+      if (!container) return;
+      if (!postsList.length) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 36px 20px; border: 1px dashed rgba(212,175,55,0.25); border-radius: 10px; background: rgba(0,0,0,0.25);">
+            <div style="font-size: 2.2rem; margin-bottom: 10px;">📱</div>
+            <h4 class="text-gold font-sm mb-6">No Feed Posts Published Yet</h4>
+            <p class="font-xs text-muted max-w-500 mx-auto mb-16">
+              Share lookbooks, teasers, decrees, and audio clips with your active fan tier subscribers.
+            </p>
+            <button type="button" onclick="openCreatePostModal()" class="btn btn-gold btn-sm" style="font-weight: 700;">
+              <span>➕</span> Create First Post
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const typeIcons = { image: '📸', audio: '🎙️', video: '🎬', text: '📝' };
+
+      container.innerHTML = postsList.map((post, idx) => `
+        <div class="repeater-item-box" style="border: 1px solid ${post.is_locked ? 'rgba(212,175,55,0.35)' : 'rgba(255,255,255,0.12)'}; background: #110f15; margin-bottom: 14px; padding: 16px 18px; border-radius: 10px;">
+          <div class="flex-between align-center flex-wrap gap-10 mb-10">
+            <div class="flex-row align-center gap-8 flex-wrap">
+              <span class="section-tag ${post.is_locked ? 'tag-gold' : 'tag-emerald'} font-2xs m-0">
+                ${post.is_locked ? '🔒 SUBSCRIBERS ONLY' : '🌍 PUBLIC PREVIEW'}
+              </span>
+              <span class="section-tag tag-secondary font-2xs m-0" style="background:rgba(255,255,255,0.05); color:#cbd5e1;">
+                ${typeIcons[post.type] || '📸'} ${escapeHtml(post.tag || 'VIP')}
+              </span>
+              <span class="font-2xs text-muted font-mono">${post.timestamp || 'Just now'}</span>
+            </div>
+
+            <div class="flex-row align-center gap-8 ml-auto">
+              <button type="button" onclick="openEditPostModal(${idx})" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.75rem;">
+                ✏️ Edit
+              </button>
+              <button type="button" onclick="removeFeedPost(${idx})" class="btn-delete-item" style="position:static; padding: 4px 8px; font-size: 0.75rem;" title="Delete Post">
+                ✕ Delete
+              </button>
+            </div>
+          </div>
+
+          <h4 class="font-sm font-bold text-white mb-6" style="margin: 0 0 6px 0;">${escapeHtml(post.title || 'Untitled Post')}</h4>
+          
+          ${post.content ? `<p class="font-xs text-muted mb-10" style="line-height: 1.5; margin-bottom: 8px;">${escapeHtml(post.content)}</p>` : ''}
+
+          ${(post.type === 'image' && post.media_url) ? `
+            <div style="margin-top: 8px; max-width: 260px;">
+              <img src="${escapeHtml(post.media_url)}" alt="Post Media" style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(212,175,55,0.25);">
+            </div>
+          ` : ''}
+
+          ${(post.type === 'audio' && post.media_url) ? `
+            <div class="font-2xs text-gold font-mono mt-6">🎙️ Audio Attachment: <a href="${escapeHtml(post.media_url)}" target="_blank" class="text-gold" style="text-decoration:underline;">${escapeHtml(post.media_url.substring(0, 45))}...</a></div>
+          ` : ''}
+        </div>
+      `).join('');
     }
 
     /* ================= LISTENERS & STATE ================= */
@@ -2095,6 +2321,14 @@
       // Streamlined full-width layout; live preview moved to direct profile viewing
     }
 
+    function showToast(msg) {
+      const toast = document.getElementById('save-toast');
+      if (!toast) return;
+      toast.innerHTML = `<span>💾</span> ${msg}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -2103,12 +2337,11 @@
     /* ================= SAVE & PUBLISH ================= */
 
     async function saveProfile() {
-      const btn = document.getElementById('save-btn');
-      const feedback = document.getElementById('save-feedback');
-
-      btn.disabled = true;
-      btn.innerHTML = '<span>⏳</span> Saving & Publishing Profile...';
-      feedback.style.display = 'none';
+      const saveButtons = document.querySelectorAll('button[onclick="saveProfile()"]');
+      saveButtons.forEach(b => {
+        b.disabled = true;
+        b.innerHTML = '<span>⏳</span> Saving...';
+      });
 
       const selectedTags = Array.from(document.querySelectorAll('.tag-choice.selected')).map(el => el.innerText.trim());
       const customTagsRaw = document.getElementById('edit-custom-tags')?.value || '';
@@ -2217,34 +2450,24 @@
           throw new Error(result.error || ('Server returned status ' + response.status));
         }
 
-        const blobStatus = result.profile && result.profile._blob_saved ? '💾 Persisted to cloud storage' : '⚠️ In-memory only (may not persist across restarts)';
-        const storeAvail = result.profile && result.profile._store_available ? 'Store: ✓' : 'Store: ✗';
-        const storeErr = (result.profile && result.profile._store_error) ? ` (${result.profile._store_error})` : '';
+        saveButtons.forEach(b => {
+          b.disabled = false;
+          b.innerHTML = '<span>✓</span> Saved!';
+        });
 
-        btn.disabled = false;
-        btn.innerHTML = '<span>✓</span> Saved Successfully!';
-
-        feedback.style.display = 'block';
-        feedback.className = 'form-feedback-box success';
-        feedback.style.borderColor = '#10b981';
-        feedback.style.color = '#34d399';
-        feedback.innerHTML = `
-          <strong>✓ Profile &amp; Rate Card Published!</strong><br>
-          Your rate card, live availability status, photos, and boundary settings are saved and updated live across the Control &amp; Chaos directory.<br>
-          <span style="font-size:0.75rem; opacity:0.8;">${blobStatus} | ${storeAvail}${storeErr}</span>
-        `;
+        showToast('Profile &amp; Rate Card Published Live!');
 
         setTimeout(() => {
-          btn.innerHTML = '<span>💾</span> Save &amp; Publish Profile';
-        }, 4000);
+          saveButtons.forEach(b => {
+            b.innerHTML = '<span>💾</span> Save Profile';
+          });
+        }, 3500);
       } catch (err) {
-        btn.disabled = false;
-        btn.innerHTML = '<span>💾</span> Save &amp; Publish Profile';
-        feedback.style.display = 'block';
-        feedback.className = 'form-feedback-box';
-        feedback.style.borderColor = '#ef4444';
-        feedback.style.color = '#f87171';
-        feedback.innerHTML = `<strong>Error saving profile:</strong> ${err.message}. Please check your connection or contact sim tech support.`;
+        saveButtons.forEach(b => {
+          b.disabled = false;
+          b.innerHTML = '<span>💾</span> Save Profile';
+        });
+        alert(`Error saving profile: ${err.message}. Please check connection.`);
       }
     }
   </script>
