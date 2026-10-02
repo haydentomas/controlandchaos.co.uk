@@ -116,9 +116,64 @@
     }
 
     /* Profile Tabs Navigation */
+    .profile-tabs-nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 35px;
+      border-bottom: 1px solid var(--gold-border-subtle);
+      padding-bottom: 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .profile-tabs-nav::-webkit-scrollbar { display: none; }
+    .profile-tab-btn {
+      background: rgba(22, 19, 16, 0.7);
+      border: 1px solid var(--gold-border-subtle);
+      color: var(--text-muted);
+      padding: 12px 24px;
+      border-radius: 9999px;
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+    .profile-tab-btn:hover {
+      border-color: var(--gold-border);
+      color: #fff;
+      background: rgba(36, 30, 24, 0.85);
+      transform: translateY(-1px);
+    }
+    .profile-tab-btn.active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(184, 154, 88, 0.08) 100%);
+      border-color: var(--gold-bright);
+      color: var(--gold-bright);
+      box-shadow: 0 4px 16px rgba(212, 175, 55, 0.18);
+    }
+    .tab-badge {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--gold-bright);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+    .tab-badge-locked {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
     /* Exclusive Feed Layout */
     .feed-container {
-      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
     }
     .feed-fan-hero {
       background: linear-gradient(145deg, rgba(28, 23, 17, 0.92) 0%, rgba(16, 13, 10, 0.96) 100%);
@@ -365,13 +420,20 @@
   <main class="section" style="padding: 60px 0;">
     <div class="container">
       
-      <!-- Top Action Bar & Hardware Support Badges -->
-      <div id="profile-toolbar" style="margin-bottom: 30px;">
-        <!-- Injected dynamically -->
+      <!-- Segmented Profile View Tabs -->
+      <div class="profile-tabs-nav" id="profile-tabs-nav">
+        <button class="profile-tab-btn active" id="tab-btn-ratecard" onclick="switchProfileTab('ratecard')">
+          <span>📋</span> Rate Card &amp; Bio
+        </button>
+        <button class="profile-tab-btn" id="tab-btn-feed" onclick="switchProfileTab('feed')">
+          <span>🔒</span> Exclusive Feed <span class="tab-badge" id="tab-feed-badge">3</span>
+        </button>
       </div>
 
-      <!-- Two-Column Layout: Left (About, Rate Categories, Custom Blocks, Exclusive Feed, Booking Form) | Right (Gallery, Hardware, Limits, How to Book, Reviews, Socials) -->
-      <div style="display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 40px; align-items: start;" id="profile-main-layout">
+      <!-- Tab Pane 1: Rate Card & Bio Layout -->
+      <div id="tab-pane-ratecard">
+        <!-- Two-Column Layout: Left (About, Rate Categories, Custom Blocks, Booking Calc) | Right (Gallery, Hardware, Limits, How to Book, Reviews, Socials) -->
+        <div style="display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 40px; align-items: start;" id="profile-main-layout">
         
         <!-- Left Column: Bio, Categorized Rate Cards & Custom Sections -->
         <div>
@@ -460,31 +522,6 @@
                   <span>💎</span> Pay / Settle Quote
                 </button>
               </div>
-            </div>
-          </div>
-
-          <!-- ================= EXCLUSIVE CREATOR FEED & LOOKBOOKS ================= -->
-          <div class="card" id="profile-feed-card" style="margin-bottom: 30px; display: none; border-color: rgba(212,175,55,0.4); background: linear-gradient(165deg, #181512 0%, #100d0a 100%);">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.06);">
-              <div>
-                <span class="section-tag tag-gold" style="margin-bottom: 6px;">CREATOR FEED</span>
-                <h3 class="card-title" id="profile-feed-title" style="font-size: 22px; margin: 0; color: var(--gold-bright); display: flex; align-items: center; gap: 8px;">
-                  <span>📱</span> <span id="feed-header-title">Exclusive Posts &amp; Lookbooks</span>
-                </h3>
-                <p style="font-size: 13px; color: var(--text-muted); margin: 4px 0 0;" id="feed-header-desc">
-                  Exclusive photo sets, uncensored audio voice notes, and daily protocol decrees.
-                </p>
-              </div>
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <button class="btn btn-gold btn-sm" onclick="openSubscribeModal()" id="feed-hero-sub-btn" style="padding: 8px 16px; font-size: 12.5px; font-weight: 800;">
-                  <span>🔒</span> Unlock Inner Circle (<span id="feed-hero-price">L$1,500/mo</span>)
-                </button>
-              </div>
-            </div>
-
-            <!-- Feed Posts Stream Container -->
-            <div id="feed-posts-stream">
-              <!-- Rendered dynamically via JS -->
             </div>
           </div>
 
@@ -669,6 +706,41 @@
         </div>
 
       </div>
+      <!-- End Tab Pane 1: Rate Card -->
+
+      <!-- Tab Pane 2: Creator Feed Wall -->
+      <div id="tab-pane-feed" style="display: none;">
+        <div class="feed-container">
+          
+          <!-- Fan Club Hero & Perks Banner -->
+          <div class="feed-fan-hero" id="feed-hero-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+              <div>
+                <div class="font-xs text-gold font-mono" style="letter-spacing: 0.1em; text-transform: uppercase;">👑 CREATOR INNER CIRCLE</div>
+                <h3 style="font-family: var(--font-heading); font-size: 24px; color: #fff; margin: 4px 0 8px;" id="feed-hero-domme-name">Exclusive Feed &amp; Lookbooks</h3>
+                <p style="font-size: 13.5px; color: var(--text-muted); margin: 0; max-width: 500px;" id="feed-hero-desc">
+                  Unlock private photoshoots, uncensored session previews, audio voice notes, and daily obedience tasks.
+                </p>
+              </div>
+              <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                <div style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: var(--gold-bright);" id="feed-hero-price">
+                  L$1,500 <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); font-weight: 400;">/ month</span>
+                </div>
+                <button class="btn btn-gold btn-sm" onclick="openSubscribeModal()" id="feed-hero-sub-btn">
+                  <span>🔒</span> Unlock Inner Circle
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feed Posts Stream Container -->
+          <div id="feed-posts-stream">
+            <!-- Rendered dynamically via JS -->
+          </div>
+
+        </div>
+      </div>
+      <!-- End Tab Pane 2 -->
 
     </div>
   </main>
@@ -1989,6 +2061,25 @@
         return localStorage.getItem('cc_fan_unlocked_' + uId) === '1';
       }
 
+      window.switchProfileTab = function(tabName) {
+        const btnRatecard = document.getElementById('tab-btn-ratecard');
+        const btnFeed = document.getElementById('tab-btn-feed');
+        const paneRatecard = document.getElementById('tab-pane-ratecard');
+        const paneFeed = document.getElementById('tab-pane-feed');
+
+        if (tabName === 'feed') {
+          if (btnRatecard) btnRatecard.classList.remove('active');
+          if (btnFeed) btnFeed.classList.add('active');
+          if (paneRatecard) paneRatecard.style.display = 'none';
+          if (paneFeed) paneFeed.style.display = 'block';
+        } else {
+          if (btnFeed) btnFeed.classList.remove('active');
+          if (btnRatecard) btnRatecard.classList.add('active');
+          if (paneFeed) paneFeed.style.display = 'none';
+          if (paneRatecard) paneRatecard.style.display = 'block';
+        }
+      };
+
       window.openSubscribeModal = function() {
         const modal = document.getElementById('feed-subscribe-modal');
         if (modal) {
@@ -2022,21 +2113,16 @@
       };
 
       function renderFeed() {
-        const posts = (Array.isArray(profileData.posts) && profileData.posts.length > 0) ? profileData.posts : (profileData.fan_tier_price ? defaultSamplePosts : []);
-        const feedCard = document.getElementById('profile-feed-card');
+        const posts = (Array.isArray(profileData.posts) && profileData.posts.length > 0) ? profileData.posts : defaultSamplePosts;
         const feedStream = document.getElementById('feed-posts-stream');
-        const headerTitle = document.getElementById('feed-header-title');
+        const feedBadge = document.getElementById('tab-feed-badge');
+        const heroDomme = document.getElementById('feed-hero-domme-name');
         const heroPrice = document.getElementById('feed-hero-price');
         const heroSubBtn = document.getElementById('feed-hero-sub-btn');
 
-        if (!posts || posts.length === 0) {
-          if (feedCard) feedCard.style.display = 'none';
-          return;
-        }
-
-        if (feedCard) feedCard.style.display = 'block';
-        if (headerTitle) headerTitle.textContent = `${profileData.name}'s Exclusive Feed`;
-        if (heroPrice) heroPrice.textContent = `${profileData.fan_tier_price || 'L$1,500'}/mo`;
+        if (feedBadge) feedBadge.textContent = posts.length;
+        if (heroDomme) heroDomme.textContent = `${profileData.name}'s Inner Circle`;
+        if (heroPrice) heroPrice.innerHTML = `${profileData.fan_tier_price || 'L$1,500'} <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); font-weight: 400;">/ month</span>`;
 
         const unlocked = isFanUnlocked();
         if (heroSubBtn) {
@@ -2046,7 +2132,7 @@
             heroSubBtn.onclick = () => alert('You have active VIP member access to this creator.');
           } else {
             heroSubBtn.className = 'btn btn-gold btn-sm';
-            heroSubBtn.innerHTML = `<span>🔒</span> Unlock Inner Circle (${profileData.fan_tier_price || 'L$1,500'}/mo)`;
+            heroSubBtn.innerHTML = '<span>🔒</span> Unlock Inner Circle';
             heroSubBtn.onclick = openSubscribeModal;
           }
         }

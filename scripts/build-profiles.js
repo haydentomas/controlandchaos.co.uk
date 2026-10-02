@@ -9,7 +9,7 @@ const path = require('path');
 
 const PROFILES_DIR = path.join(__dirname, '../directory/profiles');
 const COMBINED_JSON = path.join(__dirname, '../directory/profiles.json');
-const TEMPLATE_FILE = path.join(__dirname, '../profile/_template/index.html');
+const TEMPLATE_FILE = path.join(__dirname, '../directory/profile.html');
 const PROFILE_OUT_DIR = path.join(__dirname, '../profile');
 
 function escapeHtml(str) {
