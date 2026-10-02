@@ -1135,8 +1135,24 @@
                 <p class="font-xs text-muted mb-16">
                   Publish updates, photo sets, voice notes, tasks, and teasers. Choose whether each post is <strong>Locked (Subscribers Only)</strong> or <strong>Public Preview</strong>.
                 </p>
-                <div id="feed-posts-repeater-container">
-                  <!-- Populated dynamically via renderFeedPosts() -->
+              <!-- VIP Custom Vanity Domain Manager -->
+              <div class="editor-card" style="border-color: rgba(212,175,55,0.45); background: linear-gradient(180deg, #14111d 0%, #0d0b13 100%);">
+                <div class="editor-card-header">
+                  <h3 class="editor-card-title"><span class="icon">🌐</span> Custom Vanity Domain (VIP Perk)</h3>
+                  <span class="section-tag tag-gold font-2xs m-0">WHITE-LABEL URL</span>
+                </div>
+                <p class="font-xs text-muted mb-14">
+                  Connect your own private domain (e.g. <code>alekzane.com</code> or <code>vip.mistressvane.com</code>) to point directly to your Control &amp; Chaos profile while keeping your standard directory URL active.
+                </p>
+                
+                <div class="form-group mb-12">
+                  <label class="form-label font-2xs" for="edit-custom-domain">Your Custom Domain</label>
+                  <input type="text" id="edit-custom-domain" class="form-input font-xs" placeholder="e.g. alekzane.com or vip.yourbrand.com">
+                </div>
+
+                <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(212,175,55,0.3); border-radius: 8px; padding: 12px 14px; font-size: 0.78rem; color: #cbd5e1; line-height: 1.6;">
+                  <strong class="text-gold">⚡ 1-Minute DNS Setup at your Domain Registrar (GoDaddy, Namecheap, Cloudflare):</strong><br>
+                  Add a <strong>CNAME Record</strong>: Host <code>@</code> (or your subdomain) &rarr; Target / Value: <code style="color:#ffd700; background:rgba(212,175,55,0.15); padding:2px 6px; border-radius:4px;">controlandchaos.co.uk</code>
                 </div>
               </div>
             </div>
@@ -1751,6 +1767,7 @@
       document.getElementById('edit-fan-tier-price').value = p.fan_tier_price || 'L$1,500 / month';
       document.getElementById('edit-fan-tier-desc').value = p.fan_tier_desc || 'Unlocks all restricted lookbooks, uncensored audio notes, and direct priority decrees.';
       document.getElementById('edit-fan-slurl').value = p.fan_slurl || p.slurl || 'secondlife://Chaos%20Manor/128/142/23';
+      document.getElementById('edit-custom-domain').value = p.custom_domain || '';
 
       // VIP Lock Check for Exclusive Feed
       const isVipTier = isAdminMode || p.is_vip === true || p.plan === 'vip';
@@ -2467,6 +2484,7 @@
         fan_tier_price: document.getElementById('edit-fan-tier-price')?.value || 'L$1,500',
         fan_tier_desc: document.getElementById('edit-fan-tier-desc')?.value || '',
         fan_slurl: document.getElementById('edit-fan-slurl')?.value || '',
+        custom_domain: (document.getElementById('edit-custom-domain')?.value || '').toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/+$/, ''),
         posts: postsList,
         // Tribute Goal & Privacy Tributes
         tribute_goal: {

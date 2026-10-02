@@ -942,7 +942,13 @@ exports.handler = async (event) => {
         profileData.fan_tier_price = '';
         profileData.fan_tier_desc = '';
         profileData.fan_slurl = '';
+        profileData.custom_domain = '';
       }
+
+      if (profileData.custom_domain) {
+        profileData.custom_domain = String(profileData.custom_domain).toLowerCase().trim().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/+$/, '');
+      }
+
       const pId = publicSlug;
       const pUsername = (profileData.sl_username || '').toLowerCase().trim();
 
@@ -956,11 +962,12 @@ exports.handler = async (event) => {
         }
       }
       
-      console.log(`[SAVE_PROFILE] Saving profile: uuid=${cleanUuid}, id=${pId}, username=${pUsername}, role=${profileData.role}`);
+      console.log(`[SAVE_PROFILE] Saving profile: uuid=${cleanUuid}, id=${pId}, username=${pUsername}, role=${profileData.role}, custom_domain=${profileData.custom_domain || 'none'}`);
       
       gCustomProfiles[cleanUuid] = profileData;
       gCustomProfiles[pId] = profileData;
       if (pUsername) gCustomProfiles[pUsername] = profileData;
+      if (profileData.custom_domain) gCustomProfiles[`domain_${profileData.custom_domain}`] = profileData;
 
       if (KNOWN_AVATARS[cleanUuid]) {
         KNOWN_AVATARS[cleanUuid].forEach(alias => { gCustomProfiles[alias.toLowerCase()] = profileData; });
@@ -975,6 +982,7 @@ exports.handler = async (event) => {
             await store.setJSON(pId, profileData);
             if (pUsername) await store.setJSON(pUsername, profileData);
             if (profileData.avatar_uuid) await store.setJSON(profileData.avatar_uuid.toLowerCase().trim(), profileData);
+            if (profileData.custom_domain) await store.setJSON(`domain_${profileData.custom_domain}`, profileData);
             await store.setJSON('all_profiles', gCustomProfiles);
             blobSaved = true;
             console.log(`[SAVE_PROFILE] Blobs saved via setJSON for keys: ${cleanUuid}, ${pId}, ${pUsername}`);
@@ -983,6 +991,7 @@ exports.handler = async (event) => {
             await store.set(cleanUuid, dataStr);
             await store.set(pId, dataStr);
             if (pUsername) await store.set(pUsername, dataStr);
+            if (profileData.custom_domain) await store.set(`domain_${profileData.custom_domain}`, dataStr);
             if (profileData.avatar_uuid) await store.set(profileData.avatar_uuid.toLowerCase().trim(), dataStr);
             await store.set('all_profiles', JSON.stringify(gCustomProfiles));
             blobSaved = true;
