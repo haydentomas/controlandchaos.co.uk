@@ -2120,6 +2120,11 @@
         alert(cur ? '🔒 Switched to Unsubscribed Preview (Locked View)' : '👑 Unlocked Inner Circle Preview (All media visible)!');
       };
 
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
       function renderFeed() {
         if (!profileData) return;
         const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
@@ -2159,33 +2164,76 @@
           const isLiked = localStorage.getItem(likedKey) === '1';
           const likesCount = (post.likes || 0) + (isLiked ? 1 : 0);
 
-          let mediaHtml = '';
-          if (post.media_url) {
-            if (isLocked) {
-              mediaHtml = `
-                <div class="feed-post-media-wrap">
-                  <img src="${post.media_url}" alt="Locked Media" class="feed-post-media-img" style="filter: blur(28px) brightness(0.5); transform: scale(1.15);">
-                  <div class="feed-locked-overlay">
-                    <div class="feed-locked-padlock">🔒</div>
-                    <div style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: var(--gold-bright); margin-bottom: 6px;">
-                      Subscriber-Only Media Set
-                    </div>
-                    <p style="font-size: 12.5px; color: #d6d3d1; max-width: 380px; margin: 0 0 16px; line-height: 1.5;">
-                      Join ${profileData.name}'s Inner Circle to unlock this uncensored lookbook and full creator archive.
-                    </p>
-                    <button class="btn btn-gold btn-sm" onclick="openSubscribeModal()">
-                      <span>💎</span> Unlock for ${profileData.fan_tier_price || 'L$1,500'}
-                    </button>
+          let bodyAndMediaHtml = '';
+
+          if (isLocked) {
+            // LOCKED CONTENT: Hide private message/decrees and media behind subscriber paywall
+            bodyAndMediaHtml = `
+              <div class="feed-post-body">
+                ${post.title ? `<h4 style="font-family: var(--font-heading); font-size: 17px; color: var(--gold-bright); margin: 0 0 10px;">${escapeHtml(post.title)}</h4>` : ''}
+                
+                <div style="background: radial-gradient(ellipse at center, rgba(212,175,55,0.12) 0%, rgba(18,15,24,0.98) 80%); border: 1px solid rgba(212,175,55,0.4); border-radius: 12px; padding: 28px 20px; text-align: center; margin: 10px 0 14px; box-shadow: inset 0 0 30px rgba(0,0,0,0.6);">
+                  <div style="font-size: 34px; margin-bottom: 8px;">🔒</div>
+                  <div style="font-family: var(--font-heading); font-size: 16px; font-weight: 800; color: var(--gold-bright); margin-bottom: 6px; letter-spacing: 0.04em;">
+                    SUBSCRIBER EXCLUSIVE CONTENT
                   </div>
+                  <p style="font-size: 13px; color: #d6d3d1; max-width: 440px; margin: 0 auto 16px; line-height: 1.55;">
+                    This post, lookbook archive, uncensored audio decree, or private instructions are locked for active <strong>${escapeHtml(profileData.name)}</strong> fan tier subscribers.
+                  </p>
+                  <button class="btn btn-gold btn-sm" onclick="openSubscribeModal()" style="font-weight: 700; padding: 9px 20px; box-shadow: 0 0 15px rgba(212,175,55,0.35);">
+                    <span>💎</span> Unlock for ${escapeHtml(profileData.fan_tier_price || 'L$1,500')} ↗
+                  </button>
                 </div>
-              `;
-            } else {
-              mediaHtml = `
-                <div class="feed-post-media-wrap" style="cursor: pointer;" onclick="openLightbox('${post.media_url}', '${encodeURIComponent(post.title || '')}', '${post.tag || 'Lookbook'}')">
-                  <img src="${post.media_url}" alt="${post.title || 'Feed Image'}" class="feed-post-media-img">
-                </div>
-              `;
+
+                ${(post.media_url && post.type !== 'text') ? `
+                  <div class="feed-post-media-wrap" style="position: relative; overflow: hidden; border-radius: 10px; height: 160px; margin-bottom: 12px; border: 1px solid rgba(212,175,55,0.25);">
+                    <img src="${escapeHtml(post.media_url)}" alt="Locked Media Preview" class="feed-post-media-img" style="filter: blur(28px) brightness(0.4); transform: scale(1.15); width: 100%; height: 100%; object-fit: cover;">
+                    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); color: #ffd700; font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.05em;">
+                      🔒 ${post.type === 'audio' ? 'AUDIO DECREE LOCKED' : (post.type === 'video' ? 'VIDEO CLIP LOCKED' : 'LOOKBOOK PHOTO SET LOCKED')}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          } else {
+            // UNLOCKED OR PUBLIC CONTENT: Show complete unblurred content & media
+            let mediaContent = '';
+            if (post.media_url) {
+              if (post.type === 'audio' || post.media_url.endsWith('.mp3') || post.media_url.endsWith('.wav') || post.media_url.endsWith('.ogg')) {
+                mediaContent = `
+                  <div style="padding: 0 22px 18px;">
+                    <div style="background: rgba(14,12,10,0.9); border: 1px solid var(--gold-border-subtle); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 14px;">
+                      <span style="font-size: 24px;">🎙️</span>
+                      <audio controls src="${escapeHtml(post.media_url)}" style="width: 100%; height: 36px; filter: invert(0.9) hue-rotate(180deg) contrast(1.2);"></audio>
+                    </div>
+                  </div>
+                `;
+              } else if (post.type === 'video' || post.media_url.endsWith('.mp4') || post.media_url.endsWith('.webm')) {
+                mediaContent = `
+                  <div style="padding: 0 22px 18px;">
+                    <video controls src="${escapeHtml(post.media_url)}" style="width: 100%; border-radius: 10px; max-height: 480px; background: #000; border: 1px solid rgba(212,175,55,0.3);"></video>
+                  </div>
+                `;
+              } else {
+                mediaContent = `
+                  <div class="feed-post-media-wrap" style="cursor: pointer;" onclick="openLightbox('${escapeHtml(post.media_url)}', '${encodeURIComponent(post.title || '')}', '${escapeHtml(post.tag || 'Lookbook')}')">
+                    <img src="${escapeHtml(post.media_url)}" alt="${escapeHtml(post.title || 'Feed Image')}" class="feed-post-media-img">
+                  </div>
+                `;
+              }
             }
+
+            bodyAndMediaHtml = `
+              <div class="feed-post-body">
+                ${post.title ? `<h4 style="font-family: var(--font-heading); font-size: 17px; color: var(--gold-bright); margin: 0 0 8px;">${escapeHtml(post.title)}</h4>` : ''}
+                ${post.content ? `
+                  <div style="font-size: 14px; color: var(--text-primary); line-height: 1.65; white-space: pre-line; margin-bottom: 12px;">
+                    ${escapeHtml(post.content)}
+                  </div>
+                ` : ''}
+              </div>
+              ${mediaContent}
+            `;
           }
 
           card.innerHTML = `
@@ -2196,26 +2244,19 @@
                 </div>
                 <div>
                   <div style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 800; color: #fff;">
-                    ${profileData.name}
+                    ${escapeHtml(profileData.name)}
                   </div>
                   <div style="font-family: var(--font-mono); font-size: 11px; color: var(--gold-muted);">
-                    @${profileData.sl_username || profileData.id} • ${post.timestamp || 'Recent'}
+                    @${escapeHtml(profileData.sl_username || profileData.id)} • ${escapeHtml(post.timestamp || 'Recent')}
                   </div>
                 </div>
               </div>
               <span class="tag-pill-badge" style="font-size: 10.5px; border-color: rgba(212,175,55,0.3); color: var(--gold-bright);">
-                ${post.tag || '✨ Post'}
+                ${escapeHtml(post.tag || '✨ Post')}
               </span>
             </div>
 
-            <div class="feed-post-body">
-              ${post.title ? `<h4 style="font-family: var(--font-heading); font-size: 17px; color: var(--gold-bright); margin: 0 0 8px;">${post.title}</h4>` : ''}
-              <div style="font-size: 14px; color: var(--text-primary); line-height: 1.65; white-space: pre-line;">
-                ${post.content || ''}
-              </div>
-            </div>
-
-            ${mediaHtml}
+            ${bodyAndMediaHtml}
 
             <div class="feed-post-footer">
               <button class="feed-like-btn ${isLiked ? 'liked' : ''}" onclick="togglePostLike('${profileData.id}', '${post.id || pIdx}', this)">
@@ -2223,7 +2264,7 @@
                 <span class="likes-num">${likesCount}</span>
               </button>
               <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
-                ${post.is_locked ? '<span style="color: #f59e0b;">🔒 Member Exclusive</span>' : '<span style="color: #4ade80;">🌐 Public Post</span>'}
+                ${post.is_locked ? (unlocked ? '<span style="color: #34d399; font-weight: 600;">🔓 Unlocked VIP Access</span>' : '<span style="color: #f59e0b; font-weight: 600;">🔒 Member Exclusive</span>') : '<span style="color: #4ade80;">🌐 Public Post</span>'}
               </div>
             </div>
           `;
