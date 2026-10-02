@@ -469,6 +469,30 @@
       display: block;
     }
 
+  
+    .btn-avail-day {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-family: var(--font-mono, monospace);
+      font-weight: 700;
+      background: #0f0d14;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-avail-day:hover {
+      border-color: rgba(212,175,55,0.5);
+      color: #fff;
+    }
+    .btn-avail-day.active {
+      background: rgba(212,175,55,0.2);
+      border-color: #d4af37;
+      color: #ffd700;
+      box-shadow: 0 0 10px rgba(212,175,55,0.25);
+    }
+
   </style>
 </head>
 
@@ -635,6 +659,92 @@
                 <label class="form-label" for="edit-custom-status">Custom Availability Note (Optional)</label>
                 <input type="text" id="edit-custom-status" class="form-input"
                   placeholder="e.g. In-world today from 2 PM to 8 PM SLT">
+              </div>
+            </div>
+
+            
+            <!-- Booking Availability & Schedule Hours -->
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🕒</span> Booking Hours &amp; Active Availability Window</h3>
+                <span class="section-tag tag-gold font-2xs m-0">SMART TIME SLOTS</span>
+              </div>
+              <p class="font-xs text-muted mb-16">
+                Define your awake and active session hours. The booking inquiry form will restrict appointment requests strictly to these hours so clients cannot book times when you are offline or asleep.
+              </p>
+
+              <div class="form-grid-2 mb-16">
+                <div class="form-group mb-0">
+                  <label class="form-label" for="edit-avail-tz">Timezone Reference</label>
+                  <select id="edit-avail-tz" class="form-select">
+                    <option value="SLT">Second Life Time (SLT / Pacific)</option>
+                    <option value="EST">US Eastern Time (EST)</option>
+                    <option value="GMT">UK / London (GMT / BST)</option>
+                    <option value="CET">Central Europe (CET)</option>
+                  </select>
+                </div>
+                <div class="form-group mb-0">
+                  <label class="form-label" for="edit-avail-slot-step">Appointment Slot Interval</label>
+                  <select id="edit-avail-slot-step" class="form-select">
+                    <option value="60">Every 1 Hour (e.g. 2 PM, 3 PM, 4 PM)</option>
+                    <option value="30">Every 30 Minutes (e.g. 2:00, 2:30, 3:00)</option>
+                    <option value="120">Every 2 Hours (e.g. 2 PM, 4 PM, 6 PM)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid-2 mb-16">
+                <div class="form-group mb-0">
+                  <label class="form-label" for="edit-avail-start">Earliest Available Time (Start)</label>
+                  <select id="edit-avail-start" class="form-select">
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="12:00 PM" selected>12:00 PM (Noon)</option>
+                    <option value="1:00 PM">1:00 PM</option>
+                    <option value="2:00 PM">2:00 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="4:00 PM">4:00 PM</option>
+                    <option value="5:00 PM">5:00 PM</option>
+                    <option value="6:00 PM">6:00 PM</option>
+                    <option value="7:00 PM">7:00 PM</option>
+                    <option value="8:00 PM">8:00 PM</option>
+                  </select>
+                </div>
+                <div class="form-group mb-0">
+                  <label class="form-label" for="edit-avail-end">Latest Available Time (End)</label>
+                  <select id="edit-avail-end" class="form-select">
+                    <option value="4:00 PM">4:00 PM</option>
+                    <option value="5:00 PM">5:00 PM</option>
+                    <option value="6:00 PM">6:00 PM</option>
+                    <option value="7:00 PM">7:00 PM</option>
+                    <option value="8:00 PM">8:00 PM</option>
+                    <option value="9:00 PM">9:00 PM</option>
+                    <option value="10:00 PM" selected>10:00 PM</option>
+                    <option value="11:00 PM">11:00 PM</option>
+                    <option value="12:00 AM">12:00 AM (Midnight)</option>
+                    <option value="1:00 AM">1:00 AM</option>
+                    <option value="2:00 AM">2:00 AM</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group mb-16">
+                <label class="form-label">Available Days of the Week</label>
+                <div class="flex-row gap-8 flex-wrap" id="avail-days-container">
+                  <button type="button" class="btn-avail-day active" data-day="Monday">Mon</button>
+                  <button type="button" class="btn-avail-day active" data-day="Tuesday">Tue</button>
+                  <button type="button" class="btn-avail-day active" data-day="Wednesday">Wed</button>
+                  <button type="button" class="btn-avail-day active" data-day="Thursday">Thu</button>
+                  <button type="button" class="btn-avail-day active" data-day="Friday">Fri</button>
+                  <button type="button" class="btn-avail-day active" data-day="Saturday">Sat</button>
+                  <button type="button" class="btn-avail-day active" data-day="Sunday">Sun</button>
+                </div>
+                <div class="form-hint">Click days to toggle Active vs Offline.</div>
+              </div>
+
+              <div class="form-group mb-0">
+                <label class="form-label" for="edit-avail-note">Booking Notice &amp; Lead Time Note (Optional)</label>
+                <input type="text" id="edit-avail-note" class="form-input" placeholder="e.g. Please submit booking requests at least 24 hours in advance.">
               </div>
             </div>
 
@@ -1609,6 +1719,21 @@
         };
       });
 
+      
+      // Availability & Active Hours
+      const avail = p.booking_availability || {};
+      if (document.getElementById('edit-avail-tz')) document.getElementById('edit-avail-tz').value = avail.timezone || 'SLT';
+      if (document.getElementById('edit-avail-slot-step')) document.getElementById('edit-avail-slot-step').value = avail.slot_duration || '60';
+      if (document.getElementById('edit-avail-start')) document.getElementById('edit-avail-start').value = avail.start_hour || '12:00 PM';
+      if (document.getElementById('edit-avail-end')) document.getElementById('edit-avail-end').value = avail.end_hour || '10:00 PM';
+      if (document.getElementById('edit-avail-note')) document.getElementById('edit-avail-note').value = avail.custom_note || '';
+
+      const activeDays = Array.isArray(avail.days) ? avail.days : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+      document.querySelectorAll('.btn-avail-day').forEach(btn => {
+        const d = btn.getAttribute('data-day');
+        btn.classList.toggle('active', activeDays.includes(d));
+      });
+
       // Privacy Payment Settings
       document.getElementById('edit-throne-url').value = p.throne_url || '';
 
@@ -2326,6 +2451,15 @@
         custom_domain: (document.getElementById('edit-custom-domain')?.value || '').toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/+$/, ''),
         whitelabel_mode: document.getElementById('edit-whitelabel-mode')?.checked !== false,
         posts: postsList,
+        
+        booking_availability: {
+          timezone: document.getElementById('edit-avail-tz')?.value || 'SLT',
+          slot_duration: document.getElementById('edit-avail-slot-step')?.value || '60',
+          start_hour: document.getElementById('edit-avail-start')?.value || '12:00 PM',
+          end_hour: document.getElementById('edit-avail-end')?.value || '10:00 PM',
+          custom_note: document.getElementById('edit-avail-note')?.value || '',
+          days: Array.from(document.querySelectorAll('.btn-avail-day.active')).map(b => b.getAttribute('data-day'))
+        },
         // Privacy Tributes & Payment Links
         throne_url: document.getElementById('edit-throne-url')?.value || '',
 

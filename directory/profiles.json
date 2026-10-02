@@ -242,6 +242,22 @@
       "3. Settle retainer via Tribute Jar at Control & Chaos before session starts."
     ],
     "starting_rate": "L$3,000 / hr",
+    "booking_availability": {
+      "timezone": "SLT",
+      "slot_duration": "60",
+      "start_hour": "12:00 PM",
+      "end_hour": "10:00 PM",
+      "custom_note": "Advance booking recommended for evening sessions.",
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
+    },
     "slug": "alek-zane"
   }
 ]

@@ -330,11 +330,27 @@
                 <input type="text" name="client_contact" required placeholder="e.g. username#1234 or email" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
               </div>
 
+              <!-- Available Schedule Info Badge -->
+              <div id="booking-schedule-hint" style="grid-column: 1 / -1; background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 10px 14px; font-size: 12.5px; color: var(--gold-bright); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                <span id="booking-schedule-hours-txt">🕒 Active Booking Hours: 12:00 PM – 10:00 PM SLT</span>
+                <span id="booking-schedule-days-txt" style="color: #cbd5e1; font-size: 11.5px; font-family: var(--font-mono);">Active Days: Mon – Sun</span>
+              </div>
+
               <div>
                 <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
-                  Preferred Date &amp; Time
+                  Preferred Date *
                 </label>
-                <input type="text" name="preferred_time" placeholder="e.g. Saturday 2:00 PM SLT" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
+                <input type="date" name="preferred_date" id="booking-date-input" required style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px; color-scheme:dark;">
+              </div>
+
+              <div>
+                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
+                  Available Time Slot *
+                </label>
+                <select name="preferred_time_slot" id="booking-time-select" required style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#ffd700; font-weight:600; font-size:13.5px;">
+                  <option value="">Select a date first...</option>
+                </select>
+                <input type="hidden" name="preferred_time" id="booking-preferred-time-combined" value="">
               </div>
 
               <div>
@@ -1121,6 +1137,119 @@
           if (e.target === tributeModal) tributeModal.style.display = 'none';
         });
       }
+
+      
+      // Smart Availability Time Slot Generator
+      function setupBookingAvailability(profileData) {
+        const dateInput = document.getElementById('booking-date-input');
+        const timeSelect = document.getElementById('booking-time-select');
+        const combinedInput = document.getElementById('booking-preferred-time-combined');
+        const hoursTxt = document.getElementById('booking-schedule-hours-txt');
+        const daysTxt = document.getElementById('booking-schedule-days-txt');
+
+        if (!dateInput || !timeSelect) return;
+
+        // Set minimum date to today
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.min = `${yyyy}-${mm}-${dd}`;
+
+        const avail = profileData.booking_availability || {};
+        const tz = avail.timezone || 'SLT';
+        const startStr = avail.start_hour || '12:00 PM';
+        const endStr = avail.end_hour || '10:00 PM';
+        const slotStep = parseInt(avail.slot_duration || '60', 10);
+        const activeDays = Array.isArray(avail.days) && avail.days.length > 0
+          ? avail.days
+          : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+        if (hoursTxt) {
+          hoursTxt.textContent = `🕒 Active Booking Hours: ${startStr} – ${endStr} ${tz}`;
+        }
+        if (daysTxt) {
+          const shortDays = activeDays.map(d => d.slice(0, 3)).join(', ');
+          daysTxt.textContent = `Days: ${shortDays}`;
+        }
+
+        function parseHourToMinutes(timeStr) {
+          const m = timeStr.match(/(\d+)(?::(\d+))?\s*(AM|PM)/i);
+          if (!m) return 12 * 60;
+          let h = parseInt(m[1], 10);
+          let mins = parseInt(m[2] || '0', 10);
+          const ampm = m[3].toUpperCase();
+          if (ampm === 'PM' && h < 12) h += 12;
+          if (ampm === 'AM' && h === 12) h = 0;
+          return h * 60 + mins;
+        }
+
+        function formatMinutesToTime(totalMins) {
+          let h = Math.floor(totalMins / 60) % 24;
+          let m = totalMins % 60;
+          const ampm = h >= 12 ? 'PM' : 'AM';
+          let displayH = h % 12;
+          if (displayH === 0) displayH = 12;
+          const displayM = m === 0 ? ':00' : ':' + String(m).padStart(2, '0');
+          return `${displayH}${displayM} ${ampm}`;
+        }
+
+        function generateSlots() {
+          const startMins = parseHourToMinutes(startStr);
+          let endMins = parseHourToMinutes(endStr);
+          if (endMins <= startMins) {
+            endMins += 24 * 60; // Over midnight
+          }
+
+          const slots = [];
+          for (let cur = startMins; cur <= endMins; cur += slotStep) {
+            slots.push(formatMinutesToTime(cur) + ' ' + tz);
+          }
+          return slots;
+        }
+
+        function updateSlotsForDate() {
+          const val = dateInput.value;
+          if (!val) {
+            timeSelect.innerHTML = '<option value="">Select a date first...</option>';
+            if (combinedInput) combinedInput.value = '';
+            return;
+          }
+
+          const selectedDate = new Date(val + 'T12:00:00');
+          const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+          const dayName = dayNames[selectedDate.getDay()];
+
+          if (!activeDays.includes(dayName)) {
+            timeSelect.innerHTML = `<option value="">⚠️ Offline / Unavailable on ${dayName}s</option>`;
+            if (combinedInput) combinedInput.value = '';
+            return;
+          }
+
+          const slots = generateSlots();
+          timeSelect.innerHTML = '<option value="">-- Choose an available time slot --</option>' +
+            slots.map(s => `<option value="${s}">${s}</option>`).join('');
+
+          updateCombined();
+        }
+
+        function updateCombined() {
+          if (dateInput.value && timeSelect.value) {
+            const selectedDate = new Date(dateInput.value + 'T12:00:00');
+            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const dayName = dayNames[selectedDate.getDay()];
+            const formatted = `${dateInput.value} (${dayName}) at ${timeSelect.value}`;
+            if (combinedInput) combinedInput.value = formatted;
+          } else {
+            if (combinedInput) combinedInput.value = '';
+          }
+        }
+
+        dateInput.addEventListener('change', updateSlotsForDate);
+        timeSelect.addEventListener('change', updateCombined);
+      }
+
+      setupBookingAvailability(profileData);
 
       // 6. Render Gallery / Visual Lookbook (Dynamic Title & Locked VIP Support)
       const galleryTitleEl = document.getElementById('profile-gallery-title');
