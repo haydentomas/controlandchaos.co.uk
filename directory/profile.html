@@ -801,9 +801,18 @@
         <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.45;">
           Teleport to the in-world terminal to pay L$ and unlock this web feed instantly.
         </p>
-        <a id="sub-modal-slurl-btn" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width:100%; justify-content:center; font-size:12px; padding:9px 14px;">
-          <span>📍</span> Teleport in Second Life ↗
+        <a id="sub-modal-slurl-btn" href="#" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width:100%; justify-content:center; font-size:12px; padding:9px 14px; margin-bottom:10px;">
+          <span>📍</span> Teleport to Subscriber Terminal ↗
         </a>
+        <div style="padding:10px 12px; background:#0e0c0b; border:1px dashed rgba(212,175,55,0.4); border-radius:8px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div>
+            <div style="font-size:10px; font-family:var(--font-mono); color:var(--gold-muted); text-transform:uppercase; letter-spacing:0.5px;">Terminal Pay Code</div>
+            <div style="font-family:var(--font-heading); font-size:14px; font-weight:800; color:var(--gold-bright);" id="sub-modal-escort-code">ALEK-ZANE</div>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="copyEscortPayCode(this)" style="font-size:11px; padding:5px 10px; flex-shrink:0; cursor:pointer;">
+            <span>📋</span> Copy Code
+          </button>
+        </div>
       </div>
 
       <!-- Option 2: Direct SL Contact -->
@@ -842,6 +851,17 @@
   <script>
 
     window.currentProfile = null;
+
+    window.copyEscortPayCode = function(btn) {
+      const code = document.getElementById('sub-modal-escort-code')?.textContent || '';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code);
+      }
+      const origText = btn.innerHTML;
+      btn.innerHTML = '<span>✓</span> Copied!';
+      setTimeout(() => { btn.innerHTML = origText; }, 2000);
+    };
+
 
     // Option 2: Send Method Dynamic UI & Execution
     window.updateSendMethodUI = function() {

@@ -274,6 +274,17 @@
 
     window.currentProfile = null;
 
+    window.copyEscortPayCode = function(btn) {
+      const code = document.getElementById('sub-modal-escort-code')?.textContent || '';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code);
+      }
+      const origText = btn.innerHTML;
+      btn.innerHTML = '<span>✓</span> Copied!';
+      setTimeout(() => { btn.innerHTML = origText; }, 2000);
+    };
+
+
     // Option 2: Send Method Dynamic UI & Execution
     window.updateSendMethodUI = function() {
       const selected = document.querySelector('input[name="send_method"]:checked')?.value || 'web';
