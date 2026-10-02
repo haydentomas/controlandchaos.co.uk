@@ -1,5 +1,7 @@
 {
   "hardware_title": "My Toys",
+  "is_vip": true,
+  "published": true,
   "avatar_uuid": "b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec",
   "sl_username": "alek.zane",
   "throne_url": "https://throne.com/alekzane",

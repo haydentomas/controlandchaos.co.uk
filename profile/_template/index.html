@@ -927,10 +927,12 @@
         (profileData.id && liveData.subscriptions[profileData.id.toLowerCase()]) ||
         (profileData.sl_username && liveData.subscriptions[profileData.sl_username.toLowerCase()])
       );
-      const profileExpiry = profileData.expires_at ? new Date(profileData.expires_at).getTime() : 0;
-      const subscriptionExpired = entitlement
-        ? entitlement.published === false || (!entitlement.is_vip && (!entitlement.expires_at || new Date(entitlement.expires_at).getTime() <= Date.now()))
-        : profileData.published === false || (!!profileData.avatar_uuid && !entitlement) || (profileExpiry > 0 && profileExpiry <= Date.now());
+      const isProfileVip = profileData.is_vip || (entitlement && entitlement.is_vip);
+      const isExplicitlyUnpublished = profileData.published === false || (entitlement && entitlement.published === false);
+      const isPastExpiry = (entitlement && entitlement.expires_at && new Date(entitlement.expires_at).getTime() <= Date.now()) ||
+                           (!entitlement && profileExpiry > 0 && profileExpiry <= Date.now());
+
+      const subscriptionExpired = !isProfileVip && (isExplicitlyUnpublished || isPastExpiry);
       if (subscriptionExpired) {
         const banner = document.getElementById('profile-renewal-banner');
         const link = document.getElementById('profile-renewal-link');
