@@ -103,36 +103,44 @@
         </p>
       </div>
 
-      <div class="grid-3">
-        <div class="card card-flex-column">
-          <div class="card-icon">📄</div>
-          <h3 class="card-title">Standard Listing</h3>
-          <div class="card-price-badge font-lg mb-12">L$1,000 <span class="font-xs text-muted">/ month</span></div>
-          <p class="card-desc card-body-grow">
-            Full searchable directory profile, custom service menu &amp; rates card, SL IM link, and verified rank badge.
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; max-width: 860px; margin: 0 auto;">
+        <!-- Standard Tier -->
+        <div class="card card-flex-column" style="background: rgba(18, 16, 22, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 28px;">
+          <div class="card-icon" style="font-size: 28px; margin-bottom: 12px;">📄</div>
+          <h3 class="card-title" style="font-size: 1.3rem; margin-bottom: 4px;">Standard Listing</h3>
+          <div class="card-price-badge font-lg mb-12" style="font-size: 1.5rem; font-weight: 800; color: #fff;">L$1,000 <span class="font-xs text-muted" style="font-size: 0.85rem; font-weight: 400;">/ month</span></div>
+          <p class="card-desc card-body-grow" style="color: #94a3b8; font-size: 0.88rem; line-height: 1.6; margin-bottom: 20px;">
+            Full searchable directory profile, custom service menu &amp; rates card, SL IM link, direct booking inquiry form, and verified rank badge.
           </p>
-          <a href="../contact/index.html" class="btn btn-secondary btn-sm mt-auto">Request Listing &rarr;</a>
+          <ul style="list-style: none; padding: 0; margin: 0 0 24px; font-size: 0.82rem; color: #cbd5e1; line-height: 1.8;">
+            <li>✓ Searchable profile &amp; rate card</li>
+            <li>✓ Direct Second Life IM integration</li>
+            <li>✓ Custom service menu pricing</li>
+            <li style="color: #64748b; text-decoration: line-through;">✗ Exclusive Feed &amp; Lookbooks</li>
+            <li style="color: #64748b; text-decoration: line-through;">✗ In-World Fan Club Passes</li>
+          </ul>
+          <a href="checkout/?tier=basic" class="btn btn-secondary btn-sm mt-auto" style="width: 100%; text-align: center; justify-content: center;">Get Standard Listing &rarr;</a>
         </div>
 
-        <div class="card card-highlight-gold card-flex-column">
-          <div class="card-icon">👑</div>
-          <span class="section-tag tag-gold mb-8 align-start">MOST POPULAR</span>
-          <h3 class="card-title">VIP Featured Listing</h3>
-          <div class="card-price-badge font-lg mb-12">L$2,500 <span class="font-xs text-muted">/ month</span></div>
-          <p class="card-desc card-body-grow">
-            Top of directory placement, featured badge on homepage, custom Tribute Jar rezzed in the VIP lounge at Control & Chaos, and Discord showcase shoutout.
+        <!-- VIP Featured Tier -->
+        <div class="card card-highlight-gold card-flex-column" style="background: linear-gradient(180deg, rgba(30, 25, 18, 0.98) 0%, rgba(18, 16, 22, 0.98) 100%); border: 1px solid var(--gold-bright); border-radius: 16px; padding: 28px; box-shadow: 0 0 35px rgba(212, 175, 55, 0.15); position: relative;">
+          <div class="flex-between align-center mb-8">
+            <div class="card-icon" style="font-size: 28px; margin-bottom: 0;">👑</div>
+            <span class="section-tag tag-gold font-2xs m-0" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; font-weight: 800; border: none; padding: 3px 10px;">MOST POPULAR</span>
+          </div>
+          <h3 class="card-title" style="font-size: 1.3rem; margin-bottom: 4px; color: var(--gold-bright);">VIP Featured Listing</h3>
+          <div class="card-price-badge font-lg mb-12" style="font-size: 1.5rem; font-weight: 800; color: #ffd700;">L$2,500 <span class="font-xs text-muted" style="font-size: 0.85rem; font-weight: 400; color: var(--gold-muted);">/ month</span></div>
+          <p class="card-desc card-body-grow" style="color: #e2e8f0; font-size: 0.88rem; line-height: 1.6; margin-bottom: 20px;">
+            Top-tier placement, verified VIP gold badge, and full access to publish exclusive lookbooks, voice decrees, and sell monthly subscriber passes.
           </p>
-          <a href="../contact/index.html" class="btn btn-gold btn-sm mt-auto">Get VIP Listing &rarr;</a>
-        </div>
-
-        <div class="card card-flex-column">
-          <div class="card-icon">💎</div>
-          <h3 class="card-title">House Elite Partner</h3>
-          <div class="card-price-badge font-lg mb-12">L$5,000 <span class="font-xs text-muted">/ month</span></div>
-          <p class="card-desc card-body-grow">
-            Includes private skybox venue key, dedicated Vow Collar pairing portal, weekly Cage Break VIP guard slot, and full advertising rotation.
-          </p>
-          <a href="../contact/index.html" class="btn btn-secondary btn-sm mt-auto">Partner Inquiry &rarr;</a>
+          <ul style="list-style: none; padding: 0; margin: 0 0 24px; font-size: 0.82rem; color: #fef08a; line-height: 1.8;">
+            <li>✓ <strong>All Standard Listing features</strong></li>
+            <li>✓ <strong>🔒 Exclusive Feed &amp; Lookbooks</strong></li>
+            <li>✓ <strong>💎 In-World Fan Club &amp; Monthly Passes</strong></li>
+            <li>✓ <strong>🎙️ Voice Decrees &amp; Audio Player</strong></li>
+            <li>✓ <strong>⭐ Top directory placement &amp; featured badge</strong></li>
+          </ul>
+          <a href="checkout/?tier=vip" class="btn btn-gold btn-sm mt-auto" style="width: 100%; text-align: center; justify-content: center; font-weight: 700;">Get VIP Listing &rarr;</a>
         </div>
       </div>
     </div>
