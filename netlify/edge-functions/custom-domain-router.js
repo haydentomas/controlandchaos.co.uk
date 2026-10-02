@@ -128,13 +128,68 @@ export default async function handler(request, context) {
       // Fetch the profile page HTML from the origin
       const profileResponse = await fetch(profileUrl.toString());
       if (profileResponse.ok) {
-        const html = await profileResponse.text();
+        let html = await profileResponse.text();
+
+        // 3. Standalone White-Label Mode
+        // If white-label mode is enabled (default true for custom domain profiles),
+        // strip the C&C global navigation header & directory footer so the rate card looks 100% standalone
+        const isWhitelabel = customProfile.whitelabel_mode !== false && customProfile.is_whitelabel !== false;
+        
+        if (isWhitelabel) {
+          const whitelabelCss = `
+          <style id="cc-whitelabel-standalone-mode">
+            site-navbar, 
+            site-footer, 
+            .site-header, 
+            header.hero site-navbar,
+            footer.site-footer, 
+            #main-header, 
+            #main-footer, 
+            .directory-breadcrumbs, 
+            .back-to-directory-btn, 
+            .nav-logo,
+            #profile-renewal-banner {
+              display: none !important;
+            }
+            body {
+              padding-top: 0 !important;
+              margin-top: 0 !important;
+            }
+            header.hero#profile-hero-header {
+              padding-top: 50px !important;
+            }
+          </style>
+          `;
+
+          const creatorFooter = `
+          <footer class="creator-standalone-footer" style="padding: 36px 20px; text-align: center; font-size: 11.5px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 40px; letter-spacing: 0.04em;">
+            &copy; ${new Date().getFullYear()} <strong style="color: #cbd5e1;">${customProfile.name || 'Verified Creator'}</strong>. All Rights Reserved. Private Concierge &amp; Official Rate Card.
+          </footer>
+          `;
+
+          // Inject CSS before </head>
+          if (html.includes("</head>")) {
+            html = html.replace("</head>", `${whitelabelCss}\n</head>`);
+          } else {
+            html = whitelabelCss + html;
+          }
+
+          // Inject class on body
+          html = html.replace(/<body([^>]*)>/i, '<body$1 class="is-whitelabel-custom-domain">');
+
+          // Replace site-footer with bespoke creator footer before </body>
+          if (html.includes("</body>")) {
+            html = html.replace("</body>", `${creatorFooter}\n</body>`);
+          }
+        }
+
         return new Response(html, {
           status: 200,
           headers: {
             "Content-Type": "text/html; charset=utf-8",
             "Cache-Control": "public, max-age=0, must-revalidate",
-            "X-Custom-Domain-Owner": targetSlug
+            "X-Custom-Domain-Owner": targetSlug,
+            "X-Custom-Domain-Whitelabel": isWhitelabel ? "active" : "standard"
           }
         });
       }

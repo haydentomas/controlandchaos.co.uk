@@ -24,18 +24,18 @@ integer GetTierPrice(integer tierNum) {
     string val = llLinksetDataRead("plan" + (string)tierNum + "_price");
     if (val != "") return (integer)val;
     if (tierNum == 1) return 1000;
-    if (tierNum == 2) return 1750;
-    if (tierNum == 3) return 7250;
-    if (tierNum == 4) return 12250;
+    if (tierNum == 2) return 2500;
+    if (tierNum == 3) return 7500;
+    if (tierNum == 4) return 15000;
     return 1000;
 }
 
 string GetTierButtonLabel(integer tierNum) {
     integer lindenPrice = GetTierPrice(tierNum);
-    if (tierNum == 1) return "Basic Month L$" + (string)lindenPrice;
+    if (tierNum == 1) return "Standard L$" + (string)lindenPrice;
     if (tierNum == 2) return "VIP Month L$" + (string)lindenPrice;
-    if (tierNum == 3) return "Basic Life L$" + (string)lindenPrice;
-    if (tierNum == 4) return "VIP Life L$" + (string)lindenPrice;
+    if (tierNum == 3) return "Standard 3mo L$" + (string)lindenPrice;
+    if (tierNum == 4) return "VIP Lifetime L$" + (string)lindenPrice;
     return "Plan " + (string)tierNum;
 }
 

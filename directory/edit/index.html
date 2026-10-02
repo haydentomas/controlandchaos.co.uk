@@ -1150,6 +1150,18 @@
                   <input type="text" id="edit-custom-domain" class="form-input font-xs" placeholder="e.g. alekzane.com or vip.yourbrand.com">
                 </div>
 
+                <div class="form-group mb-12" style="background: rgba(212,175,55,0.06); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 12px 14px;">
+                  <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin: 0;">
+                    <input type="checkbox" id="edit-whitelabel-mode" checked style="margin-top: 3px; accent-color: #ffd700; width: 16px; height: 16px;">
+                    <div>
+                      <strong class="text-gold font-xs block" style="color: #ffd700;">✨ 100% Standalone White-Label Mode</strong>
+                      <span class="font-2xs text-muted block mt-2" style="line-height: 1.4;">
+                        Hides the Control &amp; Chaos global header and platform footer when clients visit your profile via your custom domain. Your rate card appears as your own private bespoke web app. (Visitors from the C&amp;C Directory still see the standard directory navigation).
+                      </span>
+                    </div>
+                  </label>
+                </div>
+
                 <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(212,175,55,0.3); border-radius: 8px; padding: 12px 14px; font-size: 0.78rem; color: #cbd5e1; line-height: 1.6;">
                   <strong class="text-gold">⚡ 1-Minute DNS Setup at your Domain Registrar (GoDaddy, Namecheap, Cloudflare):</strong><br>
                   Add a <strong>CNAME Record</strong>: Host <code>@</code> (or your subdomain) &rarr; Target / Value: <code style="color:#ffd700; background:rgba(212,175,55,0.15); padding:2px 6px; border-radius:4px;">controlandchaos.co.uk</code>
@@ -1768,6 +1780,10 @@
       document.getElementById('edit-fan-tier-desc').value = p.fan_tier_desc || 'Unlocks all restricted lookbooks, uncensored audio notes, and direct priority decrees.';
       document.getElementById('edit-fan-slurl').value = p.fan_slurl || p.slurl || 'secondlife://Chaos%20Manor/128/142/23';
       document.getElementById('edit-custom-domain').value = p.custom_domain || '';
+      const whitelabelCheckbox = document.getElementById('edit-whitelabel-mode');
+      if (whitelabelCheckbox) {
+        whitelabelCheckbox.checked = p.whitelabel_mode !== false;
+      }
 
       // VIP Lock Check for Exclusive Feed
       const isVipTier = isAdminMode || p.is_vip === true || p.plan === 'vip';
@@ -2485,6 +2501,7 @@
         fan_tier_desc: document.getElementById('edit-fan-tier-desc')?.value || '',
         fan_slurl: document.getElementById('edit-fan-slurl')?.value || '',
         custom_domain: (document.getElementById('edit-custom-domain')?.value || '').toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/+$/, ''),
+        whitelabel_mode: document.getElementById('edit-whitelabel-mode')?.checked !== false,
         posts: postsList,
         // Tribute Goal & Privacy Tributes
         tribute_goal: {

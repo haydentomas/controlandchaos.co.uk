@@ -943,6 +943,7 @@ exports.handler = async (event) => {
         profileData.fan_tier_desc = '';
         profileData.fan_slurl = '';
         profileData.custom_domain = '';
+        profileData.whitelabel_mode = false;
       }
 
       if (profileData.custom_domain) {
