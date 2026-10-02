@@ -927,7 +927,8 @@
         (profileData.id && liveData.subscriptions[profileData.id.toLowerCase()]) ||
         (profileData.sl_username && liveData.subscriptions[profileData.sl_username.toLowerCase()])
       );
-      const isProfileVip = profileData.is_vip || (entitlement && entitlement.is_vip);
+      const isProfileVip = !!(profileData.is_vip || (entitlement && entitlement.is_vip));
+      const profileExpiry = profileData.expires_at ? new Date(profileData.expires_at).getTime() : 0;
       const isExplicitlyUnpublished = profileData.published === false || (entitlement && entitlement.published === false);
       const isPastExpiry = (entitlement && entitlement.expires_at && new Date(entitlement.expires_at).getTime() <= Date.now()) ||
                            (!entitlement && profileExpiry > 0 && profileExpiry <= Date.now());
@@ -2171,6 +2172,15 @@
                     <button class="btn btn-gold btn-sm" onclick="openSubscribeModal()">
                       <span>💎</span> Unlock for ${profileData.fan_tier_price || 'L$1,500'}
                     </button>
+                  </div>
+                </div>
+              `;
+            } else if (post.type === 'audio' || post.media_url.endsWith('.mp3') || post.media_url.endsWith('.wav') || post.media_url.endsWith('.ogg')) {
+              mediaHtml = `
+                <div style="padding: 0 22px 18px;">
+                  <div style="background: rgba(14,12,10,0.9); border: 1px solid var(--gold-border-subtle); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 14px;">
+                    <span style="font-size: 24px;">🎙️</span>
+                    <audio controls src="${post.media_url}" style="width: 100%; height: 36px; filter: invert(0.9) hue-rotate(180deg) contrast(1.2);"></audio>
                   </div>
                 </div>
               `;

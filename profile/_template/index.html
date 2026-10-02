@@ -927,7 +927,8 @@
         (profileData.id && liveData.subscriptions[profileData.id.toLowerCase()]) ||
         (profileData.sl_username && liveData.subscriptions[profileData.sl_username.toLowerCase()])
       );
-      const isProfileVip = profileData.is_vip || (entitlement && entitlement.is_vip);
+      const isProfileVip = !!(profileData.is_vip || (entitlement && entitlement.is_vip));
+      const profileExpiry = profileData.expires_at ? new Date(profileData.expires_at).getTime() : 0;
       const isExplicitlyUnpublished = profileData.published === false || (entitlement && entitlement.published === false);
       const isPastExpiry = (entitlement && entitlement.expires_at && new Date(entitlement.expires_at).getTime() <= Date.now()) ||
                            (!entitlement && profileExpiry > 0 && profileExpiry <= Date.now());
