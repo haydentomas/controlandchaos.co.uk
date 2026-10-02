@@ -27,9 +27,10 @@
 
     .editor-wide-container {
       width: 100%;
-      max-width: 1680px;
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 0 32px;
+      padding: 0 24px;
+      box-sizing: border-box;
     }
 
     @media (max-width: 768px) {
@@ -38,10 +39,121 @@
       }
     }
 
-    /* Full-Width Spacious Editor Layout */
-    .editor-layout {
-      max-width: 1040px;
-      margin: 0 auto;
+    /* Modern 2-Column Sidebar + Main Panel Dashboard Layout */
+    .editor-dashboard-grid {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 28px;
+      align-items: start;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 992px) {
+      .editor-dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+
+    .editor-sidebar {
+      position: sticky;
+      top: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sidebar-nav-card {
+      background: var(--editor-card);
+      border: 1px solid var(--editor-card-border);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar-nav-header {
+      padding: 6px 8px 12px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .editor-sidebar-tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .sidebar-tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      width: 100%;
+      text-decoration: none;
+      box-sizing: border-box;
+    }
+
+    .sidebar-tab-btn:hover {
+      background: rgba(212, 175, 55, 0.08);
+      color: #fff;
+      border-color: rgba(212, 175, 55, 0.25);
+      transform: translateX(2px);
+    }
+
+    .sidebar-tab-btn.active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(184, 134, 11, 0.12) 100%);
+      border-color: #d4af37;
+      color: #ffd700;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+      font-weight: 700;
+    }
+
+    .sidebar-tab-btn .tab-icon {
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar-tab-btn .tab-label {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vip-pill-badge {
+      font-size: 0.65rem;
+      background: linear-gradient(135deg, #ffd700, #b8860b);
+      color: #000;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-left: auto;
+    }
+
+    .sidebar-quick-card {
+      background: var(--editor-card);
+      border: 1px solid var(--editor-card-border);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .editor-main-panel {
+      min-width: 0;
       width: 100%;
     }
 
@@ -81,44 +193,6 @@
 
     .editor-card-title span.icon {
       font-size: 1.3rem;
-    }
-
-    .editor-tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 24px;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-    }
-
-    .editor-tab-btn {
-      padding: 10px 18px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .editor-tab-btn:hover {
-      background: rgba(212, 175, 55, 0.1);
-      color: #fff;
-      border-color: rgba(212, 175, 55, 0.3);
-    }
-
-    .editor-tab-btn.active {
-      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(184, 134, 11, 0.15) 100%);
-      border-color: #d4af37;
-      color: #ffd700;
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
     }
 
     .tab-content {
@@ -403,35 +477,61 @@
       </div>
 
       <!-- Main Editor UI (Shown when authenticated) -->
-      <div id="editor-container" class="editor-layout" style="display: none;">
+      <div id="editor-container" class="editor-dashboard-grid" style="display: none;">
 
-        <!-- Main Form Column & Tabs -->
-        <div id="editor-form-col">
-
-          <!-- Editor Navigation Tabs -->
-          <div class="editor-tabs">
-            <button class="editor-tab-btn active" onclick="switchTab('tab-identity')">
-              <span>👤</span> Identity &amp; Role
-            </button>
-            <button class="editor-tab-btn" onclick="switchTab('tab-media')">
-              <span>📸</span> Photos &amp; Visuals
-            </button>
-            <button class="editor-tab-btn" onclick="switchTab('tab-bio')">
-              <span>📝</span> Bio &amp; Tags
-            </button>
-            <button class="editor-tab-btn" onclick="switchTab('tab-rates')">
-              <span>🪙</span> Rate Cards &amp; Menus
-            </button>
-            <button class="editor-tab-btn" onclick="switchTab('tab-tech')">
-              <span>⚡</span> Tech &amp; Boundaries
-            </button>
-            <button class="editor-tab-btn" onclick="switchTab('tab-socials')">
-              <span>🎁</span> Wishlists &amp; Reviews
-            </button>
-            <button class="editor-tab-btn" onclick="switchTab('tab-feed')">
-              <span>📱</span> Exclusive Feed <span style="font-size: 0.65rem; background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; padding: 1px 5px; border-radius: 4px; font-weight: 800; margin-left: 4px;">VIP</span>
-            </button>
+        <!-- Left Sidebar Navigation -->
+        <aside class="editor-sidebar">
+          <div class="sidebar-nav-card">
+            <div class="sidebar-nav-header">
+              <span class="font-2xs uppercase tracking-wider font-mono text-gold font-bold">Studio Sections</span>
+              <span class="font-2xs text-muted font-mono">7 TABS</span>
+            </div>
+            <nav class="editor-sidebar-tabs">
+              <button type="button" class="sidebar-tab-btn active" onclick="switchTab('tab-identity')">
+                <span class="tab-icon">👤</span>
+                <span class="tab-label">Identity &amp; Role</span>
+              </button>
+              <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-media')">
+                <span class="tab-icon">📸</span>
+                <span class="tab-label">Photos &amp; Visuals</span>
+              </button>
+              <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-bio')">
+                <span class="tab-icon">📝</span>
+                <span class="tab-label">Bio &amp; Tags</span>
+              </button>
+              <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-rates')">
+                <span class="tab-icon">🪙</span>
+                <span class="tab-label">Rate Cards &amp; Menus</span>
+              </button>
+              <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-tech')">
+                <span class="tab-icon">⚡</span>
+                <span class="tab-label">Tech &amp; Boundaries</span>
+              </button>
+              <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-socials')">
+                <span class="tab-icon">🎁</span>
+                <span class="tab-label">Wishlists &amp; Reviews</span>
+              </button>
+              <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-feed')">
+                <span class="tab-icon">📱</span>
+                <span class="tab-label">Exclusive Feed</span>
+                <span class="vip-pill-badge">VIP</span>
+              </button>
+            </nav>
           </div>
+
+          <!-- Sidebar Quick Save & Live View Card -->
+          <div class="sidebar-quick-card">
+            <button type="button" onclick="saveProfile()" class="btn btn-gold w-100 btn-md flex-center" style="font-weight: 700; gap: 8px;">
+              <span>💾</span> Save Profile
+            </button>
+            <a href="#" id="sidebar-live-profile-btn" target="_blank" class="btn btn-secondary w-100 btn-sm flex-center mt-10" style="gap: 6px;">
+              <span>👁️</span> View Live Profile ↗
+            </a>
+          </div>
+        </aside>
+
+        <!-- Right Main Form Panel -->
+        <div class="editor-main-panel">
 
           <!-- ================= TAB 1: IDENTITY & ROLE ================= -->
           <div id="tab-identity" class="tab-content active">
@@ -1211,12 +1311,15 @@
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.editor-tab-btn').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.sidebar-tab-btn, .editor-tab-btn').forEach(el => el.classList.remove('active'));
 
       const targetTab = document.getElementById(tabId);
       if (targetTab) targetTab.classList.add('active');
 
-      const activeBtn = Array.from(document.querySelectorAll('.editor-tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      const activeBtn = Array.from(document.querySelectorAll('.sidebar-tab-btn, .editor-tab-btn')).find(b => {
+        const oc = b.getAttribute('onclick') || '';
+        return oc.includes(tabId);
+      });
       if (activeBtn) activeBtn.classList.add('active');
     }
 
@@ -1373,6 +1476,8 @@
 
       const liveLink = document.getElementById('view-live-profile-btn');
       if (liveLink) liveLink.href = `/profile/${p.id || authUUID}/`;
+      const sideLiveLink = document.getElementById('sidebar-live-profile-btn');
+      if (sideLiveLink) sideLiveLink.href = `/profile/${p.id || authUUID}/`;
 
       // Identity Tab
       document.getElementById('edit-name').value = p.name || '';
