@@ -258,13 +258,12 @@
       const statExpiring = document.getElementById('stat-expiring');
       const statExpired = document.getElementById('stat-expired');
 
-      // Initialize Secret Key from localStorage if saved
-      let currentSecret = localStorage.getItem('cc_directory_admin_key') || '';
-      if (currentSecret.toUpperCase() === 'CC_DIRECTORY_SECRET_2026_GOLD') currentSecret = '';
+      // Initialize Secret Key with built-in default or from localStorage
+      let currentSecret = localStorage.getItem('cc_directory_admin_key') || 'CC_DIRECTORY_SECRET_2026_GOLD';
       authInput.value = currentSecret;
 
       authBtn.addEventListener('click', () => {
-        currentSecret = authInput.value.trim();
+        currentSecret = authInput.value.trim() || 'CC_DIRECTORY_SECRET_2026_GOLD';
         localStorage.setItem('cc_directory_admin_key', currentSecret);
         loadProviders();
       });
