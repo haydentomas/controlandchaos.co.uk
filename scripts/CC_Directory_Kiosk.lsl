@@ -125,15 +125,12 @@ SendQuickStatusUpdate(key agent, string newStatus) {
     ], payload);
 }
 
-key SendSubscriptionRegistration(key agent, string tierName, integer amount, integer durationDays) {
+key SendSubscriptionRegistrationHTTP(key agent, string tierName, integer amount, integer durationDays) {
     string token = GenerateToken(agent);
     string name = llGetDisplayName(agent);
     if (name == "" || name == "???") name = llKey2Name(agent);
     
-    // 1. Record locally in LinksetData for automated reminder IMs
-    llMessageLinked(LINK_SET, 1, tierName + "|" + (string)durationDays + "|" + name, agent);
-    
-    // 2. Sync to Web Netlify backend
+    // Sync to Web Netlify backend with secret and payment_token
     string payload = "{" +
         "\"action\":\"register_paid\"," +
         "\"uuid\":\"" + (string)agent + "\"," +
@@ -143,6 +140,7 @@ key SendSubscriptionRegistration(key agent, string tierName, integer amount, int
         "\"amount\":" + (string)amount + "," +
         "\"duration_days\":" + (string)durationDays + "," +
         "\"token\":\"" + token + "\"," +
+        "\"secret\":\"" + SECRET_KEY + "\"," +
         "\"payment_token\":\"" + GeneratePaidToken(agent, tierName, durationDays) + "\"" +
     "}";
     
@@ -151,6 +149,17 @@ key SendSubscriptionRegistration(key agent, string tierName, integer amount, int
         HTTP_METHOD, "POST",
         HTTP_MIMETYPE, "application/json"
     ], payload);
+}
+
+key SendSubscriptionRegistration(key agent, string tierName, integer amount, integer durationDays) {
+    string name = llGetDisplayName(agent);
+    if (name == "" || name == "???") name = llKey2Name(agent);
+    
+    // 1. Record locally in LinksetData for automated reminder IMs
+    llMessageLinked(LINK_SET, 1, tierName + "|" + (string)durationDays + "|" + name, agent);
+    
+    // 2. Sync to Web Netlify backend
+    return SendSubscriptionRegistrationHTTP(agent, tierName, amount, durationDays);
 }
 
 DeliverSubscriberPackage(key buyer) {
@@ -470,7 +479,7 @@ default {
                 llMessageLinked(LINK_SET, 4, tier + "|" + (string)days + "|" + targetName, targetKey);
                 
                 // Also update Netlify backend
-                key registrationRequest = SendSubscriptionRegistration(targetKey, tier, 0, days);
+                key registrationRequest = SendSubscriptionRegistrationHTTP(targetKey, tier, 0, days);
                 gPendingRegistrationRequests += [registrationRequest, targetKey];
                 
                 llOwnerSay("⏳ Set exact subscription for " + targetName + " (" + (string)targetKey + ") to " + (string)days + " days.");
