@@ -90,7 +90,7 @@ InitKiosk() {
     integer p4 = GetTierPrice(4);
     llSetPayPrice(PAY_HIDE, [p1, p2, p3, p4]);
     
-    llSetText("👑 Control & Chaos\n✨ Dominant Directory & Subscription Portal\n[ Touch to Subscribe (L$ / PayPal) or Edit Profile ]", <0.83, 0.69, 0.22>, 1.0);
+    llSetText("👑 Control & Chaos\n✨ Dominant Directory & Subscription Kiosk\n[ Touch to Subscribe or Edit Profile ]", <0.83, 0.69, 0.22>, 1.0);
 }
 
 LaunchWebEditor(key agent) {
@@ -98,16 +98,6 @@ LaunchWebEditor(key agent) {
     string fullUrl = WEB_PORTAL_URL + "?uuid=" + (string)agent + "&token=" + token;
     llLoadURL(agent, "✨ Control & Chaos: Open your Private Profile & Rate Card Editor", fullUrl);
     llRegionSayTo(agent, 0, "👑 [DIRECTORY] Private Editor link: " + fullUrl);
-}
-
-LaunchPayPalCheckout(key agent, string tierKey) {
-    string token = GenerateToken(agent);
-    string name = llGetDisplayName(agent);
-    if (name == "" || name == "???") name = llKey2Name(agent);
-    
-    string checkoutUrl = CHECKOUT_URL + "?uuid=" + (string)agent + "&name=" + llEscapeURL(name) + "&token=" + token + "&tier=" + tierKey;
-    llLoadURL(agent, "💳 Open Secure PayPal / Card Checkout", checkoutUrl);
-    llRegionSayTo(agent, 0, "💳 [PAYPAL CHECKOUT] Secure web payment link: " + checkoutUrl);
 }
 
 SendQuickStatusUpdate(key agent, string newStatus) {
@@ -278,16 +268,13 @@ ShowSubscribeMenu(key agent, string returnState) {
     gActiveListens += [agent, channel, handle, expiry, menuState];
     
     string prompt = "👑 [CHOOSE YOUR DIRECTORY PACKAGE]\n\n" +
-                    "Basic monthly $3.99 / L$" + (string)GetTierPrice(1) + "\n" +
-                    "VIP monthly $6.99 / L$" + (string)GetTierPrice(2) + "\n" +
-                    "Basic lifetime $29 / L$" + (string)GetTierPrice(3) + "\n" +
-                    "VIP lifetime $49 / L$" + (string)GetTierPrice(4) + "\n\n" +
-                    "Choose a Linden price or PayPal/Card:";
+                    "Standard Listing: L$" + (string)GetTierPrice(1) + " / month\n" +
+                    "VIP Featured Listing: L$" + (string)GetTierPrice(2) + " / month (Includes Exclusive Feed & Lookbooks)\n\n" +
+                    "Right-click & Pay the kiosk in Lindens (L$), or select an option below:";
                     
     list buttons = [
         GetTierButtonLabel(1), GetTierButtonLabel(2), GetTierButtonLabel(3),
-        GetTierButtonLabel(4), "Pay Basic M $3.99", "Pay VIP M $6.99",
-        "Pay Basic Life $29", "Pay VIP Life $49", "ℹ️ Tier Info", "⬅️ Back"
+        GetTierButtonLabel(4), "ℹ️ Tier Info", "⬅️ Back"
     ];
     
     llDialog(agent, prompt, buttons, channel);
@@ -296,13 +283,9 @@ ShowSubscribeMenu(key agent, string returnState) {
 ShowTierInfo(key agent) {
     string info = "\n💎 [CONTROL & CHAOS DIRECTORY PACKAGES]\n" +
                   "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-                  "✨ BASIC: full public profile, rate card, live status, and photo gallery.\n" +
-                  "No booking form, payment links, or tribute features.\n\n" +
-                  "👑 VIP: everything in Basic plus booking form, payment/tribute links,\n" +
-                  "wishlist, socials, reviews, and hardware badges.\n\n" +
-                  "Monthly: Basic $3.99 | VIP $6.99\n" +
-                  "Lifetime: Basic $29 | VIP $49\n" +
-                  "Pay exact L$ amount shown in the package menu or use PayPal/Card.";
+                  "✨ STANDARD (L$" + (string)GetTierPrice(1) + "/mo): Full public profile, service rate card, direct SL IM link, and verified companion badge.\n\n" +
+                  "👑 VIP FEATURED (L$" + (string)GetTierPrice(2) + "/mo): Everything in Standard PLUS Exclusive Feed & Lookbooks, in-world subscriber pass tribute monetization, voice note player, and top directory placement.\n\n" +
+                  "To activate, right-click and Pay the Kiosk your chosen tier in Lindens (L$).";
     llRegionSayTo(agent, 0, info);
 }
 
@@ -601,14 +584,6 @@ default {
                 llRegionSayTo(id, 0, "Right-click and pay exactly L$" + (string)GetTierPrice(3) + " for Basic Lifetime.");
             } else if (message == GetTierButtonLabel(4)) {
                 llRegionSayTo(id, 0, "Right-click and pay exactly L$" + (string)GetTierPrice(4) + " for VIP Lifetime.");
-            } else if (message == "Pay Basic M $3.99") {
-                LaunchPayPalCheckout(id, "basic-monthly");
-            } else if (message == "Pay VIP M $6.99") {
-                LaunchPayPalCheckout(id, "vip-monthly");
-            } else if (message == "Pay Basic Life $29") {
-                LaunchPayPalCheckout(id, "basic-lifetime");
-            } else if (message == "Pay VIP Life $49") {
-                LaunchPayPalCheckout(id, "vip-lifetime");
             }
             else if (message == "ℹ️ Tier Info") {
                 ShowTierInfo(id);

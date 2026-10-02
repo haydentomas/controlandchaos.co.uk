@@ -119,7 +119,7 @@
             <li style="color: #64748b; text-decoration: line-through;">✗ Exclusive Feed &amp; Lookbooks</li>
             <li style="color: #64748b; text-decoration: line-through;">✗ In-World Fan Club Passes</li>
           </ul>
-          <a href="checkout/?tier=basic" class="btn btn-secondary btn-sm mt-auto" style="width: 100%; text-align: center; justify-content: center;">Get Standard Listing &rarr;</a>
+          <button type="button" onclick="openKioskModal('Standard Listing', 'L$1,000 / month', 'Full searchable directory profile, custom service menu & rates card, and verified rank badge.')" class="btn btn-secondary btn-sm mt-auto" style="width: 100%; text-align: center; justify-content: center;">Get Standard Listing &rarr;</button>
         </div>
 
         <!-- VIP Featured Tier -->
@@ -140,11 +140,45 @@
             <li>✓ <strong>🎙️ Voice Decrees &amp; Audio Player</strong></li>
             <li>✓ <strong>⭐ Top directory placement &amp; featured badge</strong></li>
           </ul>
-          <a href="checkout/?tier=vip" class="btn btn-gold btn-sm mt-auto" style="width: 100%; text-align: center; justify-content: center; font-weight: 700;">Get VIP Listing &rarr;</a>
+          <button type="button" onclick="openKioskModal('VIP Featured Listing', 'L$2,500 / month', 'Top placement, VIP gold badge, exclusive feed lookbooks, and in-world subscriber pass monetization.')" class="btn btn-gold btn-sm mt-auto" style="width: 100%; text-align: center; justify-content: center; font-weight: 700;">Get VIP Listing &rarr;</button>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- In-World Kiosk Activation Modal (100% Linden Only) -->
+  <div id="kiosk-activation-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(5, 4, 8, 0.88); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: linear-gradient(180deg, #181520 0%, #0d0b12 100%); border: 1px solid var(--gold-bright); border-radius: 20px; max-width: 520px; width: 100%; padding: 32px; box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 40px rgba(212,175,55,0.2); position: relative;">
+      <button type="button" onclick="closeKioskModal()" style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 40px; margin-bottom: 8px;">👑</div>
+        <span class="section-tag tag-gold font-2xs" id="modal-tier-badge">VIP FEATURED LISTING</span>
+        <h3 id="modal-tier-title" style="font-family: var(--font-heading); font-size: 24px; color: #fff; margin: 10px 0 4px;">Get Listed In-World</h3>
+        <div id="modal-tier-price" style="font-size: 20px; font-weight: 800; color: #ffd700; font-family: var(--font-mono);">L$2,500 / month</div>
+      </div>
+
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+        <div style="font-size: 13px; font-weight: 700; color: var(--gold-bright); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">
+          ✨ How to Activate Instantly:
+        </div>
+        <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: #cbd5e1; line-height: 1.7;">
+          <li>Teleport to the <strong>Directory Kiosk</strong> at Control &amp; Chaos in Second Life.</li>
+          <li>Right-click and <strong>Pay</strong> the terminal your chosen tier in Lindens (L$).</li>
+          <li>The Kiosk gives you your private <strong>Studio Editor link</strong> and your profile goes live immediately!</li>
+        </ol>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <a id="modal-teleport-btn" href="secondlife://Chaos%20Manor/128/128/23" class="btn btn-gold btn-md" style="width: 100%; justify-content: center; font-weight: 800; font-size: 15px; padding: 12px;">
+          <span>⚡</span> Teleport to Kiosk in Second Life
+        </a>
+        <button type="button" id="copy-slurl-btn" onclick="copyKioskSlurl()" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center;">
+          <span>📋</span> Copy Landmark / SLurl Link
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Master Footer Component -->
   <site-footer></site-footer>
@@ -497,6 +531,47 @@
           }
         })
         .catch(() => {});
+    });
+
+    const KIOSK_SLURL = "secondlife://Chaos%20Manor/128/128/23";
+
+    window.openKioskModal = function(tierName, priceStr, descStr) {
+      const modal = document.getElementById('kiosk-activation-modal');
+      const badge = document.getElementById('modal-tier-badge');
+      const title = document.getElementById('modal-tier-title');
+      const price = document.getElementById('modal-tier-price');
+
+      if (badge) badge.textContent = tierName.toUpperCase();
+      if (title) title.textContent = `Activate ${tierName}`;
+      if (price) price.textContent = priceStr;
+
+      if (modal) {
+        modal.style.display = 'flex';
+      }
+    };
+
+    window.closeKioskModal = function() {
+      const modal = document.getElementById('kiosk-activation-modal');
+      if (modal) modal.style.display = 'none';
+    };
+
+    window.copyKioskSlurl = function() {
+      navigator.clipboard.writeText(KIOSK_SLURL);
+      const btn = document.getElementById('copy-slurl-btn');
+      if (btn) {
+        btn.innerHTML = '<span>✓</span> Copied SLurl to Clipboard!';
+        setTimeout(() => {
+          btn.innerHTML = '<span>📋</span> Copy Landmark / SLurl Link';
+        }, 2500);
+      }
+    };
+
+    // Close on backdrop click
+    document.addEventListener('click', (e) => {
+      const modal = document.getElementById('kiosk-activation-modal');
+      if (modal && e.target === modal) {
+        modal.style.display = 'none';
+      }
     });
   </script>
 </body>
