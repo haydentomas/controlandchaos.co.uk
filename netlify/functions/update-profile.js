@@ -108,8 +108,8 @@ function getProfilesStore(event) {
 
 function verifyToken(uuid, token, secret, payload) {
   const cleanToken = token ? String(token).trim().toLowerCase() : (payload && payload.token ? String(payload.token).trim().toLowerCase() : '');
-  const adminToken = process.env.ADMIN_EDIT_TOKEN;
-  if (adminToken && cleanToken && cleanToken === adminToken.toLowerCase()) {
+  const adminTokens = [process.env.ADMIN_EDIT_TOKEN, SECRET_KEY, KIOSK_DEFAULT_SECRET].filter(Boolean).map(t => String(t).toLowerCase().trim());
+  if (cleanToken && adminTokens.includes(cleanToken)) {
     return true;
   }
 
@@ -535,7 +535,9 @@ exports.handler = async (event) => {
     const { uuid, id, username, name, token, action, profileData, status, tier, duration_days, days, published, is_vip } = payload;
 
     const targetKey = uuid || id || (profileData && (profileData.avatar_uuid || profileData.id || profileData.sl_username)) || 'profile';
-    const adminAuthorized = !!process.env.ADMIN_EDIT_TOKEN && String(token || '').trim() === process.env.ADMIN_EDIT_TOKEN;
+    const cleanToken = String(token || payload.token || '').trim().toLowerCase();
+    const validAdminTokens = [process.env.ADMIN_EDIT_TOKEN, SECRET_KEY, KIOSK_DEFAULT_SECRET].filter(Boolean).map(t => String(t).toLowerCase().trim());
+    const adminAuthorized = !!cleanToken && validAdminTokens.includes(cleanToken);
     let validPaymentRegistration = false;
     if (action === 'register_paid') {
       if (payload.payment_provider === 'paypal') {
@@ -546,14 +548,6 @@ exports.handler = async (event) => {
     }
     const isKioskSecret = payload.secret && (payload.secret === SECRET_KEY || payload.secret === KIOSK_DEFAULT_SECRET);
     const requiresAdmin = (action === 'admin_grant_time' || action === 'admin_toggle_publish' || action === 'admin_remove_profile') && !isKioskSecret;
-
-    if (requiresAdmin && !process.env.ADMIN_EDIT_TOKEN) {
-      return {
-        statusCode: 503,
-        headers,
-        body: JSON.stringify({ error: 'Admin actions are disabled: ADMIN_EDIT_TOKEN is not configured in the Netlify site environment.' })
-      };
-    }
 
     if (isKioskSecret ? false : requiresAdmin ? !adminAuthorized : action === 'register_paid' ? !validPaymentRegistration : !verifyToken(targetKey, token, '', payload)) {
       return {
