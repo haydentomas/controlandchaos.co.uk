@@ -58,8 +58,8 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Default sender (use verified domain email if set, or Resend default test onboarding address)
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Control & Chaos <onboarding@resend.dev>';
+    // Default sender (use verified domain email)
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Control & Chaos <enquiries@controlandchaos.co.uk>';
     const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL; // Optional BCC copy to site admin
 
     // Build Luxury Branded HTML Email
