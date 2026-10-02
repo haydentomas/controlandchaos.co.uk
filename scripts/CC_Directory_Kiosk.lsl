@@ -1,6 +1,6 @@
 // CC_Directory_Kiosk.lsl
 // [Control & Chaos] In-World Directory, Tiered Subscription & Automated Expiration Manager
-// Enables avatars to subscribe to Basic and VIP packages (Monthly / Lifetime),
+// Enables avatars to subscribe to Basic or VIP packages (Monthly / Lifetime),
 // pay in L$ or PayPal/Credit Card, unlock self-service directory profiles, sync live status,
 // and automatically sends 3-Day Expiration IM Reminders before auto-unpublishing expired listings.
 
@@ -271,13 +271,13 @@ ShowSubscribeMenu(key agent, string returnState) {
 ShowTierInfo(key agent) {
     string info = "\n💎 [CONTROL & CHAOS DIRECTORY PACKAGES]\n" +
                   "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-                  "✨ BASIC: profile, bio, status, rate card, and photo gallery.\n" +
+                  "✨ BASIC: full public profile, rate card, live status, and photo gallery.\n" +
                   "No booking form, payment links, or tribute features.\n\n" +
-                  "👑 VIP: everything in Basic plus booking, payments/tributes,\n" +
-                  "wishlists, socials, reviews, and hardware badges.\n\n" +
+                  "👑 VIP: everything in Basic plus booking form, payment/tribute links,\n" +
+                  "wishlist, socials, reviews, and hardware badges.\n\n" +
                   "Monthly: Basic $3.99 | VIP $6.99\n" +
                   "Lifetime: Basic $29 | VIP $49\n" +
-                  "Choose an exact L$ amount above or use PayPal/Card.";
+                  "Pay exact L$ amount shown in the package menu or use PayPal/Card.";
     llRegionSayTo(agent, 0, info);
 }
 
@@ -299,9 +299,9 @@ ShowAdminPanel(key agent) {
                     "Manage active listings, grant complimentary time, trigger reminder audits, or configure pricing:";
                     
     list buttons = [
-        "📋 List Subs",    "🎁 Grant +30d",  "👑 Grant VIP",
-        "🔔 Run Audit",    "⚙️ Config Tiers", "🌐 Web Admin",
-        "⬅️ Main Menu",   "❌ Close"
+        "📋 List Subs",    "⏳ Set Days",    "🎁 Grant +30d",
+        "👑 Grant VIP",    "🔔 Run Audit",    "⚙️ Config Tiers",
+        "🌐 Web Admin",    "⬅️ Main Menu",   "❌ Close"
     ];
     
     llDialog(agent, prompt, buttons, channel);
@@ -364,7 +364,6 @@ default {
         integer p2 = GetTierPrice(2);
         integer p3 = GetTierPrice(3);
         integer p4 = GetTierPrice(4);
-        
         string tierName;
         integer durationDays;
         
@@ -385,7 +384,7 @@ default {
             llOwnerSay("⚠️ Rejected unsupported directory payment amount L$" + (string)amount + " from " + llKey2Name(giver) + ".");
             return;
         }
-        
+
         string name = llGetDisplayName(giver);
         if (name == "" || name == "???") name = llKey2Name(giver);
         
@@ -442,6 +441,40 @@ default {
                 gPendingRegistrationRequests += [registrationRequest, targetKey];
                 llOwnerSay("👑 Granted VIP Lifetime to " + targetName + " (" + cleanVal + ").");
             }
+            else if (gOwnerConfiguring == 9) { // Set Exact Days
+                key targetKey = NULL_KEY;
+                integer days = 30;
+                string tier = "Basic Monthly";
+                
+                if (llSubStringIndex(cleanVal, ":") != -1) {
+                    list parts = llParseString2List(cleanVal, [":"], []);
+                    targetKey = (key)llStringTrim(llList2String(parts, 0), STRING_TRIM);
+                    days = (integer)llStringTrim(llList2String(parts, 1), STRING_TRIM);
+                    if (days <= 0) days = 30;
+                } else {
+                    targetKey = (key)cleanVal;
+                }
+                
+                string targetName = llKey2Name(targetKey);
+                if (targetName == "" || targetName == "???") targetName = llGetDisplayName(targetKey);
+                if (targetName == "") targetName = (string)targetKey;
+                
+                // Read current tier if exists
+                string existing = llLinksetDataRead("sub_" + (string)targetKey);
+                if (existing != "") {
+                    list exParts = llParseString2List(existing, ["|"], []);
+                    if (llGetListLength(exParts) >= 2) tier = llList2String(exParts, 1);
+                }
+                
+                // Send link message 4 (Set Exact Days)
+                llMessageLinked(LINK_SET, 4, tier + "|" + (string)days + "|" + targetName, targetKey);
+                
+                // Also update Netlify backend
+                key registrationRequest = SendSubscriptionRegistration(targetKey, tier, 0, days);
+                gPendingRegistrationRequests += [registrationRequest, targetKey];
+                
+                llOwnerSay("⏳ Set exact subscription for " + targetName + " (" + (string)targetKey + ") to " + (string)days + " days.");
+            }
             gOwnerConfiguring = 0;
             InitKiosk();
             ShowAdminPanel(id);
@@ -479,6 +512,12 @@ default {
             if (message == "📋 List Subs") {
                 llMessageLinked(LINK_SET, 2, "", id);
                 ShowAdminPanel(id);
+            }
+            else if (message == "⏳ Set Days") {
+                gOwnerConfiguring = 9;
+                integer h = llListen(chan, "", id, "");
+                gActiveListens += [id, chan, h, llGetUnixTime() + 60, "TEXTBOX_CONFIG"];
+                llTextBox(id, "Enter Avatar UUID and days (e.g. UUID:30) or just paste UUID for 30 days:", chan);
             }
             else if (message == "🎁 Grant +30d") {
                 gOwnerConfiguring = 7;
@@ -537,33 +576,37 @@ default {
         }
         else if (menuState == "CONFIG" && id == llGetOwner()) {
             integer chan = GetUserChannel(id);
-
+            integer h;
             if (message == "Basic Monthly") {
                 gOwnerConfiguring = 1;
-                integer h = llListen(chan, "", id, "");
+                h = llListen(chan, "", id, "");
                 gActiveListens += [id, chan, h, llGetUnixTime() + 60, "TEXTBOX_CONFIG"];
                 llTextBox(id, "Set Basic Monthly L$ price.\nCurrent: L$" + (string)GetTierPrice(1), chan);
-            } else if (message == "VIP Monthly") {
+            }
+            else if (message == "VIP Monthly") {
                 gOwnerConfiguring = 2;
-                integer h = llListen(chan, "", id, "");
+                h = llListen(chan, "", id, "");
                 gActiveListens += [id, chan, h, llGetUnixTime() + 60, "TEXTBOX_CONFIG"];
                 llTextBox(id, "Set VIP Monthly L$ price.\nCurrent: L$" + (string)GetTierPrice(2), chan);
-            } else if (message == "Basic Lifetime") {
+            }
+            else if (message == "Basic Lifetime") {
                 gOwnerConfiguring = 3;
-                integer h = llListen(chan, "", id, "");
+                h = llListen(chan, "", id, "");
                 gActiveListens += [id, chan, h, llGetUnixTime() + 60, "TEXTBOX_CONFIG"];
                 llTextBox(id, "Set Basic Lifetime L$ price.\nCurrent: L$" + (string)GetTierPrice(3), chan);
-            } else if (message == "VIP Lifetime") {
+            }
+            else if (message == "VIP Lifetime") {
                 gOwnerConfiguring = 4;
-                integer h = llListen(chan, "", id, "");
+                h = llListen(chan, "", id, "");
                 gActiveListens += [id, chan, h, llGetUnixTime() + 60, "TEXTBOX_CONFIG"];
                 llTextBox(id, "Set VIP Lifetime L$ price.\nCurrent: L$" + (string)GetTierPrice(4), chan);
-            } else if (message == "Reset Defaults") {
+            }
+            else if (message == "Reset Defaults") {
                 llLinksetDataDelete("plan1_price");
                 llLinksetDataDelete("plan2_price");
                 llLinksetDataDelete("plan3_price");
                 llLinksetDataDelete("plan4_price");
-                llOwnerSay("✓ Tier prices reset to factory defaults.");
+                llOwnerSay("✓ Basic/VIP package prices reset to defaults.");
                 InitKiosk();
                 ShowOwnerConfigMenu(id);
             }

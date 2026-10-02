@@ -8,6 +8,22 @@ integer IsLifetimeTier(string tier) {
     return llSubStringIndex(cleanTier, "basic lifetime") != -1 || llSubStringIndex(cleanTier, "vip lifetime") != -1 || llSubStringIndex(cleanTier, "royal lifetime") != -1;
 }
 
+SetExactSubscriber(key agent, string name, string tier, integer exactDays) {
+    integer now = llGetUnixTime();
+    integer lifetime = (exactDays >= 3650) || IsLifetimeTier(tier);
+    integer newExpiry = 0;
+    if (!lifetime) newExpiry = now + exactDays * 86400;
+    
+    llLinksetDataWrite("sub_" + (string)agent, name + "|" + tier + "|" + (string)newExpiry + "|0|" + (string)lifetime);
+
+    string subscribers = llLinksetDataRead("subscriber_list");
+    list allSubscribers = llCSV2List(subscribers);
+    if (llListFindList(allSubscribers, [(string)agent]) == -1) {
+        allSubscribers += [(string)agent];
+        llLinksetDataWrite("subscriber_list", llList2CSV(allSubscribers));
+    }
+}
+
 RecordSubscriber(key agent, string name, string tier, integer durationDays) {
     integer now = llGetUnixTime();
     integer currentExpiry = now;
@@ -136,6 +152,11 @@ default {
             DumpAllSubscribers(id);
         } else if (number == 3) {
             RunSubscriptionAudit(id);
+        } else if (number == 4) {
+            list fields = llParseStringKeepNulls(message, ["|"], []);
+            if (llGetListLength(fields) >= 3) {
+                SetExactSubscriber(id, llList2String(fields, 2), llList2String(fields, 0), (integer)llList2String(fields, 1));
+            }
         }
     }
 
