@@ -241,204 +241,19 @@
           </div>
 
           <!-- Interactive Booking & Tribute Calculator -->
-          <div class="card" style="margin-bottom: 30px; border-color: var(--gold-bright); background: linear-gradient(165deg, #26201b 0%, #171412 100%);" id="rate-calc-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
-              <h3 class="card-title" style="margin:0; font-size:20px;">🧮 Interactive Booking &amp; Tribute Quote</h3>
-              <span class="section-tag" style="margin:0; font-size:10px;">INSTANT ESTIMATE</span>
+          <!-- Live Quote Summary Bar (Appears dynamically when services are selected) -->
+          <div id="selected-quote-bar" style="display:none; background: linear-gradient(135deg, #241f1a 0%, #141210 100%); border: 1px solid var(--gold-bright); border-radius: 10px; padding: 16px 20px; margin-top: -10px; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+            <div>
+              <div style="font-size: 11px; font-family: var(--font-mono); color: var(--gold-muted); text-transform: uppercase; letter-spacing: 0.8px;">Selected Services Quote</div>
+              <div style="display:flex; align-items:baseline; gap:10px; margin-top: 2px;">
+                <span id="live-quote-total" style="font-family: var(--font-heading); font-size: 24px; font-weight: 900; color: var(--gold-bright);">L$0</span>
+                <span id="live-quote-count" style="font-size: 13px; color: #cbd5e1; font-family: var(--font-mono);">(0 selected)</span>
+              </div>
             </div>
-            <p style="font-size:14px; color:var(--text-muted); margin-bottom:16px;">
-              Select the services and session duration you wish to request:
-            </p>
-            <div id="calc-options-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:18px;">
-              <!-- Checkboxes for services injected here -->
-            </div>
-            <div style="border-top:1px solid var(--gold-border); padding-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-              <div>
-                <span style="font-size:12px; color:var(--text-muted); display:block;">Estimated Total:</span>
-                <span id="calc-total-quote" style="font-family:var(--font-heading); font-size:24px; font-weight:900; color:var(--gold-bright);">L$0</span>
-              </div>
-              <a href="#booking-enquiry-section" id="calc-book-cta" class="btn btn-gold btn-sm">
-                <span>💬</span> Book with this Quote
-              </a>
-            </div>
+            <a href="#booking-enquiry-section" class="btn btn-gold btn-sm" style="font-weight: 800; padding: 10px 20px; font-size: 13px; box-shadow: 0 0 14px rgba(212,175,55,0.35);">
+              <span>💬</span> Book with Selected Services ↓
+            </a>
           </div>
-
-          <!-- Direct Contact & Booking Enquiry Section (Inside Main Column) -->
-          <div id="booking-enquiry-section" class="card" style="padding: 28px 24px; background: linear-gradient(175deg, #1a1715 0%, #100f0d 100%); border: 1px solid var(--gold-border);">
-            <div style="margin-bottom:20px;">
-              <span class="section-tag tag-gold" style="margin-bottom:6px;">DIRECT ENQUIRY</span>
-              <h2 style="font-family:var(--font-heading); font-size:22px; font-weight:800; color:var(--gold-bright); margin:0;" id="enquiry-header-title">
-                Request a Session or Booking
-              </h2>
-              <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">
-                Fill in your session details and choose how you would like to send your enquiry.
-              </p>
-            </div>
-
-            <form name="escort-booking" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" id="booking-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px;">
-              <input type="hidden" name="form-name" value="escort-booking">
-              <p style="display:none;"><label>Don’t fill this out if you're human: <input name="bot-field"></label></p>
-              <input type="hidden" name="escort_name" id="form-escort-name" value="">
-              <input type="hidden" name="escort_id" id="form-escort-id" value="">
-              <input type="hidden" name="escort_email" id="form-escort-email" value="">
-              <input type="hidden" name="quote_total" id="form-quote-total" value="">
-              <input type="hidden" name="selected_services" id="form-selected-services" value="">
-
-              <div>
-                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
-                  Your Name / SL Username *
-                </label>
-                <input type="text" name="client_name" id="booking-client-name" required placeholder="e.g. Master_Orion Resident" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
-              </div>
-
-              <div>
-                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
-                  Your Contact (Discord/Email/SL) *
-                </label>
-                <input type="text" name="client_contact" id="booking-client-contact" required placeholder="e.g. username#1234 or email" style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px;">
-              </div>
-
-              <!-- Available Schedule Info Badge -->
-              <div id="booking-schedule-hint" style="grid-column: 1 / -1; background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 10px 14px; font-size: 12.5px; color: var(--gold-bright); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                <span id="booking-schedule-hours-txt">🕒 Active Booking Hours: 12:00 PM – 10:00 PM SLT</span>
-                <span id="booking-schedule-days-txt" style="color: #cbd5e1; font-size: 11.5px; font-family: var(--font-mono);">Active Days: Mon – Sun</span>
-              </div>
-
-              <div>
-                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
-                  Preferred Date *
-                </label>
-                <input type="date" name="preferred_date" id="booking-date-input" required style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px; color-scheme:dark;">
-              </div>
-
-              <div>
-                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
-                  Available Time Slot *
-                </label>
-                <select name="preferred_time_slot" id="booking-time-select" required style="width:100%; padding:10px 12px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#ffd700; font-weight:600; font-size:13.5px;">
-                  <option value="">Select a date first...</option>
-                </select>
-                <input type="hidden" name="preferred_time" id="booking-preferred-time-combined" value="">
-              </div>
-
-              <div style="grid-column: 1 / -1;">
-                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:5px; text-transform:uppercase;">
-                  Session Notes &amp; Details
-                </label>
-                <textarea name="message" id="form-message-input" rows="6" placeholder="Describe your scenario, Lovense/RLV preferences, or event..." style="width:100%; min-height:145px; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:6px; color:#fff; font-size:13.5px; line-height:1.6; resize:vertical; font-family:inherit;"></textarea>
-              </div>
-
-              <!-- Option 2: Send Method Selector -->
-              <div style="grid-column: 1 / -1; margin-top: 4px;">
-                <label style="display:block; font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:8px; text-transform:uppercase;">
-                  Choose How to Send Your Enquiry
-                </label>
-                <div class="send-method-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px;">
-                  <label class="send-method-card" id="send-method-web-label" style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:rgba(212,175,55,0.1); border:1px solid var(--gold-bright); border-radius:8px; cursor:pointer; transition:all 0.2s;">
-                    <input type="radio" name="send_method" value="web" checked onchange="updateSendMethodUI()" style="accent-color:var(--gold-bright); cursor:pointer;">
-                    <div>
-                      <div style="font-size:13px; font-weight:700; color:#fff;">🌐 Direct Web Send</div>
-                      <div style="font-size:11px; color:var(--text-muted);">Instant submission to provider</div>
-                    </div>
-                  </label>
-                  <label class="send-method-card" id="send-method-email-label" style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:8px; cursor:pointer; transition:all 0.2s;">
-                    <input type="radio" name="send_method" value="email" onchange="updateSendMethodUI()" style="accent-color:var(--gold-bright); cursor:pointer;">
-                    <div>
-                      <div style="font-size:13px; font-weight:700; color:#fff;">📧 My Email App</div>
-                      <div style="font-size:11px; color:var(--text-muted);">Opens Gmail / Outlook / Mail</div>
-                    </div>
-                  </label>
-                  <label class="send-method-card" id="send-method-sl-label" style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:#0e0c0b; border:1px solid var(--gold-border-subtle); border-radius:8px; cursor:pointer; transition:all 0.2s;">
-                    <input type="radio" name="send_method" value="sl" onchange="updateSendMethodUI()" style="accent-color:var(--gold-bright); cursor:pointer;">
-                    <div>
-                      <div style="font-size:13px; font-weight:700; color:#fff;">💬 Second Life IM</div>
-                      <div style="font-size:11px; color:var(--text-muted);">Opens SL IM &amp; copies notes</div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-
-              <div style="grid-column: 1 / -1; margin-top:8px;">
-                <div id="booking-form-status" style="font-size:13.5px; margin-bottom:10px; text-align:center;"></div>
-                <button type="submit" class="btn btn-gold" id="booking-submit-btn" style="width:100%; padding:14px 20px; font-size:14.5px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 0 20px rgba(212,175,55,0.25); cursor:pointer;">
-                  <span>✉️</span> Submit Booking Enquiry
-                </button>
-                <div style="margin-top:12px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px; color:var(--text-muted); text-align:center;">
-                  <span>🛡️</span>
-                  <span><strong>No upfront payment required.</strong> Session fees in Lindens (L$) are arranged and settled directly in-world once your date and time are confirmed by the provider.</span>
-                </div>
-              </div>
-            </form>
-          </div>
-
-        </div>
-
-        <!-- Right Column: Gallery, Hardware, Limits, How to Book & Reviews -->
-        <div id="profile-sidebar">
-          
-          <!-- Visual Lookbook / Photo Gallery -->
-          <div class="card" style="margin-bottom: 30px;" id="profile-gallery-card">
-            <h3 class="card-title" id="profile-gallery-title" style="font-size: 20px; margin-bottom: 16px;">📸 Gallery</h3>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="gallery-grid">
-              <!-- Gallery items injected here -->
-            </div>
-          </div>
-
-          <!-- Hardware & Tech Compatibility Card (Repeater & Dynamic Title) -->
-          <div class="card" id="profile-hardware-card" style="margin-bottom: 30px;">
-            <h3 class="card-title" id="profile-hardware-title" style="font-size:18px; margin:0 0 14px 0; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:20px;">⚡</span> Hardware &amp; Tech Compatibility
-            </h3>
-            <div id="hardware-features-container" style="display:flex; flex-direction:column; gap:10px;">
-              <!-- Injected dynamically -->
-            </div>
-          </div>
-
-          <!-- Hard Limits & Boundaries -->
-          <div class="card" id="profile-limits-card" style="margin-bottom: 30px; border-color: rgba(139,30,45,0.4); background: rgba(30,15,18,0.4); display:none;">
-            <h3 class="card-title" id="profile-limits-title" style="font-size:18px; color:#ffb8c2; margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:20px;">🚫</span> Hard Limits &amp; Boundaries
-            </h3>
-            <ul id="hard-limits-list" style="padding-left:18px; font-size:13.5px; color:var(--text-primary); line-height:1.65;">
-              <!-- Injected dynamically -->
-            </ul>
-          </div>
-
-          <!-- How to Book / Protocol -->
-          <div class="card" id="profile-booking-card" style="margin-bottom: 30px; display:none;">
-            <h3 class="card-title" id="profile-booking-title" style="font-size:18px; margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:20px;">📜</span> How to Book
-            </h3>
-            <div id="booking-protocol-steps" style="font-size:13.5px; color:var(--text-primary); line-height:1.7;">
-              <!-- Injected dynamically -->
-            </div>
-          </div>
-
-          <!-- Client Reviews -->
-          <div class="card" id="profile-reviews-card" style="margin-bottom: 30px; display:none;">
-            <h3 class="card-title" id="profile-reviews-title" style="font-size: 18px; margin-bottom: 14px;">⭐ Verified Client Reviews</h3>
-            <div id="reviews-container" style="display:flex; flex-direction:column; gap:12px;">
-              <!-- Injected dynamically -->
-            </div>
-          </div>
-
-          <!-- Wishlist Box (Conditionally Rendered) -->
-          <div class="card" id="profile-wishlist-card" style="margin-bottom: 30px; display:none;">
-            <h3 class="card-title" id="profile-wishlist-title" style="font-size:18px; margin:0 0 14px 0; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:20px;">🎁</span> Wishlist &amp; Tributes
-            </h3>
-            <div id="wishlist-container" style="display:flex; flex-direction:column; gap:10px;"></div>
-          </div>
-
-          <!-- Social Links Box (Conditionally Rendered) -->
-          <div class="card" id="profile-social-card" style="margin-bottom: 30px; display:none;">
-            <h3 class="card-title" id="profile-social-title" style="font-size:18px; margin:0 0 14px 0; display:flex; align-items:center; gap:8px;">
-              <span style="font-size:20px;">🌐</span> Socials &amp; Media
-            </h3>
-            <div id="social-links-container" style="display:flex; flex-direction:column; gap:10px;"></div>
-          </div>
-
-        </div>
 
     </div>
   </main>
@@ -781,13 +596,83 @@ function openLightbox(imgSrc, title, category) {
         aboutText.textContent = profileData.about || '';
       }
 
-      // 4. Render Categorized Rate Cards (Repeater)
+            // 4. Render Categorized Interactive Rate Cards (Direct Selection)
       const ratesContainer = document.getElementById('rate-categories-container');
-      const calcOptions = document.getElementById('calc-options-container');
+      const selectedQuoteBar = document.getElementById('selected-quote-bar');
+      const liveQuoteTotal = document.getElementById('live-quote-total');
+      const liveQuoteCount = document.getElementById('live-quote-count');
+
+      window.selectedServicesMap = new Map();
+
+      window.toggleRateService = function(cardEl) {
+        const name = cardEl.getAttribute('data-name');
+        const price = parseInt(cardEl.getAttribute('data-price'), 10) || 0;
+        const category = cardEl.getAttribute('data-category') || '';
+        const checkMark = cardEl.querySelector('.service-check-mark');
+        const checkBox = cardEl.querySelector('.service-check-box');
+
+        if (window.selectedServicesMap.has(name)) {
+          window.selectedServicesMap.delete(name);
+          cardEl.style.background = 'rgba(20,18,16,0.85)';
+          cardEl.style.borderColor = 'var(--gold-border-subtle)';
+          cardEl.style.boxShadow = 'none';
+          if (checkBox) {
+            checkBox.style.borderColor = 'var(--gold-border-subtle)';
+            checkBox.style.background = '#0e0c0b';
+          }
+          if (checkMark) checkMark.style.display = 'none';
+        } else {
+          window.selectedServicesMap.set(name, { name, price, category });
+          cardEl.style.background = 'rgba(212,175,55,0.12)';
+          cardEl.style.borderColor = 'var(--gold-bright)';
+          cardEl.style.boxShadow = '0 0 16px rgba(212,175,55,0.2)';
+          if (checkBox) {
+            checkBox.style.borderColor = 'var(--gold-bright)';
+            checkBox.style.background = 'rgba(212,175,55,0.3)';
+          }
+          if (checkMark) checkMark.style.display = 'block';
+        }
+
+        window.updateLiveRateSelection();
+      };
+
+      window.updateLiveRateSelection = function() {
+        let total = 0;
+        const selectedItems = Array.from(window.selectedServicesMap.values());
+        selectedItems.forEach(item => { total += item.price; });
+
+        if (selectedQuoteBar) {
+          if (selectedItems.length > 0) {
+            selectedQuoteBar.style.display = 'flex';
+            if (liveQuoteTotal) liveQuoteTotal.textContent = `L${total.toLocaleString()}`;
+            if (liveQuoteCount) liveQuoteCount.textContent = `(${selectedItems.length} selected)`;
+          } else {
+            selectedQuoteBar.style.display = 'none';
+          }
+        }
+
+        // Sync hidden form inputs and pre-fill message textarea
+        const quoteTotalInput = document.getElementById('form-quote-total');
+        const quoteServicesInput = document.getElementById('form-selected-services');
+        const messageField = document.getElementById('form-message-input');
+
+        if (quoteTotalInput) quoteTotalInput.value = total > 0 ? `L${total.toLocaleString()}` : '';
+        if (quoteServicesInput) quoteServicesInput.value = selectedItems.map(s => s.name).join(', ');
+
+        if (selectedItems.length > 0) {
+          if (messageField) {
+            const servicesBreakdown = selectedItems.map(s => `  • ${s.name} (${s.category ? `${s.category} — ` : ''}L${s.price.toLocaleString()})`).join('\n');
+            messageField.value = `Hello ${profileData.name},\n\nI would like to request a booking/session for the following services:\n${servicesBreakdown}\n\nEstimated Total: L${total.toLocaleString()} (~${Math.round(total / 250)})\n\nSession Preferences & Notes:\n[Please specify any Lovense/RLV preferences, scenario ideas, or timing details here]`;
+          }
+        } else {
+          if (messageField && messageField.value.startsWith(`Hello ${profileData.name}`)) {
+            messageField.value = '';
+          }
+        }
+      };
 
       if (ratesContainer && profileData.rate_categories && profileData.rate_categories.length > 0) {
         ratesContainer.innerHTML = '';
-        if (calcOptions) calcOptions.innerHTML = '';
 
         profileData.rate_categories.forEach((cat) => {
           const catBox = document.createElement('div');
@@ -796,117 +681,41 @@ function openLightbox(imgSrc, title, category) {
 
           const services = cat.services || [];
           catBox.innerHTML = `
-            <div style="border-bottom:1px solid var(--gold-border); padding-bottom:10px; margin-bottom:16px;">
-              <h3 style="font-family:var(--font-heading); font-size:20px; font-weight:800; color:var(--gold-bright); margin:0;">${cat.category_name}</h3>
-              ${cat.category_desc ? `<p style="font-size:13px; color:var(--text-muted); margin-top:4px;">${cat.category_desc}</p>` : ''}
+            <div style="border-bottom:1px solid var(--gold-border); padding-bottom:10px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:8px;">
+              <div>
+                <h3 style="font-family:var(--font-heading); font-size:20px; font-weight:800; color:var(--gold-bright); margin:0;">${cat.category_name}</h3>
+                ${cat.category_desc ? `<p style="font-size:13px; color:var(--text-muted); margin-top:4px;">${cat.category_desc}</p>` : ''}
+              </div>
+              <span style="font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); text-transform:uppercase;">Click to select</span>
             </div>
-            <div style="display:flex; flex-direction:column; gap:12px;">
-              ${services.map((s) => `
-                <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:6px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; gap:16px;">
-                  <div>
-                    <div style="font-family:var(--font-heading); font-size:16px; font-weight:800; color:var(--text-primary);">${s.name}</div>
-                    ${s.desc ? `<div style="font-size:13.5px; color:var(--text-muted); margin-top:3px; line-height:1.5;">${s.desc}</div>` : ''}
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              ${services.map((s) => {
+                const numPrice = parseInt((s.price || '0').replace(/[^0-9]/g, ''), 10) || 0;
+                return `
+                  <div class="service-select-card" onclick="toggleRateService(this)" data-name="${s.name.replace(/"/g, '&quot;')}" data-price="${numPrice}" data-category="${(cat.category_name || '').replace(/"/g, '&quot;')}" style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:8px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; gap:16px; cursor:pointer; transition:all 0.2s ease;">
+                    <div style="display:flex; align-items:flex-start; gap:14px;">
+                      <div class="service-check-box" style="width:20px; height:20px; border-radius:4px; border:2px solid var(--gold-border-subtle); background:#0e0c0b; display:flex; align-items:center; justify-content:center; margin-top:2px; flex-shrink:0; transition:all 0.2s;">
+                        <span class="service-check-mark" style="display:none; color:var(--gold-bright); font-size:13px; font-weight:900;">✓</span>
+                      </div>
+                      <div>
+                        <div style="font-family:var(--font-heading); font-size:16px; font-weight:800; color:var(--text-primary);">${s.name}</div>
+                        ${s.desc ? `<div style="font-size:13.5px; color:var(--text-muted); margin-top:3px; line-height:1.5;">${s.desc}</div>` : ''}
+                      </div>
+                    </div>
+                    <div style="text-align:right; flex-shrink:0;">
+                      <div style="font-family:var(--font-mono); font-size:16px; font-weight:800; color:var(--gold-bright);">${s.price}</div>
+                      <div style="font-size:11px; color:var(--gold-muted);">${s.unit || 'per session'}</div>
+                    </div>
                   </div>
-                  <div style="text-align:right; flex-shrink:0;">
-                    <div style="font-family:var(--font-mono); font-size:16px; font-weight:800; color:var(--gold-bright);">${s.price}</div>
-                    <div style="font-size:11px; color:var(--gold-muted);">${s.unit || 'per session'}</div>
-                  </div>
-                </div>
-              `).join('')}
+                `;
+              }).join('')}
             </div>
           `;
 
           ratesContainer.appendChild(catBox);
-
-          // Add grouped items to Quote Calculator
-          if (calcOptions && services.length > 0) {
-            const validServices = services.filter(s => (parseInt((s.price || '0').replace(/[^0-9]/g, '')) || 0) > 0);
-            if (validServices.length > 0) {
-              const catGroup = document.createElement('div');
-              catGroup.style.marginBottom = '14px';
-              catGroup.innerHTML = `
-                <div style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--gold-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
-                  <span style="color:var(--gold-bright);">◆</span>
-                  <span>${cat.category_name}</span>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:6px;">
-                  ${validServices.map(s => {
-                    const numPrice = parseInt((s.price || '0').replace(/[^0-9]/g, '')) || 0;
-                    return `
-                      <label style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(20,18,16,0.7); border:1px solid var(--gold-border-subtle); border-radius:6px; cursor:pointer; font-size:13.5px; transition:border-color 0.2s, background 0.2s;">
-                        <input type="checkbox" class="quote-check" data-name="${s.name}" data-price="${numPrice}" data-category="${cat.category_name}" style="cursor:pointer; accent-color:var(--gold-bright); width:16px; height:16px;">
-                        <span style="flex:1; color:var(--text-primary); font-weight:500;">${s.name}</span>
-                        <span style="font-family:var(--font-mono); color:var(--gold-bright); font-weight:700; font-size:13.5px;">L$${numPrice.toLocaleString()}</span>
-                      </label>
-                    `;
-                  }).join('')}
-                </div>
-              `;
-              calcOptions.appendChild(catGroup);
-            }
-          }
         });
-
-        // Sync quote calculation and prefill booking enquiry form
-        function updateQuoteAndForm() {
-          let total = 0;
-          let selectedItems = [];
-          document.querySelectorAll('.quote-check:checked').forEach(c => {
-            const price = parseInt(c.getAttribute('data-price')) || 0;
-            const name = c.getAttribute('data-name');
-            const cat = c.getAttribute('data-category') || '';
-            total += price;
-            selectedItems.push({ name, price, cat });
-          });
-
-          const totalEl = document.getElementById('calc-total-quote');
-          if (totalEl) totalEl.textContent = `L$${total.toLocaleString()}`;
-
-          // Form fields
-          const quoteTotalInput = document.getElementById('form-quote-total');
-          const quoteServicesInput = document.getElementById('form-selected-services');
-          const serviceField = document.getElementById('form-service-input');
-          const messageField = document.getElementById('form-message-input');
-
-          if (quoteTotalInput) quoteTotalInput.value = `L$${total.toLocaleString()}`;
-          if (quoteServicesInput) quoteServicesInput.value = selectedItems.map(s => s.name).join(', ');
-
-          if (selectedItems.length > 0) {
-            if (serviceField) {
-              serviceField.value = `${selectedItems.map(s => s.name).join(' + ')} (Total: L$${total.toLocaleString()})`;
-            }
-            if (messageField) {
-              const servicesBreakdown = selectedItems.map(s => `  • ${s.name} (${s.cat ? `${s.cat} — ` : ''}L$${s.price.toLocaleString()})`).join('\n');
-              messageField.value = `Hello ${profileData.name},\n\nI would like to request a booking/session for the following services:\n${servicesBreakdown}\n\nEstimated Total: L$${total.toLocaleString()}\n\nSession Preferences & Notes:\n[Please specify any Lovense/RLV preferences, scenario ideas, or timing details here]`;
-            }
-          } else {
-            if (serviceField) serviceField.value = '';
-            if (messageField && messageField.value.startsWith(`Hello ${profileData.name}`)) {
-              messageField.value = '';
-            }
-          }
-        }
-
-        document.querySelectorAll('.quote-check').forEach(chk => {
-          chk.addEventListener('change', updateQuoteAndForm);
-        });
-
-        const bookCta = document.getElementById('calc-book-cta');
-        if (bookCta) {
-          bookCta.addEventListener('click', (e) => {
-            e.preventDefault();
-            updateQuoteAndForm();
-            const formSection = document.getElementById('booking-enquiry-section');
-            if (formSection) {
-              formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-            const nameInput = document.querySelector('input[name="client_name"]');
-            if (nameInput) {
-              setTimeout(() => nameInput.focus(), 350);
-            }
-          });
-        }
       }
+
 
       // 5. Render Custom Sections (Repeater)
       const customContainer = document.getElementById('custom-sections-container');
