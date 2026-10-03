@@ -147,33 +147,44 @@
               <thead>
                 <!-- Top Main Tier Summary & Action Row -->
                 <tr style="background: rgba(22, 18, 28, 0.98); border-bottom: 2px solid rgba(212, 175, 55, 0.35);">
-                  <th style="padding: 28px 24px; color: #94a3b8; font-weight: 700; width: 44%; vertical-align: bottom;">
+                  <!-- Left Title Column -->
+                  <th style="padding: 24px 24px; color: #94a3b8; font-weight: 700; width: 44%; vertical-align: bottom;">
                     <div style="font-size: 1.25rem; font-family: var(--font-heading); color: #fff; margin-bottom: 4px;">Choose Your Listing</div>
                     <div style="font-size: 0.8rem; color: #94a3b8; font-weight: 400; line-height: 1.4;">Instant in-world activation via Lindens (L$). Cancel or upgrade anytime.</div>
                   </th>
                   
                   <!-- Standard Column Header -->
-                  <th style="padding: 28px 20px 24px; text-align: center; color: #fff; width: 28%; vertical-align: top; background: rgba(255,255,255,0.01);">
-                    <div style="font-size: 24px; margin-bottom: 6px;">📄</div>
-                    <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-heading); color: #fff;">Standard</div>
-                    <div style="font-size: 1.5rem; font-weight: 900; color: #fff; margin: 6px 0 2px; font-family: var(--font-mono);">
-                      L$1,000 <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 400;">/ mo</span>
+                  <th style="padding: 24px 20px; text-align: center; color: #fff; width: 28%; vertical-align: top; background: rgba(255,255,255,0.01);">
+                    <div style="display: flex; flex-direction: column; height: 100%;">
+                      <div style="min-height: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;">
+                        <span class="section-tag font-2xs m-0" style="background: rgba(255,255,255,0.06); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.12); padding: 2px 8px; font-size: 0.68rem; letter-spacing: 0.05em; font-weight: 700;">ESSENTIAL</span>
+                      </div>
+                      <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-heading); color: #fff; min-height: 26px; display: flex; align-items: center; justify-content: center;">Standard</div>
+                      <div style="font-size: 1.5rem; font-weight: 900; color: #fff; margin: 6px 0 2px; font-family: var(--font-mono);">
+                        L$1,000 <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 400;">/ mo</span>
+                      </div>
+                      <div style="font-size: 0.76rem; color: #94a3b8; margin-bottom: 16px; font-weight: 400; min-height: 38px; display: flex; align-items: center; justify-content: center; line-height: 1.35;">Searchable profile &amp; rate card menu</div>
+                      <div style="margin-top: auto;">
+                        <button type="button" onclick="openKioskModal('Standard Listing', 'L$1,000 / month', 'Full searchable directory profile, custom service menu & rates card, and verified rank badge.')" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center; font-size: 0.82rem; padding: 10px 12px; height: 38px;">Get Standard &rarr;</button>
+                      </div>
                     </div>
-                    <div style="font-size: 0.76rem; color: #94a3b8; margin-bottom: 16px; font-weight: 400; min-height: 32px;">Searchable profile &amp; rate card menu</div>
-                    <button type="button" onclick="openKioskModal('Standard Listing', 'L$1,000 / month', 'Full searchable directory profile, custom service menu & rates card, and verified rank badge.')" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center; font-size: 0.82rem; padding: 9px 12px;">Get Standard &rarr;</button>
                   </th>
 
                   <!-- VIP Featured Column Header (Highlight) -->
-                  <th style="padding: 24px 20px 24px; text-align: center; color: #ffd700; width: 28%; vertical-align: top; background: linear-gradient(180deg, rgba(212, 175, 55, 0.16) 0%, rgba(26, 21, 14, 0.95) 100%); border-left: 1px solid rgba(212, 175, 55, 0.35); border-right: 1px solid rgba(212, 175, 55, 0.35); position: relative;">
-                    <div style="margin-bottom: 6px;">
-                      <span class="section-tag tag-gold font-2xs m-0" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; font-weight: 900; border: none; padding: 2px 8px; font-size: 0.68rem; letter-spacing: 0.05em;">👑 MOST POPULAR</span>
+                  <th style="padding: 24px 20px; text-align: center; color: #ffd700; width: 28%; vertical-align: top; background: linear-gradient(180deg, rgba(212, 175, 55, 0.16) 0%, rgba(26, 21, 14, 0.95) 100%); border-left: 1px solid rgba(212, 175, 55, 0.35); border-right: 1px solid rgba(212, 175, 55, 0.35); position: relative;">
+                    <div style="display: flex; flex-direction: column; height: 100%;">
+                      <div style="min-height: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;">
+                        <span class="section-tag tag-gold font-2xs m-0" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; font-weight: 900; border: none; padding: 2px 8px; font-size: 0.68rem; letter-spacing: 0.05em;">👑 MOST POPULAR</span>
+                      </div>
+                      <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-heading); color: var(--gold-bright); min-height: 26px; display: flex; align-items: center; justify-content: center;">VIP Featured</div>
+                      <div style="font-size: 1.5rem; font-weight: 900; color: #ffd700; margin: 6px 0 2px; font-family: var(--font-mono);">
+                        L$2,500 <span style="font-size: 0.8rem; color: var(--gold-muted); font-weight: 400;">/ mo</span>
+                      </div>
+                      <div style="font-size: 0.76rem; color: #fef08a; margin-bottom: 16px; font-weight: 500; min-height: 38px; display: flex; align-items: center; justify-content: center; line-height: 1.35;">Custom domain, exclusive feed &amp; fan passes</div>
+                      <div style="margin-top: auto;">
+                        <button type="button" onclick="openKioskModal('VIP Featured Listing', 'L$2,500 / month', 'Top placement, VIP gold badge, exclusive feed lookbooks, and in-world subscriber pass monetization.')" class="btn btn-gold btn-sm" style="width: 100%; justify-content: center; font-weight: 800; font-size: 0.82rem; padding: 10px 12px; height: 38px; box-shadow: 0 0 15px rgba(212,175,55,0.3);">Get VIP Listing &rarr;</button>
+                      </div>
                     </div>
-                    <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-heading); color: var(--gold-bright);">VIP Featured</div>
-                    <div style="font-size: 1.5rem; font-weight: 900; color: #ffd700; margin: 6px 0 2px; font-family: var(--font-mono);">
-                      L$2,500 <span style="font-size: 0.8rem; color: var(--gold-muted); font-weight: 400;">/ mo</span>
-                    </div>
-                    <div style="font-size: 0.76rem; color: #fef08a; margin-bottom: 16px; font-weight: 500; min-height: 32px;">Custom domain, exclusive feed &amp; fan passes</div>
-                    <button type="button" onclick="openKioskModal('VIP Featured Listing', 'L$2,500 / month', 'Top placement, VIP gold badge, exclusive feed lookbooks, and in-world subscriber pass monetization.')" class="btn btn-gold btn-sm" style="width: 100%; justify-content: center; font-weight: 800; font-size: 0.82rem; padding: 9px 12px; box-shadow: 0 0 15px rgba(212,175,55,0.3);">Get VIP Listing &rarr;</button>
                   </th>
                 </tr>
               </thead>
