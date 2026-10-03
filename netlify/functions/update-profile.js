@@ -37,6 +37,26 @@ function slugifyProfileName(name) {
   return String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+function normalizeVipProfileFeatures(profile) {
+  const features = ['public_blog', 'vip_feed', 'full_gallery', 'ratecard_gallery', 'media_intro', 'booking', 'hardware', 'boundaries', 'booking_protocol', 'reviews', 'wishlist', 'socials', 'about', 'rate_menus', 'custom_sections'];
+  const vip = profile.plan === 'vip';
+  const settings = profile.feature_visibility;
+  profile.feature_visibility = vip && settings && typeof settings === 'object'
+    ? Object.fromEntries(features.filter(feature => typeof settings[feature] === 'boolean').map(feature => [feature, settings[feature]]))
+    : {};
+  if (Array.isArray(profile.gallery)) {
+    profile.gallery = profile.gallery.map(item => {
+      if (!item || typeof item !== 'object') return item;
+      const photo = { ...item };
+      if (!vip || typeof photo.show_on_ratecard !== 'boolean') delete photo.show_on_ratecard;
+      return photo;
+    });
+  }
+  return profile;
+}
+
+exports.normalizeVipProfileFeatures = normalizeVipProfileFeatures;
+
 let getStore;
 let connectLambda;
 let blobImportError = null;
@@ -833,6 +853,7 @@ exports.handler = async (event) => {
       profileData.is_lifetime = isLifetimeSubscription(subscription);
       profileData.expires_at = subscription && subscription.expires_at;
       profileData.managed_subscription = true;
+      normalizeVipProfileFeatures(profileData);
       if (profileData.plan !== 'vip') {
         profileData.booking_protocol = [];
         profileData.wishlist = [];

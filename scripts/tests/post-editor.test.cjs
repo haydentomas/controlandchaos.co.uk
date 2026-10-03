@@ -211,3 +211,111 @@ test('custom feed excerpts are draft-protected, saved, and removable', () => {
   context.saveBlogPostModal();
   assert.equal(context.readPostChanges().blog_posts[0].excerpt, undefined);
 });
+
+test('formatting buttons preserve source and page scroll while retaining selection', () => {
+  for (const type of ['bold', 'italic', 'h2', 'list', 'link', 'quote', 'divider']) {
+    const { context, document } = setup();
+    context.openEditBlogPostModal(0);
+    const textarea = document.getElementById('modal-blog-content');
+    textarea.value = 'Before selected text after\n' + 'A long paragraph.\n'.repeat(100);
+    textarea.selectionStart = 7;
+    textarea.selectionEnd = 15;
+    textarea.scrollTop = 430;
+    textarea.scrollLeft = 12;
+    context.window.scrollY = 800;
+    context.window.scrollX = 4;
+    let focusedWithoutScrolling = false;
+    textarea.focus = options => {
+      focusedWithoutScrolling = options?.preventScroll === true;
+      textarea.scrollTop = 1900;
+    };
+    context.window.scrollTo = options => {
+      context.window.scrollY = options.top;
+      context.window.scrollX = options.left;
+    };
+    let nextFrame;
+    context.window.requestAnimationFrame = callback => { nextFrame = callback; };
+    context.insertBlogMarkdown(type);
+    assert.ok(focusedWithoutScrolling);
+    assert.equal(textarea.scrollTop, 430);
+    assert.equal(textarea.scrollLeft, 12);
+    assert.equal(context.window.scrollY, 800);
+    assert.equal(context.window.scrollX, 4);
+    textarea.scrollTop = 1900;
+    nextFrame();
+    assert.equal(textarea.scrollTop, 430);
+  }
+});
+
+test('formatting in preview does not focus hidden source and refreshes the preview in place', () => {
+  const { context, document } = setup();
+  context.openEditBlogPostModal(0);
+  const textarea = document.getElementById('modal-blog-content');
+  textarea.value = 'Selected words';
+  textarea.selectionStart = 0;
+  textarea.selectionEnd = 8;
+  context.switchBlogContentMode('preview');
+  textarea.focus = () => { throw new Error('Hidden source should not be focused'); };
+  const preview = document.getElementById('modal-blog-preview-rendered');
+  preview.scrollTop = 120;
+  context.insertBlogMarkdown('bold');
+  assert.equal(preview.querySelector('strong').textContent, 'Selected');
+  assert.equal(preview.scrollTop, 120);
+  assert.equal(textarea.style.display, 'none');
+});
+
+test('returning from preview preserves the Markdown scroll position without scrolling focus', () => {
+  const { context, document } = setup();
+  context.openEditBlogPostModal(0);
+  const textarea = document.getElementById('modal-blog-content');
+  textarea.scrollTop = 350;
+  context.switchBlogContentMode('preview');
+  textarea.scrollTop = 0;
+  textarea.focus = options => {
+    assert.equal(options.preventScroll, true);
+    textarea.scrollTop = 999;
+  };
+  context.switchBlogContentMode('write');
+  assert.equal(textarea.scrollTop, 350);
+});
+
+test('gallery management is a dedicated backend section and new VIP images do not automatically enter the rate card', () => {
+  const { context, document } = setup();
+  assert.equal(document.getElementById('gallery-manager-card').parentElement.id, 'gallery-manager-slot');
+  vm.runInContext('currentProfile.is_vip = true;', context);
+  context.addGalleryItem();
+  assert.equal(vm.runInContext('galleryItems[0].show_on_ratecard', context), false);
+  assert.ok(document.getElementById('gallery-description-0'));
+  assert.ok(document.querySelector('.gallery-manager-preview'));
+});
+
+test('VIP feature controls retain disabled selections and are locked for basic profiles', () => {
+  const { context, document } = setup();
+  vm.runInContext('currentProfile.is_vip = true;', context);
+  context.renderProfileFeatureSwitches({ is_vip: true, feature_visibility: { public_blog: false } });
+  assert.ok(!document.querySelector('[data-profile-feature="public_blog"]').hasAttribute('checked'));
+  for (const input of document.querySelectorAll('[data-profile-feature]')) input.checked = input.hasAttribute('checked');
+  assert.equal(context.collectProfileFeatureVisibility().public_blog, false);
+  assert.equal(context.collectProfileFeatureVisibility().full_gallery, true);
+  vm.runInContext('currentProfile.is_vip = false;', context);
+  context.renderProfileFeatureSwitches({ plan: 'basic' });
+  assert.ok(document.querySelector('[data-profile-feature="full_gallery"]').hasAttribute('disabled'));
+  assert.deepEqual(Object.keys(context.collectProfileFeatureVisibility()), []);
+});
+
+test('saving a VIP profile includes gallery descriptions, rate-card choices, and feature switches without deleting content', async () => {
+  const { context, document } = setup();
+  vm.runInContext('currentProfile.is_vip = true; currentProfile.plan = "vip"; galleryItems = [{image:"/photo.jpg", description:"A photo description", show_on_ratecard:false}];', context);
+  context.renderProfileFeatureSwitches({ is_vip: true });
+  for (const input of document.querySelectorAll('[data-profile-feature]')) input.checked = true;
+  document.querySelector('[data-profile-feature="public_blog"]').checked = false;
+  let payload;
+  context.fetch = async (url, options) => { payload = JSON.parse(options.body); return { ok: true, json: async () => ({ success: true }) }; };
+  await context.saveProfile();
+  assert.equal(payload.profileData.feature_visibility.public_blog, false);
+  assert.equal(payload.profileData.gallery[0].description, 'A photo description');
+  assert.equal(payload.profileData.gallery[0].show_on_ratecard, false);
+  assert.equal(payload.profileData.blog_posts.length, 2);
+  assert.equal(vm.runInContext('currentProfile.is_vip', context), true);
+  assert.equal(context.collectProfileFeatureVisibility().public_blog, false);
+});

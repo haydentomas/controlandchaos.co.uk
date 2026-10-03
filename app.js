@@ -3,6 +3,72 @@
  * Modern Luxury Web Experience
  */
 
+initPageReveal();
+
+function initPageReveal() {
+  if (window._ccPageRevealStarted) return;
+  window._ccPageRevealStarted = true;
+  const root = document.documentElement;
+  root.classList.add('site-loading');
+  root.setAttribute('aria-busy', 'true');
+  const startedAt = window.ccPageLoadStartedAt ?? performance.now();
+  const nativeFetch = window.fetch;
+  let pending = 0;
+  let domReady = document.readyState !== 'loading';
+  let finished = false;
+  let revealTimer = null;
+  const minimumDuration = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 0 : 400;
+
+  function reveal() {
+    if (finished) return;
+    finished = true;
+    clearTimeout(revealTimer);
+    clearTimeout(failsafe);
+    root.classList.remove('site-loading');
+    root.classList.add('site-revealed');
+    root.removeAttribute('aria-busy');
+    if (window.fetch === trackedFetch) window.fetch = nativeFetch;
+  }
+
+  function scheduleReveal() {
+    clearTimeout(revealTimer);
+    if (finished || !domReady || pending) return;
+    revealTimer = setTimeout(reveal, Math.max(180, minimumDuration - (performance.now() - startedAt)));
+  }
+
+  function track(operation) {
+    pending++;
+    clearTimeout(revealTimer);
+    return Promise.resolve(operation).finally(() => {
+      pending--;
+      scheduleReveal();
+    });
+  }
+
+  function trackedFetch(...args) {
+    if (finished) return nativeFetch.apply(this, args);
+    return track(Promise.resolve().then(() => nativeFetch.apply(this, args)).then(response => {
+      for (const method of ['json', 'text', 'blob', 'arrayBuffer']) {
+        if (typeof response[method] !== 'function') continue;
+        const readBody = response[method].bind(response);
+        response[method] = (...bodyArgs) => finished ? readBody(...bodyArgs) : track(readBody(...bodyArgs));
+      }
+      return response;
+    }));
+  }
+
+  const failsafe = setTimeout(reveal, 8000);
+  if (typeof nativeFetch === 'function') window.fetch = trackedFetch;
+  document.addEventListener('DOMContentLoaded', () => {
+    domReady = true;
+    scheduleReveal();
+  }, { once: true });
+  window.addEventListener('pageshow', event => {
+    if (event.persisted) reveal();
+  });
+  scheduleReveal();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initParticleCanvas();
   initMobileNav();

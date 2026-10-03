@@ -251,12 +251,13 @@ test('custom excerpts are plain text, with correct mirror article links and no i
   assert.ok(!card.includes('Full body is not a teaser.'));
 });
 
-async function loadedFeed(hash = '', withObserver = false) {
+async function loadedFeed(hash = '', withObserver = false, overrides = {}) {
   const stored = new Map();
   const fixture = JSON.parse(fs.readFileSync(path.join(root, 'directory/profiles/alek-zane.json'), 'utf8'));
   fixture.blog_posts = Array.from({ length: 12 }, (_, index) => ({
     id: `post-${index}`, slug: `entry-${index}`, title: `Entry ${index}`, content: 'Short excerpt.', likes: 0
   }));
+  Object.assign(fixture, overrides);
   const observers = [];
   const context = browserContext('https://controlandchaos.co.uk/profile/alek-zane/' + hash, '', {
     setTimeout() {},
@@ -312,4 +313,96 @@ test('scroll loading appends batches only while the blog tab is visible', async 
 test('deep links render the batch containing the requested post', async () => {
   const { document } = await loadedFeed('#post-entry-10');
   assert.ok(document.getElementById('post-entry-10'));
+});
+
+test('VIP feature visibility is optional and does not alter non-VIP features', () => {
+  const context = browserContext(articleUrl);
+  assert.equal(context.profileFeatureEnabled({ is_vip: true }, 'full_gallery'), true);
+  assert.equal(context.profileFeatureEnabled({ is_vip: true, feature_visibility: { full_gallery: false } }, 'full_gallery'), false);
+  assert.equal(context.profileFeatureEnabled({ feature_visibility: { public_blog: false } }, 'public_blog'), true);
+  assert.equal(context.profileFeatureEnabled({}, 'full_gallery'), false);
+});
+
+test('gallery library shares rate-card selections without removing images', () => {
+  const context = browserContext(articleUrl);
+  const data = { is_vip: true, gallery: [{ image: '/first.jpg', title: 'Legacy' }, { image: '/second.jpg', show_on_ratecard: false }, { image: '/third.jpg', show_on_ratecard: true }] };
+  assert.equal(context.profileGalleryImages(data).length, 3);
+  assert.equal(context.profileGalleryImages(data, true).length, 2);
+  assert.equal(data.gallery.length, 3);
+});
+
+test('gallery filters and incremental loading preserve lightbox descriptions and next/previous navigation', () => {
+  const context = browserContext(articleUrl);
+  context.document.defaultView.HTMLElement.prototype.focus = function() {};
+  const data = { name: 'Alek Zane', gallery: Array.from({ length: 15 }, (_, index) => ({ image: `/photo-${index}.jpg`, title: `Photo ${index}`, category: index % 2 ? 'Portraits' : 'Events', description: `Description ${index}` })) };
+  context.renderGalleryLibrary(data);
+  const document = context.document;
+  assert.equal(document.querySelectorAll('.gallery-library-tile').length, 12);
+  assert.equal(document.querySelector('.gallery-library-tile img').getAttribute('loading'), 'lazy');
+  document.getElementById('gallery-library-more').click();
+  assert.equal(document.querySelectorAll('.gallery-library-tile').length, 15);
+  const portraits = Array.from(document.querySelectorAll('#gallery-library-filters button')).find(button => button.textContent === 'Portraits');
+  portraits.click();
+  assert.equal(document.querySelectorAll('.gallery-library-tile').length, 7);
+  document.querySelector('.gallery-library-tile').click();
+  assert.equal(document.getElementById('lightbox-description').textContent, 'Description 1');
+  context.stepGalleryImage(1);
+  assert.equal(document.getElementById('lightbox-description').textContent, 'Description 3');
+  context.stepGalleryImage(-1);
+  assert.equal(document.getElementById('lightbox-counter').textContent, '1 / 7');
+  context.stepGalleryImage(-1);
+  assert.equal(document.getElementById('lightbox-counter').textContent, '7 / 7');
+  context.closeLightbox();
+  assert.ok(!document.getElementById('gallery-lightbox').classList.contains('active'));
+});
+
+test('VIP gallery tabs render on demand and show only selected photos on the rate card', async () => {
+  const gallery = [{ image: '/one.jpg', title: 'Selected', show_on_ratecard: true }, { image: '/two.jpg', title: 'Library only', show_on_ratecard: false }];
+  const { context, document } = await loadedFeed('', false, { is_vip: true, plan: 'vip', gallery });
+  assert.equal(document.getElementById('tab-btn-gallery').style.display, 'inline-flex');
+  assert.equal(document.querySelectorAll('#gallery-grid .gallery-thumb-card').length, 1);
+  assert.equal(document.querySelectorAll('.gallery-library-tile').length, 0);
+  context.window.switchProfileTab('gallery');
+  assert.equal(document.getElementById('tab-pane-gallery').style.display, 'block');
+  assert.equal(document.querySelectorAll('.gallery-library-tile').length, 2);
+});
+
+test('VIP switches hide tabs and sections while stored content and direct article rendering remain available', async () => {
+  const settings = { full_gallery: false, public_blog: false, vip_feed: false, booking: false, ratecard_gallery: false, about: false };
+  const { context, document } = await loadedFeed('', false, { is_vip: true, plan: 'vip', feature_visibility: settings });
+  for (const id of ['tab-btn-gallery', 'tab-btn-blog', 'tab-btn-feed', 'profile-gallery-card', 'booking-enquiry-section', 'profile-about-card']) {
+    assert.equal(document.getElementById(id).style.display, 'none');
+  }
+  context.window.switchProfileTab('gallery');
+  assert.equal(document.getElementById('tab-pane-ratecard').style.display, 'block');
+  context.window.switchProfileTab('gallery', true);
+  assert.equal(document.getElementById('tab-pane-gallery').style.display, 'block');
+  assert.equal(document.getElementById('tab-btn-gallery').style.display, 'none');
+  assert.equal(context.window.currentProfile.blog_posts.length, 12);
+  context.renderDynamicArticleView(context.window.currentProfile, context.window.currentProfile.blog_posts[0], []);
+  assert.ok(document.querySelector('#dynamic-article-wrap .article-content'));
+  assert.equal(document.querySelector('[data-profile-booking-link]').style.display, 'none');
+});
+
+test('basic profiles do not gain full galleries or VIP feature switches from supplied flags', async () => {
+  const { context, document } = await loadedFeed('', false, { is_vip: false, plan: 'basic', feature_visibility: { public_blog: false, full_gallery: true, about: false } });
+  assert.equal(document.getElementById('tab-btn-gallery').style.display, 'none');
+  assert.equal(document.getElementById('tab-btn-blog').style.display, 'inline-flex');
+  assert.notEqual(document.getElementById('profile-about-card').style.display, 'none');
+  context.window.switchProfileTab('gallery');
+  assert.equal(document.getElementById('tab-pane-gallery').style.display, 'none');
+  context.window.switchProfileTab('gallery', true);
+  assert.equal(document.getElementById('tab-pane-gallery').style.display, 'none');
+});
+
+test('server accepts only boolean VIP preferences and preserves gallery content', () => {
+  const { normalizeVipProfileFeatures } = require('../../netlify/functions/update-profile.js');
+  const vip = normalizeVipProfileFeatures({ plan: 'vip', feature_visibility: { public_blog: false, full_gallery: true, booking: 'false', injected: false }, gallery: [{ image: '/photo.jpg', description: 'Caption', show_on_ratecard: false }] });
+  assert.deepEqual(vip.feature_visibility, { public_blog: false, full_gallery: true });
+  assert.equal(vip.gallery[0].show_on_ratecard, false);
+  const basic = normalizeVipProfileFeatures({ plan: 'basic', is_vip: true, feature_visibility: { full_gallery: true }, gallery: vip.gallery });
+  assert.deepEqual(basic.feature_visibility, {});
+  assert.equal(basic.gallery[0].image, '/photo.jpg');
+  assert.equal(basic.gallery[0].description, 'Caption');
+  assert.equal(basic.gallery[0].show_on_ratecard, undefined);
 });

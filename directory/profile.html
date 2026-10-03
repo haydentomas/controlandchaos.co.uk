@@ -391,6 +391,9 @@
         <button class="profile-tab-btn" id="tab-btn-blog" onclick="switchProfileTab('blog')">
           <span>📰</span> Public Blog <span class="tab-badge" id="tab-blog-badge" style="display: none;">0</span>
         </button>
+        <button class="profile-tab-btn" id="tab-btn-gallery" style="display:none;" onclick="switchProfileTab('gallery')">
+          <span>📸</span> Gallery <span class="tab-badge" id="tab-gallery-badge">0</span>
+        </button>
       </div>
 
       <!-- Tab Pane 1: Rate Card & Bio Layout -->
@@ -716,6 +719,15 @@
         </div>
       </div>
       <!-- End Tab Pane 3 -->
+      <section id="tab-pane-gallery" style="display:none;" aria-labelledby="gallery-library-title">
+        <div class="gallery-library-header">
+          <h2 id="gallery-library-title" class="section-title">Gallery</h2>
+          <div id="gallery-library-filters" class="gallery-library-filters" aria-label="Gallery categories"></div>
+        </div>
+        <div id="gallery-library-grid" class="gallery-library-grid"></div>
+        <p id="gallery-library-empty" class="text-muted" hidden>No photos in this gallery yet.</p>
+        <button type="button" id="gallery-library-more" class="btn btn-secondary gallery-library-more" hidden>Load More Photos</button>
+      </section>
 
     </div>
   </main>
@@ -787,11 +799,15 @@
   </div>
 
   <!-- Image Lightbox Modal -->
-  <div class="lightbox-modal" id="gallery-lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-modal" id="gallery-lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" tabindex="-1" onclick="closeLightbox(event)">
     <div class="lightbox-content" onclick="event.stopPropagation()">
-      <button onclick="closeLightbox()" style="position:absolute; top:-40px; right:0; background:none; border:none; color:#fff; font-size:28px; cursor:pointer;" title="Close">&times;</button>
+      <button type="button" id="lightbox-close" onclick="closeLightbox()" class="gallery-lightbox-control gallery-lightbox-close" title="Close" aria-label="Close photo viewer">&times;</button>
+      <button type="button" id="lightbox-previous" onclick="stepGalleryImage(-1)" class="gallery-lightbox-control gallery-lightbox-previous" title="Previous image" aria-label="Previous image" hidden>&larr;</button>
       <img src="" alt="Gallery Preview" class="lightbox-img" id="lightbox-image">
+      <button type="button" id="lightbox-next" onclick="stepGalleryImage(1)" class="gallery-lightbox-control gallery-lightbox-next" title="Next image" aria-label="Next image" hidden>&rarr;</button>
       <div id="lightbox-caption" style="margin-top:12px; font-family:var(--font-heading); font-size:16px; color:var(--gold-bright); text-align:center;"></div>
+      <p id="lightbox-description" class="gallery-lightbox-description"></p>
+      <span id="lightbox-counter" class="gallery-lightbox-counter" aria-live="polite"></span>
     </div>
   </div>
 
@@ -892,21 +908,152 @@
       }
     };
 
-function openLightbox(imgSrc, title, category) {
+    let lightboxItems = [];
+    let lightboxIndex = -1;
+    let lightboxPreviousFocus = null;
+    let lightboxPreviousOverflow = '';
+
+    function profileFeatureEnabled(profile, feature) {
+      const vip = profile?.is_vip === true || profile?.plan === 'vip';
+      if (feature === 'full_gallery') return vip && profile.feature_visibility?.[feature] !== false;
+      return !vip || profile.feature_visibility?.[feature] !== false;
+    }
+
+    function profileGalleryImages(profile, rateCardOnly = false) {
+      const vip = profile?.is_vip === true || profile?.plan === 'vip';
+      return (Array.isArray(profile?.gallery) ? profile.gallery : []).filter(item => item && item.image && (!rateCardOnly || !vip || item.show_on_ratecard !== false));
+    }
+
+    function applyProfileFeatureVisibility(profile) {
+      const sections = {
+        about: ['profile-about-card'],
+        rate_menus: ['rate-categories-container'],
+        custom_sections: ['custom-sections-container'],
+        ratecard_gallery: ['profile-gallery-card'],
+        media_intro: ['profile-media-intro-card'],
+        booking: ['booking-enquiry-section', 'selected-quote-bar', 'modal-web-enquiry-btn'],
+        hardware: ['profile-hardware-card'],
+        boundaries: ['profile-limits-card'],
+        booking_protocol: ['profile-booking-card'],
+        reviews: ['profile-reviews-card'],
+        wishlist: ['profile-wishlist-card', 'modal-throne-box'],
+        socials: ['profile-social-card']
+      };
+      for (const [feature, ids] of Object.entries(sections)) {
+        if (!profileFeatureEnabled(profile, feature)) {
+          for (const id of ids) {
+            const section = document.getElementById(id);
+            if (section) section.style.display = 'none';
+          }
+        }
+      }
+      if (!profileFeatureEnabled(profile, 'booking')) {
+        for (const link of document.querySelectorAll('[data-profile-booking-link]')) link.style.display = 'none';
+      }
+      const sidebar = document.getElementById('profile-sidebar');
+      if (sidebar && !Array.from(sidebar.children).some(section => section.style.display !== 'none')) {
+        sidebar.style.display = 'none';
+        const layout = document.getElementById('profile-main-layout');
+        if (layout) layout.style.gridTemplateColumns = 'minmax(0, 1fr)';
+      }
+    }
+
+    function openGalleryImage(index, items) {
+      lightboxItems = items;
+      lightboxIndex = index;
+      const item = items[index];
+      if (!item) return;
+      openLightbox(item.image, item.title, item.category, item.description || item.desc || '', true);
+    }
+
+    function stepGalleryImage(direction) {
+      if (lightboxItems.length < 2) return;
+      lightboxIndex = (lightboxIndex + direction + lightboxItems.length) % lightboxItems.length;
+      const item = lightboxItems[lightboxIndex];
+      openLightbox(item.image, item.title, item.category, item.description || item.desc || '', true);
+    }
+
+    function openLightbox(imgSrc, title, category, description = '', galleryNavigation = false) {
       const modal = document.getElementById('gallery-lightbox');
       const img = document.getElementById('lightbox-image');
       const cap = document.getElementById('lightbox-caption');
       if (modal && img) {
+        const wasOpen = modal.classList.contains('active');
+        if (!wasOpen) {
+          lightboxPreviousFocus = document.activeElement;
+          lightboxPreviousOverflow = document.body.style.overflow;
+        }
+        if (!galleryNavigation) {
+          lightboxItems = [];
+          lightboxIndex = -1;
+        }
         img.src = imgSrc;
         img.alt = title || 'Lookbook Image';
-        if (cap) cap.innerHTML = `<strong>${title || ''}</strong> ${category ? `<span style="font-size:12px; color:var(--gold-muted); font-family:var(--font-mono); margin-left:8px;">[${category}]</span>` : ''}`;
+        if (cap) cap.textContent = [title, category].filter(Boolean).join(' · ');
+        document.getElementById('lightbox-description').textContent = description;
+        document.getElementById('lightbox-counter').textContent = galleryNavigation ? `${lightboxIndex + 1} / ${lightboxItems.length}` : '';
+        document.getElementById('lightbox-previous').hidden = !galleryNavigation || lightboxItems.length < 2;
+        document.getElementById('lightbox-next').hidden = !galleryNavigation || lightboxItems.length < 2;
+        document.body.style.overflow = 'hidden';
         modal.classList.add('active');
+        if (!wasOpen) document.getElementById('lightbox-close').focus({ preventScroll: true });
       }
     }
 
     function closeLightbox() {
       const modal = document.getElementById('gallery-lightbox');
-      if (modal) modal.classList.remove('active');
+      if (modal?.classList.contains('active')) {
+        modal.classList.remove('active');
+        document.body.style.overflow = lightboxPreviousOverflow;
+        lightboxPreviousFocus?.focus?.({ preventScroll: true });
+      }
+    }
+
+    function renderGalleryLibrary(profile) {
+      const pane = document.getElementById('tab-pane-gallery');
+      if (!pane || pane.dataset.initialized === 'true') return;
+      pane.dataset.initialized = 'true';
+      const items = profileGalleryImages(profile);
+      const filters = document.getElementById('gallery-library-filters');
+      const grid = document.getElementById('gallery-library-grid');
+      const more = document.getElementById('gallery-library-more');
+      let filtered = items;
+      let count = 0;
+      document.getElementById('gallery-library-title').textContent = `${profile.name}'s Gallery`;
+      function appendPhotos() {
+        const end = Math.min(count + 12, filtered.length);
+        for (let index = count; index < end; index++) {
+          const item = filtered[index];
+          const tile = document.createElement('button');
+          tile.type = 'button';
+          tile.className = 'gallery-library-tile';
+          tile.setAttribute('aria-label', item.title || 'Open photo');
+          tile.innerHTML = `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title || 'Gallery photo')}" width="640" height="480" loading="lazy" decoding="async"><span class="gallery-library-tile-title">${escapeHtml(item.title || 'Photo')}</span><span class="gallery-library-tile-category">${escapeHtml(item.category || '')}</span>`;
+          tile.addEventListener('click', () => openGalleryImage(index, filtered));
+          grid.appendChild(tile);
+        }
+        count = end;
+        more.hidden = count >= filtered.length;
+        document.getElementById('gallery-library-empty').hidden = filtered.length > 0;
+      }
+      const categories = ['', ...new Set(items.map(item => String(item.category || '').trim()).filter(Boolean))];
+      for (const category of categories) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn btn-secondary btn-sm';
+        button.textContent = category || 'All Photos';
+        button.setAttribute('aria-pressed', String(!category));
+        button.addEventListener('click', () => {
+          filtered = category ? items.filter(item => String(item.category || '').trim() === category) : items;
+          count = 0;
+          grid.innerHTML = '';
+          for (const filter of filters.querySelectorAll('button')) filter.setAttribute('aria-pressed', String(filter === button));
+          appendPhotos();
+        });
+        filters.appendChild(button);
+      }
+      more.addEventListener('click', appendPhotos);
+      appendPhotos();
     }
 
     function profileSlugFor(profile) {
@@ -1269,7 +1416,7 @@ function openLightbox(imgSrc, title, category) {
                 <a href="${profilePath}#profile-tabs-nav" class="btn btn-gold" style="width:100%; box-sizing:border-box; justify-content:center;">
                   <span>📋</span> View Full Rate Card &amp; Menus
                 </a>
-                <a href="${profilePath}?tab=ratecard#booking-enquiry-section" class="btn btn-secondary" style="width:100%; box-sizing:border-box; justify-content:center;">
+                <a href="${profilePath}?tab=ratecard#booking-enquiry-section" data-profile-booking-link class="btn btn-secondary" style="width:100%; box-sizing:border-box; justify-content:center;">
                   <span>✉️</span> Submit Booking Enquiry
                 </a>
                 <a href="${escapeHtml(profile.slurl || 'secondlife://Chaos%20Manor/128/142/23')}" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%; box-sizing:border-box; justify-content:center;">
@@ -1281,6 +1428,7 @@ function openLightbox(imgSrc, title, category) {
         </div>
       `;
 
+      applyProfileFeatureVisibility(profile);
       window.toggleDynArticleLike = function(key, base) {
         const cur = localStorage.getItem('cc_blog_liked_' + key) === '1';
         localStorage.setItem('cc_blog_liked_' + key, cur ? '0' : '1');
@@ -1293,6 +1441,19 @@ function openLightbox(imgSrc, title, category) {
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeLightbox();
+      const modal = document.getElementById('gallery-lightbox');
+      if (!modal?.classList.contains('active')) return;
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        stepGalleryImage(e.key === 'ArrowLeft' ? -1 : 1);
+      }
+      if (e.key === 'Tab') {
+        const controls = Array.from(modal.querySelectorAll('button')).filter(button => !button.hidden);
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
     });
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -1618,7 +1779,7 @@ function openLightbox(imgSrc, title, category) {
               <a href="${profileData.slurl || 'secondlife://Chaos%20Manor/128/128/23'}" class="btn btn-secondary btn-sm">
                 📍 Teleport to Skybox
               </a>
-              <a href="#booking-enquiry-section" class="btn btn-secondary btn-sm" style="border-color:var(--gold-border);">
+              <a href="#booking-enquiry-section" data-profile-booking-link class="btn btn-secondary btn-sm" style="border-color:var(--gold-border);">
                 ✉️ Book Session
               </a>
             </div>
@@ -1754,7 +1915,7 @@ function openLightbox(imgSrc, title, category) {
         selectedItems.forEach(item => { total += item.price; });
 
         if (selectedQuoteBar) {
-          if (selectedItems.length > 0) {
+          if (selectedItems.length > 0 && profileFeatureEnabled(profileData, 'booking')) {
             selectedQuoteBar.style.display = 'flex';
             if (liveQuoteTotal) liveQuoteTotal.textContent = `L${total.toLocaleString()}`;
             if (liveQuoteCount) liveQuoteCount.textContent = `(${selectedItems.length} selected)`;
@@ -2070,22 +2231,24 @@ function openLightbox(imgSrc, title, category) {
       }
 
       const galleryGrid = document.getElementById('gallery-grid');
-      if (galleryGrid && profileData.gallery && profileData.gallery.length > 0) {
+      const rateCardImages = profileGalleryImages(profileData, true);
+      if (galleryGrid && rateCardImages.length > 0) {
         galleryGrid.innerHTML = '';
-        profileData.gallery.forEach(g => {
-          const item = document.createElement('div');
+        rateCardImages.forEach((g, index) => {
+          const item = document.createElement('button');
+          item.type = 'button';
           const hasImage = !!g.image;
           const isLocked = g.is_locked || g.vip || g.locked;
 
           if (hasImage) {
             item.className = 'gallery-thumb-card';
-            item.onclick = () => openLightbox(g.image, g.title, g.category);
+            item.onclick = () => openGalleryImage(index, rateCardImages);
             item.innerHTML = `
-              <img src="${g.image}" alt="${g.title || 'Gallery Photo'}" class="gallery-thumb-img" loading="lazy">
+              <img src="${escapeHtml(g.image)}" alt="${escapeHtml(g.title || 'Gallery Photo')}" class="gallery-thumb-img" loading="lazy" decoding="async">
               <div class="gallery-thumb-overlay">
-                <div style="font-family:var(--font-heading); font-size:12.5px; font-weight:800; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.8);">${g.title || 'Photo'}</div>
+                <div style="font-family:var(--font-heading); font-size:12.5px; font-weight:800; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.8);">${escapeHtml(g.title || 'Photo')}</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                  <span style="font-size:9.5px; color:var(--gold-bright); font-family:var(--font-mono);">${g.category || ''}</span>
+                  <span style="font-size:9.5px; color:var(--gold-bright); font-family:var(--font-mono);">${escapeHtml(g.category || '')}</span>
                   <span style="font-size:11px;">🔍</span>
                 </div>
               </div>
@@ -2102,7 +2265,7 @@ function openLightbox(imgSrc, title, category) {
         });
       } else {
         const galleryCard = document.getElementById('profile-gallery-card');
-        if (galleryCard && (!profileData.gallery || profileData.gallery.length === 0)) {
+        if (galleryCard && rateCardImages.length === 0) {
           galleryCard.style.display = 'none';
         }
       }
@@ -2445,19 +2608,23 @@ function openLightbox(imgSrc, title, category) {
         return localStorage.getItem('cc_fan_unlocked_' + uId) === '1';
       }
 
-      window.switchProfileTab = function(tabName) {
+      window.switchProfileTab = function(tabName, allowHidden = false) {
         const isVipCreator = profileData.is_vip === true || profileData.plan === 'vip';
-        if (tabName === 'feed' && !isVipCreator) return;
+        if (tabName === 'feed' && (!isVipCreator || (!allowHidden && !profileFeatureEnabled(profileData, 'vip_feed')))) tabName = 'ratecard';
+        if (tabName === 'blog' && !allowHidden && !profileFeatureEnabled(profileData, 'public_blog')) tabName = 'ratecard';
+        if (tabName === 'gallery' && (!isVipCreator || (!allowHidden && !profileFeatureEnabled(profileData, 'full_gallery')))) tabName = 'ratecard';
 
         const btnRatecard = document.getElementById('tab-btn-ratecard');
         const btnFeed = document.getElementById('tab-btn-feed');
         const btnBlog = document.getElementById('tab-btn-blog');
+        const btnGallery = document.getElementById('tab-btn-gallery');
         const paneRatecard = document.getElementById('tab-pane-ratecard');
         const paneFeed = document.getElementById('tab-pane-feed');
         const paneBlog = document.getElementById('tab-pane-blog');
+        const paneGallery = document.getElementById('tab-pane-gallery');
 
-        [btnRatecard, btnFeed, btnBlog].forEach(b => b && b.classList.remove('active'));
-        [paneRatecard, paneFeed, paneBlog].forEach(p => p && (p.style.display = 'none'));
+        [btnRatecard, btnFeed, btnBlog, btnGallery].forEach(b => b && b.classList.remove('active'));
+        [paneRatecard, paneFeed, paneBlog, paneGallery].forEach(p => p && (p.style.display = 'none'));
 
         if (tabName === 'feed') {
           if (btnFeed) btnFeed.classList.add('active');
@@ -2467,6 +2634,10 @@ function openLightbox(imgSrc, title, category) {
           if (btnBlog) btnBlog.classList.add('active');
           if (paneBlog) paneBlog.style.display = 'block';
           renderBlog();
+        } else if (tabName === 'gallery') {
+          if (btnGallery) btnGallery.classList.add('active');
+          if (paneGallery) paneGallery.style.display = 'block';
+          renderGalleryLibrary(profileData);
         } else {
           if (btnRatecard) btnRatecard.classList.add('active');
           if (paneRatecard) paneRatecard.style.display = 'block';
@@ -2759,9 +2930,13 @@ function openLightbox(imgSrc, title, category) {
       const blogTabBtn = document.getElementById('tab-btn-blog');
       const feedBadge = document.getElementById('tab-feed-badge');
       const blogBadge = document.getElementById('tab-blog-badge');
+      const galleryTabBtn = document.getElementById('tab-btn-gallery');
+      if (galleryTabBtn) galleryTabBtn.style.display = profileFeatureEnabled(profileData, 'full_gallery') ? 'inline-flex' : 'none';
+      document.getElementById('tab-gallery-badge').textContent = profileGalleryImages(profileData).length;
+      applyProfileFeatureVisibility(profileData);
 
       if (feedTabBtn) {
-        if (isVipCreator) {
+        if (isVipCreator && profileFeatureEnabled(profileData, 'vip_feed')) {
           feedTabBtn.style.display = 'inline-flex';
           const postCount = Array.isArray(profileData.posts) ? profileData.posts.length : 3;
           if (feedBadge) feedBadge.textContent = postCount;
@@ -2771,6 +2946,7 @@ function openLightbox(imgSrc, title, category) {
       }
 
       if (blogTabBtn) {
+        blogTabBtn.style.display = profileFeatureEnabled(profileData, 'public_blog') ? 'inline-flex' : 'none';
         const blogCount = Array.isArray(profileData.blog_posts) ? profileData.blog_posts.length : (Array.isArray(profileData.blog) ? profileData.blog.length : 0);
         if (blogBadge) {
           blogBadge.textContent = blogCount;
@@ -2784,7 +2960,7 @@ function openLightbox(imgSrc, title, category) {
       const reqHash = window.location.hash;
 
       if (window.defaultToBlogTab || reqTab === 'blog' || reqHash.startsWith('#post-') || reqHash === '#tab-blog') {
-        window.switchProfileTab('blog');
+        window.switchProfileTab('blog', true);
         if (reqHash.startsWith('#post-')) {
           setTimeout(() => {
             const targetEl = document.querySelector(reqHash);
@@ -2796,7 +2972,9 @@ function openLightbox(imgSrc, title, category) {
           }, 300);
         }
       } else if (reqTab === 'feed' || reqHash === '#tab-feed') {
-        window.switchProfileTab('feed');
+        window.switchProfileTab('feed', true);
+      } else if (reqTab === 'gallery' || reqHash === '#tab-gallery') {
+        window.switchProfileTab('gallery', true);
       }
 
     });

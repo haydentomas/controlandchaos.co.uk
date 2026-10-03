@@ -3,6 +3,7 @@ const path = require('path');
 const { minify: minifyHtml } = require('html-minifier-terser');
 const CleanCSS = require('clean-css');
 const { minify: minifyJs } = require('terser');
+const { parseHTML } = require('linkedom');
 
 const SRC_DIR = __dirname;
 const DIST_DIR = path.join(__dirname, 'dist');
@@ -38,6 +39,38 @@ const IGNORED_PATHS = [
   '.gitignore'
 ];
 
+function addPageReveal(content) {
+  const { document } = parseHTML(content);
+  const portalScripts = Array.from(document.querySelectorAll('script[src]')).filter(script => {
+    const scriptPath = script.getAttribute('src').split('?')[0];
+    return /^(?:\/|(?:\.\.?\/)*)app\.js$/.test(scriptPath);
+  });
+  if (!portalScripts.length) return content;
+  for (const script of portalScripts) script.setAttribute('src', '/app.js?v=20261003-vip-gallery');
+  for (const stylesheet of document.querySelectorAll('link[rel="stylesheet"][href]')) {
+    const stylesheetPath = stylesheet.getAttribute('href').split('?')[0];
+    if (/^(?:\/|(?:\.\.?\/)*)styles\.css$/.test(stylesheetPath)) {
+      stylesheet.setAttribute('href', '/styles.css?v=20261003-vip-gallery');
+    }
+  }
+  const bootstrap = `
+    <style id="site-loading-critical">
+      html.site-loading::before { content:''; position:fixed; inset:0; background:#12100e; z-index:2147483646; }
+      html.site-loading::after { content:''; position:fixed; left:50%; top:45%; width:180px; height:100px; transform:translate(-50%,-50%); background:url('/images/logo.png') center 20px / 160px auto no-repeat; border-bottom:1px solid #d8c290; z-index:2147483647; }
+      html.site-loading body { opacity:0; pointer-events:none; }
+    </style>
+    <script>
+      window.ccPageLoadStartedAt = performance.now();
+      document.documentElement.classList.add('site-loading');
+      setTimeout(function() { document.documentElement.classList.remove('site-loading'); document.documentElement.removeAttribute('aria-busy'); }, 8500);
+    </script>
+  `;
+  const charset = document.head.querySelector('meta[charset]');
+  if (charset) charset.insertAdjacentHTML('afterend', bootstrap);
+  else document.head.insertAdjacentHTML('afterbegin', bootstrap);
+  return document.toString();
+}
+
 async function processDirectory(src, dest) {
   await fs.ensureDir(dest);
   const entries = await fs.readdir(src, { withFileTypes: true });
@@ -56,7 +89,7 @@ async function processDirectory(src, dest) {
       const ext = path.extname(entry.name).toLowerCase();
 
       if (ext === '.html') {
-        const content = await fs.readFile(srcPath, 'utf8');
+        const content = addPageReveal(await fs.readFile(srcPath, 'utf8'));
         try {
           const minified = await minifyHtml(content, htmlOptions);
           await fs.writeFile(destPath, minified, 'utf8');
@@ -125,7 +158,11 @@ async function run() {
   console.log('✨ Build complete! All HTML, CSS, and JS fully minified into dist/');
 }
 
-run().catch((err) => {
-  console.error('❌ Build failed:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  run().catch((err) => {
+    console.error('❌ Build failed:', err);
+    process.exit(1);
+  });
+}
+
+module.exports = { addPageReveal };

@@ -777,7 +777,7 @@
           <div class="sidebar-nav-card">
             <div class="sidebar-nav-header">
               <span class="font-2xs uppercase tracking-wider font-mono text-gold font-bold">Studio Sections</span>
-              <span class="font-2xs text-muted font-mono">9 TABS</span>
+              <span class="font-2xs text-muted font-mono">11 TABS</span>
             </div>
             <nav class="editor-sidebar-tabs">
               <button type="button" class="sidebar-tab-btn active" onclick="switchTab('tab-identity')">
@@ -817,6 +817,8 @@
                 <span class="tab-label">Subscribers Feed</span>
                 <span class="vip-pill-badge">VIP</span>
               </button>
+              <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-gallery')"><span class="tab-icon">📸</span><span class="tab-label">Gallery Library</span></button>
+              <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-features')"><span class="tab-icon">⚙️</span><span class="tab-label">Profile Features</span><span class="vip-pill-badge">VIP</span></button>
             </nav>
           </div>
 
@@ -833,6 +835,14 @@
 
         <!-- Right Main Form Panel -->
         <div class="editor-main-panel">
+          <div id="tab-gallery" class="tab-content"><div id="gallery-manager-slot"></div></div>
+          <div id="tab-features" class="tab-content">
+            <div class="editor-card">
+              <div class="editor-card-header"><h3 class="editor-card-title">Profile Features</h3><span class="vip-pill-badge">VIP</span></div>
+              <p id="profile-features-locked" class="text-muted" hidden>VIP membership required.</p>
+              <div id="profile-feature-switches" class="profile-feature-switches"></div>
+            </div>
+          </div>
 
           <!-- ================= TAB 1: IDENTITY & ROLE ================= -->
           <div id="tab-identity" class="tab-content active">
@@ -1128,7 +1138,7 @@
             </div>
 
             <!-- Photo Lookbook Gallery -->
-            <div class="editor-card">
+            <div id="gallery-manager-card" class="editor-card">
               <div class="editor-card-header">
                 <h3 class="editor-card-title"><span class="icon">📸</span> Photo Gallery &amp; Lookbook</h3>
                 <button type="button" onclick="addGalleryItem()" class="btn-add-repeater">
@@ -1139,6 +1149,7 @@
                 <!-- Injected dynamically -->
               </div>
             </div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="switchTab('tab-gallery')">📸 Manage Gallery</button>
 
           </div>
 
@@ -2387,6 +2398,7 @@
       }
 
       renderAllRepeaters();
+      renderProfileFeatureSwitches(p);
       restorePostDraft('blog');
       restorePostDraft('feed');
       attachInputListeners();
@@ -2467,6 +2479,29 @@
       renderReviews();
       renderBlogPosts();
       renderFeedPosts();
+    }
+
+    const profileFeatureChoices = [
+      ['public_blog', 'Public Blog'], ['vip_feed', 'VIP Subscribers Feed'], ['full_gallery', 'Full Gallery Tab'],
+      ['ratecard_gallery', 'Rate Card Gallery Preview'], ['media_intro', 'Voice & Video Introduction'],
+      ['booking', 'Booking Enquiry & Quote'], ['hardware', 'Hardware & Toys'], ['boundaries', 'Hard Limits & Boundaries'],
+      ['booking_protocol', 'Booking Protocol'], ['reviews', 'Reviews'], ['wishlist', 'Wishlist & Throne'], ['socials', 'Social Links'],
+      ['about', 'About & Bio'], ['rate_menus', 'Rate Cards & Menus'], ['custom_sections', 'Custom Information Sections']
+    ];
+
+    function renderProfileFeatureSwitches(profile) {
+      const vip = isAdminMode || profile.is_vip === true || profile.plan === 'vip';
+      const container = document.getElementById('profile-feature-switches');
+      document.getElementById('profile-features-locked').hidden = vip;
+      container.innerHTML = profileFeatureChoices.map(([feature, label]) => `
+        <label class="profile-feature-switch"><input type="checkbox" data-profile-feature="${feature}" ${profile.feature_visibility?.[feature] !== false ? 'checked' : ''} ${vip ? '' : 'disabled'}><span>${label}</span></label>
+      `).join('');
+    }
+
+    function collectProfileFeatureVisibility() {
+      const vip = isAdminMode || currentProfile?.is_vip === true || currentProfile?.plan === 'vip';
+      if (!vip) return {};
+      return Object.fromEntries(Array.from(document.querySelectorAll('[data-profile-feature]')).map(input => [input.dataset.profileFeature, input.checked]));
     }
 
     // Rate Categories
@@ -2564,6 +2599,7 @@
     // Gallery
     function renderGallery() {
       const container = document.getElementById('gallery-repeater-container');
+      const vip = isAdminMode || currentProfile?.is_vip === true || currentProfile?.plan === 'vip';
       if (!galleryItems.length) {
         container.innerHTML = '<p class="font-xs text-muted">No lookbook photos added. Click "+ Add Photo".</p>';
         return;
@@ -2589,12 +2625,19 @@
             <label class="form-label font-2xs">Image URL (Upload or Web)</label>
             <input type="text" class="form-input font-xs" value="${escapeHtml(item.image || '')}" placeholder="https://..." oninput="galleryItems[${idx}].image = this.value;">
           </div>
+          ${item.image ? `<img class="gallery-manager-preview" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title || 'Gallery photo')}" loading="lazy" decoding="async">` : ''}
+          <div class="form-group mt-12">
+            <label class="form-label font-2xs" for="gallery-description-${idx}">Photo Description</label>
+            <textarea id="gallery-description-${idx}" class="form-textarea font-xs" rows="2" oninput="galleryItems[${idx}].description = this.value;">${escapeHtml(item.description || item.desc || '')}</textarea>
+          </div>
+          <label class="profile-feature-switch"><input type="checkbox" ${!vip || item.show_on_ratecard !== false ? 'checked' : ''} ${vip ? '' : 'disabled'} onchange="galleryItems[${idx}].show_on_ratecard = this.checked;"><span>Show on Rate Card</span>${vip ? '' : '<span class="vip-pill-badge">VIP</span>'}</label>
         </div>
       `).join('');
     }
 
     function addGalleryItem() {
-      galleryItems.push({ title: "Lookbook Photo", category: "VIP Escort", icon: "👗", image: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80" });
+      const vip = isAdminMode || currentProfile?.is_vip === true || currentProfile?.plan === 'vip';
+      galleryItems.push({ title: "Lookbook Photo", category: "VIP Escort", icon: "👗", image: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80", description: '', show_on_ratecard: !vip });
       renderGallery();
     }
 
@@ -2816,6 +2859,13 @@
     function insertBlogMarkdown(type) {
       const textarea = document.getElementById('modal-blog-content');
       if (!textarea) return;
+      const scrollTop = textarea.scrollTop || 0;
+      const scrollLeft = textarea.scrollLeft || 0;
+      const pageTop = window.scrollY || 0;
+      const pageLeft = window.scrollX || 0;
+      const preview = document.getElementById('modal-blog-preview-rendered');
+      const previewTop = preview?.scrollTop || 0;
+      const isPreview = textarea.style.display === 'none';
       
       const start = textarea.selectionStart || 0;
       const end = textarea.selectionEnd || 0;
@@ -2856,12 +2906,21 @@
       
       const replacement = before + placeholder + after;
       textarea.value = val.substring(0, start) + replacement + val.substring(end);
-      textarea.focus();
       textarea.selectionStart = start + before.length;
       textarea.selectionEnd = start + before.length + placeholder.length;
+      if (!isPreview) textarea.focus({ preventScroll: true });
+      else if (preview) preview.innerHTML = renderMarkdownToHtml(textarea.value);
       
       updateBlogSeoPreview();
       persistPostDraft('blog');
+      const restoreScroll = () => {
+        textarea.scrollTop = scrollTop;
+        textarea.scrollLeft = scrollLeft;
+        if (preview) preview.scrollTop = previewTop;
+        window.scrollTo?.({ top: pageTop, left: pageLeft, behavior: 'instant' });
+      };
+      restoreScroll();
+      window.requestAnimationFrame?.(restoreScroll);
     }
 
     function toggleBlogMarkdownGuide() {
@@ -2876,10 +2935,15 @@
       const prevBtn = document.getElementById('blog-tab-preview');
       const textarea = document.getElementById('modal-blog-content');
       const prevBox = document.getElementById('modal-blog-preview-rendered');
+      const pageTop = window.scrollY || 0;
+      const pageLeft = window.scrollX || 0;
+      const sourceTop = textarea?.style.display === 'none' ? Number(textarea.dataset.editorScrollTop || 0) : textarea?.scrollTop || 0;
+      const sourceLeft = textarea?.scrollLeft || 0;
       if (writeBtn) writeBtn.setAttribute('aria-pressed', String(mode !== 'preview'));
       if (prevBtn) prevBtn.setAttribute('aria-pressed', String(mode === 'preview'));
       
       if (mode === 'preview') {
+        if (textarea) textarea.dataset.editorScrollTop = String(sourceTop);
         if (writeBtn) writeBtn.classList.remove('active');
         if (prevBtn) prevBtn.classList.add('active');
         if (textarea) textarea.style.display = 'none';
@@ -2893,9 +2957,12 @@
         if (prevBox) prevBox.style.display = 'none';
         if (textarea) {
           textarea.style.display = 'block';
-          textarea.focus();
+          textarea.focus({ preventScroll: true });
+          textarea.scrollTop = sourceTop;
+          textarea.scrollLeft = sourceLeft;
         }
       }
+      window.scrollTo?.({ top: pageTop, left: pageLeft, behavior: 'instant' });
     }
 
     function updateBlogSeoPreview() {
@@ -2933,6 +3000,7 @@
     }
 
     function initializePostEditors() {
+      document.getElementById('gallery-manager-slot').appendChild(document.getElementById('gallery-manager-card'));
       for (const kind of ['blog', 'feed']) {
         parkPostEditor(kind);
         const panel = document.getElementById(kind + '-post-modal');
@@ -3653,6 +3721,7 @@
 
         rate_categories: rateCategories,
         gallery: galleryItems,
+        feature_visibility: collectProfileFeatureVisibility(),
         hardware_compat: hardwareItems,
         hard_limits: hardLimitsList,
         booking_protocol: bookingStepsList,
@@ -3682,7 +3751,7 @@
         seo_image: document.getElementById('edit-seo-img').value || document.getElementById('edit-banner-img').value || document.getElementById('edit-avatar-img').value
       };
 
-      currentProfile = profilePayload;
+      currentProfile = { ...currentProfile, ...profilePayload };
 
       // Local storage persistence across tabs & pages
       try {
