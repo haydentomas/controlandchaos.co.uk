@@ -114,3 +114,106 @@ test('parser failure returns the original readable response', async () => {
   const response = await handler(new Request(articleUrl), { next: async () => origin });
   assert.equal(await response.text(), template);
 });
+
+const routerSource = fs.readFileSync(path.join(root, 'netlify/edge-functions/custom-domain-router.js'), 'utf8')
+  .replace(/^import .*;\r?\n/gm, '')
+  .replace('export default async function handler', 'async function handler');
+
+async function mirrorResponse(pathname, data = { ...profile, is_vip: true, custom_domain: 'alek.example' }) {
+  const upstreamRequests = [];
+  const router = vm.runInNewContext(`${routerSource}\nhandler;`, {
+    URL, Request, Response, parseHTML, console,
+    getStore: () => ({ get: async key => key === 'domain_alek.example' ? data : null }),
+    fetch: async url => {
+      upstreamRequests.push(new URL(url));
+      return handlerFor(data)(new Request(url), { next: async () => new Response(template, { headers: { 'Content-Type': 'text/html' } }) });
+    }
+  });
+  const response = await router(new Request('https://alek.example' + pathname), {
+    next: async () => new Response('passthrough')
+  });
+  const { document } = parseHTML(await response.text());
+  return { response, document, upstreamRequests };
+}
+
+test('custom-domain profile keeps C&C canonical and identifies its owner', async () => {
+  const { document, upstreamRequests } = await mirrorResponse('/');
+  assert.equal(upstreamRequests[0].pathname, '/profile/alek-zane/');
+  assert.equal(document.querySelector('meta[name="cc-profile-id"]').getAttribute('content'), 'alek-zane');
+  assert.equal(document.querySelector('link[rel="canonical"]').getAttribute('href'), 'https://controlandchaos.co.uk/profile/alek-zane/');
+  assert.ok(document.body.classList.contains('is-whitelabel-custom-domain'));
+});
+
+test('custom-domain article fetches the article and preserves its C&C metadata', async () => {
+  const { document, upstreamRequests } = await mirrorResponse('/blog/i-just-wanna-se-if-batman-exists/');
+  assert.equal(upstreamRequests[0].pathname, new URL(articleUrl).pathname);
+  assert.equal(document.querySelector('link[rel="canonical"]').getAttribute('href'), articleUrl);
+  assert.equal(document.querySelector('meta[property="og:type"]').getAttribute('content'), 'article');
+  assert.equal(document.title, profile.blog_posts[0].seo_title);
+});
+
+test('custom-domain blog index selects the blog tab; non-VIP domains are blocked', async () => {
+  const index = await mirrorResponse('/blog/');
+  assert.equal(index.upstreamRequests[0].searchParams.get('tab'), 'blog');
+  const blocked = await mirrorResponse('/', { ...profile, is_vip: false });
+  assert.equal(blocked.response.status, 403);
+  assert.equal(blocked.upstreamRequests.length, 0);
+});
+
+test('custom-domain assets pass through and unrelated profile paths do not impersonate the owner', async () => {
+  const asset = await mirrorResponse('/directory/profiles/alek-zane.json');
+  assert.equal(asset.upstreamRequests.length, 0);
+  const unrelated = await mirrorResponse('/profile/someone-else/blog/post/');
+  assert.equal(unrelated.response.status, 404);
+  assert.equal(unrelated.upstreamRequests.length, 0);
+});
+
+function browserContext(url, ownerId = '') {
+  const { document } = parseHTML(template);
+  if (ownerId) {
+    const marker = document.createElement('meta');
+    marker.setAttribute('name', 'cc-profile-id');
+    marker.setAttribute('content', ownerId);
+    document.head.appendChild(marker);
+  }
+  const context = vm.createContext({
+    window: { location: new URL(url) }, document, URL, URLSearchParams,
+    localStorage: { getItem: () => null }, console
+  });
+  for (const match of template.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+    if (!/src=|application\/ld\+json/.test(match[1])) vm.runInContext(match[2], context);
+  }
+  return context;
+}
+
+test('browser identifies custom-domain owners and clean blog routes without changing the host', () => {
+  for (const pathname of ['/', '/blog/my-update/', '/profile/jane-doe/blog/my-update/']) {
+    const context = browserContext('https://jane.example' + pathname, 'jane-doe');
+    const route = context.profileRouteForLocation();
+    assert.equal(route.profileId, 'jane-doe');
+    assert.equal(route.isBlogPostRoute, pathname !== '/');
+    assert.equal(route.postSlug, pathname === '/' ? '' : 'my-update');
+    assert.equal(context.profileBasePath({ name: 'Jane Doe' }), '/');
+    assert.equal(context.profileArticlePath({ name: 'Jane Doe' }, 'my-update'), '/blog/my-update/');
+    assert.equal(context.window.location.hostname, 'jane.example');
+  }
+});
+
+test('live custom-domain articles retain C&C canonicals and mirror navigation', () => {
+  const context = browserContext('https://alek.example/blog/i-just-wanna-se-if-batman-exists/', 'alek-zane');
+  context.renderDynamicArticleView(profile, profile.blog_posts[0], [{ title: 'Another post', slug: 'another-post' }]);
+  const document = context.document;
+  assert.equal(document.querySelector('link[rel="canonical"]').getAttribute('href'), articleUrl);
+  assert.ok(document.querySelector('main a[href="/?tab=blog"]'));
+  assert.ok(document.querySelector('main a[href="/blog/another-post/"]'));
+  assert.ok(document.querySelector('main a[href="/?tab=ratecard#booking-enquiry-section"]'));
+});
+
+test('directory profile and article routes keep C&C navigation', () => {
+  const context = browserContext(articleUrl);
+  assert.equal(context.profileRouteForLocation().profileId, 'alek-zane');
+  assert.equal(context.profileRouteForLocation().isBlogPostRoute, true);
+  assert.equal(context.profileArticlePath(profile, 'another-post'), '/profile/alek-zane/blog/another-post/');
+  context.renderDynamicArticleView(profile, profile.blog_posts[0], []);
+  assert.ok(context.document.querySelector('main a[href="/profile/alek-zane/?tab=blog"]'));
+});

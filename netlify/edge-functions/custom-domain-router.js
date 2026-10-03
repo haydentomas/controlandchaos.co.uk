@@ -1,4 +1,5 @@
 import { getStore } from "@netlify/blobs";
+import { parseHTML } from "linkedom";
 
 function slugifyProfileName(name) {
   return String(name || '')
@@ -35,6 +36,9 @@ export default async function handler(request, context) {
     path.startsWith("/styles.css") ||
     path.startsWith("/app.js") ||
     path.startsWith("/images/") ||
+    path.startsWith("/assets/") ||
+    path.startsWith("/settings/") ||
+    path.startsWith("/directory/profiles") ||
     path.startsWith("/favicon.svg") ||
     path.startsWith("/.netlify/") ||
     path.match(/\.(css|js|png|jpg|jpeg|svg|webp|woff2?|ttf|ico)$/i);
@@ -119,16 +123,46 @@ export default async function handler(request, context) {
 
       // Rewrite to the creator's profile page internally
       const targetSlug = customProfile.slug || customProfile.id || slugifyProfileName(customProfile.name);
-      const profileUrl = new URL(`/profile/${targetSlug}/`, "https://controlandchaos.co.uk");
+      const profilePath = `/profile/${encodeURIComponent(targetSlug)}/`;
+      const segments = path.split('/').filter(Boolean);
+      if (segments[segments.length - 1] === 'index.html') segments.pop();
+      if (segments[0] === 'profile' && segments[1] === targetSlug) segments.splice(0, 2);
+      const isBlogIndex = segments.length === 1 && segments[0] === 'blog';
+      const isBlogArticle = segments.length === 2 && segments[0] === 'blog';
+      if (segments.length && !isBlogIndex && !isBlogArticle) {
+        return new Response('Page not found.', { status: 404, headers: { 'Cache-Control': 'no-store' } });
+      }
+      const articleSlug = isBlogArticle ? segments[1] : '';
+      const upstreamPath = articleSlug ? `${profilePath}blog/${articleSlug}/` : profilePath;
+      const profileUrl = new URL(upstreamPath, "https://controlandchaos.co.uk");
       
       // Preserve query params
       url.searchParams.forEach((val, key) => profileUrl.searchParams.set(key, val));
       profileUrl.searchParams.set("custom_domain", cleanDomain);
+      if (isBlogIndex) profileUrl.searchParams.set('tab', 'blog');
 
       // Fetch the profile page HTML from the origin
       const profileResponse = await fetch(profileUrl.toString());
+      if (!profileResponse.ok) return profileResponse;
       if (profileResponse.ok) {
-        let html = await profileResponse.text();
+        const { document } = parseHTML(await profileResponse.text());
+        const ownerMarker = document.createElement('meta');
+        ownerMarker.setAttribute('name', 'cc-profile-id');
+        ownerMarker.setAttribute('content', targetSlug);
+        document.head.appendChild(ownerMarker);
+
+        for (const anchor of document.querySelectorAll('a[href]')) {
+          const href = anchor.getAttribute('href');
+          if (!href || href.startsWith('#')) continue;
+          const destination = new URL(href, profileUrl);
+          if (destination.origin !== profileUrl.origin) continue;
+          if (destination.pathname.startsWith(profilePath)) {
+            const mirrorPath = '/' + destination.pathname.substring(profilePath.length);
+            anchor.setAttribute('href', mirrorPath + destination.search + destination.hash);
+          } else {
+            anchor.setAttribute('href', destination.toString());
+          }
+        }
 
         // 3. Standalone White-Label Mode
         // If white-label mode is enabled (default true for custom domain profiles),
@@ -158,36 +192,28 @@ export default async function handler(request, context) {
             header.hero#profile-hero-header {
               padding-top: 50px !important;
             }
+            main.companion-article-page {
+              padding-top: 40px;
+            }
           </style>
           `;
 
           const creatorFooter = `
           <footer class="creator-standalone-footer" style="padding: 36px 20px; text-align: center; font-size: 11.5px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 40px; letter-spacing: 0.04em;">
-            &copy; ${new Date().getFullYear()} <strong style="color: #cbd5e1;">${customProfile.name || 'Verified Creator'}</strong>. All Rights Reserved. Private Concierge &amp; Official Rate Card.
+            &copy; ${new Date().getFullYear()} <strong style="color: #cbd5e1;">${escapeHtml(customProfile.name || 'Verified Creator')}</strong>. All Rights Reserved. Private Concierge &amp; Official Rate Card.
           </footer>
           `;
 
-          // Inject CSS before </head>
-          if (html.includes("</head>")) {
-            html = html.replace("</head>", `${whitelabelCss}\n</head>`);
-          } else {
-            html = whitelabelCss + html;
-          }
-
-          // Inject class on body
-          html = html.replace(/<body([^>]*)>/i, '<body$1 class="is-whitelabel-custom-domain">');
-
-          // Replace site-footer with bespoke creator footer before </body>
-          if (html.includes("</body>")) {
-            html = html.replace("</body>", `${creatorFooter}\n</body>`);
-          }
+          document.head.insertAdjacentHTML('beforeend', whitelabelCss);
+          document.body.classList.add('is-whitelabel-custom-domain');
+          document.body.insertAdjacentHTML('beforeend', creatorFooter);
         }
 
-        return new Response(html, {
+        return new Response(document.toString(), {
           status: 200,
           headers: {
             "Content-Type": "text/html; charset=utf-8",
-            "Cache-Control": "public, max-age=0, must-revalidate",
+            "Cache-Control": "no-store",
             "X-Custom-Domain-Owner": targetSlug,
             "X-Custom-Domain-Whitelabel": isWhitelabel ? "active" : "standard"
           }
@@ -199,4 +225,11 @@ export default async function handler(request, context) {
   }
 
   return context.next();
+}
+
+function escapeHtml(value) {
+  const { document } = parseHTML('<html><body></body></html>');
+  const element = document.createElement('span');
+  element.textContent = String(value);
+  return element.innerHTML;
 }

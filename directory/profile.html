@@ -913,6 +913,37 @@ function openLightbox(imgSrc, title, category) {
       return String(profile.slug || profile.name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     }
 
+    function customDomainProfileId() {
+      return document.querySelector('meta[name="cc-profile-id"]')?.getAttribute('content') || '';
+    }
+
+    function profileBasePath(profile) {
+      return customDomainProfileId() ? '/' : `/profile/${encodeURIComponent(profileSlugFor(profile) || profile.id)}/`;
+    }
+
+    function profileArticlePath(profile, postSlug) {
+      return `${profileBasePath(profile)}blog/${encodeURIComponent(postSlug)}/`;
+    }
+
+    function profileRouteForLocation() {
+      const pathSegments = window.location.pathname.split('/').filter(Boolean);
+      if (pathSegments[pathSegments.length - 1] === 'index.html') pathSegments.pop();
+      const ownerId = customDomainProfileId();
+      if (ownerId) {
+        if (pathSegments[0] === 'profile' && pathSegments[1] === ownerId) pathSegments.splice(0, 2);
+        const isBlogPostRoute = pathSegments[0] === 'blog' && !!pathSegments[1];
+        return { profileId: ownerId, isBlogPostRoute, postSlug: isBlogPostRoute ? pathSegments[1] : '' };
+      }
+      const profileIndex = pathSegments.indexOf('profile');
+      let profileId = profileIndex !== -1 ? pathSegments[profileIndex + 1] || '' : pathSegments[pathSegments.length - 1] || '';
+      if (!profileId || ['profile', '_template', 'directory', 'profile.html'].includes(profileId)) {
+        const params = new URLSearchParams(window.location.search);
+        profileId = params.get('id') || window.location.hash.replace('#', '') || 'alek-zane';
+      }
+      const isBlogPostRoute = profileIndex !== -1 && pathSegments[profileIndex + 2] === 'blog' && !!pathSegments[profileIndex + 3];
+      return { profileId, isBlogPostRoute, postSlug: isBlogPostRoute ? pathSegments[profileIndex + 3] : '' };
+    }
+
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1000,6 +1031,7 @@ function openLightbox(imgSrc, title, category) {
     }
 
     function renderDynamicArticleView(profile, post, allBlogPosts) {
+      const profilePath = profileBasePath(profile);
       const isDomme = (profile.role_type === 'domme' || profile.role_type === 'dom');
       const roleLabel = isDomme ? 'DOM' : 'SUB';
       const roleTitle = profile.role || (isDomme ? 'Verified Dominant Companion' : 'Verified Submissive Companion');
@@ -1012,7 +1044,7 @@ function openLightbox(imgSrc, title, category) {
       const morePostsHtml = otherPosts.map(op => {
         const opSlug = op.slug || (op.title ? op.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : op.id);
         return `
-          <a href="../${opSlug}/" style="display:block; padding:12px 14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:10px; text-decoration:none; margin-bottom:10px; transition:all 0.2s ease;">
+          <a href="${profileArticlePath(profile, opSlug)}" style="display:block; padding:12px 14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:10px; text-decoration:none; margin-bottom:10px; transition:all 0.2s ease;">
             <div style="font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:4px;">${escapeHtml(op.timestamp || 'Recent')} &bull; ${escapeHtml(op.tag || 'Update')}</div>
             <div style="font-size:13.5px; font-weight:700; color:#fff; line-height:1.4;">${escapeHtml(op.title || 'Journal Entry')}</div>
           </a>
@@ -1101,7 +1133,7 @@ function openLightbox(imgSrc, title, category) {
                 </div>
                 <div>
                   <div style="display:flex; align-items:center; gap:8px;">
-                    <a href="../../" style="font-family:var(--font-heading); font-size:16px; font-weight:800; color:var(--gold-bright); text-decoration:none;">
+                    <a href="${profilePath}" style="font-family:var(--font-heading); font-size:16px; font-weight:800; color:var(--gold-bright); text-decoration:none;">
                       ${escapeHtml(profile.name)}
                     </a>
                     <span class="role-badge">${roleLabel}</span>
@@ -1132,7 +1164,7 @@ function openLightbox(imgSrc, title, category) {
                   </button>
                 </div>
 
-                <a href="../../?tab=blog" class="btn btn-secondary btn-sm">
+                <a href="${profilePath}?tab=blog" class="btn btn-secondary btn-sm">
                   <span>←</span> All ${escapeHtml(profile.name)}'s Posts
                 </a>
               </div>
@@ -1181,10 +1213,10 @@ function openLightbox(imgSrc, title, category) {
               ` : ''}
 
               <div style="display:flex; flex-direction:column; gap:10px;">
-                <a href="../../#profile-tabs-nav" class="btn btn-gold" style="width:100%; box-sizing:border-box; justify-content:center;">
+                <a href="${profilePath}#profile-tabs-nav" class="btn btn-gold" style="width:100%; box-sizing:border-box; justify-content:center;">
                   <span>📋</span> View Full Rate Card &amp; Menus
                 </a>
-                <a href="../../?tab=ratecard#booking-calc" class="btn btn-secondary" style="width:100%; box-sizing:border-box; justify-content:center;">
+                <a href="${profilePath}?tab=ratecard#booking-enquiry-section" class="btn btn-secondary" style="width:100%; box-sizing:border-box; justify-content:center;">
                   <span>✉️</span> Submit Booking Enquiry
                 </a>
                 <a href="${escapeHtml(profile.slurl || 'secondlife://Chaos%20Manor/128/142/23')}" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%; box-sizing:border-box; justify-content:center;">
@@ -1211,34 +1243,7 @@ function openLightbox(imgSrc, title, category) {
     });
 
     document.addEventListener('DOMContentLoaded', async () => {
-      // Determine slug from folder name (e.g. /profile/alek-zane/) or query param (?id=alek-zane)
-      const pathSegments = window.location.pathname.split('/').filter(Boolean);
-      let profileId = '';
-      let isBlogPostRoute = false;
-      let postSlug = '';
-
-      const profIdx = pathSegments.indexOf('profile');
-      if (profIdx !== -1 && pathSegments[profIdx + 1]) {
-        profileId = pathSegments[profIdx + 1];
-        if (pathSegments[profIdx + 2] === 'blog' && pathSegments[profIdx + 3]) {
-          isBlogPostRoute = true;
-          postSlug = pathSegments[profIdx + 3];
-        }
-      } else {
-        const lastSeg = pathSegments[pathSegments.length - 1] || '';
-        const prevSeg = pathSegments[pathSegments.length - 2] || '';
-        
-        if (lastSeg && lastSeg !== 'index.html' && lastSeg !== 'profile' && lastSeg !== '_template' && lastSeg !== 'directory' && lastSeg !== 'profile.html') {
-          profileId = lastSeg;
-        } else if (prevSeg && prevSeg !== 'profile' && prevSeg !== '_template' && prevSeg !== 'directory') {
-          profileId = prevSeg;
-        }
-      }
-
-      if (!profileId || profileId === 'profile' || profileId === '_template' || profileId === 'directory') {
-        const urlParams = new URLSearchParams(window.location.search);
-        profileId = urlParams.get('id') || window.location.hash.replace('#', '') || 'alek-zane';
-      }
+      const { profileId, isBlogPostRoute, postSlug } = profileRouteForLocation();
 
       let profileData = null;
 
@@ -1346,8 +1351,8 @@ function openLightbox(imgSrc, title, category) {
       }
 
       const canonicalSlug = profileSlugFor(profileData) || profileId;
-      if (canonicalSlug !== profileId) {
-        window.history.replaceState(null, '', `/profile/${encodeURIComponent(canonicalSlug)}/`);
+      if (!customDomainProfileId() && canonicalSlug !== profileId) {
+        window.history.replaceState(null, '', `/profile/${encodeURIComponent(canonicalSlug)}/${window.location.search}${window.location.hash}`);
       }
 
       const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
@@ -1364,7 +1369,7 @@ function openLightbox(imgSrc, title, category) {
       if (!finalSeoImg) {
         finalSeoImg = 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80';
       }
-      const pageUrl = `${window.location.origin}/profile/${encodeURIComponent(canonicalSlug)}/`;
+      const pageUrl = `https://controlandchaos.co.uk/profile/${encodeURIComponent(canonicalSlug)}/`;
 
       document.title = finalSeoTitle;
       const metaDesc = document.getElementById('meta-description');
@@ -2656,7 +2661,7 @@ function openLightbox(imgSrc, title, category) {
           const uKey = (profileData.avatar_uuid || profileData.id || '') + '_' + (post.id || postSlug || pIdx);
           const hasLiked = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
           const likeCount = (post.likes || 0) + (hasLiked ? 1 : 0);
-          const articleUrl = `./blog/${postSlug}/`;
+          const articleUrl = profileArticlePath(profileData, postSlug);
 
           return `
             <article id="post-${postSlug}" class="feed-post-card" style="background: linear-gradient(165deg, #181512 0%, #100e0c 100%); border: 1px solid var(--gold-border-subtle); border-radius: 16px; padding: 26px 28px; margin-bottom: 24px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); transition: box-shadow 0.4s ease;">
@@ -2734,7 +2739,7 @@ function openLightbox(imgSrc, title, category) {
       };
 
       window.shareBlogPost = function(pSlug, postSlug, title) {
-        const fullUrl = `https://controlandchaos.co.uk/profile/${pSlug}/blog/${postSlug}/`;
+        const fullUrl = new URL(profileArticlePath(profileData, postSlug), window.location.origin).toString();
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(fullUrl);
         }
@@ -2768,7 +2773,7 @@ function openLightbox(imgSrc, title, category) {
 
       // Check URL parameters for tab routing (e.g. ?tab=blog or #post-...)
       const urlParams = new URLSearchParams(window.location.search);
-      const reqTab = urlParams.get('tab');
+      const reqTab = urlParams.get('tab') || (customDomainProfileId() && /^\/blog\/?$/.test(window.location.pathname) ? 'blog' : null);
       const reqHash = window.location.hash;
 
       if (window.defaultToBlogTab || reqTab === 'blog' || reqHash.startsWith('#post-') || reqHash === '#tab-blog') {

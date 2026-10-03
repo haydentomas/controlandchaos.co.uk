@@ -684,7 +684,7 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
             <a href="../../#profile-tabs-nav" class="btn btn-gold" style="width:100%; box-sizing:border-box;">
               <span>📋</span> View Full Rate Card &amp; Menus
             </a>
-            <a href="../../?tab=ratecard#booking-calc" class="btn btn-secondary" style="width:100%; box-sizing:border-box;">
+            <a href="../../?tab=ratecard#booking-enquiry-section" class="btn btn-secondary" style="width:100%; box-sizing:border-box;">
               <span>✉️</span> Submit Booking Enquiry
             </a>
             <a href="${escapeHtml(profile.slurl || 'secondlife://Chaos%20Manor/128/142/23')}" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%; box-sizing:border-box;">

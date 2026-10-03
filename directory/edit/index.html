@@ -155,47 +155,7 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
-    /* Modal Backdrop & Dialog */
-    .editor-modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.82);
-      backdrop-filter: blur(8px);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.25s ease, visibility 0.25s ease;
-    }
-
-    .editor-modal-backdrop.open {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .editor-modal-box {
-      background: #131118;
-      border: 1px solid var(--gold-bright);
-      border-radius: 14px;
-      width: 100%;
-      max-width: 640px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 175, 55, 0.25);
-      padding: 26px 28px;
-      position: relative;
-      transform: translateY(20px) scale(0.97);
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .editor-modal-backdrop.open .editor-modal-box {
-      transform: translateY(0) scale(1);
-    }
-
-    .editor-modal-header {
+    .post-editor-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -494,65 +454,51 @@
       box-shadow: 0 0 12px rgba(212,175,55,0.3) !important;
     }
 
-    /* Studio Modal Popup Styles */
-    .editor-modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(8, 6, 12, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 999999;
+    .post-inline-editor {
       display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      box-sizing: border-box;
-      overflow-y: auto;
+      min-width: 0;
+      padding: 24px 0;
+      margin-bottom: 24px;
+      border-top: 2px solid var(--gold-primary);
+      border-bottom: 1px solid var(--gold-border);
+      scroll-margin-top: 100px;
     }
 
-    .editor-modal-backdrop.open {
-      display: flex !important;
-      animation: modalFadeIn 0.2s ease-out forwards;
+    .post-inline-editor.open {
+      display: block;
     }
 
-    @keyframes modalFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .post-editor-body {
+      min-width: 0;
     }
 
-    .editor-modal-box {
-      background: linear-gradient(165deg, #181520 0%, #100e16 100%);
-      border: 1px solid rgba(212, 175, 55, 0.45);
-      border-radius: 14px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(212, 175, 55, 0.15);
-      width: 100%;
-      max-width: 620px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 28px 30px;
-      position: relative;
-      margin: auto;
-      box-sizing: border-box;
-      animation: modalBoxPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .post-inline-editor textarea {
+      min-height: 180px;
+      resize: vertical;
     }
 
-    @keyframes modalBoxPop {
-      from { transform: scale(0.94) translateY(10px); opacity: 0; }
-      to { transform: scale(1) translateY(0); opacity: 1; }
-    }
-
-    .editor-modal-header {
+    .post-editor-actions {
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      gap: 12px;
+      padding: 16px 0;
+      border-top: 1px solid var(--gold-border-subtle);
+    }
+
+    .post-editor-actions .btn-gold {
+      margin-left: auto;
+    }
+
+    .post-row-editing {
+      outline: 2px solid var(--gold-primary);
+      outline-offset: 2px;
+    }
+
+    .post-draft-status {
+      font-size: 12px;
+      color: var(--gold-muted);
+      margin-bottom: 16px;
     }
 
     /* Markdown Editor & Toolbar Styles */
@@ -1569,6 +1515,8 @@
               <p class="font-xs text-muted mb-16">
                 Publish free public posts, thought pieces, schedule updates, and photos that anyone visiting your profile can read without a subscription.
               </p>
+              <p class="post-changes-status post-draft-status" role="status" hidden>Unpublished post changes saved on this device</p>
+              <div id="blog-post-editor-slot"></div>
               <div id="blog-posts-repeater-container">
                 <!-- Dynamically populated blog posts -->
               </div>
@@ -1627,6 +1575,8 @@
                 <p class="font-xs text-muted mb-16">
                   Publish updates, photo sets, voice notes, tasks, and teasers. Choose whether each post is <strong>Locked (Subscribers Only)</strong> or <strong>Public Preview</strong>.
                 </p>
+                <p class="post-changes-status post-draft-status" role="status" hidden>Unpublished post changes saved on this device</p>
+                <div id="feed-post-editor-slot"></div>
                 <div id="feed-posts-repeater-container">
                   <!-- Dynamically populated posts -->
                 </div>
@@ -1639,15 +1589,15 @@
     </div>
   </main>
 
-  <!-- Feed Post Composer Modal Popup -->
-  <div id="feed-post-modal" class="editor-modal-backdrop" onclick="if(event.target===this) closePostModal()">
-    <div class="editor-modal-box">
-      <div class="editor-modal-header">
+  <section id="feed-post-modal" class="post-inline-editor" aria-labelledby="modal-post-title-header">
+    <div class="post-editor-body">
+      <div class="post-editor-header">
         <h3 id="modal-post-title-header" class="editor-card-title m-0">
           <span class="icon">✨</span> Create Exclusive Feed Post
         </h3>
-        <button type="button" onclick="closePostModal()" style="background:transparent; border:none; color:#cbd5e1; font-size:1.4rem; cursor:pointer; padding:4px 8px;">✕</button>
+        <button type="button" onclick="closePostModal()" class="btn btn-secondary btn-sm">Back to Posts</button>
       </div>
+      <p id="feed-post-draft-status" class="post-draft-status" role="status"></p>
 
       <input type="hidden" id="modal-post-index" value="-1">
 
@@ -1695,26 +1645,26 @@
         <textarea id="modal-post-content" class="form-textarea" rows="4" placeholder="Write details, protocol decrees, private notes, or tribute requests for your subscribers..."></textarea>
       </div>
 
-      <div class="flex-between align-center gap-12 mt-20 pt-16" style="border-top: 1px solid rgba(255,255,255,0.08);">
-        <button type="button" onclick="closePostModal()" class="btn btn-secondary btn-sm" style="padding: 10px 18px;">
-          ✕ Cancel
+      <div class="post-editor-actions">
+        <button type="button" onclick="discardPostDraft('feed')" class="btn btn-secondary btn-sm">
+          Discard Draft
         </button>
         <button type="button" onclick="savePostModal()" class="btn btn-gold btn-md" style="font-weight: 700; padding: 10px 24px; box-shadow: 0 0 15px rgba(212,175,55,0.3);">
           <span>💾</span> Save Post
         </button>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Blog Post Composer Modal Popup -->
-  <div id="blog-post-modal" class="editor-modal-backdrop" onclick="if(event.target===this) closeBlogPostModal()">
-    <div class="editor-modal-box">
-      <div class="editor-modal-header">
+  <section id="blog-post-modal" class="post-inline-editor" aria-labelledby="modal-blog-title-header">
+    <div class="post-editor-body">
+      <div class="post-editor-header">
         <h3 id="modal-blog-title-header" class="editor-card-title m-0">
           <span class="icon">📰</span> Create Public Blog Post
         </h3>
-        <button type="button" onclick="closeBlogPostModal()" style="background:transparent; border:none; color:#cbd5e1; font-size:1.4rem; cursor:pointer; padding:4px 8px;">✕</button>
+        <button type="button" onclick="closeBlogPostModal()" class="btn btn-secondary btn-sm">Back to Posts</button>
       </div>
+      <p id="blog-post-draft-status" class="post-draft-status" role="status"></p>
 
       <input type="hidden" id="modal-blog-index" value="-1">
 
@@ -1819,16 +1769,16 @@
         </div>
       </details>
 
-      <div class="flex-between align-center gap-12 mt-10 pt-16" style="border-top: 1px solid rgba(255,255,255,0.08);">
-        <button type="button" onclick="closeBlogPostModal()" class="btn btn-secondary btn-sm" style="padding: 10px 18px;">
-          ✕ Cancel
+      <div class="post-editor-actions">
+        <button type="button" onclick="discardPostDraft('blog')" class="btn btn-secondary btn-sm">
+          Discard Draft
         </button>
         <button type="button" onclick="saveBlogPostModal()" class="btn btn-gold btn-md" style="font-weight: 700; padding: 10px 24px; box-shadow: 0 0 15px rgba(212,175,55,0.3);">
           <span>💾</span> Save Blog Post
         </button>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- Global Floating Save Toast -->
   <div id="save-toast">
@@ -1857,6 +1807,9 @@
     let reviewsList = [];
     let postsList = [];
     let blogPostsList = [];
+    const postEditorState = { blog: null, feed: null };
+    let restoringPostDraft = false;
+    let postCollectionsDirty = false;
 
     function escapeHtml(str) {
       if (!str) return '';
@@ -1949,14 +1902,8 @@
       if (typeof updatePreview === 'function') updatePreview();
     }
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if (typeof closePostModal === 'function') closePostModal();
-        if (typeof closeBlogPostModal === 'function') closeBlogPostModal();
-      }
-    });
-
     document.addEventListener('DOMContentLoaded', async () => {
+      initializePostEditors();
       const params = new URLSearchParams(window.location.search);
       const urlId = params.get('uuid') || params.get('id');
       const urlToken = params.get('token');
@@ -2287,6 +2234,12 @@
     }
 
     function populateForm(p) {
+      parkPostEditor('blog');
+      parkPostEditor('feed');
+      document.getElementById('blog-post-modal').classList.remove('open');
+      document.getElementById('feed-post-modal').classList.remove('open');
+      postEditorState.blog = null;
+      postEditorState.feed = null;
       document.getElementById('auth-user-name').innerText = p.name || p.sl_username;
 
       const liveLink = document.getElementById('view-live-profile-btn');
@@ -2377,6 +2330,13 @@
       reviewsList = p.reviews || [];
       postsList = p.posts || [];
       blogPostsList = p.blog_posts || p.blog || [];
+      const pendingPostChanges = readPostChanges();
+      postCollectionsDirty = !!pendingPostChanges;
+      if (pendingPostChanges) {
+        postsList = pendingPostChanges.posts;
+        blogPostsList = pendingPostChanges.blog_posts;
+      }
+      updatePostChangesStatus();
 
       // Fan Club / Subscription Tier
       document.getElementById('edit-fan-tier-price').value = p.fan_tier_price || 'L$1,500 / month';
@@ -2422,6 +2382,8 @@
       }
 
       renderAllRepeaters();
+      restorePostDraft('blog');
+      restorePostDraft('feed');
       attachInputListeners();
       updateStartingRateHint();
       updatePreview();
@@ -2894,6 +2856,7 @@
       textarea.selectionEnd = start + before.length + placeholder.length;
       
       updateBlogSeoPreview();
+      persistPostDraft('blog');
     }
 
     function toggleBlogMarkdownGuide() {
@@ -2962,7 +2925,188 @@
       }
     }
 
+    function initializePostEditors() {
+      for (const kind of ['blog', 'feed']) {
+        parkPostEditor(kind);
+        const panel = document.getElementById(kind + '-post-modal');
+        panel.addEventListener('input', () => persistPostDraft(kind));
+        panel.addEventListener('change', () => persistPostDraft(kind));
+      }
+      window.addEventListener('beforeunload', event => {
+        for (const kind of ['blog', 'feed']) persistPostDraft(kind);
+        if (postCollectionsDirty || Object.values(postEditorState).some(state => state?.dirty)) {
+          event.preventDefault();
+          event.returnValue = '';
+        }
+      });
+    }
+
+    function postDraftStorageKey(kind) {
+      const owner = currentProfile?.avatar_uuid || authUUID || currentProfile?.id;
+      return owner ? `cc_post_draft_${owner}_${kind}` : '';
+    }
+
+    function postFields(kind) {
+      const fields = {};
+      document.getElementById(kind + '-post-modal').querySelectorAll('input:not([type="hidden"]), textarea, select').forEach(field => {
+        fields[field.id] = field.value;
+      });
+      return fields;
+    }
+
+    function readPostDraft(kind) {
+      try {
+        const key = postDraftStorageKey(kind);
+        const draft = key ? JSON.parse(localStorage.getItem(key)) : null;
+        return draft && draft.fields && Number.isInteger(draft.index) ? draft : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function readPostChanges() {
+      try {
+        const key = postDraftStorageKey('collections');
+        const saved = key ? JSON.parse(localStorage.getItem(key)) : null;
+        return saved && Array.isArray(saved.posts) && Array.isArray(saved.blog_posts) ? saved : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function persistPostChanges() {
+      postCollectionsDirty = true;
+      updatePostChangesStatus();
+      try {
+        const key = postDraftStorageKey('collections');
+        if (key) localStorage.setItem(key, JSON.stringify({ posts: postsList, blog_posts: blogPostsList }));
+      } catch (error) {
+        showToast('Post changes are unsaved on this device.');
+      }
+    }
+
+    function updatePostChangesStatus() {
+      document.querySelectorAll('.post-changes-status').forEach(status => {
+        status.hidden = !postCollectionsDirty;
+      });
+    }
+
+    function persistPostDraft(kind) {
+      const state = postEditorState[kind];
+      if (!state) return;
+      const fields = postFields(kind);
+      state.dirty = JSON.stringify(fields) !== state.baseline;
+      const status = document.getElementById(kind + '-post-draft-status');
+      try {
+        if (state.storageKey) {
+          if (state.dirty) localStorage.setItem(state.storageKey, JSON.stringify({ index: state.index, postKey: state.postKey, fields }));
+          else localStorage.removeItem(state.storageKey);
+        }
+        status.textContent = state.dirty ? (state.storageKey ? 'Draft saved on this device' : 'Unsaved draft') : 'No unsaved changes';
+      } catch (error) {
+        status.textContent = 'Unsaved draft - local storage unavailable';
+      }
+    }
+
+    function parkPostEditor(kind) {
+      const panel = document.getElementById(kind + '-post-modal');
+      const slot = document.getElementById(kind + '-post-editor-slot');
+      if (panel && slot) slot.appendChild(panel);
+    }
+
+    function showPostEditor(kind, index) {
+      const panel = document.getElementById(kind + '-post-modal');
+      const row = document.getElementById(`${kind}-post-row-${index}`);
+      document.querySelectorAll(`[id^="${kind}-post-row-"]`).forEach(item => item.classList.remove('post-row-editing'));
+      if (row) {
+        row.classList.add('post-row-editing');
+        row.after(panel);
+      } else parkPostEditor(kind);
+      panel.classList.add('open');
+      if (!restoringPostDraft) {
+        switchTab(kind === 'blog' ? 'tab-blog' : 'tab-feed');
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById(kind === 'blog' ? 'modal-blog-title' : 'modal-post-title').focus({ preventScroll: true });
+      }
+    }
+
+    function preparePostEditor(kind, index) {
+      persistPostDraft(kind);
+      const state = postEditorState[kind];
+      if (state && state.index === index && !restoringPostDraft) {
+        showPostEditor(kind, index);
+        return false;
+      }
+      const saved = readPostDraft(kind);
+      if (!restoringPostDraft && saved && saved.index !== index) {
+        if (!confirm('Discard the current draft and open another post?')) return false;
+        try {
+          localStorage.removeItem(postDraftStorageKey(kind));
+        } catch (error) { }
+      }
+      return true;
+    }
+
+    function finishOpeningPostEditor(kind, index) {
+      const posts = kind === 'blog' ? blogPostsList : postsList;
+      const post = posts[index];
+      postEditorState[kind] = {
+        index,
+        storageKey: postDraftStorageKey(kind),
+        postKey: post ? String(post.id || `${post.title}|${post.timestamp}`) : '',
+        baseline: JSON.stringify(postFields(kind)),
+        dirty: false
+      };
+      const saved = readPostDraft(kind);
+      if (saved && (saved.index === index || restoringPostDraft)) {
+        const panel = document.getElementById(kind + '-post-modal');
+        panel.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach(field => {
+          if (typeof saved.fields[field.id] === 'string') field.value = saved.fields[field.id];
+        });
+        if (kind === 'blog') {
+          updateModalBlogThumb(document.getElementById('modal-blog-media-url').value);
+          updateBlogSeoPreview();
+        } else onModalMediaTypeChange(document.getElementById('modal-post-type').value);
+      }
+      persistPostDraft(kind);
+      showPostEditor(kind, index);
+    }
+
+    function restorePostDraft(kind) {
+      const saved = readPostDraft(kind);
+      if (!saved) return;
+      const posts = kind === 'blog' ? blogPostsList : postsList;
+      const index = saved.postKey ? posts.findIndex(post => String(post.id || `${post.title}|${post.timestamp}`) === saved.postKey) : -1;
+      restoringPostDraft = true;
+      try {
+        if (kind === 'blog') {
+          if (index >= 0) openEditBlogPostModal(index); else openCreateBlogPostModal();
+        } else {
+          if (index >= 0) openEditPostModal(index); else openCreatePostModal();
+        }
+      } finally {
+        restoringPostDraft = false;
+      }
+    }
+
+    function finishPostEditing(kind) {
+      const state = postEditorState[kind];
+      try {
+        if (state?.storageKey) localStorage.removeItem(state.storageKey);
+      } catch (error) { }
+      postEditorState[kind] = null;
+      document.getElementById(kind + '-post-modal').classList.remove('open');
+      document.querySelectorAll(`[id^="${kind}-post-row-"]`).forEach(item => item.classList.remove('post-row-editing'));
+      parkPostEditor(kind);
+    }
+
+    function discardPostDraft(kind) {
+      if (!confirm('Discard this draft? Your saved post will not be changed.')) return;
+      finishPostEditing(kind);
+    }
+
     function openCreateBlogPostModal() {
+      if (!preparePostEditor('blog', -1)) return;
       document.getElementById('modal-blog-title-header').innerHTML = '<span class="icon">📰</span> Create Public Blog Post';
       document.getElementById('modal-blog-index').value = '-1';
       document.getElementById('modal-blog-title').value = '';
@@ -2979,14 +3123,13 @@
       const guide = document.getElementById('modal-blog-md-guide-panel');
       if (guide) guide.style.display = 'none';
 
-      const modal = document.getElementById('blog-post-modal');
-      if (modal) modal.classList.add('open');
-      setTimeout(() => document.getElementById('modal-blog-title')?.focus(), 100);
+      finishOpeningPostEditor('blog', -1);
     }
 
     function openEditBlogPostModal(idx) {
       const p = blogPostsList[idx];
       if (!p) return;
+      if (!preparePostEditor('blog', idx)) return;
       document.getElementById('modal-blog-title-header').innerHTML = '<span class="icon">✏️</span> Edit Blog Post';
       document.getElementById('modal-blog-index').value = String(idx);
       document.getElementById('modal-blog-title').value = p.title || '';
@@ -3003,13 +3146,14 @@
       const guide = document.getElementById('modal-blog-md-guide-panel');
       if (guide) guide.style.display = 'none';
 
-      const modal = document.getElementById('blog-post-modal');
-      if (modal) modal.classList.add('open');
+      finishOpeningPostEditor('blog', idx);
     }
 
     function closeBlogPostModal() {
+      persistPostDraft('blog');
       const modal = document.getElementById('blog-post-modal');
       if (modal) modal.classList.remove('open');
+      document.querySelectorAll('[id^="blog-post-row-"]').forEach(item => item.classList.remove('post-row-editing'));
     }
 
     function updateModalBlogThumb(url) {
@@ -3029,8 +3173,9 @@
       const title = (document.getElementById('modal-blog-title').value || '').trim();
       if (!title) {
         alert("Please provide a title for this blog post.");
+        showPostEditor('blog', postEditorState.blog?.index ?? -1);
         document.getElementById('modal-blog-title')?.focus();
-        return;
+        return false;
       }
       const idxStr = document.getElementById('modal-blog-index').value;
       const idx = parseInt(idxStr);
@@ -3043,8 +3188,9 @@
 
       if (!content) {
         alert("Please provide some text content for your blog post.");
+        showPostEditor('blog', postEditorState.blog?.index ?? -1);
         document.getElementById('modal-blog-content')?.focus();
-        return;
+        return false;
       }
 
       if (idx >= 0 && idx < blogPostsList.length) {
@@ -3076,20 +3222,29 @@
         blogPostsList.unshift(newPost);
       }
 
-      closeBlogPostModal();
+      finishPostEditing('blog');
+      persistPostChanges();
       renderBlogPosts();
       showToast('Blog post saved! Click 💾 Save Profile to publish live.');
+      return true;
     }
 
     function removeBlogPost(idx) {
+      if (postEditorState.blog?.dirty) {
+        alert('Save or discard your blog draft before deleting a post.');
+        return;
+      }
       if (confirm("Delete this blog post?")) {
+        finishPostEditing('blog');
         blogPostsList.splice(idx, 1);
+        persistPostChanges();
         renderBlogPosts();
         showToast('Blog post removed.');
       }
     }
 
     function renderBlogPosts() {
+      parkPostEditor('blog');
       const container = document.getElementById('blog-posts-repeater-container');
       if (!container) return;
       if (!blogPostsList.length) {
@@ -3109,7 +3264,7 @@
       }
 
       container.innerHTML = blogPostsList.map((post, idx) => `
-        <div class="repeater-item-box" style="border: 1px solid rgba(255,255,255,0.12); background: #110f15; margin-bottom: 14px; padding: 16px 18px; border-radius: 10px;">
+        <div id="blog-post-row-${idx}" class="repeater-item-box" style="border: 1px solid rgba(255,255,255,0.12); background: #110f15; margin-bottom: 14px; padding: 16px 18px; border-radius: 10px;">
           <div class="flex-between align-center flex-wrap gap-10 mb-10">
             <div class="flex-row align-center gap-8 flex-wrap">
               <span class="section-tag tag-emerald font-2xs m-0">
@@ -3124,7 +3279,7 @@
 
             <div class="flex-row align-center gap-8 ml-auto">
               <button type="button" onclick="openEditBlogPostModal(${idx})" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.75rem;">
-                ✏️ Edit
+                ✏️ Edit Blog Post
               </button>
               <button type="button" onclick="removeBlogPost(${idx})" class="btn-delete-item" style="position:static; padding: 4px 8px; font-size: 0.75rem;" title="Delete Blog Post">
                 ✕ Delete
@@ -3151,6 +3306,7 @@
 
     // Exclusive Feed Posts & Modal
     function openCreatePostModal() {
+      if (!preparePostEditor('feed', -1)) return;
       document.getElementById('modal-post-title-header').innerHTML = '<span class="icon">✨</span> Create Exclusive Feed Post';
       document.getElementById('modal-post-index').value = '-1';
       document.getElementById('modal-post-title').value = '';
@@ -3162,14 +3318,13 @@
       onModalMediaTypeChange('image');
       updateModalMediaThumb('');
       
-      const modal = document.getElementById('feed-post-modal');
-      if (modal) modal.classList.add('open');
-      setTimeout(() => document.getElementById('modal-post-title')?.focus(), 100);
+      finishOpeningPostEditor('feed', -1);
     }
 
     function openEditPostModal(idx) {
       const p = postsList[idx];
       if (!p) return;
+      if (!preparePostEditor('feed', idx)) return;
       document.getElementById('modal-post-title-header').innerHTML = '<span class="icon">✏️</span> Edit Feed Post';
       document.getElementById('modal-post-index').value = String(idx);
       document.getElementById('modal-post-title').value = p.title || '';
@@ -3181,13 +3336,14 @@
       onModalMediaTypeChange(p.type || 'image');
       updateModalMediaThumb(p.media_url || '');
 
-      const modal = document.getElementById('feed-post-modal');
-      if (modal) modal.classList.add('open');
+      finishOpeningPostEditor('feed', idx);
     }
 
     function closePostModal() {
+      persistPostDraft('feed');
       const modal = document.getElementById('feed-post-modal');
       if (modal) modal.classList.remove('open');
+      document.querySelectorAll('[id^="feed-post-row-"]').forEach(item => item.classList.remove('post-row-editing'));
     }
 
     function onModalMediaTypeChange(type) {
@@ -3223,8 +3379,9 @@
       const title = (document.getElementById('modal-post-title').value || '').trim();
       if (!title) {
         alert("Please provide a title for this post.");
+        showPostEditor('feed', postEditorState.feed?.index ?? -1);
         document.getElementById('modal-post-title').focus();
-        return;
+        return false;
       }
       const idxStr = document.getElementById('modal-post-index').value;
       const idx = parseInt(idxStr);
@@ -3257,20 +3414,29 @@
         });
       }
 
-      closePostModal();
+      finishPostEditing('feed');
+      persistPostChanges();
       renderFeedPosts();
       showToast('Feed post saved! Remember to click 💾 Save Profile.');
+      return true;
     }
 
     function removeFeedPost(idx) {
+      if (postEditorState.feed?.dirty) {
+        alert('Save or discard your feed draft before deleting a post.');
+        return;
+      }
       if (confirm("Delete this feed post?")) {
+        finishPostEditing('feed');
         postsList.splice(idx, 1);
+        persistPostChanges();
         renderFeedPosts();
         showToast('Feed post removed.');
       }
     }
 
     function renderFeedPosts() {
+      parkPostEditor('feed');
       const container = document.getElementById('feed-posts-repeater-container');
       if (!container) return;
       if (!postsList.length) {
@@ -3292,7 +3458,7 @@
       const typeIcons = { image: '📸', audio: '🎙️', video: '🎬', text: '📝' };
 
       container.innerHTML = postsList.map((post, idx) => `
-        <div class="repeater-item-box" style="border: 1px solid ${post.is_locked ? 'rgba(212,175,55,0.35)' : 'rgba(255,255,255,0.12)'}; background: #110f15; margin-bottom: 14px; padding: 16px 18px; border-radius: 10px;">
+        <div id="feed-post-row-${idx}" class="repeater-item-box" style="border: 1px solid ${post.is_locked ? 'rgba(212,175,55,0.35)' : 'rgba(255,255,255,0.12)'}; background: #110f15; margin-bottom: 14px; padding: 16px 18px; border-radius: 10px;">
           <div class="flex-between align-center flex-wrap gap-10 mb-10">
             <div class="flex-row align-center gap-8 flex-wrap">
               <span class="section-tag ${post.is_locked ? 'tag-gold' : 'tag-emerald'} font-2xs m-0">
@@ -3306,7 +3472,7 @@
 
             <div class="flex-row align-center gap-8 ml-auto">
               <button type="button" onclick="openEditPostModal(${idx})" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.75rem;">
-                ✏️ Edit
+                ✏️ Edit Feed Post
               </button>
               <button type="button" onclick="removeFeedPost(${idx})" class="btn-delete-item" style="position:static; padding: 4px 8px; font-size: 0.75rem;" title="Delete Post">
                 ✕ Delete
@@ -3412,6 +3578,15 @@
     /* ================= SAVE & PUBLISH ================= */
 
     async function saveProfile() {
+      persistPostDraft('blog');
+      persistPostDraft('feed');
+      if (postEditorState.blog?.dirty && !saveBlogPostModal()) return;
+      if (postEditorState.feed?.dirty && !savePostModal()) return;
+      const pendingPostChangesKey = postDraftStorageKey('collections');
+      let submittedPostChanges = null;
+      try {
+        if (pendingPostChangesKey) submittedPostChanges = localStorage.getItem(pendingPostChangesKey);
+      } catch (error) { }
       const saveButtons = document.querySelectorAll('button[onclick="saveProfile()"]');
       saveButtons.forEach(b => {
         b.disabled = true;
@@ -3523,6 +3698,14 @@
         if (!response.ok || !result.success) {
           throw new Error(result.error || ('Server returned status ' + response.status));
         }
+
+        try {
+          if (pendingPostChangesKey && localStorage.getItem(pendingPostChangesKey) === submittedPostChanges) {
+            localStorage.removeItem(pendingPostChangesKey);
+          }
+          postCollectionsDirty = !!readPostChanges();
+          updatePostChangesStatus();
+        } catch (error) { }
 
         saveButtons.forEach(b => {
           b.disabled = false;
