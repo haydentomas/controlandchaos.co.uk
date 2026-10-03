@@ -915,6 +915,180 @@ function openLightbox(imgSrc, title, category) {
       return String(profile.slug || profile.name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     }
 
+    function renderDynamicArticleView(profile, post, allBlogPosts) {
+      const isDomme = (profile.role_type === 'domme' || profile.role_type === 'dom');
+      const roleLabel = isDomme ? 'DOM' : 'SUB';
+      const roleTitle = profile.role || (isDomme ? 'Verified Dominant Companion' : 'Verified Submissive Companion');
+      const startingRate = profile.starting_rate || 'From L$3,000 / hr';
+      const avatarImg = profile.avatar_image || '';
+      const heroHeader = document.getElementById('profile-hero-header');
+      if (heroHeader) heroHeader.style.display = 'none';
+
+      const otherPosts = (allBlogPosts || []).filter(p => p !== post).slice(0, 3);
+      const morePostsHtml = otherPosts.map(op => {
+        const opSlug = op.slug || (op.title ? op.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : op.id);
+        return `
+          <a href="../${opSlug}/" style="display:block; padding:12px 14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:10px; text-decoration:none; margin-bottom:10px; transition:all 0.2s ease;">
+            <div style="font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:4px;">${escapeHtml(op.timestamp || 'Recent')} &bull; ${escapeHtml(op.tag || 'Update')}</div>
+            <div style="font-size:13.5px; font-weight:700; color:#fff; line-height:1.4;">${escapeHtml(op.title || 'Journal Entry')}</div>
+          </a>
+        `;
+      }).join('');
+
+      const hardwareBadges = (profile.hardware_compat || []).slice(0, 3).map(h => `
+        <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-family:var(--font-mono); background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.3); color:var(--gold-bright); padding:3px 8px; border-radius:6px;">
+          <span>${escapeHtml(h.icon || '🔌')}</span> ${escapeHtml(h.name || 'Lovense')}
+        </span>
+      `).join('');
+
+      const wordCount = (post.content || '').split(/\s+/).length;
+      const readMinutes = Math.max(1, Math.round(wordCount / 180));
+      const uKey = (profile.avatar_uuid || profile.id || '') + '_' + (post.id || post.slug || '0');
+      const hasLiked = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
+      const likeCount = (post.likes || 0) + (hasLiked ? 1 : 0);
+
+      document.title = `${post.title || 'Blog Post'} — ${profile.name}'s Blog | Control & Chaos`;
+
+      const mainEl = document.querySelector('main.section') || document.querySelector('main');
+      if (!mainEl) return;
+
+      mainEl.innerHTML = `
+        <div style="max-width: 1200px; margin: 0 auto; padding: 30px 20px 80px; display: grid; grid-template-columns: 1.45fr 0.85fr; gap: 40px; align-items: start;" id="dynamic-article-wrap">
+          <!-- Left Column: Article Body -->
+          <div>
+            <nav style="font-family: var(--font-mono); font-size: 11.5px; color: var(--gold-muted); margin-bottom: 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <a href="/" style="color: var(--gold-muted); text-decoration: none;">Home</a> <span>/</span>
+              <a href="/directory/" style="color: var(--gold-muted); text-decoration: none;">Service Providers</a> <span>/</span>
+              <a href="../../" style="color: var(--gold-muted); text-decoration: none;">${escapeHtml(profile.name)}</a> <span>/</span>
+              <a href="../../?tab=blog" style="color: var(--gold-muted); text-decoration: none;">Public Blog</a> <span>/</span>
+              <span style="color:#fff;">${escapeHtml(post.title || 'Journal Entry')}</span>
+            </nav>
+
+            <article style="background: linear-gradient(165deg, #181512 0%, #100e0c 100%); border: 1px solid var(--gold-border-subtle); border-radius: 18px; padding: 36px 38px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                <span class="role-badge" style="background:rgba(212,175,55,0.12); color:var(--gold-bright); font-size:11px; padding:3px 10px;">
+                  ${escapeHtml(post.tag || '💬 Update')}
+                </span>
+                <span style="font-family:var(--font-mono); font-size:11.5px; color:var(--gold-muted);">
+                  ${escapeHtml(post.timestamp || 'Recent')} &bull; ${readMinutes} min read
+                </span>
+              </div>
+
+              <h1 style="font-family:var(--font-heading); font-size:28px; font-weight:900; color:#fff; line-height:1.25; margin:0 0 18px 0;">
+                ${escapeHtml(post.title || 'Journal Entry')}
+              </h1>
+
+              <div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div style="width:46px; height:46px; border-radius:50%; overflow:hidden; border:1.5px solid var(--gold-border); background:#14110e; flex-shrink:0;">
+                  ${avatarImg ? `<img src="${avatarImg}" alt="${profile.name}" style="width:100%; height:100%; object-fit:cover;">` : (isDomme ? '👑' : '🩷')}
+                </div>
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <a href="../../" style="font-family:var(--font-heading); font-size:16px; font-weight:800; color:var(--gold-bright); text-decoration:none;">
+                      ${escapeHtml(profile.name)}
+                    </a>
+                    <span class="role-badge">${roleLabel}</span>
+                  </div>
+                  <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--gold-muted);">
+                    @${escapeHtml(profile.sl_username || profile.id)} &bull; ${escapeHtml(profile.location || 'Control & Chaos')}
+                  </div>
+                </div>
+              </div>
+
+              ${post.media_url ? `
+                <img src="${escapeHtml(post.media_url)}" alt="${escapeHtml(post.title)}" style="width:100%; max-height:480px; border-radius:14px; object-fit:cover; border:1px solid var(--gold-border-subtle); margin:20px 0; display:block;">
+              ` : ''}
+
+              <div style="font-size: 16px; line-height: 1.8; color: #e2e8f0; margin: 24px 0 32px; white-space: pre-line;">
+                ${escapeHtml(post.content || '')}
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:12px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <button type="button" class="btn btn-secondary btn-sm" id="dyn-like-btn" onclick="toggleDynArticleLike('${uKey}', ${post.likes || 0})">
+                    <span id="dyn-like-heart">${hasLiked ? '❤️' : '🤍'}</span>
+                    <span id="dyn-like-count">${likeCount} Likes</span>
+                  </button>
+
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard?.writeText(window.location.href); alert('🔗 Article link copied to clipboard!');">
+                    <span>🔗</span> Share Article
+                  </button>
+                </div>
+
+                <a href="../../?tab=blog" class="btn btn-secondary btn-sm">
+                  <span>←</span> All ${escapeHtml(profile.name)}'s Posts
+                </a>
+              </div>
+            </article>
+
+            ${morePostsHtml ? `
+              <div style="margin-top: 30px;">
+                <h3 style="font-family:var(--font-heading); font-size:18px; color:var(--gold-bright); margin-bottom:14px;">
+                  More from ${escapeHtml(profile.name)}
+                </h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px;">
+                  ${morePostsHtml}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Right Column: Sticky Creator Profile & Booking Card -->
+          <div>
+            <aside style="position: sticky; top: 100px; background: linear-gradient(165deg, #181512 0%, #100e0c 100%); border: 1px solid var(--gold-border); border-radius: 18px; padding: 28px 24px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);">
+              <div style="text-align:center; margin-bottom:18px;">
+                <div style="width:84px; height:84px; border-radius:50%; overflow:hidden; border:2px solid var(--gold-bright); margin:0 auto 12px; box-shadow:0 0 20px rgba(212,175,55,0.35);">
+                  ${avatarImg ? `<img src="${avatarImg}" alt="${profile.name}" style="width:100%; height:100%; object-fit:cover;">` : (isDomme ? '👑' : '🩷')}
+                </div>
+                <h2 style="font-family:var(--font-heading); font-size:20px; font-weight:800; color:#fff; margin:0 0 4px 0;">
+                  ${escapeHtml(profile.name)}
+                </h2>
+                <div style="font-size:12px; color:var(--gold-muted); margin-bottom:8px;">
+                  ${escapeHtml(roleTitle)}
+                </div>
+                <div style="display:inline-block; background:rgba(212,175,55,0.12); border:1px solid var(--gold-border); color:var(--gold-bright); font-family:var(--font-heading); font-weight:800; font-size:13px; padding:4px 12px; border-radius:20px;">
+                  ⚡ Starting at ${escapeHtml(startingRate)}
+                </div>
+              </div>
+
+              ${profile.tagline ? `
+                <p style="font-size:12.5px; color:#cbd5e1; line-height:1.55; text-align:center; margin-bottom:18px; font-style:italic;">
+                  "${escapeHtml(profile.tagline)}"
+                </p>
+              ` : ''}
+
+              ${hardwareBadges ? `
+                <div style="margin-bottom:18px; text-align:center; display:flex; flex-wrap:wrap; justify-content:center; gap:6px;">
+                  ${hardwareBadges}
+                </div>
+              ` : ''}
+
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <a href="../../#profile-tabs-nav" class="btn btn-gold" style="width:100%; box-sizing:border-box; justify-content:center;">
+                  <span>📋</span> View Full Rate Card &amp; Menus
+                </a>
+                <a href="../../?tab=ratecard#booking-calc" class="btn btn-secondary" style="width:100%; box-sizing:border-box; justify-content:center;">
+                  <span>✉️</span> Submit Booking Enquiry
+                </a>
+                <a href="${escapeHtml(profile.slurl || 'secondlife://Chaos%20Manor/128/142/23')}" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%; box-sizing:border-box; justify-content:center;">
+                  <span>📍</span> Teleport In-World (SL) ↗
+                </a>
+              </div>
+            </aside>
+          </div>
+        </div>
+      `;
+
+      window.toggleDynArticleLike = function(key, base) {
+        const cur = localStorage.getItem('cc_blog_liked_' + key) === '1';
+        localStorage.setItem('cc_blog_liked_' + key, cur ? '0' : '1');
+        const heart = document.getElementById('dyn-like-heart');
+        const count = document.getElementById('dyn-like-count');
+        if (heart) heart.textContent = !cur ? '❤️' : '🤍';
+        if (count) count.textContent = (base + (!cur ? 1 : 0)) + ' Likes';
+      };
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeLightbox();
     });
@@ -923,14 +1097,25 @@ function openLightbox(imgSrc, title, category) {
       // Determine slug from folder name (e.g. /profile/alek-zane/) or query param (?id=alek-zane)
       const pathSegments = window.location.pathname.split('/').filter(Boolean);
       let profileId = '';
-      
-      const lastSeg = pathSegments[pathSegments.length - 1] || '';
-      const prevSeg = pathSegments[pathSegments.length - 2] || '';
-      
-      if (lastSeg && lastSeg !== 'index.html' && lastSeg !== 'profile' && lastSeg !== '_template' && lastSeg !== 'directory' && lastSeg !== 'profile.html') {
-        profileId = lastSeg;
-      } else if (prevSeg && prevSeg !== 'profile' && prevSeg !== '_template' && prevSeg !== 'directory') {
-        profileId = prevSeg;
+      let isBlogPostRoute = false;
+      let postSlug = '';
+
+      const profIdx = pathSegments.indexOf('profile');
+      if (profIdx !== -1 && pathSegments[profIdx + 1]) {
+        profileId = pathSegments[profIdx + 1];
+        if (pathSegments[profIdx + 2] === 'blog' && pathSegments[profIdx + 3]) {
+          isBlogPostRoute = true;
+          postSlug = pathSegments[profIdx + 3];
+        }
+      } else {
+        const lastSeg = pathSegments[pathSegments.length - 1] || '';
+        const prevSeg = pathSegments[pathSegments.length - 2] || '';
+        
+        if (lastSeg && lastSeg !== 'index.html' && lastSeg !== 'profile' && lastSeg !== '_template' && lastSeg !== 'directory' && lastSeg !== 'profile.html') {
+          profileId = lastSeg;
+        } else if (prevSeg && prevSeg !== 'profile' && prevSeg !== '_template' && prevSeg !== 'directory') {
+          profileId = prevSeg;
+        }
       }
 
       if (!profileId || profileId === 'profile' || profileId === '_template' || profileId === 'directory') {
@@ -956,6 +1141,7 @@ function openLightbox(imgSrc, title, category) {
       const candidateUrls = [
         `/directory/profiles/${profileId}.json?v=${Date.now()}`,
         `../../directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `../../../directory/profiles/${profileId}.json?v=${Date.now()}`,
         `../directory/profiles/${profileId}.json?v=${Date.now()}`,
         `directory/profiles/${profileId}.json?v=${Date.now()}`,
         `/directory/profiles.json?v=${Date.now()}`
@@ -999,6 +1185,22 @@ function openLightbox(imgSrc, title, category) {
 
       if (!profileData) return;
       window.currentProfile = profileData;
+
+      // Handle direct blog post URL route (/profile/:id/blog/:postSlug/)
+      if (isBlogPostRoute && postSlug) {
+        const blogList = profileData.blog_posts || profileData.blog || [];
+        const cleanSlug = postSlug.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const matchedPost = blogList.find(p => {
+          const s = (p.slug || (p.title ? p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : '')).toLowerCase();
+          const id = String(p.id || '').toLowerCase();
+          return s === cleanSlug || id === cleanSlug || cleanSlug.includes(s) || s.includes(cleanSlug);
+        });
+
+        if (matchedPost) {
+          renderDynamicArticleView(profileData, matchedPost, blogList);
+          return;
+        }
+      }
 
       const liveResponse = await fetch(`/.netlify/functions/update-profile?v=${Date.now()}`, { cache: 'no-store' }).catch(() => null);
       const liveData = liveResponse && liveResponse.ok ? await liveResponse.json().catch(() => null) : null;
