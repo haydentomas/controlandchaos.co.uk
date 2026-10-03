@@ -494,6 +494,67 @@
       box-shadow: 0 0 12px rgba(212,175,55,0.3) !important;
     }
 
+    /* Studio Modal Popup Styles */
+    .editor-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(8, 6, 12, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 999999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    .editor-modal-backdrop.open {
+      display: flex !important;
+      animation: modalFadeIn 0.2s ease-out forwards;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .editor-modal-box {
+      background: linear-gradient(165deg, #181520 0%, #100e16 100%);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(212, 175, 55, 0.15);
+      width: 100%;
+      max-width: 620px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px 30px;
+      position: relative;
+      margin: auto;
+      box-sizing: border-box;
+      animation: modalBoxPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes modalBoxPop {
+      from { transform: scale(0.94) translateY(10px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .editor-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
   </style>
 </head>
 
@@ -1463,6 +1524,8 @@
         </button>
       </div>
     </div>
+  </div>
+
   <!-- Blog Post Composer Modal Popup -->
   <div id="blog-post-modal" class="editor-modal-backdrop" onclick="if(event.target===this) closeBlogPostModal()">
     <div class="editor-modal-box">
@@ -1543,6 +1606,13 @@
       btn.classList.toggle('active');
       if (typeof updatePreview === 'function') updatePreview();
     }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (typeof closePostModal === 'function') closePostModal();
+        if (typeof closeBlogPostModal === 'function') closeBlogPostModal();
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', async () => {
       const params = new URLSearchParams(window.location.search);
