@@ -304,65 +304,62 @@
           return;
         }
 
+        filtered.sort((a, b) => {
+          if (b.is_vip && !a.is_vip) return 1;
+          if (!b.is_vip && a.is_vip) return -1;
+          return 0;
+        });
+
         filtered.forEach(p => {
           const card = document.createElement('div');
-          card.className = 'dom-rate-card';
+          card.className = `dom-rate-card ${p.is_vip ? 'vip-card' : ''}`;
 
           const isDomme = (p.role_type === 'domme' || p.role_type === 'DOMINANT' || p.role_type === 'dom');
-          const coverImg = p.banner_image || p.cover_image || (p.gallery && p.gallery.find(g => g.image && !g.is_locked)?.image) || (p.gallery && p.gallery[0]?.image) || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80';
           const avatarImg = p.avatar_image || p.avatar || p.seo_image || (p.gallery && p.gallery.find(g => g.image)?.image) || '';
           const profileSlug = p.slug || String(p.name || p.id || 'profile').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
           card.innerHTML = `
-            <!-- Luxury Cover Banner -->
-            <div class="dom-card-cover" style="background-image: url('${coverImg}');">
-              <div class="dom-card-cover-overlay"></div>
-              <div class="dom-card-top-badges">
-                ${p.is_vip ? '<span class="tag-gold-vip">👑 VIP</span>' : ''}
-                <span class="${isDomme ? 'dom-role-badge' : 'sub-role-badge'}">
-                  ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
+            <div>
+              <!-- Top Row: Circular Avatar + Name/Handle/Status + Role/VIP Badge -->
+              <div class="flex-between align-start mb-16">
+                <div class="flex-row gap-14 align-start">
+                  <div class="avatar-photo-circle ${p.is_vip ? 'avatar-vip' : ''}">
+                    ${avatarImg ? `<img src="${avatarImg}" alt="${p.name}" class="avatar-photo-img" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'avatar-icon-fallback\\'>${isDomme ? '👑' : '🩷'}</span>';">` : `<span class="avatar-icon-fallback">${isDomme ? '👑' : '🩷'}</span>`}
+                  </div>
+                  <div>
+                    <h3 class="dom-name font-md m-0" style="font-size: 1.15rem; font-weight: 800;">${p.name}</h3>
+                    <div class="font-mono font-xs text-gold">@${p.sl_username}</div>
+                    <div style="margin-top: 4px;">
+                      ${getStatusBadgeHtml(p.status)}
+                    </div>
+                  </div>
+                </div>
+                <span class="${p.is_vip ? 'tag-vip-badge' : (isDomme ? 'dom-role-badge' : 'sub-role-badge')}">
+                  ${p.is_vip ? '👑 VIP ' : ''}${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
                 </span>
+              </div>
+
+              <div class="font-xs text-gold font-bold mb-10">
+                ${p.role || (isDomme ? 'Dominant' : 'Submissive')}
+              </div>
+
+              <p class="dom-quote">
+                "${p.tagline}"
+              </p>
+
+              <div class="flex-row flex-wrap gap-8 mb-20">
+                ${(p.tags || []).slice(0, 3).map(t => `<span class="tag-pill-badge">${t}</span>`).join('')}
               </div>
             </div>
 
-            <!-- Card Body with Overlapping Avatar -->
-            <div class="dom-card-body">
+            <div class="dom-rate-footer">
               <div>
-                <div class="dom-avatar-wrapper">
-                  <div class="dom-avatar-ring">
-                    ${avatarImg ? `<img src="${avatarImg}" alt="${p.name}" class="dom-avatar-img" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'dom-avatar-placeholder\\'>${isDomme ? '👑' : '🩷'}</div>';">` : `<div class="dom-avatar-placeholder">${isDomme ? '👑' : '🩷'}</div>`}
-                  </div>
-                  <div class="dom-status-wrap">
-                    ${getStatusBadgeHtml(p.status)}
-                  </div>
-                </div>
-
-                <div class="mb-12">
-                  <h3 class="dom-name font-md m-0" style="font-size: 1.25rem;">${p.name}</h3>
-                  <div class="font-mono font-xs text-gold">@${p.sl_username}</div>
-                  <div class="font-xs text-gold font-bold mt-4">
-                    ${p.role || (isDomme ? 'Dominant' : 'Submissive')}
-                  </div>
-                </div>
-
-                <p class="dom-quote">
-                  "${p.tagline}"
-                </p>
-
-                <div class="flex-row flex-wrap gap-6 mb-20">
-                  ${(p.tags || []).slice(0, 3).map(t => `<span class="tag-pill-badge">${t}</span>`).join('')}
-                </div>
+                <span class="font-2xs text-muted block">Rates From:</span>
+                <span class="dom-rate-price">${p.starting_rate || 'From L$2,000 / hr'}</span>
               </div>
-
-              <div class="dom-rate-footer">
-                <div>
-                  <span class="font-2xs text-muted block">Rates From:</span>
-                  <span class="dom-rate-price">${p.starting_rate || 'From L$2,000 / hr'}</span>
-                </div>
-                <a href="/profile/${profileSlug}/" class="dom-rate-pill">
-                  RATE CARD &rarr;
-                </a>
-              </div>
+              <a href="/profile/${profileSlug}/" class="dom-rate-pill">
+                RATE CARD &rarr;
+              </a>
             </div>
           `;
 
