@@ -26,6 +26,44 @@ function slugifyProfileName(name) {
   return String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+function calculateLowestRateFromProfile(profile) {
+  if (profile.starting_rate && String(profile.starting_rate).trim()) {
+    return profile.starting_rate;
+  }
+  const categories = profile.rate_categories || profile.services_data || profile.menu_categories || [];
+  let lowestNum = Infinity;
+  let lowestUnit = '';
+  if (Array.isArray(categories)) {
+    for (const cat of categories) {
+      const services = cat.services || [];
+      if (Array.isArray(services)) {
+        for (const s of services) {
+          if (!s || !s.price) continue;
+          const num = parseInt(String(s.price).replace(/[^0-9]/g, ''), 10);
+          if (!isNaN(num) && num > 0 && num < lowestNum) {
+            lowestNum = num;
+            lowestUnit = (s.unit || '').trim();
+          }
+        }
+      }
+    }
+  }
+  if (lowestNum !== Infinity) {
+    let unitStr = lowestUnit;
+    if (unitStr) {
+      if (unitStr.toLowerCase().startsWith('per ')) {
+        unitStr = '/ ' + unitStr.substring(4);
+      } else if (!unitStr.startsWith('/')) {
+        unitStr = '/ ' + unitStr;
+      }
+    } else {
+      unitStr = '/ hr';
+    }
+    return `L$${lowestNum.toLocaleString('en-US')} ${unitStr}`;
+  }
+  return 'From L$2,000 / hr';
+}
+
 function buildProfiles() {
   console.log('👑 Generating static profile SEO pages & syncing profiles.json...');
 
@@ -61,6 +99,10 @@ function buildProfiles() {
     }
     usedSlugs.add(id);
     profile.slug = id;
+
+    if (!profile.starting_rate || !String(profile.starting_rate).trim()) {
+      profile.starting_rate = calculateLowestRateFromProfile(profile);
+    }
   }
 
   // Sync combined directory/profiles.json, including generated public slugs.

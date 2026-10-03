@@ -314,6 +314,44 @@
           const badgeText = isVip ? `[VIP] ${roleLabel}` : roleLabel;
           const avatarImg = p.avatar_image || p.avatar || p.seo_image || (p.gallery && p.gallery.find(g => g.image)?.image) || '';
 
+          function getEffectiveStartingRate(item) {
+            if (item.starting_rate && item.starting_rate.trim()) {
+              return item.starting_rate;
+            }
+            const categories = item.rate_categories || item.services_data || item.menu_categories || [];
+            let lowestNum = Infinity;
+            let lowestUnit = '';
+            if (Array.isArray(categories)) {
+              for (const cat of categories) {
+                const services = cat.services || [];
+                if (Array.isArray(services)) {
+                  for (const s of services) {
+                    if (!s || !s.price) continue;
+                    const num = parseInt(String(s.price).replace(/[^0-9]/g, ''), 10);
+                    if (!isNaN(num) && num > 0 && num < lowestNum) {
+                      lowestNum = num;
+                      lowestUnit = (s.unit || '').trim();
+                    }
+                  }
+                }
+              }
+            }
+            if (lowestNum !== Infinity) {
+              let unitStr = lowestUnit;
+              if (unitStr) {
+                if (unitStr.toLowerCase().startsWith('per ')) {
+                  unitStr = '/ ' + unitStr.substring(4);
+                } else if (!unitStr.startsWith('/')) {
+                  unitStr = '/ ' + unitStr;
+                }
+              } else {
+                unitStr = '/ hr';
+              }
+              return `L$${lowestNum.toLocaleString('en-US')} ${unitStr}`;
+            }
+            return 'From L$2,000 / hr';
+          }
+
           card.innerHTML = `
             <div>
               <div class="flex-row gap-16 align-center mb-16">
@@ -350,7 +388,7 @@
             <div class="dom-rate-footer">
               <div>
                 <span class="font-2xs text-muted block">Rates From:</span>
-                <span class="dom-rate-price">${p.starting_rate || 'From L$2,000 / hr'}</span>
+                <span class="dom-rate-price">${getEffectiveStartingRate(p)}</span>
               </div>
               <a href="/profile/${p.slug || String(p.name || p.id || 'profile').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}/" class="dom-rate-pill">
                 RATE CARD &rarr;

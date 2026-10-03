@@ -809,8 +809,14 @@
 
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label class="form-label" for="edit-rate">Starting Rate</label>
-                  <input type="text" id="edit-rate" class="form-input" placeholder="L$3,000 / hr">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label class="form-label" style="margin-bottom: 0;" for="edit-rate">Starting Rate</label>
+                    <button type="button" class="btn-add-repeater" style="padding: 2px 8px; font-size: 11px;" onclick="autoDetectLowestRate()" title="Scan Rate Cards &amp; Menus and set lowest rate">⚡ Auto-Detect</button>
+                  </div>
+                  <input type="text" id="edit-rate" class="form-input" placeholder="Auto-calculated from menu if empty (e.g. L$3,000 / hr)" oninput="updateStartingRateHint()">
+                  <div class="form-hint" id="starting-rate-hint" style="font-size: 11px; color: var(--gold-muted); margin-top: 4px;">
+                    ⚡ Auto-calculated from lowest service in Rate Cards &amp; Menus if left blank.
+                  </div>
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="edit-location">Location on Sim</label>
@@ -1770,7 +1776,7 @@
       document.getElementById('edit-throne-url').value = p.throne_url || '';
 
       // Populate Arrays
-      rateCategories = p.rate_categories || [];
+      rateCategories = p.rate_categories || p.services_data || p.menu_categories || [];
       galleryItems = p.gallery || [];
       hardwareItems = p.hardware_compat || [];
       hardLimitsList = (p.hard_limits || []).map(l => typeof l === 'object' ? l.limit : l);
@@ -1812,10 +1818,71 @@
 
       renderAllRepeaters();
       attachInputListeners();
+      updateStartingRateHint();
       updatePreview();
     }
 
     /* ================= REPEATERS RENDERING ================= */
+
+    function calculateLowestRateFromMenu() {
+      let lowestNum = Infinity;
+      let lowestUnit = '';
+      if (Array.isArray(rateCategories)) {
+        for (const cat of rateCategories) {
+          const services = cat.services || [];
+          if (Array.isArray(services)) {
+            for (const s of services) {
+              if (!s || !s.price) continue;
+              const num = parseInt(String(s.price).replace(/[^0-9]/g, ''), 10);
+              if (!isNaN(num) && num > 0 && num < lowestNum) {
+                lowestNum = num;
+                lowestUnit = (s.unit || '').trim();
+              }
+            }
+          }
+        }
+      }
+      if (lowestNum !== Infinity) {
+        let unitStr = lowestUnit;
+        if (unitStr) {
+          if (unitStr.toLowerCase().startsWith('per ')) {
+            unitStr = '/ ' + unitStr.substring(4);
+          } else if (!unitStr.startsWith('/')) {
+            unitStr = '/ ' + unitStr;
+          }
+        } else {
+          unitStr = '/ hr';
+        }
+        return `L$${lowestNum.toLocaleString('en-US')} ${unitStr}`;
+      }
+      return '';
+    }
+
+    function updateStartingRateHint() {
+      const hint = document.getElementById('starting-rate-hint');
+      const rateInput = document.getElementById('edit-rate');
+      if (!hint) return;
+      const detected = calculateLowestRateFromMenu();
+      if (rateInput && rateInput.value.trim()) {
+        hint.innerHTML = `Custom override active. <span style="color:var(--text-muted);">(Lowest detected from menu: ${detected || 'None'})</span>`;
+      } else {
+        hint.innerHTML = detected 
+          ? `⚡ Auto-calculated from menu: <strong style="color:var(--gold-bright);">${detected}</strong> (Will display automatically)`
+          : `⚡ Leave empty to auto-calculate from lowest service in Rate Cards &amp; Menus.`;
+      }
+    }
+
+    function autoDetectLowestRate() {
+      const detected = calculateLowestRateFromMenu();
+      const rateInput = document.getElementById('edit-rate');
+      if (detected && rateInput) {
+        rateInput.value = detected;
+        updateStartingRateHint();
+        updatePreview();
+      } else {
+        alert("Please add services with prices under 'Rate Cards & Menus' first.");
+      }
+    }
 
     function renderAllRepeaters() {
       renderRateCategories();
@@ -1834,6 +1901,7 @@
       const container = document.getElementById('categories-builder-container');
       if (!rateCategories.length) {
         container.innerHTML = '<p class="font-xs text-muted">No rate categories added yet. Click "+ Add Rate Category" to begin.</p>';
+        updateStartingRateHint();
         return;
       }
       container.innerHTML = rateCategories.map((cat, catIdx) => `
@@ -1869,8 +1937,8 @@
                     <div>
                       <label class="form-label font-2xs">Price & Unit</label>
                       <div class="flex-row gap-6">
-                        <input type="text" class="form-input font-xs" value="${escapeHtml(srv.price || '')}" placeholder="L$3,000" oninput="rateCategories[${catIdx}].services[${srvIdx}].price = this.value; updatePreview();">
-                        <input type="text" class="form-input font-xs" value="${escapeHtml(srv.unit || '')}" placeholder="per hour" oninput="rateCategories[${catIdx}].services[${srvIdx}].unit = this.value; updatePreview();">
+                        <input type="text" class="form-input font-xs" value="${escapeHtml(srv.price || '')}" placeholder="L$3,000" oninput="rateCategories[${catIdx}].services[${srvIdx}].price = this.value; updateStartingRateHint(); updatePreview();">
+                        <input type="text" class="form-input font-xs" value="${escapeHtml(srv.unit || '')}" placeholder="per hour" oninput="rateCategories[${catIdx}].services[${srvIdx}].unit = this.value; updateStartingRateHint(); updatePreview();">
                       </div>
                     </div>
                   </div>
@@ -1884,6 +1952,7 @@
           </div>
         </div>
       `).join('');
+      updateStartingRateHint();
     }
 
     function addRateCategory() {
@@ -1893,12 +1962,14 @@
         services: [{ name: "Standard Session", price: "L$2,500", unit: "per hour", desc: "Private tailored experience." }]
       });
       renderRateCategories();
+      updateStartingRateHint();
       updatePreview();
     }
 
     function removeRateCategory(idx) {
       rateCategories.splice(idx, 1);
       renderRateCategories();
+      updateStartingRateHint();
       updatePreview();
     }
 
@@ -1906,12 +1977,14 @@
       if (!rateCategories[catIdx].services) rateCategories[catIdx].services = [];
       rateCategories[catIdx].services.push({ name: "Custom Service", price: "L$2,500", unit: "per hour", desc: "Details here..." });
       renderRateCategories();
+      updateStartingRateHint();
       updatePreview();
     }
 
     function removeServiceFromCat(catIdx, srvIdx) {
       rateCategories[catIdx].services.splice(srvIdx, 1);
       renderRateCategories();
+      updateStartingRateHint();
       updatePreview();
     }
 
