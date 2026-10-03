@@ -2,15 +2,18 @@ import { getStore } from "@netlify/blobs";
 
 export default async function handler(request, context) {
   const url = new URL(request.url);
-  const path = url.pathname; // e.g. /profile/alek-zane/
+  const path = url.pathname; // e.g. /profile/alek-zane/ or /profile/alek-zane/blog/yeah-ok-rude-boy/
   
-  // Extract profile slug
-  const match = path.match(/^\/profile\/([a-zA-Z0-9_.-]+)/);
-  if (!match) {
+  // Extract profile slug and optional blog post slug
+  const blogMatch = path.match(/^\/profile\/([a-zA-Z0-9_.-]+)\/blog\/([a-zA-Z0-9_.-]+)/i);
+  const profileMatch = path.match(/^\/profile\/([a-zA-Z0-9_.-]+)/i);
+  if (!profileMatch) {
     return context.next();
   }
 
-  const profileId = match[1].toLowerCase();
+  const profileId = profileMatch[1].toLowerCase();
+  const postSlug = blogMatch ? blogMatch[2].toLowerCase() : null;
+
   if (profileId === '_template' || profileId === 'index.html') {
     return context.next();
   }
@@ -72,10 +75,43 @@ export default async function handler(request, context) {
 
     let text = await response.text();
 
-    const finalTitle = customProfile.seo_title || `${customProfile.name || profileId} — Luxury Rate Card & Services | Control & Chaos`;
-    const finalDesc = customProfile.seo_description || customProfile.tagline || (customProfile.about ? customProfile.about.substring(0, 160).replace(/(\r\n|\n|\r)/gm, " ") + '...' : `Verified Second Life companion and escort rate card for ${customProfile.name || profileId}. View interactive booking quotes, Lovense toy syncing, and direct IM.`);
+    let finalTitle = '';
+    let finalDesc = '';
+    let finalImg = '';
+    let pageUrl = `https://controlandchaos.co.uk/profile/${profileId}/`;
+    let ogType = 'profile';
+
+    // If requesting an individual blog article
+    if (postSlug) {
+      const blogList = customProfile.blog_posts || customProfile.blog || [];
+      const cleanPostSlug = postSlug.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      const matchedPost = blogList.find(p => {
+        const s = (p.slug || (p.title ? slugifyProfileName(p.title) : '')).toLowerCase();
+        const id = String(p.id || '').toLowerCase();
+        return s === cleanPostSlug || id === cleanPostSlug || (cleanPostSlug && s && cleanPostSlug.includes(s)) || (cleanPostSlug && s && s.includes(cleanPostSlug));
+      });
+
+      if (matchedPost) {
+        ogType = 'article';
+        pageUrl = `https://controlandchaos.co.uk/profile/${profileId}/blog/${matchedPost.slug || cleanPostSlug}/`;
+        
+        finalTitle = matchedPost.seo_title || `${matchedPost.title || 'Journal Entry'} — ${customProfile.name || profileId}'s Blog | Control & Chaos`;
+        
+        const plainSnippet = matchedPost.content ? stripMarkdown(matchedPost.content) : '';
+        const defaultPostDesc = plainSnippet ? (plainSnippet.substring(0, 157) + (plainSnippet.length > 157 ? '...' : '')) : `Read this free public journal update from ${customProfile.name || profileId} on Control & Chaos.`;
+        finalDesc = matchedPost.seo_description || defaultPostDesc;
+
+        finalImg = matchedPost.seo_image || matchedPost.media_url || customProfile.seo_image || customProfile.banner_image || customProfile.avatar_image || '';
+      }
+    }
+
+    // Default Profile Rate Card SEO fallback
+    if (!finalTitle) {
+      finalTitle = customProfile.seo_title || `${customProfile.name || profileId} — Luxury Rate Card & Services | Control & Chaos`;
+      finalDesc = customProfile.seo_description || customProfile.tagline || (customProfile.about ? customProfile.about.substring(0, 160).replace(/(\r\n|\n|\r)/gm, " ") + '...' : `Verified Second Life companion and escort rate card for ${customProfile.name || profileId}. View interactive booking quotes, Lovense toy syncing, and direct IM.`);
+      finalImg = customProfile.seo_image || customProfile.banner_image || customProfile.avatar_image || '';
+    }
     
-    let finalImg = customProfile.seo_image || customProfile.banner_image || customProfile.avatar_image || '';
     if (finalImg && !finalImg.startsWith('http') && !finalImg.startsWith('//')) {
       finalImg = `https://controlandchaos.co.uk${finalImg.startsWith('/') ? '' : '/'}${finalImg}`;
     }
@@ -86,11 +122,14 @@ export default async function handler(request, context) {
     // Replace Title
     text = text.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title id="page-title">${escapeHtml(finalTitle)}</title>`);
     text = text.replace(/<meta name="description"[^>]*content="[^"]*"/i, `<meta name="description" id="meta-description" content="${escapeHtml(finalDesc)}"`);
+    text = text.replace(/<link rel="canonical"[^>]*href="[^"]*"/i, `<link rel="canonical" id="meta-canonical" href="${pageUrl}">`);
     
     // Replace OpenGraph Meta Tags (Discord, Facebook, LinkedIn, iMessage)
     text = text.replace(/<meta property="og:title"[^>]*content="[^"]*"/i, `<meta property="og:title" id="og-title" content="${escapeHtml(finalTitle)}"`);
     text = text.replace(/<meta property="og:description"[^>]*content="[^"]*"/i, `<meta property="og:description" id="og-desc" content="${escapeHtml(finalDesc)}"`);
     text = text.replace(/<meta property="og:image"[^>]*content="[^"]*"/i, `<meta property="og:image" id="og-image" content="${escapeHtml(finalImg)}"`);
+    text = text.replace(/<meta property="og:url"[^>]*content="[^"]*"/i, `<meta property="og:url" id="og-url" content="${pageUrl}"`);
+    text = text.replace(/<meta property="og:type"[^>]*content="[^"]*"/i, `<meta property="og:type" content="${ogType}"`);
     
     // Replace Twitter Meta Tags
     text = text.replace(/<meta name="twitter:title"[^>]*content="[^"]*"/i, `<meta name="twitter:title" id="twitter-title" content="${escapeHtml(finalTitle)}"`);
@@ -104,6 +143,23 @@ export default async function handler(request, context) {
   } catch (err) {
     return response;
   }
+}
+
+function stripMarkdown(md) {
+  if (!md) return '';
+  return String(md)
+    .replace(/#+\s+/g, '')
+    .replace(/(\*\*|__)(.*?)\1/g, '$2')
+    .replace(/(\*|_)(.*?)\1/g, '$2')
+    .replace(/~~(.*?)~~/g, '$1')
+    .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
+    .replace(/`{1,3}(.*?)`{1,3}/g, '$1')
+    .replace(/^>\s+/gm, '')
+    .replace(/^[-*+]\s+/gm, '')
+    .replace(/^\d+\.\s+/gm, '')
+    .replace(/\r\n|\n|\r/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function escapeHtml(str) {
