@@ -2409,12 +2409,14 @@ function openLightbox(imgSrc, title, category) {
         const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
 
         blogStream.innerHTML = blogPosts.map((post, pIdx) => {
-          const uKey = (profileData.avatar_uuid || profileData.id || '') + '_' + (post.id || pIdx);
+          const postSlug = post.slug || (post.title ? post.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : `entry-${pIdx + 1}`);
+          const uKey = (profileData.avatar_uuid || profileData.id || '') + '_' + (post.id || postSlug || pIdx);
           const hasLiked = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
           const likeCount = (post.likes || 0) + (hasLiked ? 1 : 0);
+          const articleUrl = `./blog/${postSlug}/`;
 
           return `
-            <article class="feed-post-card" style="background: linear-gradient(165deg, #181512 0%, #100e0c 100%); border: 1px solid var(--gold-border-subtle); border-radius: 16px; padding: 26px 28px; margin-bottom: 24px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);">
+            <article id="post-${postSlug}" class="feed-post-card" style="background: linear-gradient(165deg, #181512 0%, #100e0c 100%); border: 1px solid var(--gold-border-subtle); border-radius: 16px; padding: 26px 28px; margin-bottom: 24px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); transition: box-shadow 0.4s ease;">
               
               <!-- Post Author & Tag Header -->
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
@@ -2440,9 +2442,11 @@ function openLightbox(imgSrc, title, category) {
                 </div>
               </div>
 
-              <!-- Post Title -->
-              <h3 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: #fff; margin: 0 0 12px 0; line-height: 1.3;">
-                ${escapeHtml(post.title || 'Journal Entry')}
+              <!-- Post Title (Clickable to dedicated article page) -->
+              <h3 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; margin: 0 0 12px 0; line-height: 1.3;">
+                <a href="${articleUrl}" style="color: #fff; text-decoration: none; transition: color 0.2s ease;" onmouseover="this.style.color='var(--gold-bright)'" onmouseout="this.style.color='#fff'">
+                  ${escapeHtml(post.title || 'Journal Entry')}
+                </a>
               </h3>
 
               <!-- Post Body -->
@@ -2458,15 +2462,21 @@ function openLightbox(imgSrc, title, category) {
               ` : ''}
 
               <!-- Post Action Footer -->
-              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; margin-top: 10px;">
-                <button type="button" class="btn btn-secondary btn-sm" onclick="toggleBlogLike('${uKey}', ${pIdx})" id="blog-like-btn-${pIdx}" style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
-                  <span>${hasLiked ? '❤️' : '🤍'}</span>
-                  <span id="blog-like-count-${pIdx}">${likeCount} Likes</span>
-                </button>
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; margin-top: 10px; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="toggleBlogLike('${uKey}', ${pIdx})" id="blog-like-btn-${pIdx}" style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+                    <span>${hasLiked ? '❤️' : '🤍'}</span>
+                    <span id="blog-like-count-${pIdx}">${likeCount} Likes</span>
+                  </button>
 
-                <button type="button" class="btn btn-secondary btn-sm" onclick="shareBlogPost('${escapeHtml(post.title)}')" style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
-                  <span>🔗</span> Share Link
-                </button>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="shareBlogPost('${profileData.slug || profileData.id}', '${postSlug}', '${escapeHtml(post.title)}')" style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+                    <span>🔗</span> Share Link
+                  </button>
+                </div>
+
+                <a href="${articleUrl}" class="btn btn-secondary btn-sm" style="font-size: 11.5px; padding: 5px 12px;">
+                  <span>📖</span> Read Full Article ↗
+                </a>
               </div>
 
             </article>
@@ -2480,14 +2490,15 @@ function openLightbox(imgSrc, title, category) {
         renderBlog();
       };
 
-      window.shareBlogPost = function(title) {
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(window.location.href);
-          alert(`Copied link to: ${title}`);
+      window.shareBlogPost = function(pSlug, postSlug, title) {
+        const fullUrl = `https://controlandchaos.co.uk/profile/${pSlug}/blog/${postSlug}/`;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(fullUrl);
         }
+        alert(`🔗 Direct article link copied to clipboard:\n${fullUrl}`);
       };
 
-      // Profile tab initialization
+      // Profile tab initialization & Deep Linking
       const isVipCreator = profileData.is_vip === true || profileData.plan === 'vip';
       const feedTabBtn = document.getElementById('tab-btn-feed');
       const blogTabBtn = document.getElementById('tab-btn-blog');
@@ -2510,6 +2521,27 @@ function openLightbox(imgSrc, title, category) {
           blogBadge.textContent = blogCount;
           blogBadge.style.display = blogCount > 0 ? 'inline-block' : 'none';
         }
+      }
+
+      // Check URL parameters for tab routing (e.g. ?tab=blog or #post-...)
+      const urlParams = new URLSearchParams(window.location.search);
+      const reqTab = urlParams.get('tab');
+      const reqHash = window.location.hash;
+
+      if (reqTab === 'blog' || reqHash.startsWith('#post-') || reqHash === '#tab-blog') {
+        switchProfileTab('blog');
+        if (reqHash.startsWith('#post-')) {
+          setTimeout(() => {
+            const targetEl = document.querySelector(reqHash);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              targetEl.style.boxShadow = '0 0 25px rgba(212,175,55,0.6)';
+              setTimeout(() => { targetEl.style.boxShadow = ''; }, 2500);
+            }
+          }, 300);
+        }
+      } else if (reqTab === 'feed' || reqHash === '#tab-feed') {
+        switchProfileTab('feed');
       }
 
     });
