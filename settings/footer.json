@@ -24,7 +24,7 @@
       "title": "Community",
       "links": [
         { "label": "Sim Game Rules", "url": "/xp-system/#sim-rules", "new_tab": false },
-        { "label": "Get Listed", "url": "/directory/#get-listed", "new_tab": false },
+        { "label": "Get Listed", "url": "/directory/get-listed/", "new_tab": false },
         { "label": "Contact & Concierge", "url": "/contact/", "new_tab": false }
       ]
     }

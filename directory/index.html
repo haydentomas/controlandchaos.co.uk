@@ -57,6 +57,11 @@
       <p class="hero-description">
         Connect with elite Financial Dominants, high-society Second Life escorts, and devoted submissives. Explore transparent service menus, RLV capabilities, and verified sim reputation.
       </p>
+      <div style="margin-top: 24px; display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+        <a href="/directory/get-listed/" class="btn btn-gold btn-sm" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 8px 18px;">
+          <span>👑</span> For Creators: Get Listed &amp; Rates Card &rarr;
+        </a>
+      </div>
     </div>
   </header>
 
@@ -92,255 +97,28 @@
     </div>
   </section>
 
-  <!-- "Get Listed in Directory" Monetization / Submission Section -->
-  <section class="section section-surface-dark" id="get-listed">
+  <!-- Sleek Creator Enrollment Callout Banner -->
+  <section class="section" style="padding-top: 20px; padding-bottom: 70px;">
     <div class="container">
-      <div class="section-header">
-        <span class="section-tag">For Dominants &amp; Companions</span>
-        <h2 class="section-title">Get Your Profile &amp; Rate Card Listed</h2>
-        <p class="section-subtitle">
-          Promote your services directly to the Control &amp; Chaos community with a dedicated luxury profile card and on-sim tribute integration.
-        </p>
-      </div>
-
-      <!-- Unified Luxury Master Pricing & Comparison Matrix -->
-      <div style="max-width: 960px; margin: 0 auto;">
-        <div style="background: rgba(14, 12, 18, 0.95); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(212,175,55,0.12);">
-          <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem;">
-              <thead>
-                <!-- Top Main Tier Summary & Action Row -->
-                <tr style="background: rgba(22, 18, 28, 0.98); border-bottom: 2px solid rgba(212, 175, 55, 0.35);">
-                  <th style="padding: 28px 24px; color: #94a3b8; font-weight: 700; width: 44%; vertical-align: bottom;">
-                    <div style="font-size: 1.25rem; font-family: var(--font-heading); color: #fff; margin-bottom: 4px;">Choose Your Listing</div>
-                    <div style="font-size: 0.8rem; color: #94a3b8; font-weight: 400; line-height: 1.4;">Instant in-world activation via Lindens (L$). Cancel or upgrade anytime.</div>
-                  </th>
-                  
-                  <!-- Standard Column Header -->
-                  <th style="padding: 28px 20px 24px; text-align: center; color: #fff; width: 28%; vertical-align: top; background: rgba(255,255,255,0.01);">
-                    <div style="font-size: 24px; margin-bottom: 6px;">📄</div>
-                    <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-heading); color: #fff;">Standard</div>
-                    <div style="font-size: 1.5rem; font-weight: 900; color: #fff; margin: 6px 0 2px; font-family: var(--font-mono);">
-                      L$1,000 <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 400;">/ mo</span>
-                    </div>
-                    <div style="font-size: 0.76rem; color: #94a3b8; margin-bottom: 16px; font-weight: 400; min-height: 32px;">Searchable profile &amp; rate card menu</div>
-                    <button type="button" onclick="openKioskModal('Standard Listing', 'L$1,000 / month', 'Full searchable directory profile, custom service menu & rates card, and verified rank badge.')" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center; font-size: 0.82rem; padding: 9px 12px;">Get Standard &rarr;</button>
-                  </th>
-
-                  <!-- VIP Featured Column Header (Highlight) -->
-                  <th style="padding: 24px 20px 24px; text-align: center; color: #ffd700; width: 28%; vertical-align: top; background: linear-gradient(180deg, rgba(212, 175, 55, 0.16) 0%, rgba(26, 21, 14, 0.95) 100%); border-left: 1px solid rgba(212, 175, 55, 0.35); border-right: 1px solid rgba(212, 175, 55, 0.35); position: relative;">
-                    <div style="margin-bottom: 6px;">
-                      <span class="section-tag tag-gold font-2xs m-0" style="background: linear-gradient(135deg, #ffd700, #b8860b); color: #000; font-weight: 900; border: none; padding: 2px 8px; font-size: 0.68rem; letter-spacing: 0.05em;">👑 MOST POPULAR</span>
-                    </div>
-                    <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-heading); color: var(--gold-bright);">VIP Featured</div>
-                    <div style="font-size: 1.5rem; font-weight: 900; color: #ffd700; margin: 6px 0 2px; font-family: var(--font-mono);">
-                      L$2,500 <span style="font-size: 0.8rem; color: var(--gold-muted); font-weight: 400;">/ mo</span>
-                    </div>
-                    <div style="font-size: 0.76rem; color: #fef08a; margin-bottom: 16px; font-weight: 500; min-height: 32px;">Custom domain, exclusive feed &amp; fan passes</div>
-                    <button type="button" onclick="openKioskModal('VIP Featured Listing', 'L$2,500 / month', 'Top placement, VIP gold badge, exclusive feed lookbooks, and in-world subscriber pass monetization.')" class="btn btn-gold btn-sm" style="width: 100%; justify-content: center; font-weight: 800; font-size: 0.82rem; padding: 9px 12px; box-shadow: 0 0 15px rgba(212,175,55,0.3);">Get VIP Listing &rarr;</button>
-                  </th>
-                </tr>
-              </thead>
-              <tbody style="line-height: 1.5;">
-                <!-- Category: Visibility & Ranking -->
-                <tr style="background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06);">
-                  <td colspan="3" style="padding: 10px 20px; font-size: 0.75rem; font-weight: 800; color: var(--gold-bright); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono);">
-                    👑 Visibility &amp; Promotion
-                  </td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Directory Ranking Placement</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Where you appear when clients search companions</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #94a3b8;">Standard alphabetical</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #ffd700; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">⭐ Top of Directory Priority</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Verified Rank Badge</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Identity badge shown on your card &amp; rate card</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #cbd5e1;">Silver Verified</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #ffd700; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">👑 Gold Crown VIP Badge</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Homepage Showcase Spotlight</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Featured rotation on controlandchaos.co.uk main landing</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #64748b;">—</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">✓ Included</td>
-                </tr>
-
-                <!-- Category: Branding & White-Label -->
-                <tr style="background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06);">
-                  <td colspan="3" style="padding: 10px 20px; font-size: 0.75rem; font-weight: 800; color: var(--gold-bright); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono);">
-                    🌐 Custom Branding &amp; Domains
-                  </td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>White-Label Custom Vanity Domain</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Connect your own domain (e.g. <code>yourname.com</code>) with free automated SSL</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #64748b;">—</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #ffd700; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">🌐 Full Custom Domain Support</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Standalone Unbranded Mode (No C&amp;C Header/Footer)</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Hides global platform nav &amp; footer on custom domain for a 100% private standalone site</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #64748b;">—</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">✨ 100% Standalone Look</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Social Media 4K Sharing Cards (Discord/X)</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Custom OpenGraph embeds when sharing your link</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #cbd5e1;">Standard link</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">✨ Custom 4K Embeds</td>
-                </tr>
-
-                <!-- Category: Fan Monetization & Exclusives -->
-                <tr style="background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06);">
-                  <td colspan="3" style="padding: 10px 20px; font-size: 0.75rem; font-weight: 800; color: var(--gold-bright); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono);">
-                    💎 Fan Club &amp; Creator Monetization
-                  </td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>🔒 Subscriber-Only Locked Feed &amp; Lookbooks</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Frosted glass locked photo sets unlocked by subscribers</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #64748b;">—</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #ffd700; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">🔒 Full Feed Publisher</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>In-World Monthly Fan Pass Sales (Keep 100%)</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Charge fans recurring L$ monthly tribute to unlock your feed</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #64748b;">—</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">💎 100% In-World Revenue</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>🎙️ Voice Decrees &amp; Audio Player</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Embed voice notes, instructions, and audio decrees</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #64748b;">—</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">🎙️ Inline Player Included</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Anonymous Wishlists (Throne, Ko-fi, etc.)</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Direct 1-click gift and tribute links on your rate card</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #64748b;">—</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">🎁 Full Wishlist Registry</td>
-                </tr>
-
-                <!-- Category: Rate Cards & Booking -->
-                <tr style="background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06);">
-                  <td colspan="3" style="padding: 10px 20px; font-size: 0.75rem; font-weight: 800; color: var(--gold-bright); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono);">
-                    📋 Rate Cards &amp; Second Life Features
-                  </td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Service Categories &amp; Menus</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Organize session offerings and pricing</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #cbd5e1;">1 Standard Category</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #ffd700; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">✨ Unlimited Categories &amp; Rates</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Lovense, RLV &amp; Vow Collar Tech Badges</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Showcase toy syncing and restraint protocols</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #64748b;">—</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">⚡ Full Hardware Badges</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Live In-World Sim Status (🟢 / 🔴 / 🟡)</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Real-time availability status synced from in-world</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700;">✓ Included</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">✓ Included</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Direct Second Life IM Shortcut &amp; Inquiry Form</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">1-click message in SL + email notification</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700;">✓ Included</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">✓ Included</td>
-                </tr>
-                <tr>
-                  <td style="padding: 14px 20px; color: #e2e8f0;">
-                    <strong>Wearable Creator HUD &amp; Parcel Terminal</strong>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Update rates &amp; post content from anywhere on the grid</div>
-                  </td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700;">✓ Included</td>
-                  <td style="padding: 14px 16px; text-align: center; color: #34d399; font-weight: 700; background: rgba(212, 175, 55, 0.04); border-left: 1px solid rgba(212, 175, 55, 0.15); border-right: 1px solid rgba(212, 175, 55, 0.15);">✓ Included</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr style="background: rgba(20, 16, 26, 0.95); border-top: 2px solid rgba(212, 175, 55, 0.3);">
-                  <td style="padding: 20px;"></td>
-                  <td style="padding: 20px 16px; text-align: center;">
-                    <button type="button" onclick="openKioskModal('Standard Listing', 'L$1,000 / month', 'Full searchable directory profile, custom service menu & rates card, and verified rank badge.')" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center;">Get Standard</button>
-                  </td>
-                  <td style="padding: 20px 16px; text-align: center; background: rgba(212, 175, 55, 0.08); border-left: 1px solid rgba(212, 175, 55, 0.2); border-right: 1px solid rgba(212, 175, 55, 0.2);">
-                    <button type="button" onclick="openKioskModal('VIP Featured Listing', 'L$2,500 / month', 'Top placement, VIP gold badge, exclusive feed lookbooks, and in-world subscriber pass monetization.')" class="btn btn-gold btn-sm" style="width: 100%; justify-content: center; font-weight: 800;">Get VIP Featured</button>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+      <div style="background: linear-gradient(135deg, rgba(26, 21, 14, 0.95) 0%, rgba(14, 12, 18, 0.98) 100%); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 20px; padding: 36px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; box-shadow: 0 15px 45px rgba(0,0,0,0.6), 0 0 30px rgba(212,175,55,0.08);">
+        <div style="max-width: 620px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span class="section-tag tag-gold font-2xs" style="margin: 0;">FOR DOMINANTS &amp; COMPANIONS</span>
+            <span style="font-size: 0.8rem; color: #34d399; font-weight: 700;">💎 100% In-World Revenue</span>
           </div>
+          <h3 style="font-family: var(--font-heading); font-size: 1.6rem; color: #fff; margin: 0 0 8px;">Want your rate card &amp; profile featured here?</h3>
+          <p style="font-size: 0.9rem; color: #94a3b8; margin: 0; line-height: 1.6;">
+            Promote your services to the Control &amp; Chaos community with dedicated vanity URLs, custom domains, in-world billboard integration, and instant Linden (L$) activation.
+          </p>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <a href="/directory/get-listed/" class="btn btn-gold btn-md" style="font-weight: 800; padding: 12px 24px; box-shadow: 0 0 20px rgba(212,175,55,0.25);">
+            <span>👑</span> View Packages &amp; Get Listed &rarr;
+          </a>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- In-World Kiosk Activation Modal (100% Linden Only) -->
-  <div id="kiosk-activation-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(5, 4, 8, 0.88); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px;">
-    <div style="background: linear-gradient(180deg, #181520 0%, #0d0b12 100%); border: 1px solid var(--gold-bright); border-radius: 20px; max-width: 520px; width: 100%; padding: 32px; box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 40px rgba(212,175,55,0.2); position: relative;">
-      <button type="button" onclick="closeKioskModal()" style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
-
-      <div style="text-align: center; margin-bottom: 24px;">
-        <div style="font-size: 40px; margin-bottom: 8px;">👑</div>
-        <span class="section-tag tag-gold font-2xs" id="modal-tier-badge">VIP FEATURED LISTING</span>
-        <h3 id="modal-tier-title" style="font-family: var(--font-heading); font-size: 24px; color: #fff; margin: 10px 0 4px;">Get Listed In-World</h3>
-        <div id="modal-tier-price" style="font-size: 20px; font-weight: 800; color: #ffd700; font-family: var(--font-mono);">L$2,500 / month</div>
-      </div>
-
-      <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(212,175,55,0.25); border-radius: 12px; padding: 18px; margin-bottom: 24px;">
-        <div style="font-size: 13px; font-weight: 700; color: var(--gold-bright); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">
-          ✨ How to Activate Instantly:
-        </div>
-        <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: #cbd5e1; line-height: 1.7;">
-          <li>Teleport to the <strong>Directory Kiosk</strong> at Control &amp; Chaos in Second Life.</li>
-          <li>Right-click and <strong>Pay</strong> the terminal your chosen tier in Lindens (L$).</li>
-          <li>The Kiosk gives you your private <strong>Studio Editor link</strong> and your profile goes live immediately!</li>
-        </ol>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <a id="modal-teleport-btn" href="secondlife://Chaos%20Manor/128/128/23" class="btn btn-gold btn-md" style="width: 100%; justify-content: center; font-weight: 800; font-size: 15px; padding: 12px;">
-          <span>⚡</span> Teleport to Kiosk in Second Life
-        </a>
-        <button type="button" id="copy-slurl-btn" onclick="copyKioskSlurl()" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center;">
-          <span>📋</span> Copy Landmark / SLurl Link
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- Master Footer Component -->
   <site-footer></site-footer>
@@ -693,47 +471,6 @@
           }
         })
         .catch(() => {});
-    });
-
-    const KIOSK_SLURL = "secondlife://Chaos%20Manor/128/128/23";
-
-    window.openKioskModal = function(tierName, priceStr, descStr) {
-      const modal = document.getElementById('kiosk-activation-modal');
-      const badge = document.getElementById('modal-tier-badge');
-      const title = document.getElementById('modal-tier-title');
-      const price = document.getElementById('modal-tier-price');
-
-      if (badge) badge.textContent = tierName.toUpperCase();
-      if (title) title.textContent = `Activate ${tierName}`;
-      if (price) price.textContent = priceStr;
-
-      if (modal) {
-        modal.style.display = 'flex';
-      }
-    };
-
-    window.closeKioskModal = function() {
-      const modal = document.getElementById('kiosk-activation-modal');
-      if (modal) modal.style.display = 'none';
-    };
-
-    window.copyKioskSlurl = function() {
-      navigator.clipboard.writeText(KIOSK_SLURL);
-      const btn = document.getElementById('copy-slurl-btn');
-      if (btn) {
-        btn.innerHTML = '<span>✓</span> Copied SLurl to Clipboard!';
-        setTimeout(() => {
-          btn.innerHTML = '<span>📋</span> Copy Landmark / SLurl Link';
-        }, 2500);
-      }
-    };
-
-    // Close on backdrop click
-    document.addEventListener('click', (e) => {
-      const modal = document.getElementById('kiosk-activation-modal');
-      if (modal && e.target === modal) {
-        modal.style.display = 'none';
-      }
     });
   </script>
 </body>

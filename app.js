@@ -339,7 +339,7 @@ class SiteFooter extends HTMLElement {
           title: "Community",
           links: [
             { label: "Sim Game Rules", url: "/xp-system/#sim-rules" },
-            { label: "Get Listed", url: "/directory/#get-listed" },
+            { label: "Get Listed", url: "/directory/get-listed/" },
             { label: "Contact & Concierge", url: "/contact/" }
           ]
         }
