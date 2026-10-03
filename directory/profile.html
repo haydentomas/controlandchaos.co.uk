@@ -35,7 +35,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css?v=20261003-blog-layout">
+  <link rel="stylesheet" href="/styles.css?v=20261003-blog-feed">
   <style>
     .gallery-thumb-card {
       position: relative;
@@ -1028,6 +1028,59 @@ function openLightbox(imgSrc, title, category) {
         .replace(/\r\n|\n|\r/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
+    }
+
+    function publicBlogExcerpt(post, limit = 260) {
+      const text = stripMarkdown(post.excerpt || post.summary || post.content || '');
+      if (text.length <= limit) return text;
+      const snippet = text.substring(0, limit);
+      const lastSpace = snippet.lastIndexOf(' ');
+      return (lastSpace > limit / 2 ? snippet.substring(0, lastSpace) : snippet).trimEnd() + '...';
+    }
+
+    function publicBlogPostSlug(post, index) {
+      return post.slug || (post.title ? profileSlugFor({ name: post.title }) : `entry-${index + 1}`);
+    }
+
+    function renderPublicBlogCard(profile, post, index) {
+      const postSlug = publicBlogPostSlug(post, index);
+      const articleUrl = profileArticlePath(profile, postSlug);
+      const userKey = (profile.avatar_uuid || profile.id || '') + '_' + (post.id || postSlug || index);
+      const hasLiked = localStorage.getItem('cc_blog_liked_' + userKey) === '1';
+      const likeCount = (Number(post.likes) || 0) + (hasLiked ? 1 : 0);
+      const isDomme = profile.role_type === 'domme' || profile.role_type === 'dom';
+      const avatar = profile.avatar_image || profile.avatar || '';
+      const excerpt = publicBlogExcerpt(post);
+      return `
+        <article id="post-${escapeHtml(postSlug)}" class="feed-post-card blog-feed-card">
+          ${post.media_url ? `
+            <a href="${escapeHtml(articleUrl)}" class="blog-feed-image-link" aria-label="${escapeHtml(post.title || 'Read article')}">
+              <img src="${escapeHtml(post.media_url)}" alt="${escapeHtml(post.title || 'Post image')}" loading="lazy" decoding="async" width="1200" height="675">
+            </a>
+          ` : ''}
+          <div class="blog-feed-details">
+            <div class="blog-feed-author">
+              <div class="blog-feed-avatar">
+                ${avatar ? `<img src="${escapeHtml(avatar)}" alt="${escapeHtml(profile.name)}" loading="lazy" decoding="async" width="42" height="42">` : (isDomme ? '👑' : '🩷')}
+              </div>
+              <div class="blog-feed-author-info">
+                <strong>${escapeHtml(profile.name)}</strong> <span class="role-badge">${isDomme ? 'DOM' : 'SUB'}</span>
+                <div class="blog-feed-meta">@${escapeHtml(profile.sl_username || profile.id)} &bull; ${escapeHtml(post.timestamp || 'Recent')}</div>
+              </div>
+              <span class="tag-pill-badge">${escapeHtml(post.tag || '💬 Update')}</span>
+            </div>
+            <h3 class="blog-feed-title"><a href="${escapeHtml(articleUrl)}">${escapeHtml(post.title || 'Journal Entry')}</a></h3>
+            ${excerpt ? `<p class="blog-feed-excerpt">${escapeHtml(excerpt)}</p>` : ''}
+            <div class="blog-feed-actions">
+              <button type="button" class="btn btn-secondary btn-sm" data-key="${escapeHtml(userKey)}" data-index="${index}" onclick="toggleBlogLike(this.dataset.key, Number(this.dataset.index))" id="blog-like-btn-${index}">
+                <span class="blog-like-heart">${hasLiked ? '❤️' : '🤍'}</span> <span id="blog-like-count-${index}">${likeCount} Likes</span>
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" data-slug="${escapeHtml(postSlug)}" onclick="shareBlogPost('', this.dataset.slug, '')"><span>🔗</span> Share Link</button>
+              <a href="${escapeHtml(articleUrl)}" class="btn btn-secondary btn-sm blog-feed-read"><span>📖</span> Read Full Article &rarr;</a>
+            </div>
+          </div>
+        </article>
+      `;
     }
 
     function renderDynamicArticleView(profile, post, allBlogPosts) {
@@ -2625,6 +2678,9 @@ function openLightbox(imgSrc, title, category) {
         }
       };
 
+      let blogRenderedCount = 0;
+      let blogObserver = null;
+
       function renderBlog() {
         if (!profileData) return;
         const blogPosts = (Array.isArray(profileData.blog_posts) && profileData.blog_posts.length > 0) ? profileData.blog_posts : (Array.isArray(profileData.blog) ? profileData.blog : []);
@@ -2639,6 +2695,7 @@ function openLightbox(imgSrc, title, category) {
         if (blogTitle) blogTitle.textContent = `${profileData.name}'s Public Blog`;
 
         if (!blogStream) return;
+        if (blogRenderedCount > 0) return;
 
         if (blogPosts.length === 0) {
           blogStream.innerHTML = `
@@ -2653,89 +2710,39 @@ function openLightbox(imgSrc, title, category) {
           return;
         }
 
-        const avatarImg = profileData.avatar_image || profileData.avatar || '';
-        const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
-
-        blogStream.innerHTML = blogPosts.map((post, pIdx) => {
-          const postSlug = post.slug || (post.title ? post.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : `entry-${pIdx + 1}`);
-          const uKey = (profileData.avatar_uuid || profileData.id || '') + '_' + (post.id || postSlug || pIdx);
-          const hasLiked = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
-          const likeCount = (post.likes || 0) + (hasLiked ? 1 : 0);
-          const articleUrl = profileArticlePath(profileData, postSlug);
-
-          return `
-            <article id="post-${postSlug}" class="feed-post-card" style="background: linear-gradient(165deg, #181512 0%, #100e0c 100%); border: 1px solid var(--gold-border-subtle); border-radius: 16px; padding: 26px 28px; margin-bottom: 24px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); transition: box-shadow 0.4s ease;">
-              
-              <!-- Post Author & Tag Header -->
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <div style="width: 42px; height: 42px; border-radius: 50%; overflow: hidden; border: 1.5px solid var(--gold-border); background: #14110e; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px;">
-                    ${avatarImg ? `<img src="${avatarImg}" alt="${profileData.name}" style="width:100%; height:100%; object-fit:cover;">` : (isDomme ? '👑' : '🩷')}
-                  </div>
-                  <div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                      <span style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: var(--gold-bright);">${profileData.name}</span>
-                      <span class="role-badge" style="font-size: 9px; padding: 1px 6px;">${isDomme ? 'DOM' : 'SUB'}</span>
-                    </div>
-                    <div style="font-family: var(--font-mono); font-size: 11px; color: var(--gold-muted);">
-                      @${profileData.sl_username || profileData.id} &bull; ${post.timestamp || 'Recent'}
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <span class="tag-pill-badge" style="background: rgba(235, 220, 169, 0.08); border-color: var(--gold-border); color: var(--gold-bright); font-size: 11px;">
-                    ${escapeHtml(post.tag || '💬 Update')}
-                  </span>
-                </div>
-              </div>
-
-              <!-- Post Title (Clickable to dedicated article page) -->
-              <h3 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; margin: 0 0 12px 0; line-height: 1.3;">
-                <a href="${articleUrl}" style="color: #fff; text-decoration: none; transition: color 0.2s ease;" onmouseover="this.style.color='var(--gold-bright)'" onmouseout="this.style.color='#fff'">
-                  ${escapeHtml(post.title || 'Journal Entry')}
-                </a>
-              </h3>
-
-              <!-- Post Body -->
-              <div class="blog-post-body" style="font-size: 14.5px; color: var(--text-primary); line-height: 1.7; margin-bottom: 16px; word-break: break-word;">
-                ${renderMarkdownToHtml(post.content || '')}
-              </div>
-
-              <!-- Post Media (if any) -->
-              ${post.media_url ? `
-                <div style="margin-bottom: 18px; border-radius: 12px; overflow: hidden; border: 1px solid var(--gold-border-subtle); max-height: 480px; background: #000; cursor: pointer;" onclick="openLightbox('${escapeHtml(post.media_url)}', '${encodeURIComponent(post.title || '')}', '${escapeHtml(post.tag || 'Blog Photo')}')">
-                  <img src="${post.media_url}" alt="${escapeHtml(post.title)}" style="width: 100%; height: 100%; object-fit: cover; display: block;" loading="lazy">
-                </div>
-              ` : ''}
-
-              <!-- Post Action Footer -->
-              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; margin-top: 10px; flex-wrap: wrap; gap: 10px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <button type="button" class="btn btn-secondary btn-sm" onclick="toggleBlogLike('${uKey}', ${pIdx})" id="blog-like-btn-${pIdx}" style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
-                    <span>${hasLiked ? '❤️' : '🤍'}</span>
-                    <span id="blog-like-count-${pIdx}">${likeCount} Likes</span>
-                  </button>
-
-                  <button type="button" class="btn btn-secondary btn-sm" onclick="shareBlogPost('${profileData.slug || profileData.id}', '${postSlug}', '${escapeHtml(post.title)}')" style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
-                    <span>🔗</span> Share Link
-                  </button>
-                </div>
-
-                <a href="${articleUrl}" class="btn btn-secondary btn-sm" style="font-size: 11.5px; padding: 5px 12px;">
-                  <span>📖</span> Read Full Article ↗
-                </a>
-              </div>
-
-            </article>
-          `;
-        }).join('');
+        blogStream.innerHTML = '<div class="blog-feed-items"></div><button type="button" id="blog-load-more" class="btn btn-secondary blog-feed-load">Load More Posts</button>';
+        const items = blogStream.querySelector('.blog-feed-items');
+        const loadMore = document.getElementById('blog-load-more');
+        const batchSize = 5;
+        function appendPosts(targetCount = blogRenderedCount + batchSize) {
+          const end = Math.min(targetCount, blogPosts.length);
+          for (let index = blogRenderedCount; index < end; index++) {
+            items.insertAdjacentHTML('beforeend', renderPublicBlogCard(profileData, blogPosts[index], index));
+          }
+          blogRenderedCount = end;
+          loadMore.hidden = end >= blogPosts.length;
+          if (loadMore.hidden && blogObserver) blogObserver.disconnect();
+        }
+        loadMore.addEventListener('click', () => appendPosts());
+        const hash = window.location.hash;
+        const linkedIndex = hash.startsWith('#post-') ? blogPosts.findIndex((post, index) => '#post-' + publicBlogPostSlug(post, index) === hash) : -1;
+        appendPosts(Math.max(batchSize, Math.ceil((linkedIndex + 1) / batchSize) * batchSize));
+        if (!loadMore.hidden && 'IntersectionObserver' in window) {
+          blogObserver = new IntersectionObserver(entries => {
+            if (entries.some(entry => entry.isIntersecting) && document.getElementById('tab-pane-blog').style.display !== 'none') appendPosts();
+          }, { rootMargin: '240px 0px' });
+          blogObserver.observe(loadMore);
+        }
       }
 
       window.toggleBlogLike = function(uKey, pIdx) {
         const cur = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
         localStorage.setItem('cc_blog_liked_' + uKey, cur ? '0' : '1');
-        renderBlog();
+        const posts = (Array.isArray(profileData.blog_posts) && profileData.blog_posts.length > 0) ? profileData.blog_posts : (profileData.blog || []);
+        const count = document.getElementById('blog-like-count-' + pIdx);
+        const heart = document.querySelector('#blog-like-btn-' + pIdx + ' .blog-like-heart');
+        if (count) count.textContent = ((Number(posts[pIdx]?.likes) || 0) + (!cur ? 1 : 0)) + ' Likes';
+        if (heart) heart.textContent = !cur ? '❤️' : '🤍';
       };
 
       window.shareBlogPost = function(pSlug, postSlug, title) {
@@ -2777,7 +2784,7 @@ function openLightbox(imgSrc, title, category) {
       const reqHash = window.location.hash;
 
       if (window.defaultToBlogTab || reqTab === 'blog' || reqHash.startsWith('#post-') || reqHash === '#tab-blog') {
-        switchProfileTab('blog');
+        window.switchProfileTab('blog');
         if (reqHash.startsWith('#post-')) {
           setTimeout(() => {
             const targetEl = document.querySelector(reqHash);
@@ -2789,7 +2796,7 @@ function openLightbox(imgSrc, title, category) {
           }, 300);
         }
       } else if (reqTab === 'feed' || reqHash === '#tab-feed') {
-        switchProfileTab('feed');
+        window.switchProfileTab('feed');
       }
 
     });

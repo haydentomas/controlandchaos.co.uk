@@ -65,6 +65,122 @@ main.companion-article-page {
   }
 }
 
+.feed-post-card.blog-feed-card {
+  border-radius: 8px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.blog-feed-image-link {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-darker);
+}
+
+.blog-feed-image-link img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-feed-details {
+  padding: 24px;
+}
+
+.blog-feed-author {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.blog-feed-avatar {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--gold-border);
+  overflow: hidden;
+}
+
+.blog-feed-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-feed-author-info {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.blog-feed-author-info strong {
+  font-family: var(--font-heading);
+  color: var(--gold-bright);
+}
+
+.blog-feed-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold-muted);
+}
+
+.blog-feed-title {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  line-height: 1.3;
+  margin-bottom: 12px;
+  overflow-wrap: anywhere;
+}
+
+.blog-feed-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.blog-feed-title a:hover {
+  color: var(--gold-bright);
+}
+
+.blog-feed-excerpt {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  overflow-wrap: anywhere;
+}
+
+.blog-feed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gold-border-subtle);
+}
+
+.blog-feed-read {
+  margin-left: auto;
+}
+
+.blog-feed-load {
+  display: flex;
+  margin: 0 auto;
+}
+
+.blog-feed-load[hidden] {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .blog-feed-details { padding: 20px 18px; }
+  .blog-feed-title { font-size: 20px; }
+  .blog-feed-actions .btn { white-space: normal; }
+}
+
 /* --- CSS Variables & Design System --- */
 :root {
   /* Obsidian & Deep Charcoal Backgrounds */

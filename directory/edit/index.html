@@ -1684,6 +1684,11 @@
         </div>
       </div>
 
+      <div class="form-group">
+        <label class="form-label" for="modal-blog-excerpt">Feed Excerpt <span class="font-2xs text-muted">(Optional)</span></label>
+        <textarea id="modal-blog-excerpt" class="form-textarea" style="min-height:88px;" rows="2" maxlength="260" placeholder="Leave empty for an automatic excerpt"></textarea>
+      </div>
+
       <div id="modal-blog-preview-box" style="display:none; margin-bottom:16px;">
         <img id="modal-blog-thumb" class="img-preview-thumb" style="height:140px; width:100%; border-radius:8px; object-fit:cover;" src="" alt="Blog Preview" onerror="this.style.display='none'">
       </div>
@@ -1720,12 +1725,12 @@
             <button type="button" class="md-tool-btn" onclick="toggleBlogMarkdownGuide()" style="color:var(--gold-bright); background:rgba(212,175,55,0.15);" title="Toggle Formatting Guide">ℹ️ Guide</button>
           </div>
           <div class="md-btn-group">
-            <button type="button" id="blog-tab-write" class="md-tab-btn active" onclick="switchBlogContentMode('write')">✏️ Write</button>
-            <button type="button" id="blog-tab-preview" class="md-tab-btn" onclick="switchBlogContentMode('preview')">👁️ Live Preview</button>
+            <button type="button" id="blog-tab-write" class="md-tab-btn active" aria-pressed="true" aria-controls="modal-blog-content" onclick="switchBlogContentMode('write')">&lt;/&gt; Markdown</button>
+            <button type="button" id="blog-tab-preview" class="md-tab-btn" aria-pressed="false" aria-controls="modal-blog-preview-rendered" onclick="switchBlogContentMode('preview')">👁️ Live Preview</button>
           </div>
         </div>
 
-        <textarea id="modal-blog-content" class="form-textarea" style="border-top-left-radius:0; border-top-right-radius:0; margin-top:0;" rows="7" placeholder="Write your free public blog entry, story, thoughts, or announcement...&#10;&#10;Press Enter twice to create clean spaced paragraphs! Markdown formatting like **bold**, *italic*, and ## headings are fully supported." oninput="updateBlogSeoPreview()"></textarea>
+        <textarea id="modal-blog-content" class="form-textarea" aria-label="Markdown source" style="border-top-left-radius:0; border-top-right-radius:0; margin-top:0; font-family:var(--font-mono); font-size:13px; line-height:1.7; tab-size:2;" rows="7" placeholder="Write your free public blog entry, story, thoughts, or announcement...&#10;&#10;Press Enter twice to create clean spaced paragraphs! Markdown formatting like **bold**, *italic*, and ## headings are fully supported." oninput="updateBlogSeoPreview()"></textarea>
 
         <div id="modal-blog-preview-rendered" class="md-rendered-preview" style="display:none;"></div>
       </div>
@@ -2871,13 +2876,15 @@
       const prevBtn = document.getElementById('blog-tab-preview');
       const textarea = document.getElementById('modal-blog-content');
       const prevBox = document.getElementById('modal-blog-preview-rendered');
+      if (writeBtn) writeBtn.setAttribute('aria-pressed', String(mode !== 'preview'));
+      if (prevBtn) prevBtn.setAttribute('aria-pressed', String(mode === 'preview'));
       
       if (mode === 'preview') {
         if (writeBtn) writeBtn.classList.remove('active');
         if (prevBtn) prevBtn.classList.add('active');
         if (textarea) textarea.style.display = 'none';
         if (prevBox) {
-          prevBox.innerHTML = renderMarkdownToHtml(textarea.value || '') || '<p class="font-xs text-muted" style="font-style:italic;">Nothing to preview yet. Switch to Write tab to type content.</p>';
+          prevBox.innerHTML = renderMarkdownToHtml(textarea.value || '') || '<p class="font-xs text-muted" style="font-style:italic;">No content yet.</p>';
           prevBox.style.display = 'block';
         }
       } else {
@@ -3113,6 +3120,7 @@
       document.getElementById('modal-blog-tag').value = '💬 Update';
       document.getElementById('modal-blog-media-url').value = '';
       document.getElementById('modal-blog-content').value = '';
+      document.getElementById('modal-blog-excerpt').value = '';
       document.getElementById('modal-blog-seo-title').value = '';
       document.getElementById('modal-blog-seo-desc').value = '';
       document.getElementById('modal-blog-slug').value = '';
@@ -3136,6 +3144,7 @@
       document.getElementById('modal-blog-tag').value = p.tag || '💬 Update';
       document.getElementById('modal-blog-media-url').value = p.media_url || '';
       document.getElementById('modal-blog-content').value = p.content || '';
+      document.getElementById('modal-blog-excerpt').value = p.excerpt || '';
       document.getElementById('modal-blog-seo-title').value = p.seo_title || '';
       document.getElementById('modal-blog-seo-desc').value = p.seo_description || '';
       document.getElementById('modal-blog-slug').value = p.slug || '';
@@ -3182,6 +3191,7 @@
       const tag = (document.getElementById('modal-blog-tag').value || '').trim() || '💬 Update';
       const mediaUrl = (document.getElementById('modal-blog-media-url').value || '').trim();
       const content = (document.getElementById('modal-blog-content').value || '').trim();
+      const excerpt = (document.getElementById('modal-blog-excerpt').value || '').trim();
       const seoTitle = (document.getElementById('modal-blog-seo-title')?.value || '').trim();
       const seoDesc = (document.getElementById('modal-blog-seo-desc')?.value || '').trim();
       const customSlug = (document.getElementById('modal-blog-slug')?.value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -3199,6 +3209,7 @@
         blogPostsList[idx].tag = tag;
         blogPostsList[idx].media_url = mediaUrl;
         blogPostsList[idx].content = content;
+        if (excerpt) blogPostsList[idx].excerpt = excerpt; else delete blogPostsList[idx].excerpt;
         if (seoTitle) blogPostsList[idx].seo_title = seoTitle; else delete blogPostsList[idx].seo_title;
         if (seoDesc) blogPostsList[idx].seo_description = seoDesc; else delete blogPostsList[idx].seo_description;
         if (customSlug) blogPostsList[idx].slug = customSlug;
@@ -3219,6 +3230,7 @@
         };
         if (seoTitle) newPost.seo_title = seoTitle;
         if (seoDesc) newPost.seo_description = seoDesc;
+        if (excerpt) newPost.excerpt = excerpt;
         blogPostsList.unshift(newPost);
       }
 

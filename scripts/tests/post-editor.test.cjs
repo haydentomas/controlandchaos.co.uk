@@ -174,3 +174,40 @@ test('editing and saving still work when local storage is unavailable', () => {
   assert.match(document.getElementById('blog-post-draft-status').textContent, /unavailable/);
   assert.equal(context.saveBlogPostModal(), true);
 });
+
+test('Markdown source is preserved when previewing, returning to editing, and saving', () => {
+  const { context, document } = setup();
+  const source = '## A heading\n\n**Bold text** and [a link](https://example.com)\n\n- First item\n- Second item';
+  context.openEditBlogPostModal(0);
+  const input = document.getElementById('modal-blog-content');
+  input.value = source;
+  context.persistPostDraft('blog');
+  assert.match(document.getElementById('blog-tab-write').textContent, /Markdown/);
+  context.switchBlogContentMode('preview');
+  assert.equal(input.value, source);
+  assert.equal(input.style.display, 'none');
+  assert.ok(document.querySelector('#modal-blog-preview-rendered h2'));
+  assert.ok(document.querySelector('#modal-blog-preview-rendered strong'));
+  assert.ok(document.querySelector('#modal-blog-preview-rendered a[href="https://example.com"]'));
+  assert.equal(document.getElementById('blog-tab-preview').getAttribute('aria-pressed'), 'true');
+  context.switchBlogContentMode('write');
+  assert.equal(input.value, source);
+  assert.equal(input.style.display, 'block');
+  assert.equal(document.getElementById('blog-tab-write').getAttribute('aria-pressed'), 'true');
+  assert.equal(context.saveBlogPostModal(), true);
+  assert.equal(context.readPostChanges().blog_posts[0].content, source);
+});
+
+test('custom feed excerpts are draft-protected, saved, and removable', () => {
+  const { context, document, stored } = setup();
+  context.openEditBlogPostModal(0);
+  document.getElementById('modal-blog-excerpt').value = 'A short custom introduction.';
+  context.persistPostDraft('blog');
+  assert.equal(JSON.parse(stored.get('cc_post_draft_jane_blog')).fields['modal-blog-excerpt'], 'A short custom introduction.');
+  context.saveBlogPostModal();
+  assert.equal(context.readPostChanges().blog_posts[0].excerpt, 'A short custom introduction.');
+  context.openEditBlogPostModal(0);
+  document.getElementById('modal-blog-excerpt').value = '';
+  context.saveBlogPostModal();
+  assert.equal(context.readPostChanges().blog_posts[0].excerpt, undefined);
+});

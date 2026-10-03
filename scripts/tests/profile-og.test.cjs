@@ -168,8 +168,12 @@ test('custom-domain assets pass through and unrelated profile paths do not imper
   assert.equal(unrelated.upstreamRequests.length, 0);
 });
 
-function browserContext(url, ownerId = '') {
+function browserContext(url, ownerId = '', runtime = {}) {
   const { document } = parseHTML(template);
+  const loadCallbacks = [];
+  document.addEventListener = (event, callback) => {
+    if (event === 'DOMContentLoaded') loadCallbacks.push(callback);
+  };
   if (ownerId) {
     const marker = document.createElement('meta');
     marker.setAttribute('name', 'cc-profile-id');
@@ -178,11 +182,12 @@ function browserContext(url, ownerId = '') {
   }
   const context = vm.createContext({
     window: { location: new URL(url) }, document, URL, URLSearchParams,
-    localStorage: { getItem: () => null }, console
+    localStorage: { getItem: () => null }, console, ...runtime
   });
   for (const match of template.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
     if (!/src=|application\/ld\+json/.test(match[1])) vm.runInContext(match[2], context);
   }
+  context.loadCallbacks = loadCallbacks;
   return context;
 }
 
@@ -216,4 +221,95 @@ test('directory profile and article routes keep C&C navigation', () => {
   assert.equal(context.profileArticlePath(profile, 'another-post'), '/profile/alek-zane/blog/another-post/');
   context.renderDynamicArticleView(profile, profile.blog_posts[0], []);
   assert.ok(context.document.querySelector('main a[href="/profile/alek-zane/?tab=blog"]'));
+});
+
+test('public blog cards lead with lazy images and show excerpts instead of full bodies', () => {
+  const context = browserContext('https://controlandchaos.co.uk/profile/alek-zane/');
+  const content = 'Opening paragraph with **bold words**. '.repeat(30) + 'FULL ARTICLE END';
+  const card = context.renderPublicBlogCard(profile, { title: 'Long post', content, media_url: '/assets/photo.jpg' }, 0);
+  const { document } = parseHTML(`<html><body>${card}</body></html>`);
+  const article = document.querySelector('article');
+  assert.ok(article.firstElementChild.classList.contains('blog-feed-image-link'));
+  assert.equal(article.querySelector('img').getAttribute('loading'), 'lazy');
+  assert.equal(article.querySelector('img').getAttribute('decoding'), 'async');
+  const excerpt = article.querySelector('.blog-feed-excerpt').textContent;
+  assert.ok(excerpt.length <= 263);
+  assert.ok(excerpt.endsWith('...'));
+  assert.ok(!card.includes('FULL ARTICLE END'));
+  assert.ok(!excerpt.includes('**'));
+  assert.ok(article.querySelector('a.blog-feed-read[href="/profile/alek-zane/blog/long-post/"]'));
+});
+
+test('custom excerpts are plain text, with correct mirror article links and no image placeholder', () => {
+  const context = browserContext('https://alek.example/', 'alek-zane');
+  const card = context.renderPublicBlogCard(profile, { title: 'Post', excerpt: '**A short teaser** <script>bad()</script>', content: 'Full body is not a teaser.' }, 0);
+  const { document } = parseHTML(`<html><body>${card}</body></html>`);
+  assert.equal(document.querySelector('.blog-feed-excerpt').textContent, 'A short teaser <script>bad()</script>');
+  assert.equal(document.querySelectorAll('script').length, 0);
+  assert.equal(document.querySelectorAll('.blog-feed-image-link').length, 0);
+  assert.ok(document.querySelector('a.blog-feed-read[href="/blog/post/"]'));
+  assert.ok(!card.includes('Full body is not a teaser.'));
+});
+
+async function loadedFeed(hash = '', withObserver = false) {
+  const stored = new Map();
+  const fixture = JSON.parse(fs.readFileSync(path.join(root, 'directory/profiles/alek-zane.json'), 'utf8'));
+  fixture.blog_posts = Array.from({ length: 12 }, (_, index) => ({
+    id: `post-${index}`, slug: `entry-${index}`, title: `Entry ${index}`, content: 'Short excerpt.', likes: 0
+  }));
+  const observers = [];
+  const context = browserContext('https://controlandchaos.co.uk/profile/alek-zane/' + hash, '', {
+    setTimeout() {},
+    fetch: async url => ({ ok: true, json: async () => url.includes('/.netlify/') ? { profile: fixture, subscriptions: {} } : fixture }),
+    localStorage: { getItem: key => stored.get(key) || null, setItem: (key, value) => stored.set(key, value) }
+  });
+  if (withObserver) {
+    const Observer = class {
+      constructor(callback) { this.callback = callback; this.disconnected = false; observers.push(this); }
+      observe(element) { this.element = element; }
+      disconnect() { this.disconnected = true; }
+    };
+    context.window.IntersectionObserver = Observer;
+    context.IntersectionObserver = Observer;
+  }
+  await context.loadCallbacks[0]();
+  context.window.switchProfileTab('blog');
+  return { context, document: context.document, observers };
+}
+
+test('public blog renders five cards at a time and Load More appends without resetting likes', async () => {
+  const { context, document } = await loadedFeed();
+  assert.equal(document.querySelectorAll('.blog-feed-card').length, 5);
+  const first = document.querySelector('.blog-feed-card');
+  document.getElementById('blog-load-more').click();
+  assert.equal(document.querySelectorAll('.blog-feed-card').length, 10);
+  context.window.toggleBlogLike(document.getElementById('blog-like-btn-0').getAttribute('data-key'), 0);
+  assert.equal(document.getElementById('blog-like-count-0').textContent, '1 Likes');
+  assert.equal(document.querySelector('.blog-feed-card'), first);
+  assert.equal(document.querySelectorAll('.blog-feed-card').length, 10);
+  context.window.switchProfileTab('ratecard');
+  context.window.switchProfileTab('blog');
+  assert.equal(document.querySelectorAll('.blog-feed-card').length, 10);
+  document.getElementById('blog-load-more').click();
+  assert.equal(document.querySelectorAll('.blog-feed-card').length, 12);
+  assert.ok(document.getElementById('blog-load-more').hidden);
+});
+
+test('scroll loading appends batches only while the blog tab is visible', async () => {
+  const { context, document, observers } = await loadedFeed('', true);
+  const observer = observers[0];
+  context.window.switchProfileTab('ratecard');
+  observer.callback([{ isIntersecting: true }]);
+  assert.equal(document.querySelectorAll('.blog-feed-card').length, 5);
+  context.window.switchProfileTab('blog');
+  observer.callback([{ isIntersecting: true }]);
+  assert.equal(document.querySelectorAll('.blog-feed-card').length, 10);
+  observer.callback([{ isIntersecting: true }]);
+  assert.equal(document.querySelectorAll('.blog-feed-card').length, 12);
+  assert.ok(observer.disconnected);
+});
+
+test('deep links render the batch containing the requested post', async () => {
+  const { document } = await loadedFeed('#post-entry-10');
+  assert.ok(document.getElementById('post-entry-10'));
 });
