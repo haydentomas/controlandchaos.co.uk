@@ -1185,16 +1185,22 @@
                 <h3 class="editor-card-title"><span class="icon">🌐</span> Custom Vanity Domain (VIP Perk)</h3>
                 <span class="section-tag tag-gold font-2xs m-0">WHITE-LABEL URL</span>
               </div>
-              <p class="font-xs text-muted mb-14">
+              <p class="font-xs text-muted mb-16">
                 Connect your own private domain (e.g. <code>alekzane.com</code> or <code>vip.mistressvane.com</code>) to point directly to your Control &amp; Chaos profile while keeping your standard directory URL active.
               </p>
               
               <div class="form-group mb-12">
-                <label class="form-label font-2xs" for="edit-custom-domain">Your Custom Domain</label>
-                <input type="text" id="edit-custom-domain" class="form-input font-xs" placeholder="e.g. alekzane.com or vip.yourbrand.com">
+                <label class="form-label font-2xs" for="edit-custom-domain">1. Your Custom Domain</label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="edit-custom-domain" class="form-input font-xs" placeholder="e.g. alekzane.com or vip.yourbrand.com" style="flex: 1;">
+                  <button type="button" class="btn-add-repeater" style="padding: 4px 14px; font-size: 11px; white-space: nowrap;" onclick="testCustomDomainUrl()">
+                    ↗ Test Domain
+                  </button>
+                </div>
+                <div class="form-hint">Enter your domain or subdomain without <code>https://</code>.</div>
               </div>
 
-              <div class="form-group mb-12" style="background: rgba(212,175,55,0.06); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 12px 14px;">
+              <div class="form-group mb-16" style="background: rgba(212,175,55,0.06); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 12px 14px;">
                 <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin: 0;">
                   <input type="checkbox" id="edit-whitelabel-mode" checked style="margin-top: 3px; accent-color: #ffd700; width: 16px; height: 16px;">
                   <div>
@@ -1206,9 +1212,89 @@
                 </label>
               </div>
 
-              <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(212,175,55,0.3); border-radius: 8px; padding: 12px 14px; font-size: 0.78rem; color: #cbd5e1; line-height: 1.6;">
-                <strong class="text-gold">⚡ 1-Minute DNS Setup at your Domain Registrar (GoDaddy, Namecheap, Cloudflare):</strong><br>
-                Add a <strong>CNAME Record</strong>: Host <code>@</code> (or your subdomain) &rarr; Target / Value: <code style="color:#ffd700; background:rgba(212,175,55,0.15); padding:2px 6px; border-radius:4px;">controlandchaos.co.uk</code>
+              <!-- Beginner-Friendly DNS Setup Guide -->
+              <div style="background: rgba(10, 8, 14, 0.85); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 10px; padding: 18px; margin-top: 10px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                  <span style="font-size: 18px;">📋</span>
+                  <h4 style="font-family: var(--font-heading); color: var(--gold-bright); font-size: 14px; margin: 0; font-weight: 700;">
+                    2. Simple 3-Step Setup Instructions (Anyone Can Do This)
+                  </h4>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 14px; font-size: 12.5px; color: #cbd5e1; line-height: 1.6;">
+                  
+                  <div style="background: rgba(255,255,255,0.03); border-left: 3px solid var(--gold-primary); padding: 8px 12px; border-radius: 0 6px 6px 0;">
+                    <strong style="color: var(--gold-bright);">Step 1:</strong> Type your domain above and click <strong>"Save Profile"</strong> below.
+                  </div>
+
+                  <div style="background: rgba(255,255,255,0.03); border-left: 3px solid var(--gold-primary); padding: 8px 12px; border-radius: 0 6px 6px 0;">
+                    <strong style="color: var(--gold-bright);">Step 2:</strong> Log in to the website where you bought your domain (e.g. <strong>GoDaddy, Namecheap, Cloudflare, Google Domains, Hostinger</strong>) and open your domain's <strong>"DNS Settings"</strong> or <strong>"DNS Management"</strong> page.
+                  </div>
+
+                  <div style="background: rgba(255,255,255,0.03); border-left: 3px solid var(--gold-primary); padding: 8px 12px; border-radius: 0 6px 6px 0;">
+                    <strong style="color: var(--gold-bright);">Step 3:</strong> Click <strong>"Add New Record"</strong> and enter these exact details:
+                  </div>
+
+                  <!-- Visual DNS Record Box -->
+                  <div style="background: #08060a; border: 1.5px solid rgba(212,175,55,0.4); border-radius: 8px; overflow: hidden; margin: 4px 0;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); background: rgba(212,175,55,0.12); padding: 8px 12px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--gold-bright); border-bottom: 1px solid rgba(212,175,55,0.2);">
+                      <div>TYPE</div>
+                      <div>NAME / HOST</div>
+                      <div>TARGET / VALUE</div>
+                      <div>TTL</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); padding: 12px; font-family: var(--font-mono); font-size: 12px; color: #fff; align-items: center;">
+                      <div><span style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700;">CNAME</span></div>
+                      <div><code style="color: #ffd700;">@</code> <span style="font-size: 10px; color: var(--text-muted);">(or your subdomain like vip)</span></div>
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                        <code style="color: #ffd700; background: rgba(212,175,55,0.15); padding: 3px 6px; border-radius: 4px;">controlandchaos.co.uk</code>
+                        <button type="button" onclick="navigator.clipboard.writeText('controlandchaos.co.uk'); alert('Copied: controlandchaos.co.uk');" style="background: transparent; border: none; cursor: pointer; font-size: 13px;" title="Copy to clipboard">📋</button>
+                      </div>
+                      <div style="color: var(--text-muted);">Auto (or 1 hr)</div>
+                    </div>
+                  </div>
+
+                  <!-- Registrar-Specific Click-by-Click Dropdowns -->
+                  <div style="margin-top: 6px;">
+                    <div style="font-size: 11.5px; font-weight: 700; color: var(--gold-primary); margin-bottom: 6px; text-transform: uppercase; font-family: var(--font-mono);">
+                      📖 Click-by-Click Guides for Popular Registrars:
+                    </div>
+                    <details style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; cursor: pointer;">
+                      <summary style="font-weight: 600; color: var(--gold-bright); font-size: 12px;">🟡 GoDaddy Step-by-Step</summary>
+                      <div style="padding-top: 8px; font-size: 11.5px; color: #a39474; line-height: 1.5;">
+                        1. Go to <strong>My Products</strong> &rarr; Click <strong>DNS</strong> next to your domain.<br>
+                        2. Click <strong>Add New Record</strong>.<br>
+                        3. Set Type: <strong>CNAME</strong> | Name: <strong>@</strong> | Value: <strong>controlandchaos.co.uk</strong> | TTL: <strong>1 Hour</strong>.<br>
+                        4. Click <strong>Save</strong>.
+                      </div>
+                    </details>
+                    <details style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; cursor: pointer;">
+                      <summary style="font-weight: 600; color: var(--gold-bright); font-size: 12px;">🟠 Namecheap Step-by-Step</summary>
+                      <div style="padding-top: 8px; font-size: 11.5px; color: #a39474; line-height: 1.5;">
+                        1. Go to <strong>Domain List</strong> &rarr; Click <strong>Manage</strong> next to your domain.<br>
+                        2. Click the <strong>Advanced DNS</strong> tab.<br>
+                        3. Click <strong>Add New Record</strong> &rarr; Select <strong>CNAME Record</strong>.<br>
+                        4. Host: <strong>@</strong> | Target: <strong>controlandchaos.co.uk</strong> | TTL: <strong>Automatic</strong>.<br>
+                        5. Click the green checkmark (Save).
+                      </div>
+                    </details>
+                    <details style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; cursor: pointer;">
+                      <summary style="font-weight: 600; color: var(--gold-bright); font-size: 12px;">🔵 Cloudflare Step-by-Step</summary>
+                      <div style="padding-top: 8px; font-size: 11.5px; color: #a39474; line-height: 1.5;">
+                        1. Select your domain &rarr; Click <strong>DNS &rarr; Records</strong>.<br>
+                        2. Click <strong>Add record</strong>.<br>
+                        3. Type: <strong>CNAME</strong> | Name: <strong>@</strong> | Target: <strong>controlandchaos.co.uk</strong> | Proxy Status: <strong>DNS Only (Grey Cloud)</strong>.<br>
+                        4. Click <strong>Save</strong>.
+                      </div>
+                    </details>
+                  </div>
+
+                  <div style="display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                    <span style="font-size: 14px;">⏳</span>
+                    <span><strong>Note:</strong> DNS changes typically take between <strong>5 to 30 minutes</strong> to propagate across the internet. Once live, anyone visiting your domain will see your verified rate card immediately.</span>
+                  </div>
+
+                </div>
               </div>
             </div>
 
@@ -2487,6 +2573,17 @@
           thumb.style.display = 'none';
         }
       }
+    }
+
+    function testCustomDomainUrl() {
+      const rawDomain = (document.getElementById('edit-custom-domain')?.value || '').trim();
+      if (!rawDomain) {
+        alert("Please enter a custom domain name first (e.g. alekzane.com).");
+        return;
+      }
+      const clean = rawDomain.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+      const testUrl = `https://${clean}`;
+      window.open(testUrl, '_blank');
     }
 
     function attachInputListeners() {
