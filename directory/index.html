@@ -309,6 +309,9 @@
           card.className = 'dom-rate-card';
 
           const isDomme = (p.role_type === 'domme' || p.role_type === 'DOMINANT' || p.role_type === 'dom');
+          const isVip = !!p.is_vip;
+          const roleLabel = isDomme ? 'Dominant' : 'Submissive';
+          const badgeText = isVip ? `[VIP] ${roleLabel}` : roleLabel;
           const avatarImg = p.avatar_image || p.avatar || p.seo_image || (p.gallery && p.gallery.find(g => g.image)?.image) || '';
 
           card.innerHTML = `
@@ -319,8 +322,8 @@
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0;">
                   <div>
-                    <span class="${isDomme ? 'dom-role-badge' : 'sub-role-badge'}">
-                      ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
+                    <span class="role-badge ${isVip ? 'is-vip' : ''}">
+                      ${badgeText}
                     </span>
                   </div>
                   <h3 class="dom-name m-0" style="font-size: 1.35rem; font-weight: 800; font-family: var(--font-heading); color: #fff; line-height: 1.15;">${p.name}</h3>
