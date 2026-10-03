@@ -30,86 +30,6 @@
     "url": "https://controlandchaos.co.uk/",
     "jobTitle": "Luxury Escort & Companion"
   }
-  
-    // Option 2: Send Method Dynamic UI & Execution
-    window.updateSendMethodUI = function() {
-      const selected = document.querySelector('input[name="send_method"]:checked')?.value || 'web';
-      const webCard = document.getElementById('send-method-web-label');
-      const emailCard = document.getElementById('send-method-email-label');
-      const slCard = document.getElementById('send-method-sl-label');
-      const submitBtn = document.getElementById('booking-submit-btn');
-
-      [webCard, emailCard, slCard].forEach(card => {
-        if (!card) return;
-        card.style.background = '#0e0c0b';
-        card.style.borderColor = 'var(--gold-border-subtle)';
-      });
-
-      if (selected === 'web') {
-        if (webCard) {
-          webCard.style.background = 'rgba(212,175,55,0.12)';
-          webCard.style.borderColor = 'var(--gold-bright)';
-        }
-        if (submitBtn) submitBtn.innerHTML = '<span>✉️</span> Submit Booking Enquiry';
-      } else if (selected === 'email') {
-        if (emailCard) {
-          emailCard.style.background = 'rgba(212,175,55,0.12)';
-          emailCard.style.borderColor = 'var(--gold-bright)';
-        }
-        if (submitBtn) submitBtn.innerHTML = '<span>📧</span> Launch Email App with Booking Details';
-      } else if (selected === 'sl') {
-        if (slCard) {
-          slCard.style.background = 'rgba(212,175,55,0.12)';
-          slCard.style.borderColor = 'var(--gold-bright)';
-        }
-        if (submitBtn) submitBtn.innerHTML = '<span>💬</span> Open Second Life IM &amp; Copy Details';
-      }
-    };
-
-    window.formatBookingMessageSummary = function() {
-      const clientName = document.querySelector('input[name="client_name"]')?.value || 'Client';
-      const clientContact = document.querySelector('input[name="client_contact"]')?.value || 'Not provided';
-      const preferredTime = document.getElementById('booking-preferred-time-combined')?.value || 'TBD';
-      const quoteTotal = document.getElementById('form-quote-total')?.value || '';
-      const notes = document.getElementById('form-message-input')?.value || '';
-      const escortName = currentProfile?.name || 'Escort';
-
-      let body = `BOOKING ENQUIRY FOR ${escortName.toUpperCase()}\n\n`;
-      body += `Client Name / SL: ${clientName}\n`;
-      body += `Contact Info: ${clientContact}\n`;
-      body += `Requested Date & Time: ${preferredTime}\n`;
-      if (quoteTotal) body += `Estimated Total: ${quoteTotal}\n`;
-      body += `\n--- SESSION NOTES & DETAILS ---\n${notes}\n`;
-      return body;
-    };
-
-    window.handleEmailDirectClick = function() {
-      const escortName = currentProfile?.name || 'Escort';
-      const escortEmail = currentProfile?.contact_email || 'enquiries@controlandchaos.co.uk';
-      const subject = encodeURIComponent(`Booking Enquiry for ${escortName}`);
-      const body = encodeURIComponent(window.formatBookingMessageSummary());
-      window.location.href = `mailto:${escortEmail}?subject=${subject}&body=${body}`;
-    };
-
-    window.handleSecondLifeImClick = function() {
-      const summaryText = window.formatBookingMessageSummary();
-      const statusDiv = document.getElementById('booking-form-status');
-      
-      // Copy formatted booking details to clipboard
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(summaryText).catch(e => console.error(e));
-      }
-      
-      if (statusDiv) {
-        statusDiv.style.color = '#10b981';
-        statusDiv.innerHTML = '📋 <strong>Booking details copied to clipboard!</strong> Opening Second Life IM...';
-      }
-
-      if (currentProfile?.avatar_uuid) {
-        window.location.href = `secondlife:///app/agent/${currentProfile.avatar_uuid}/im`;
-      }
-    };
-
 </script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -994,6 +914,10 @@ function openLightbox(imgSrc, title, category) {
     }
 
     function renderDynamicArticleView(profile, post, allBlogPosts) {
+      const escapeHtml = (str) => {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      };
       const isDomme = (profile.role_type === 'domme' || profile.role_type === 'dom');
       const roleLabel = isDomme ? 'DOM' : 'SUB';
       const roleTitle = profile.role || (isDomme ? 'Verified Dominant Companion' : 'Verified Submissive Companion');

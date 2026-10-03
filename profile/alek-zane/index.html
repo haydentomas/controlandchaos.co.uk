@@ -916,6 +916,10 @@ function openLightbox(imgSrc, title, category) {
     }
 
     function renderDynamicArticleView(profile, post, allBlogPosts) {
+      const escapeHtml = (str) => {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      };
       const isDomme = (profile.role_type === 'domme' || profile.role_type === 'dom');
       const roleLabel = isDomme ? 'DOM' : 'SUB';
       const roleTitle = profile.role || (isDomme ? 'Verified Dominant Companion' : 'Verified Submissive Companion');
