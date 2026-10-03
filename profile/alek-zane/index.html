@@ -915,11 +915,76 @@ function openLightbox(imgSrc, title, category) {
       return String(profile.slug || profile.name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function renderInlineMarkdown(escapedText) {
+      if (!escapedText) return '';
+      return escapedText
+        .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#fff; font-weight:700;">$1</strong>')
+        .replace(/__(.+?)__/g, '<strong style="color:#fff; font-weight:700;">$1</strong>')
+        .replace(/\*([^\*]+?)\*/g, '<em style="color:#f1f5f9;">$1</em>')
+        .replace(/_([^_]+?)_/g, '<em style="color:#f1f5f9;">$1</em>')
+        .replace(/~~(.+?)~~/g, '<del style="color:#94a3b8;">$1</del>')
+        .replace(/`([^`]+?)`/g, '<code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:var(--font-mono); font-size:12.5px; color:var(--gold-bright);">$1</code>')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:var(--gold-bright); text-decoration:underline;">$1</a>');
+    }
+
+    function renderMarkdownToHtml(text) {
+      if (!text) return '';
+      const normalized = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+      const blocks = normalized.split(/\n{2,}/);
+      
+      const renderedBlocks = blocks.map(block => {
+        block = block.trim();
+        if (!block) return '';
+
+        if (/^(---|___|\*\*\*)$/.test(block)) {
+          return '<hr style="border:0; height:1px; background:rgba(212,175,55,0.25); margin:24px 0;">';
+        }
+
+        if (/^###\s+(.+)$/m.test(block)) {
+          return block.replace(/^###\s+(.+)$/gm, (_, t) => `<h3 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:18px; font-weight:700; margin:22px 0 10px 0;">${renderInlineMarkdown(escapeHtml(t))}</h3>`);
+        }
+        if (/^##\s+(.+)$/m.test(block)) {
+          return block.replace(/^##\s+(.+)$/gm, (_, t) => `<h2 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:22px; font-weight:800; margin:26px 0 12px 0;">${renderInlineMarkdown(escapeHtml(t))}</h2>`);
+        }
+        if (/^#\s+(.+)$/m.test(block)) {
+          return block.replace(/^#\s+(.+)$/gm, (_, t) => `<h1 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:26px; font-weight:900; margin:28px 0 14px 0;">${renderInlineMarkdown(escapeHtml(t))}</h1>`);
+        }
+
+        if (/^>\s+/m.test(block)) {
+          const quoteContent = block.replace(/^>\s?/gm, '');
+          const inner = renderInlineMarkdown(escapeHtml(quoteContent)).replace(/\n/g, '<br>');
+          return `<blockquote style="border-left: 3px solid var(--gold-primary); background: rgba(212,175,55,0.06); padding: 14px 18px; margin: 18px 0; border-radius: 0 8px 8px 0; font-style: italic; color: #cbd5e1;">${inner}</blockquote>`;
+        }
+
+        if (/^[-*+]\s+/m.test(block)) {
+          const items = block.split('\n').filter(l => l.trim()).map(line => {
+            const itemText = line.replace(/^[-*+]\s+/, '');
+            return `<li style="margin-bottom: 8px; line-height: 1.7;">${renderInlineMarkdown(escapeHtml(itemText))}</li>`;
+          }).join('');
+          return `<ul style="padding-left: 22px; margin: 16px 0; color: #e2e8f0;">${items}</ul>`;
+        }
+
+        if (/^\d+\.\s+/m.test(block)) {
+          const items = block.split('\n').filter(l => l.trim()).map(line => {
+            const itemText = line.replace(/^\d+\.\s+/, '');
+            return `<li style="margin-bottom: 8px; line-height: 1.7;">${renderInlineMarkdown(escapeHtml(itemText))}</li>`;
+          }).join('');
+          return `<ol style="padding-left: 22px; margin: 16px 0; color: #e2e8f0;">${items}</ol>`;
+        }
+
+        const inline = renderInlineMarkdown(escapeHtml(block)).replace(/\n/g, '<br>');
+        return `<p style="margin: 0 0 18px 0; line-height: 1.8; color: #e2e8f0;">${inline}</p>`;
+      });
+
+      return renderedBlocks.filter(Boolean).join('\n');
+    }
+
     function renderDynamicArticleView(profile, post, allBlogPosts) {
-      const escapeHtml = (str) => {
-        if (!str) return '';
-        return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      };
       const isDomme = (profile.role_type === 'domme' || profile.role_type === 'dom');
       const roleLabel = isDomme ? 'DOM' : 'SUB';
       const roleTitle = profile.role || (isDomme ? 'Verified Dominant Companion' : 'Verified Submissive Companion');
@@ -1003,8 +1068,8 @@ function openLightbox(imgSrc, title, category) {
                 <img src="${escapeHtml(post.media_url)}" alt="${escapeHtml(post.title)}" style="width:100%; max-height:480px; border-radius:14px; object-fit:cover; border:1px solid var(--gold-border-subtle); margin:20px 0; display:block;">
               ` : ''}
 
-              <div style="font-size: 16px; line-height: 1.8; color: #e2e8f0; margin: 24px 0 32px; white-space: pre-line;">
-                ${escapeHtml(post.content || '')}
+              <div class="article-content" style="font-size: 16px; line-height: 1.8; color: #e2e8f0; margin: 24px 0 32px; word-break: break-word;">
+                ${renderMarkdownToHtml(post.content || '')}
               </div>
 
               <div style="display:flex; justify-content:space-between; align-items:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:12px;">
@@ -2580,8 +2645,8 @@ function openLightbox(imgSrc, title, category) {
               </h3>
 
               <!-- Post Body -->
-              <div style="font-size: 14.5px; color: var(--text-primary); line-height: 1.7; margin-bottom: 16px; white-space: pre-line;">
-                ${escapeHtml(post.content || '')}
+              <div class="blog-post-body" style="font-size: 14.5px; color: var(--text-primary); line-height: 1.7; margin-bottom: 16px; word-break: break-word;">
+                ${renderMarkdownToHtml(post.content || '')}
               </div>
 
               <!-- Post Media (if any) -->

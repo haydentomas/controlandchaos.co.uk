@@ -22,6 +22,93 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;');
 }
 
+function stripMarkdown(md) {
+  if (!md) return '';
+  return String(md)
+    .replace(/#+\s+/g, '')
+    .replace(/(\*\*|__)(.*?)\1/g, '$2')
+    .replace(/(\*|_)(.*?)\1/g, '$2')
+    .replace(/~~(.*?)~~/g, '$1')
+    .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
+    .replace(/`{1,3}(.*?)`{1,3}/g, '$1')
+    .replace(/^>\s+/gm, '')
+    .replace(/^[-*+]\s+/gm, '')
+    .replace(/^\d+\.\s+/gm, '')
+    .replace(/\r\n|\n|\r/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function renderInlineMarkdown(escapedText) {
+  if (!escapedText) return '';
+  return escapedText
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#fff; font-weight:700;">$1</strong>')
+    .replace(/__(.+?)__/g, '<strong style="color:#fff; font-weight:700;">$1</strong>')
+    .replace(/\*([^\*]+?)\*/g, '<em style="color:#f1f5f9;">$1</em>')
+    .replace(/_([^_]+?)_/g, '<em style="color:#f1f5f9;">$1</em>')
+    .replace(/~~(.+?)~~/g, '<del style="color:#94a3b8;">$1</del>')
+    .replace(/`([^`]+?)`/g, '<code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:var(--font-mono); font-size:12.5px; color:var(--gold-bright);">$1</code>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:var(--gold-bright); text-decoration:underline;">$1</a>');
+}
+
+function renderMarkdownToHtml(text) {
+  if (!text) return '';
+  const normalized = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+  const blocks = normalized.split(/\n{2,}/);
+  
+  const renderedBlocks = blocks.map(block => {
+    block = block.trim();
+    if (!block) return '';
+
+    // Horizontal Rule
+    if (/^(---|___|\*\*\*)$/.test(block)) {
+      return '<hr style="border:0; height:1px; background:rgba(212,175,55,0.25); margin:24px 0;">';
+    }
+
+    // Headers (#, ##, ###)
+    if (/^###\s+(.+)$/m.test(block)) {
+      return block.replace(/^###\s+(.+)$/gm, (_, t) => `<h3 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:18px; font-weight:700; margin:22px 0 10px 0;">${renderInlineMarkdown(escapeHtml(t))}</h3>`);
+    }
+    if (/^##\s+(.+)$/m.test(block)) {
+      return block.replace(/^##\s+(.+)$/gm, (_, t) => `<h2 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:22px; font-weight:800; margin:26px 0 12px 0;">${renderInlineMarkdown(escapeHtml(t))}</h2>`);
+    }
+    if (/^#\s+(.+)$/m.test(block)) {
+      return block.replace(/^#\s+(.+)$/gm, (_, t) => `<h1 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:26px; font-weight:900; margin:28px 0 14px 0;">${renderInlineMarkdown(escapeHtml(t))}</h1>`);
+    }
+
+    // Blockquote
+    if (/^>\s+/m.test(block)) {
+      const quoteContent = block.replace(/^>\s?/gm, '');
+      const inner = renderInlineMarkdown(escapeHtml(quoteContent)).replace(/\n/g, '<br>');
+      return `<blockquote style="border-left: 3px solid var(--gold-primary); background: rgba(212,175,55,0.06); padding: 14px 18px; margin: 18px 0; border-radius: 0 8px 8px 0; font-style: italic; color: #cbd5e1;">${inner}</blockquote>`;
+    }
+
+    // Unordered list
+    if (/^[-*+]\s+/m.test(block)) {
+      const items = block.split('\n').filter(l => l.trim()).map(line => {
+        const itemText = line.replace(/^[-*+]\s+/, '');
+        return `<li style="margin-bottom: 8px; line-height: 1.7;">${renderInlineMarkdown(escapeHtml(itemText))}</li>`;
+      }).join('');
+      return `<ul style="padding-left: 22px; margin: 16px 0; color: #e2e8f0;">${items}</ul>`;
+    }
+
+    // Ordered list
+    if (/^\d+\.\s+/m.test(block)) {
+      const items = block.split('\n').filter(l => l.trim()).map(line => {
+        const itemText = line.replace(/^\d+\.\s+/, '');
+        return `<li style="margin-bottom: 8px; line-height: 1.7;">${renderInlineMarkdown(escapeHtml(itemText))}</li>`;
+      }).join('');
+      return `<ol style="padding-left: 22px; margin: 16px 0; color: #e2e8f0;">${items}</ol>`;
+    }
+
+    // Standard paragraph with internal single line-breaks
+    const inline = renderInlineMarkdown(escapeHtml(block)).replace(/\n/g, '<br>');
+    return `<p style="margin: 0 0 18px 0; line-height: 1.8; color: #e2e8f0;">${inline}</p>`;
+  });
+
+  return renderedBlocks.filter(Boolean).join('\n');
+}
+
 function slugifyProfileName(name) {
   return String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
@@ -266,7 +353,9 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
   const roleTitle = profile.role || (isDomme ? 'Verified Dominant Companion' : 'Verified Submissive Companion');
   const startingRate = profile.starting_rate || 'From L$3,000 / hr';
   const avatarImg = profile.avatar_image || '';
-  let postImg = post.media_url || profile.avatar_image || profile.banner_image || '';
+  
+  // Dynamic SEO & OG Image (Attached photo -> profile banner -> avatar -> luxury fallback)
+  let postImg = post.seo_image || post.media_url || profile.banner_image || profile.avatar_image || '';
   if (postImg && !postImg.startsWith('http') && !postImg.startsWith('//')) {
     postImg = `https://controlandchaos.co.uk${postImg.startsWith('/') ? '' : '/'}${postImg}`;
   }
@@ -275,16 +364,22 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
   }
 
   const pageUrl = `https://controlandchaos.co.uk/profile/${profileSlug}/blog/${postSlug}/`;
-  const seoTitle = `${postTitle} — ${profile.name}'s Blog | Control & Chaos`;
-  const rawSummary = post.content ? post.content.substring(0, 160).replace(/(\r\n|\n|\r)/gm, ' ') + '...' : `Read this free public journal update from ${profile.name} on Control & Chaos.`;
-  const seoDesc = rawSummary;
+  const defaultSeoTitle = `${postTitle} — ${profile.name}'s Blog | Control & Chaos`;
+  const finalSeoTitle = post.seo_title || defaultSeoTitle;
+
+  const plainContentSnippet = post.content ? stripMarkdown(post.content) : '';
+  const defaultSeoDesc = plainContentSnippet 
+    ? (plainContentSnippet.substring(0, 157) + (plainContentSnippet.length > 157 ? '...' : '')) 
+    : `Read this free public journal update from ${profile.name} on Control & Chaos.`;
+  const finalSeoDesc = post.seo_description || defaultSeoDesc;
+
   const uKey = (profile.avatar_uuid || profile.id || '') + '_' + (post.id || postSlug);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": postTitle,
-    "description": seoDesc,
+    "description": finalSeoDesc,
     "image": postImg,
     "datePublished": "2026-10-03",
     "author": {
@@ -318,22 +413,22 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>${escapeHtml(seoTitle)}</title>
-  <meta name="description" content="${escapeHtml(seoDesc)}">
+  <title>${escapeHtml(finalSeoTitle)}</title>
+  <meta name="description" content="${escapeHtml(finalSeoDesc)}">
   <link rel="canonical" href="${pageUrl}">
 
   <!-- OpenGraph / Discord Rich Previews -->
   <meta property="og:type" content="article">
-  <meta property="og:title" content="${escapeHtml(seoTitle)}">
-  <meta property="og:description" content="${escapeHtml(seoDesc)}">
+  <meta property="og:title" content="${escapeHtml(finalSeoTitle)}">
+  <meta property="og:description" content="${escapeHtml(finalSeoDesc)}">
   <meta property="og:image" content="${escapeHtml(postImg)}">
   <meta property="og:url" content="${pageUrl}">
   <meta property="og:site_name" content="Control &amp; Chaos">
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${escapeHtml(seoTitle)}">
-  <meta name="twitter:description" content="${escapeHtml(seoDesc)}">
+  <meta name="twitter:title" content="${escapeHtml(finalSeoTitle)}">
+  <meta name="twitter:description" content="${escapeHtml(finalSeoDesc)}">
   <meta name="twitter:image" content="${escapeHtml(postImg)}">
 
   <!-- JSON-LD Schema -->
@@ -447,7 +542,71 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
       line-height: 1.8;
       color: #e2e8f0;
       margin: 24px 0 32px;
-      white-space: pre-line;
+      word-break: break-word;
+    }
+
+    .article-content p {
+      margin: 0 0 18px 0;
+      line-height: 1.8;
+    }
+
+    .article-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .article-content h1, .article-content h2, .article-content h3 {
+      font-family: var(--font-heading);
+      color: var(--gold-bright);
+      margin-top: 26px;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .article-content ul, .article-content ol {
+      padding-left: 24px;
+      margin: 16px 0;
+    }
+
+    .article-content li {
+      margin-bottom: 8px;
+      line-height: 1.7;
+    }
+
+    .article-content blockquote {
+      border-left: 3px solid var(--gold-primary);
+      background: rgba(212, 175, 55, 0.06);
+      padding: 14px 20px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: #cbd5e1;
+    }
+
+    .article-content strong {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .article-content em {
+      color: #f1f5f9;
+    }
+
+    .article-content a {
+      color: var(--gold-bright);
+      text-decoration: underline;
+    }
+
+    .article-content a:hover {
+      color: #fff;
+    }
+
+    .article-content code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--gold-bright);
     }
 
     .article-hero-media {
@@ -589,9 +748,9 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
             <img src="${escapeHtml(post.media_url)}" alt="${escapeHtml(postTitle)}" class="article-hero-media" loading="eager">
           ` : ''}
 
-          <!-- Article Body -->
-          <div class="article-content">
-            ${escapeHtml(post.content || '')}
+          <!-- Article Body (Rendered Markdown) -->
+          <div class="article-content" id="blog-article-content">
+            ${renderMarkdownToHtml(post.content || '')}
           </div>
 
           <!-- Article Action Bar -->

@@ -555,6 +555,186 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
+    /* Markdown Editor & Toolbar Styles */
+    .md-toolbar-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      padding: 6px 10px;
+    }
+
+    .md-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .md-tool-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .md-tool-btn:hover {
+      background: rgba(212, 175, 55, 0.2);
+      border-color: rgba(212, 175, 55, 0.4);
+      color: var(--gold-bright);
+    }
+
+    .md-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #94a3b8;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .md-tab-btn.active {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: rgba(212, 175, 55, 0.35);
+      color: var(--gold-bright);
+    }
+
+    .md-rendered-preview {
+      min-height: 150px;
+      max-height: 280px;
+      overflow-y: auto;
+      background: #0d0b10;
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 0 0 8px 8px;
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #e2e8f0;
+      word-break: break-word;
+    }
+
+    .md-rendered-preview p {
+      margin: 0 0 14px 0;
+      line-height: 1.7;
+    }
+    .md-rendered-preview p:last-child {
+      margin-bottom: 0;
+    }
+    .md-rendered-preview h1, .md-rendered-preview h2, .md-rendered-preview h3 {
+      font-family: var(--font-heading);
+      color: var(--gold-bright);
+      margin: 16px 0 8px 0;
+      line-height: 1.3;
+    }
+    .md-rendered-preview ul, .md-rendered-preview ol {
+      padding-left: 20px;
+      margin: 10px 0;
+    }
+    .md-rendered-preview li {
+      margin-bottom: 4px;
+    }
+    .md-rendered-preview blockquote {
+      border-left: 3px solid var(--gold-primary);
+      background: rgba(212, 175, 55, 0.06);
+      padding: 8px 12px;
+      margin: 12px 0;
+      border-radius: 0 6px 6px 0;
+      font-style: italic;
+      color: #cbd5e1;
+    }
+
+    /* Formatting Guide Cheat-Sheet Panel */
+    .md-guide-panel {
+      background: rgba(20, 17, 26, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      font-size: 11.5px;
+      display: none;
+      animation: modalFadeIn 0.2s ease;
+    }
+    .md-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px 14px;
+      margin-top: 8px;
+    }
+    .md-guide-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .md-guide-code {
+      font-family: var(--font-mono);
+      color: var(--gold-bright);
+    }
+    .md-guide-desc {
+      color: #94a3b8;
+    }
+
+    /* Social Card Live Preview */
+    .social-card-preview {
+      background: #110e17;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 12px 0;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+    .social-card-thumb-wrap {
+      width: 100%;
+      height: 120px;
+      background: #08060a;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .social-card-thumb-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .social-card-body {
+      padding: 10px 14px;
+    }
+    .social-card-domain {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--gold-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .social-card-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .social-card-snippet {
+      font-size: 11.5px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
   </style>
 </head>
 
@@ -1540,7 +1720,7 @@
 
       <div class="form-group">
         <label class="form-label" for="modal-blog-title">Blog Title *</label>
-        <input type="text" id="modal-blog-title" class="form-input" placeholder="e.g. Schedule Update, Session Reflections, Gala Announcement" required>
+        <input type="text" id="modal-blog-title" class="form-input" placeholder="e.g. Schedule Update, Session Reflections, Gala Announcement" required oninput="updateBlogSeoPreview()">
       </div>
 
       <div class="form-grid-2">
@@ -1550,7 +1730,7 @@
         </div>
         <div class="form-group">
           <label class="form-label" for="modal-blog-media-url">Attached Photo URL (Optional)</label>
-          <input type="text" id="modal-blog-media-url" class="form-input" placeholder="https://images.unsplash.com/... or /assets/photo.jpg" oninput="updateModalBlogThumb(this.value)">
+          <input type="text" id="modal-blog-media-url" class="form-input" placeholder="https://images.unsplash.com/... or /assets/photo.jpg" oninput="updateModalBlogThumb(this.value); updateBlogSeoPreview();">
         </div>
       </div>
 
@@ -1558,12 +1738,88 @@
         <img id="modal-blog-thumb" class="img-preview-thumb" style="height:140px; width:100%; border-radius:8px; object-fit:cover;" src="" alt="Blog Preview" onerror="this.style.display='none'">
       </div>
 
-      <div class="form-group">
-        <label class="form-label" for="modal-blog-content">Blog Post Content *</label>
-        <textarea id="modal-blog-content" class="form-textarea" rows="6" placeholder="Write your free public blog entry, story, thoughts, or announcement for everyone visiting your rate card..."></textarea>
+      <!-- Formatting Cheat-Sheet Guide Panel -->
+      <div id="modal-blog-md-guide-panel" class="md-guide-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <strong style="color:var(--gold-bright); font-family:var(--font-heading); font-size:12px;">📖 Markdown &amp; Paragraph Formatting Guide</strong>
+          <span style="font-size:10.5px; color:#94a3b8;">Click toolbar buttons or type shortcuts below:</span>
+        </div>
+        <div class="md-guide-grid">
+          <div class="md-guide-item"><span class="md-guide-code">Enter twice</span><span class="md-guide-desc">New Paragraph</span></div>
+          <div class="md-guide-item"><span class="md-guide-code">**Bold**</span><span class="md-guide-desc"><strong>Bold Text</strong></span></div>
+          <div class="md-guide-item"><span class="md-guide-code">*Italic*</span><span class="md-guide-desc"><em>Italic Text</em></span></div>
+          <div class="md-guide-item"><span class="md-guide-code">## Heading</span><span class="md-guide-desc">Subheading</span></div>
+          <div class="md-guide-item"><span class="md-guide-code">- Item</span><span class="md-guide-desc">• Bullet List</span></div>
+          <div class="md-guide-item"><span class="md-guide-code">1. Item</span><span class="md-guide-desc">1. Numbered List</span></div>
+          <div class="md-guide-item"><span class="md-guide-code">&gt; Quote</span><span class="md-guide-desc">Blockquote</span></div>
+          <div class="md-guide-item"><span class="md-guide-code">[Text](url)</span><span class="md-guide-desc">Clickable Link</span></div>
+        </div>
       </div>
 
-      <div class="flex-between align-center gap-12 mt-20 pt-16" style="border-top: 1px solid rgba(255,255,255,0.08);">
+      <!-- Blog Content with Markdown Toolbar -->
+      <div class="form-group" style="margin-bottom:18px;">
+        <div class="md-toolbar-bar">
+          <div class="md-btn-group">
+            <button type="button" class="md-tool-btn" onclick="insertBlogMarkdown('bold')" title="Bold (Ctrl+B)"><strong>B</strong></button>
+            <button type="button" class="md-tool-btn" onclick="insertBlogMarkdown('italic')" title="Italic (Ctrl+I)"><em>I</em></button>
+            <button type="button" class="md-tool-btn" onclick="insertBlogMarkdown('h2')" title="Subheading (##)">H2</button>
+            <button type="button" class="md-tool-btn" onclick="insertBlogMarkdown('list')" title="Bullet List (-)">• List</button>
+            <button type="button" class="md-tool-btn" onclick="insertBlogMarkdown('link')" title="Insert Link">🔗 Link</button>
+            <button type="button" class="md-tool-btn" onclick="insertBlogMarkdown('quote')" title="Quote (&gt;)">💬 Quote</button>
+            <button type="button" class="md-tool-btn" onclick="insertBlogMarkdown('divider')" title="Divider Line (---)">───</button>
+            <button type="button" class="md-tool-btn" onclick="toggleBlogMarkdownGuide()" style="color:var(--gold-bright); background:rgba(212,175,55,0.15);" title="Toggle Formatting Guide">ℹ️ Guide</button>
+          </div>
+          <div class="md-btn-group">
+            <button type="button" id="blog-tab-write" class="md-tab-btn active" onclick="switchBlogContentMode('write')">✏️ Write</button>
+            <button type="button" id="blog-tab-preview" class="md-tab-btn" onclick="switchBlogContentMode('preview')">👁️ Live Preview</button>
+          </div>
+        </div>
+
+        <textarea id="modal-blog-content" class="form-textarea" style="border-top-left-radius:0; border-top-right-radius:0; margin-top:0;" rows="7" placeholder="Write your free public blog entry, story, thoughts, or announcement...&#10;&#10;Press Enter twice to create clean spaced paragraphs! Markdown formatting like **bold**, *italic*, and ## headings are fully supported." oninput="updateBlogSeoPreview()"></textarea>
+
+        <div id="modal-blog-preview-rendered" class="md-rendered-preview" style="display:none;"></div>
+      </div>
+
+      <!-- Collapsible SEO & Social Share Settings -->
+      <details style="background: rgba(0,0,0,0.35); border: 1px solid rgba(212,175,55,0.25); border-radius: 10px; padding: 12px 14px; margin-bottom: 20px;">
+        <summary style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: var(--gold-bright); cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+          <span>🌐 SEO &amp; Social Sharing <span style="font-size: 11px; font-family: var(--font-mono); color: var(--gold-muted); font-weight: 400; margin-left: 6px;">(Automated by Default)</span></span>
+          <span style="font-size: 12px; color: var(--gold-muted);">▼</span>
+        </summary>
+
+        <p style="font-size: 11.5px; color: #94a3b8; line-height: 1.5; margin: 10px 0 14px;">
+          Control &amp; Chaos generates static SEO pages with OpenGraph &amp; Twitter Rich Cards for every post. Post title, attached photo, and extracted text are used automatically. You can optionally customize them below:
+        </p>
+
+        <!-- Live Social Share Preview Card -->
+        <div class="social-card-preview" id="modal-blog-seo-preview-card">
+          <div class="social-card-thumb-wrap" id="modal-blog-seo-preview-thumb-wrap">
+            <img id="modal-blog-seo-preview-img" class="social-card-thumb-img" src="" alt="SEO Preview" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div class="social-card-body">
+            <div class="social-card-domain">controlandchaos.co.uk &bull; Blog Entry</div>
+            <div class="social-card-title" id="modal-blog-seo-preview-title">Post Title — Blog | Control &amp; Chaos</div>
+            <div class="social-card-snippet" id="modal-blog-seo-preview-snippet">Post description snippet preview...</div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 12px;">
+          <label class="form-label" for="modal-blog-seo-title">Custom SEO / Social Title <span class="font-2xs text-muted">(Optional override)</span></label>
+          <input type="text" id="modal-blog-seo-title" class="form-input" placeholder="Leave empty for automated post title" oninput="updateBlogSeoPreview()">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="modal-blog-seo-desc">Custom Meta Description <span class="font-2xs text-muted">(Optional override)</span></label>
+          <textarea id="modal-blog-seo-desc" class="form-textarea" rows="2" placeholder="Leave empty to auto-extract the first 160 characters from your post" oninput="updateBlogSeoPreview()"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 4px;">
+          <label class="form-label" for="modal-blog-slug">Custom URL Slug <span class="font-2xs text-muted">(Optional, e.g. my-article-title)</span></label>
+          <input type="text" id="modal-blog-slug" class="form-input font-mono" placeholder="Leave empty to automatically generate from post title" oninput="updateBlogSeoPreview()">
+        </div>
+      </details>
+
+      <div class="flex-between align-center gap-12 mt-10 pt-16" style="border-top: 1px solid rgba(255,255,255,0.08);">
         <button type="button" onclick="closeBlogPostModal()" class="btn btn-secondary btn-sm" style="padding: 10px 18px;">
           ✕ Cancel
         </button>
@@ -1601,6 +1857,92 @@
     let reviewsList = [];
     let postsList = [];
     let blogPostsList = [];
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function stripMarkdown(md) {
+      if (!md) return '';
+      return String(md)
+        .replace(/#+\s+/g, '')
+        .replace(/(\*\*|__)(.*?)\1/g, '$2')
+        .replace(/(\*|_)(.*?)\1/g, '$2')
+        .replace(/~~(.*?)~~/g, '$1')
+        .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
+        .replace(/`{1,3}(.*?)`{1,3}/g, '$1')
+        .replace(/^>\s+/gm, '')
+        .replace(/^[-*+]\s+/gm, '')
+        .replace(/^\d+\.\s+/gm, '')
+        .replace(/\r\n|\n|\r/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function renderInlineMarkdown(escapedText) {
+      if (!escapedText) return '';
+      return escapedText
+        .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#fff; font-weight:700;">$1</strong>')
+        .replace(/__(.+?)__/g, '<strong style="color:#fff; font-weight:700;">$1</strong>')
+        .replace(/\*([^\*]+?)\*/g, '<em style="color:#f1f5f9;">$1</em>')
+        .replace(/_([^_]+?)_/g, '<em style="color:#f1f5f9;">$1</em>')
+        .replace(/~~(.+?)~~/g, '<del style="color:#94a3b8;">$1</del>')
+        .replace(/`([^`]+?)`/g, '<code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:var(--font-mono); font-size:12.5px; color:var(--gold-bright);">$1</code>')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:var(--gold-bright); text-decoration:underline;">$1</a>');
+    }
+
+    function renderMarkdownToHtml(text) {
+      if (!text) return '';
+      const normalized = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+      const blocks = normalized.split(/\n{2,}/);
+      
+      const renderedBlocks = blocks.map(block => {
+        block = block.trim();
+        if (!block) return '';
+
+        if (/^(---|___|\*\*\*)$/.test(block)) {
+          return '<hr style="border:0; height:1px; background:rgba(212,175,55,0.25); margin:18px 0;">';
+        }
+
+        if (/^###\s+(.+)$/m.test(block)) {
+          return block.replace(/^###\s+(.+)$/gm, (_, t) => `<h3 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:16px; font-weight:700; margin:16px 0 8px 0;">${renderInlineMarkdown(escapeHtml(t))}</h3>`);
+        }
+        if (/^##\s+(.+)$/m.test(block)) {
+          return block.replace(/^##\s+(.+)$/gm, (_, t) => `<h2 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:18px; font-weight:800; margin:18px 0 10px 0;">${renderInlineMarkdown(escapeHtml(t))}</h2>`);
+        }
+        if (/^#\s+(.+)$/m.test(block)) {
+          return block.replace(/^#\s+(.+)$/gm, (_, t) => `<h1 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:20px; font-weight:900; margin:20px 0 10px 0;">${renderInlineMarkdown(escapeHtml(t))}</h1>`);
+        }
+
+        if (/^>\s+/m.test(block)) {
+          const quoteContent = block.replace(/^>\s?/gm, '');
+          const inner = renderInlineMarkdown(escapeHtml(quoteContent)).replace(/\n/g, '<br>');
+          return `<blockquote style="border-left: 3px solid var(--gold-primary); background: rgba(212,175,55,0.06); padding: 10px 14px; margin: 14px 0; border-radius: 0 6px 6px 0; font-style: italic; color: #cbd5e1;">${inner}</blockquote>`;
+        }
+
+        if (/^[-*+]\s+/m.test(block)) {
+          const items = block.split('\n').filter(l => l.trim()).map(line => {
+            const itemText = line.replace(/^[-*+]\s+/, '');
+            return `<li style="margin-bottom: 6px; line-height: 1.6;">${renderInlineMarkdown(escapeHtml(itemText))}</li>`;
+          }).join('');
+          return `<ul style="padding-left: 20px; margin: 12px 0; color: #e2e8f0;">${items}</ul>`;
+        }
+
+        if (/^\d+\.\s+/m.test(block)) {
+          const items = block.split('\n').filter(l => l.trim()).map(line => {
+            const itemText = line.replace(/^\d+\.\s+/, '');
+            return `<li style="margin-bottom: 6px; line-height: 1.6;">${renderInlineMarkdown(escapeHtml(itemText))}</li>`;
+          }).join('');
+          return `<ol style="padding-left: 20px; margin: 12px 0; color: #e2e8f0;">${items}</ol>`;
+        }
+
+        const inline = renderInlineMarkdown(escapeHtml(block)).replace(/\n/g, '<br>');
+        return `<p style="margin: 0 0 14px 0; line-height: 1.7; color: #e2e8f0;">${inline}</p>`;
+      });
+
+      return renderedBlocks.filter(Boolean).join('\n');
+    }
 
     function toggleAvailDay(btn) {
       btn.classList.toggle('active');
@@ -2503,7 +2845,123 @@
       renderReviews();
     }
 
-    // Blog Posts & Modal
+    // Blog Posts & Markdown Composer
+    function insertBlogMarkdown(type) {
+      const textarea = document.getElementById('modal-blog-content');
+      if (!textarea) return;
+      
+      const start = textarea.selectionStart || 0;
+      const end = textarea.selectionEnd || 0;
+      const val = textarea.value;
+      const selected = val.substring(start, end);
+      
+      let before = '', after = '', placeholder = '';
+      
+      if (type === 'bold') {
+        before = '**';
+        after = '**';
+        placeholder = selected || 'bold text';
+      } else if (type === 'italic') {
+        before = '*';
+        after = '*';
+        placeholder = selected || 'italic text';
+      } else if (type === 'h2') {
+        before = '\n## ';
+        after = '\n';
+        placeholder = selected || 'Subheading';
+      } else if (type === 'list') {
+        before = '\n- ';
+        after = '';
+        placeholder = selected || 'List item';
+      } else if (type === 'link') {
+        before = '[';
+        after = '](https://example.com)';
+        placeholder = selected || 'Link text';
+      } else if (type === 'quote') {
+        before = '\n> ';
+        after = '\n';
+        placeholder = selected || 'Quote text';
+      } else if (type === 'divider') {
+        before = '\n\n---\n\n';
+        after = '';
+        placeholder = '';
+      }
+      
+      const replacement = before + placeholder + after;
+      textarea.value = val.substring(0, start) + replacement + val.substring(end);
+      textarea.focus();
+      textarea.selectionStart = start + before.length;
+      textarea.selectionEnd = start + before.length + placeholder.length;
+      
+      updateBlogSeoPreview();
+    }
+
+    function toggleBlogMarkdownGuide() {
+      const guide = document.getElementById('modal-blog-md-guide-panel');
+      if (guide) {
+        guide.style.display = guide.style.display === 'block' ? 'none' : 'block';
+      }
+    }
+
+    function switchBlogContentMode(mode) {
+      const writeBtn = document.getElementById('blog-tab-write');
+      const prevBtn = document.getElementById('blog-tab-preview');
+      const textarea = document.getElementById('modal-blog-content');
+      const prevBox = document.getElementById('modal-blog-preview-rendered');
+      
+      if (mode === 'preview') {
+        if (writeBtn) writeBtn.classList.remove('active');
+        if (prevBtn) prevBtn.classList.add('active');
+        if (textarea) textarea.style.display = 'none';
+        if (prevBox) {
+          prevBox.innerHTML = renderMarkdownToHtml(textarea.value || '') || '<p class="font-xs text-muted" style="font-style:italic;">Nothing to preview yet. Switch to Write tab to type content.</p>';
+          prevBox.style.display = 'block';
+        }
+      } else {
+        if (prevBtn) prevBtn.classList.remove('active');
+        if (writeBtn) writeBtn.classList.add('active');
+        if (prevBox) prevBox.style.display = 'none';
+        if (textarea) {
+          textarea.style.display = 'block';
+          textarea.focus();
+        }
+      }
+    }
+
+    function updateBlogSeoPreview() {
+      const title = (document.getElementById('modal-blog-title')?.value || '').trim() || 'Untitled Post';
+      const customSeoTitle = (document.getElementById('modal-blog-seo-title')?.value || '').trim();
+      const content = document.getElementById('modal-blog-content')?.value || '';
+      const customSeoDesc = (document.getElementById('modal-blog-seo-desc')?.value || '').trim();
+      const mediaUrl = (document.getElementById('modal-blog-media-url')?.value || '').trim();
+      const creatorName = (document.getElementById('edit-name')?.value || currentProfile?.name || 'Companion').trim();
+      const avatarUrl = document.getElementById('edit-avatar-img')?.value || currentProfile?.avatar_image || '';
+      const bannerUrl = document.getElementById('edit-banner-img')?.value || currentProfile?.banner_image || '';
+
+      const finalTitle = customSeoTitle || `${title} — ${creatorName}'s Blog | Control & Chaos`;
+      const plainText = stripMarkdown(content);
+      const defaultDesc = plainText ? (plainText.substring(0, 150) + (plainText.length > 150 ? '...' : '')) : `Read this free public journal update from ${creatorName} on Control & Chaos.`;
+      const finalDesc = customSeoDesc || defaultDesc;
+      const finalImg = mediaUrl || bannerUrl || avatarUrl || 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80';
+
+      const titleEl = document.getElementById('modal-blog-seo-preview-title');
+      const snipEl = document.getElementById('modal-blog-seo-preview-snippet');
+      const imgEl = document.getElementById('modal-blog-seo-preview-img');
+      const thumbWrap = document.getElementById('modal-blog-seo-preview-thumb-wrap');
+
+      if (titleEl) titleEl.textContent = finalTitle;
+      if (snipEl) snipEl.textContent = finalDesc;
+      if (imgEl && thumbWrap) {
+        if (finalImg) {
+          imgEl.src = finalImg;
+          imgEl.style.display = 'block';
+          thumbWrap.style.display = 'block';
+        } else {
+          thumbWrap.style.display = 'none';
+        }
+      }
+    }
+
     function openCreateBlogPostModal() {
       document.getElementById('modal-blog-title-header').innerHTML = '<span class="icon">📰</span> Create Public Blog Post';
       document.getElementById('modal-blog-index').value = '-1';
@@ -2511,8 +2969,16 @@
       document.getElementById('modal-blog-tag').value = '💬 Update';
       document.getElementById('modal-blog-media-url').value = '';
       document.getElementById('modal-blog-content').value = '';
+      document.getElementById('modal-blog-seo-title').value = '';
+      document.getElementById('modal-blog-seo-desc').value = '';
+      document.getElementById('modal-blog-slug').value = '';
       updateModalBlogThumb('');
+      switchBlogContentMode('write');
+      updateBlogSeoPreview();
       
+      const guide = document.getElementById('modal-blog-md-guide-panel');
+      if (guide) guide.style.display = 'none';
+
       const modal = document.getElementById('blog-post-modal');
       if (modal) modal.classList.add('open');
       setTimeout(() => document.getElementById('modal-blog-title')?.focus(), 100);
@@ -2527,7 +2993,15 @@
       document.getElementById('modal-blog-tag').value = p.tag || '💬 Update';
       document.getElementById('modal-blog-media-url').value = p.media_url || '';
       document.getElementById('modal-blog-content').value = p.content || '';
+      document.getElementById('modal-blog-seo-title').value = p.seo_title || '';
+      document.getElementById('modal-blog-seo-desc').value = p.seo_description || '';
+      document.getElementById('modal-blog-slug').value = p.slug || '';
       updateModalBlogThumb(p.media_url || '');
+      switchBlogContentMode('write');
+      updateBlogSeoPreview();
+
+      const guide = document.getElementById('modal-blog-md-guide-panel');
+      if (guide) guide.style.display = 'none';
 
       const modal = document.getElementById('blog-post-modal');
       if (modal) modal.classList.add('open');
@@ -2563,6 +3037,9 @@
       const tag = (document.getElementById('modal-blog-tag').value || '').trim() || '💬 Update';
       const mediaUrl = (document.getElementById('modal-blog-media-url').value || '').trim();
       const content = (document.getElementById('modal-blog-content').value || '').trim();
+      const seoTitle = (document.getElementById('modal-blog-seo-title')?.value || '').trim();
+      const seoDesc = (document.getElementById('modal-blog-seo-desc')?.value || '').trim();
+      const customSlug = (document.getElementById('modal-blog-slug')?.value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
       if (!content) {
         alert("Please provide some text content for your blog post.");
@@ -2576,19 +3053,27 @@
         blogPostsList[idx].tag = tag;
         blogPostsList[idx].media_url = mediaUrl;
         blogPostsList[idx].content = content;
+        if (seoTitle) blogPostsList[idx].seo_title = seoTitle; else delete blogPostsList[idx].seo_title;
+        if (seoDesc) blogPostsList[idx].seo_description = seoDesc; else delete blogPostsList[idx].seo_description;
+        if (customSlug) blogPostsList[idx].slug = customSlug;
       } else {
         // Create new
         const now = new Date();
         const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        blogPostsList.unshift({
+        const autoSlug = customSlug || (title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || ('entry-' + Date.now()));
+        const newPost = {
           id: 'blog-' + Date.now(),
+          slug: autoSlug,
           title: title,
           tag: tag,
           media_url: mediaUrl,
           content: content,
           likes: 0,
           timestamp: dateStr
-        });
+        };
+        if (seoTitle) newPost.seo_title = seoTitle;
+        if (seoDesc) newPost.seo_description = seoDesc;
+        blogPostsList.unshift(newPost);
       }
 
       closeBlogPostModal();
@@ -2634,6 +3119,7 @@
                 ${escapeHtml(post.tag || '💬 Update')}
               </span>
               <span class="font-2xs text-muted font-mono">${post.timestamp || 'Recent'}</span>
+              ${post.slug ? `<span class="font-2xs text-muted font-mono" style="color:var(--gold-muted);">/blog/${escapeHtml(post.slug)}/</span>` : ''}
             </div>
 
             <div class="flex-row align-center gap-8 ml-auto">
@@ -2646,9 +3132,13 @@
             </div>
           </div>
 
-          <h4 class="font-sm font-bold text-white mb-6" style="margin: 0 0 6px 0;">${escapeHtml(post.title || 'Untitled Entry')}</h4>
+          <h4 class="font-sm font-bold text-white mb-6" style="margin: 0 0 8px 0;">${escapeHtml(post.title || 'Untitled Entry')}</h4>
           
-          ${post.content ? `<p class="font-xs text-muted mb-10" style="line-height: 1.5; margin-bottom: 8px; white-space: pre-line;">${escapeHtml(post.content.length > 250 ? post.content.substring(0, 250) + '...' : post.content)}</p>` : ''}
+          ${post.content ? `
+            <div class="font-xs text-muted mb-10 blog-post-preview-body" style="line-height: 1.6; margin-bottom: 10px;">
+              ${renderMarkdownToHtml(post.content.length > 300 ? post.content.substring(0, 300) + '...' : post.content)}
+            </div>
+          ` : ''}
 
           ${post.media_url ? `
             <div style="margin-top: 8px; max-width: 260px;">
