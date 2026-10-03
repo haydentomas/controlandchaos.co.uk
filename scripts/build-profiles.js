@@ -223,6 +223,7 @@ function buildProfiles() {
       if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true });
 
       const usedPostSlugs = new Set();
+      // Pre-pass: Assign slugs to ALL blog posts first so otherPosts has valid slugs
       blogPosts.forEach((post, pIdx) => {
         let pSlug = post.slug || slugifyProfileName(post.title) || (`entry-${pIdx + 1}`);
         let pSuffix = 2;
@@ -231,7 +232,11 @@ function buildProfiles() {
         }
         usedPostSlugs.add(pSlug);
         post.slug = pSlug;
+      });
 
+      // Pass 2: Write dedicated HTML for each post
+      blogPosts.forEach((post, pIdx) => {
+        const pSlug = post.slug;
         const postOutDir = path.join(blogDir, pSlug);
         if (!fs.existsSync(postOutDir)) fs.mkdirSync(postOutDir, { recursive: true });
 

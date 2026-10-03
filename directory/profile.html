@@ -1267,16 +1267,18 @@ function openLightbox(imgSrc, title, category) {
       // Handle direct blog post URL route (/profile/:id/blog/:postSlug/)
       if (isBlogPostRoute && postSlug) {
         const blogList = profileData.blog_posts || profileData.blog || [];
-        const cleanSlug = postSlug.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const cleanSlug = decodeURIComponent(postSlug).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         const matchedPost = blogList.find(p => {
           const s = (p.slug || (p.title ? p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : '')).toLowerCase();
           const id = String(p.id || '').toLowerCase();
-          return s === cleanSlug || id === cleanSlug || cleanSlug.includes(s) || s.includes(cleanSlug);
+          return s === cleanSlug || id === cleanSlug || (cleanSlug && s && cleanSlug.includes(s)) || (cleanSlug && s && s.includes(cleanSlug));
         });
 
         if (matchedPost) {
           renderDynamicArticleView(profileData, matchedPost, blogList);
           return;
+        } else {
+          window.defaultToBlogTab = true;
         }
       }
 
@@ -2730,7 +2732,7 @@ function openLightbox(imgSrc, title, category) {
       const reqTab = urlParams.get('tab');
       const reqHash = window.location.hash;
 
-      if (reqTab === 'blog' || reqHash.startsWith('#post-') || reqHash === '#tab-blog') {
+      if (window.defaultToBlogTab || reqTab === 'blog' || reqHash.startsWith('#post-') || reqHash === '#tab-blog') {
         switchProfileTab('blog');
         if (reqHash.startsWith('#post-')) {
           setTimeout(() => {
