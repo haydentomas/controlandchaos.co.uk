@@ -1194,9 +1194,6 @@
     function renderPublicBlogCard(profile, post, index) {
       const postSlug = publicBlogPostSlug(post, index);
       const articleUrl = profileArticlePath(profile, postSlug);
-      const userKey = (profile.avatar_uuid || profile.id || '') + '_' + (post.id || postSlug || index);
-      const hasLiked = localStorage.getItem('cc_blog_liked_' + userKey) === '1';
-      const likeCount = (Number(post.likes) || 0) + (hasLiked ? 1 : 0);
       const isDomme = profile.role_type === 'domme' || profile.role_type === 'dom';
       const avatar = profile.avatar_image || profile.avatar || '';
       const excerpt = publicBlogExcerpt(post);
@@ -1221,15 +1218,58 @@
             <h3 class="blog-feed-title"><a href="${escapeHtml(articleUrl)}">${escapeHtml(post.title || 'Journal Entry')}</a></h3>
             ${excerpt ? `<p class="blog-feed-excerpt">${escapeHtml(excerpt)}</p>` : ''}
             <div class="blog-feed-actions">
-              <button type="button" class="btn btn-secondary btn-sm" data-key="${escapeHtml(userKey)}" data-index="${index}" onclick="toggleBlogLike(this.dataset.key, Number(this.dataset.index))" id="blog-like-btn-${index}">
-                <span class="blog-like-heart">${hasLiked ? '❤️' : '🤍'}</span> <span id="blog-like-count-${index}">${likeCount} Likes</span>
-              </button>
               <button type="button" class="btn btn-secondary btn-sm" data-slug="${escapeHtml(postSlug)}" onclick="shareBlogPost('', this.dataset.slug, '')"><span>🔗</span> Share Link</button>
               <a href="${escapeHtml(articleUrl)}" class="btn btn-secondary btn-sm blog-feed-read"><span>📖</span> Read Full Article &rarr;</a>
             </div>
           </div>
         </article>
       `;
+    }
+
+    function getStatusBadgeHtml(rawStatus) {
+      const status = (rawStatus || 'Offline').toLowerCase();
+      if (['busy', 'session', 'booked', 'dnd', 'do not disturb'].some(value => status.includes(value))) return '<span id="profile-live-badge" class="traffic-status traffic-busy"><span class="traffic-dot"></span> Busy</span>';
+      if (['away', 'afk', 'brb'].some(value => status.includes(value))) return '<span id="profile-live-badge" class="traffic-status traffic-away"><span class="traffic-dot"></span> Away</span>';
+      if (['live', 'avail', 'online', 'in-world', 'ready'].some(value => status.includes(value))) return '<span id="profile-live-badge" class="traffic-status traffic-live"><span class="traffic-dot"></span> Live</span>';
+      return '<span id="profile-live-badge" class="traffic-status traffic-offline"><span class="traffic-dot"></span> Offline</span>';
+    }
+
+    function renderProfileHero(profile) {
+      const hero = document.getElementById('profile-hero-header');
+      const overlay = document.getElementById('profile-hero-overlay');
+      const content = document.getElementById('profile-hero-content');
+      if (!hero || !content) return;
+      hero.style.display = '';
+      const banner = profile.banner_image || profile.cover_image || profile.banner || '';
+      if (banner) {
+        hero.style.backgroundImage = `url("${banner}")`;
+        hero.style.backgroundPosition = 'center center';
+        hero.style.backgroundSize = 'cover';
+        hero.style.backgroundRepeat = 'no-repeat';
+        if (overlay) overlay.style.display = 'block';
+      } else {
+        hero.style.background = 'linear-gradient(180deg, #1f1519 0%, #12100e 100%)';
+        if (overlay) overlay.style.display = 'none';
+      }
+      const dominant = profile.role_type === 'domme' || profile.role_type === 'dom';
+      const avatar = profile.avatar_image || profile.avatar || '';
+      const textShadow = banner ? 'text-shadow:0 2px 8px rgba(0,0,0,0.9),0 4px 20px rgba(0,0,0,0.85);' : '';
+      content.innerHTML = `
+        <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap;">
+          <div style="width:110px; height:110px; border-radius:50%; background:#12100e; border:3px solid var(--gold-bright); display:flex; align-items:center; justify-content:center; font-size:52px; box-shadow:0 0 25px var(--gold-glow),0 4px 15px rgba(0,0,0,0.8); flex-shrink:0; overflow:hidden;">
+            ${avatar ? `<img src="${escapeHtml(avatar)}" alt="${escapeHtml(profile.name)}" style="width:100%; height:100%; object-fit:cover;">` : (dominant ? '👑' : '🩷')}
+          </div>
+          <div style="flex:1; min-width:280px; ${textShadow}">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <h1 style="font-family:var(--font-heading); font-size:38px; font-weight:900; color:var(--gold-bright); margin:0; text-shadow:0 2px 10px rgba(0,0,0,0.9);">${escapeHtml(profile.name)}</h1>
+              <span class="role-badge" style="background:${dominant ? 'rgba(139,30,45,0.6)' : 'rgba(184,154,88,0.35)'}; border:1px solid ${dominant ? 'var(--burgundy-light)' : 'var(--gold-border)'}; color:${dominant ? '#ffb8c2' : 'var(--gold-bright)'}; font-size:11px; backdrop-filter:blur(4px);">VERIFIED ${dominant ? 'DOMINANT' : 'SUBMISSIVE'}</span>
+              ${getStatusBadgeHtml(profile.status)}
+            </div>
+            ${profile.role ? `<div style="font-size:16px; font-weight:700; color:var(--gold-bright); margin-top:8px; letter-spacing:0.3px; text-shadow:0 1px 6px rgba(0,0,0,0.9);">${escapeHtml(profile.role)}</div>` : ''}
+            <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:6px; text-shadow:0 1px 4px rgba(0,0,0,0.8);">Second Life Username: <strong>${escapeHtml(profile.sl_username || profile.id)}</strong> ${profile.level ? `&bull; Level ${escapeHtml(profile.level)} (${escapeHtml(profile.rank || '')})` : ''}</div>
+            <p style="font-size:18px; color:var(--text-primary); margin-top:10px; font-style:italic; max-width:750px; line-height:1.5; text-shadow:0 2px 8px rgba(0,0,0,0.9);">"${escapeHtml(profile.tagline || '')}"</p>
+          </div>
+        </div>`;
     }
 
     function renderArticleProfileTabs(profile) {
@@ -1241,9 +1281,9 @@
         ['blog', '📰', 'Public Blog', (profile.blog_posts || profile.blog || []).length, profileFeatureEnabled(profile, 'public_blog')],
         ['gallery', '📸', 'Gallery', profileGalleryImages(profile).length, profileFeatureEnabled(profile, 'full_gallery')]
       ];
-      return `<nav id="profile-tabs-nav" class="container article-profile-tabs" aria-label="Profile views">${tabs.filter(tab => tab[4]).map(([name, icon, label, count]) => `
+      return `<div class="container"><nav id="profile-tabs-nav" class="article-profile-tabs" aria-label="Profile views">${tabs.filter(tab => tab[4]).map(([name, icon, label, count]) => `
         <a href="${basePath}?tab=${name}#profile-tabs-nav" data-profile-tab="${name}" class="profile-tab-btn${name === 'blog' ? ' active' : ''}" ${name === 'blog' ? 'aria-current="page"' : ''}><span>${icon}</span> ${label}${count !== null ? ` <span class="tab-badge">${count}</span>` : ''}</a>
-      `).join('')}</nav>`;
+      `).join('')}</nav></div>`;
     }
 
     function renderDynamicArticleView(profile, post, allBlogPosts) {
@@ -1253,8 +1293,7 @@
       const roleTitle = profile.role || (isDomme ? 'Verified Dominant Companion' : 'Verified Submissive Companion');
       const startingRate = profile.starting_rate || 'From L$3,000 / hr';
       const avatarImg = profile.avatar_image || '';
-      const heroHeader = document.getElementById('profile-hero-header');
-      if (heroHeader) heroHeader.style.display = 'none';
+      renderProfileHero(profile);
 
       const otherPosts = (allBlogPosts || []).filter(p => p !== post).slice(0, 3);
       const morePostsHtml = otherPosts.map(op => {
@@ -1275,9 +1314,6 @@
 
       const wordCount = (post.content || '').split(/\s+/).length;
       const readMinutes = Math.max(1, Math.round(wordCount / 180));
-      const uKey = (profile.avatar_uuid || profile.id || '') + '_' + (post.id || post.slug || '0');
-      const hasLiked = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
-      const likeCount = (post.likes || 0) + (hasLiked ? 1 : 0);
 
       const canonicalSlug = profileSlugFor(profile) || profile.id;
       const postSlug = post.slug || (post.title ? profileSlugFor({ name: post.title }) : 'entry');
@@ -1322,7 +1358,7 @@
 
       const mainEl = document.querySelector('main.section') || document.querySelector('main');
       if (!mainEl) return;
-      mainEl.classList.add('companion-article-page');
+      mainEl.classList.add('companion-article-page', 'profile-article-page');
       mainEl.style.removeProperty('padding');
 
       mainEl.innerHTML = `
@@ -1371,11 +1407,6 @@
 
               <div style="display:flex; justify-content:space-between; align-items:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:12px;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <button type="button" class="btn btn-secondary btn-sm" id="dyn-like-btn" onclick="toggleDynArticleLike('${uKey}', ${post.likes || 0})">
-                    <span id="dyn-like-heart">${hasLiked ? '❤️' : '🤍'}</span>
-                    <span id="dyn-like-count">${likeCount} Likes</span>
-                  </button>
-
                   <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard?.writeText(window.location.href); alert('🔗 Article link copied to clipboard!');">
                     <span>🔗</span> Share Article
                   </button>
@@ -1446,14 +1477,6 @@
       `;
 
       applyProfileFeatureVisibility(profile);
-      window.toggleDynArticleLike = function(key, base) {
-        const cur = localStorage.getItem('cc_blog_liked_' + key) === '1';
-        localStorage.setItem('cc_blog_liked_' + key, cur ? '0' : '1');
-        const heart = document.getElementById('dyn-like-heart');
-        const count = document.getElementById('dyn-like-count');
-        if (heart) heart.textContent = !cur ? '❤️' : '🤍';
-        if (count) count.textContent = (base + (!cur ? 1 : 0)) + ' Likes';
-      };
     }
 
     document.addEventListener('keydown', (e) => {
@@ -1552,6 +1575,12 @@
         if (matchedPost) {
           renderDynamicArticleView(profileData, matchedPost, blogList);
           return;
+        } else if (document.querySelector('main.profile-article-page .article-content')) {
+          renderProfileHero(profileData);
+          const tabs = document.getElementById('profile-tabs-nav');
+          if (tabs) tabs.parentElement.outerHTML = renderArticleProfileTabs(profileData);
+          applyProfileFeatureVisibility(profileData);
+          return;
         } else {
           window.defaultToBlogTab = true;
         }
@@ -1637,36 +1666,7 @@
         });
       }
 
-      // 1. Render Hero Header & Banner Overlay
-      const heroHeader = document.getElementById('profile-hero-header');
-      const heroOverlay = document.getElementById('profile-hero-overlay');
-      const heroContainer = document.getElementById('profile-hero-content');
-
-      const bannerUrl = profileData.banner_image || profileData.cover_image || profileData.banner || '';
-      if (heroHeader && bannerUrl) {
-        heroHeader.style.backgroundImage = `url("${bannerUrl}")`;
-        heroHeader.style.backgroundPosition = 'center center';
-        heroHeader.style.backgroundSize = 'cover';
-        heroHeader.style.backgroundRepeat = 'no-repeat';
-        if (heroOverlay) heroOverlay.style.display = 'block';
-      } else if (heroHeader) {
-        heroHeader.style.background = 'linear-gradient(180deg, #1f1519 0%, #12100e 100%)';
-        if (heroOverlay) heroOverlay.style.display = 'none';
-      }
-
-      function getStatusBadgeHtml(rawStatus) {
-        const s = (rawStatus || 'Offline').toLowerCase();
-        if (s.includes('busy') || s.includes('session') || s.includes('booked') || s.includes('dnd') || s.includes('do not disturb')) {
-          return `<span id="profile-live-badge" class="traffic-status traffic-busy"><span class="traffic-dot"></span> Busy</span>`;
-        }
-        if (s.includes('away') || s.includes('afk') || s.includes('brb')) {
-          return `<span id="profile-live-badge" class="traffic-status traffic-away"><span class="traffic-dot"></span> Away</span>`;
-        }
-        if (s.includes('live') || s.includes('avail') || s.includes('online') || s.includes('in-world') || s.includes('ready')) {
-          return `<span id="profile-live-badge" class="traffic-status traffic-live"><span class="traffic-dot"></span> Live</span>`;
-        }
-        return `<span id="profile-live-badge" class="traffic-status traffic-offline"><span class="traffic-dot"></span> Offline</span>`;
-      }
+      renderProfileHero(profileData);
 
       // Background live status & subscription sync
       fetch(`/.netlify/functions/update-profile?v=${Date.now()}`, { cache: 'no-store' })
@@ -1708,35 +1708,6 @@
           }
         })
         .catch(() => {});
-
-      if (heroContainer) {
-        const avatarImg = profileData.avatar_image || profileData.avatar || '';
-        const textShadowStyle = bannerUrl ? 'text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 4px 20px rgba(0,0,0,0.85);' : '';
-
-        heroContainer.innerHTML = `
-          <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap;">
-            <div style="width:110px; height:110px; border-radius:50%; background:#12100e; border:3px solid var(--gold-bright); display:flex; align-items:center; justify-content:center; font-size:52px; box-shadow:0 0 25px var(--gold-glow), 0 4px 15px rgba(0,0,0,0.8); flex-shrink:0; overflow:hidden;">
-              ${avatarImg ? `<img src="${avatarImg}" alt="${profileData.name}" style="width:100%; height:100%; object-fit:cover;">` : (isDomme ? '👑' : '🩷')}
-            </div>
-            <div style="flex:1; min-width:280px; ${textShadowStyle}">
-              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                <h1 style="font-family:var(--font-heading); font-size:38px; font-weight:900; color:var(--gold-bright); margin:0; text-shadow:0 2px 10px rgba(0,0,0,0.9);">${profileData.name}</h1>
-                <span class="role-badge" style="background:${isDomme ? 'rgba(139,30,45,0.6)' : 'rgba(184,154,88,0.35)'}; border:1px solid ${isDomme ? 'var(--burgundy-light)' : 'var(--gold-border)'}; color:${isDomme ? '#ffb8c2' : 'var(--gold-bright)'}; font-size:11px; backdrop-filter:blur(4px);">
-                  VERIFIED ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
-                </span>
-                ${getStatusBadgeHtml(profileData.status)}
-              </div>
-              ${profileData.role ? `<div style="font-size:16px; font-weight:700; color:var(--gold-bright); margin-top:8px; letter-spacing:0.3px; text-shadow:0 1px 6px rgba(0,0,0,0.9);">${profileData.role}</div>` : ''}
-              <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:6px; text-shadow:0 1px 4px rgba(0,0,0,0.8);">
-                Second Life Username: <strong>${profileData.sl_username || profileData.id}</strong> ${profileData.level ? `&bull; Level ${profileData.level} (${profileData.rank || ''})` : ''}
-              </div>
-              <p style="font-size:18px; color:var(--text-primary); margin-top:10px; font-style:italic; max-width:750px; line-height:1.5; text-shadow:0 2px 8px rgba(0,0,0,0.9);">
-                "${profileData.tagline || ''}"
-              </p>
-            </div>
-          </div>
-        `;
-      }
 
       // Helper to normalize hardware features array or legacy object
       function normalizeHardwareFeatures(data) {
@@ -2733,9 +2704,6 @@
           card.className = 'feed-post-card';
           
           const isLocked = post.is_locked && !unlocked;
-          const likedKey = `cc_liked_${profileData.id}_${post.id || pIdx}`;
-          const isLiked = localStorage.getItem(likedKey) === '1';
-          const likesCount = (post.likes || 0) + (isLiked ? 1 : 0);
 
           let bodyAndMediaHtml = '';
 
@@ -2832,10 +2800,6 @@
             ${bodyAndMediaHtml}
 
             <div class="feed-post-footer">
-              <button class="feed-like-btn ${isLiked ? 'liked' : ''}" onclick="togglePostLike('${profileData.id}', '${post.id || pIdx}', this)">
-                <span class="heart-icon">${isLiked ? '❤️' : '🤍'}</span>
-                <span class="likes-num">${likesCount}</span>
-              </button>
               <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
                 ${post.is_locked ? (unlocked ? '<span style="color: #34d399; font-weight: 600;">🔓 Unlocked VIP Access</span>' : '<span style="color: #f59e0b; font-weight: 600;">🔒 Member Exclusive</span>') : '<span style="color: #4ade80;">🌐 Public Post</span>'}
               </div>
@@ -2845,26 +2809,6 @@
           feedStream.appendChild(card);
         });
       }
-
-      window.togglePostLike = function(pId, postId, btn) {
-        const key = `cc_liked_${pId}_${postId}`;
-        const isLiked = localStorage.getItem(key) === '1';
-        const numEl = btn.querySelector('.likes-num');
-        const heartEl = btn.querySelector('.heart-icon');
-        let count = parseInt(numEl.textContent, 10) || 0;
-
-        if (isLiked) {
-          localStorage.removeItem(key);
-          btn.classList.remove('liked');
-          heartEl.textContent = '🤍';
-          numEl.textContent = Math.max(0, count - 1);
-        } else {
-          localStorage.setItem(key, '1');
-          btn.classList.add('liked');
-          heartEl.textContent = '❤️';
-          numEl.textContent = count + 1;
-        }
-      };
 
       let blogRenderedCount = 0;
       let blogObserver = null;
@@ -2922,16 +2866,6 @@
           blogObserver.observe(loadMore);
         }
       }
-
-      window.toggleBlogLike = function(uKey, pIdx) {
-        const cur = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
-        localStorage.setItem('cc_blog_liked_' + uKey, cur ? '0' : '1');
-        const posts = (Array.isArray(profileData.blog_posts) && profileData.blog_posts.length > 0) ? profileData.blog_posts : (profileData.blog || []);
-        const count = document.getElementById('blog-like-count-' + pIdx);
-        const heart = document.querySelector('#blog-like-btn-' + pIdx + ' .blog-like-heart');
-        if (count) count.textContent = ((Number(posts[pIdx]?.likes) || 0) + (!cur ? 1 : 0)) + ' Likes';
-        if (heart) heart.textContent = !cur ? '❤️' : '🤍';
-      };
 
       window.shareBlogPost = function(pSlug, postSlug, title) {
         const fullUrl = new URL(profileArticlePath(profileData, postSlug), window.location.origin).toString();

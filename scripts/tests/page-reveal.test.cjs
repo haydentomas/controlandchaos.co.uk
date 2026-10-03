@@ -129,8 +129,8 @@ test('build activates the cover before page scripts and preserves charset and no
   const { document } = parseHTML(result);
   assert.equal(document.head.firstElementChild.getAttribute('charset'), 'UTF-8');
   assert.ok(document.querySelector('#site-loading-critical'));
-  assert.ok(document.querySelector('script[src="/app.js?v=20261003-article-tabs"]'));
-  assert.ok(document.querySelector('link[href="/styles.css?v=20261003-article-tabs"]'));
+  assert.ok(document.querySelector('script[src="/app.js?v=20261003-profile-article-hero"]'));
+  assert.ok(document.querySelector('link[href="/styles.css?v=20261003-profile-article-hero"]'));
   assert.ok(result.indexOf("classList.add('site-loading')") < result.indexOf('<body'));
   assert.ok(!document.documentElement.classList.contains('site-loading'));
   assert.equal(addPageReveal('<html><head></head><body>Standalone</body></html>'), '<html><head></head><body>Standalone</body></html>');

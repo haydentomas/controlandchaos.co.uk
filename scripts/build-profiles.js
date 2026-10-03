@@ -6,6 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { parseHTML } = require('linkedom');
 
 const PROFILES_DIR = path.join(__dirname, '../directory/profiles');
 const COMBINED_JSON = path.join(__dirname, '../directory/profiles.json');
@@ -341,6 +342,10 @@ function buildProfiles() {
 }
 
 function generateCompanionBlogPostHtml(profile, post, otherPosts) {
+  const { document: profileDocument } = parseHTML(fs.readFileSync(TEMPLATE_FILE, 'utf8'));
+  const heroHtml = profileDocument.getElementById('profile-hero-header').outerHTML;
+  const profileStyles = profileDocument.head.querySelector('style').outerHTML;
+  const profileEngine = Array.from(profileDocument.querySelectorAll('script:not([src])')).find(script => script.textContent.includes('function renderDynamicArticleView')).textContent.replace(/[ \t]+$/gm, '');
   const profileSlug = profile.slug;
   const postSlug = post.slug;
   const postTitle = post.title || 'Public Journal Entry';
@@ -361,9 +366,9 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
     ['blog', '📰', 'Public Blog', (profile.blog_posts || profile.blog || []).length, enabled('public_blog')],
     ['gallery', '📸', 'Gallery', (profile.gallery || []).filter(item => item && item.image).length, isVip && enabled('full_gallery')]
   ];
-  const profileTabsHtml = `<nav id="profile-tabs-nav" class="container article-profile-tabs" aria-label="Profile views">${tabs.filter(tab => tab[4]).map(([name, icon, label, count]) => `
+  const profileTabsHtml = `<div class="container"><nav id="profile-tabs-nav" class="article-profile-tabs" aria-label="Profile views">${tabs.filter(tab => tab[4]).map(([name, icon, label, count]) => `
     <a href="/profile/${encodeURIComponent(profileSlug)}/?tab=${name}#profile-tabs-nav" data-profile-tab="${name}" class="profile-tab-btn${name === 'blog' ? ' active' : ''}" ${name === 'blog' ? 'aria-current="page"' : ''}><span>${icon}</span> ${label}${count !== null ? ` <span class="tab-badge">${count}</span>` : ''}</a>
-  `.trim()).join('')}</nav>`;
+  `.trim()).join('')}</nav></div>`;
   
   // Dynamic SEO & OG Image (Attached photo -> profile banner -> avatar -> luxury fallback)
   let postImg = post.seo_image || post.media_url || profile.banner_image || profile.avatar_image || '';
@@ -383,8 +388,6 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
     ? (plainContentSnippet.substring(0, 157) + (plainContentSnippet.length > 157 ? '...' : '')) 
     : `Read this free public journal update from ${profile.name} on Control & Chaos.`;
   const finalSeoDesc = post.seo_description || defaultSeoDesc;
-
-  const uKey = (profile.avatar_uuid || profile.id || '') + '_' + (post.id || postSlug);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -451,6 +454,7 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css?v=20261003-blog-layout">
+  ${profileStyles}
 
   <style>
     .role-badge {
@@ -576,7 +580,9 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
 
   <site-navbar></site-navbar>
 
-  <main class="companion-article-page">
+  ${heroHtml}
+
+  <main class="companion-article-page profile-article-page">
     ${profileTabsHtml}
     <div class="container companion-article-layout">
 
@@ -629,11 +635,6 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
           <!-- Article Action Bar -->
           <div style="display:flex; justify-content:space-between; align-items:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:12px;">
             <div style="display:flex; align-items:center; gap:10px;">
-              <button type="button" class="btn btn-secondary btn-sm" id="blog-like-btn" onclick="toggleArticleLike('${uKey}')" style="font-size:12.5px;">
-                <span id="blog-like-heart">🤍</span>
-                <span id="blog-like-count">${post.likes || 0} Likes</span>
-              </button>
-
               <button type="button" class="btn btn-secondary btn-sm" onclick="copyArticleShareLink()" style="font-size:12.5px;">
                 <span>🔗</span> Share Article
               </button>
@@ -723,27 +724,6 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
 
   <script src="/app.js"></script>
   <script>
-    const uKey = '${uKey}';
-    const baseLikes = ${post.likes || 0};
-
-    function initArticleLikes() {
-      const hasLiked = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
-      updateLikeUI(hasLiked);
-    }
-
-    function toggleArticleLike() {
-      const hasLiked = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
-      localStorage.setItem('cc_blog_liked_' + uKey, hasLiked ? '0' : '1');
-      updateLikeUI(!hasLiked);
-    }
-
-    function updateLikeUI(isLiked) {
-      const heart = document.getElementById('blog-like-heart');
-      const count = document.getElementById('blog-like-count');
-      if (heart) heart.textContent = isLiked ? '❤️' : '🤍';
-      if (count) count.textContent = (baseLikes + (isLiked ? 1 : 0)) + ' Likes';
-    }
-
     function copyArticleShareLink() {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(window.location.href);
@@ -755,8 +735,8 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
       }
     }
 
-    document.addEventListener('DOMContentLoaded', initArticleLikes);
   </script>
+  <script>${profileEngine}</script>
 </body>
 </html>`;
 }

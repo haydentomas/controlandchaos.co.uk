@@ -46,11 +46,11 @@ function addPageReveal(content) {
     return /^(?:\/|(?:\.\.?\/)*)app\.js$/.test(scriptPath);
   });
   if (!portalScripts.length) return content;
-  for (const script of portalScripts) script.setAttribute('src', '/app.js?v=20261003-article-tabs');
+  for (const script of portalScripts) script.setAttribute('src', '/app.js?v=20261003-profile-article-hero');
   for (const stylesheet of document.querySelectorAll('link[rel="stylesheet"][href]')) {
     const stylesheetPath = stylesheet.getAttribute('href').split('?')[0];
     if (/^(?:\/|(?:\.\.?\/)*)styles\.css$/.test(stylesheetPath)) {
-      stylesheet.setAttribute('href', '/styles.css?v=20261003-article-tabs');
+      stylesheet.setAttribute('href', '/styles.css?v=20261003-profile-article-hero');
     }
   }
   const bootstrap = `

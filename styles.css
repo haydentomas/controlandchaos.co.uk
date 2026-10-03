@@ -78,11 +78,15 @@ main.companion-article-page {
   padding: 124px 0 80px;
 }
 
+main.companion-article-page.profile-article-page {
+  padding: 60px 0;
+}
+
 .article-profile-tabs {
   display: flex;
   gap: 12px;
-  padding-bottom: 16px;
-  margin-bottom: 32px;
+  padding: 8px 6px 14px;
+  margin: -8px 0 35px;
   border-bottom: 1px solid var(--gold-border-subtle);
   overflow-x: auto;
   scrollbar-width: thin;
@@ -93,32 +97,45 @@ main.companion-article-page {
   flex-shrink: 0;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
+  padding: 12px 24px;
   border: 1px solid var(--gold-border-subtle);
   border-radius: 9999px;
-  background: var(--bg-glass);
+  background: rgba(22, 19, 16, 0.7);
   font-family: var(--font-heading);
   font-size: 14px;
   font-weight: 700;
+  letter-spacing: 0.05em;
   color: var(--text-muted);
   text-decoration: none;
   white-space: nowrap;
 }
 
-.article-profile-tabs .profile-tab-btn:hover,
+.article-profile-tabs .profile-tab-btn:hover {
+  color: #fff;
+  border-color: var(--gold-border);
+  background: rgba(36, 30, 24, 0.85);
+  transform: translateY(-1px);
+}
+
 .article-profile-tabs .profile-tab-btn.active {
   color: var(--gold-bright);
   border-color: var(--gold-bright);
-  background: var(--gold-glow);
+  background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(184,154,88,0.08));
+}
+
+.profile-tabs-nav .profile-tab-btn,
+.article-profile-tabs .profile-tab-btn {
+  line-height: 1.4;
 }
 
 .article-profile-tabs .tab-badge {
   padding: 2px 8px;
   border-radius: 9999px;
-  background: var(--gold-glow);
+  background: rgba(212, 175, 55, 0.2);
   color: var(--gold-bright);
   font-family: var(--font-mono);
   font-size: 11px;
+  font-weight: 700;
 }
 
 .companion-article-layout {

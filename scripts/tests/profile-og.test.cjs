@@ -126,7 +126,8 @@ async function mirrorResponse(pathname, data = { ...profile, is_vip: true, custo
     getStore: () => ({ get: async key => key === 'domain_alek.example' ? data : null }),
     fetch: async url => {
       upstreamRequests.push(new URL(url));
-      return handlerFor(data)(new Request(url), { next: async () => new Response(originHtml, { headers: { 'Content-Type': 'text/html' } }) });
+      const html = upstreamRequests.length > 1 && new URL(url).pathname === '/profile/alek-zane/' ? template : originHtml;
+      return handlerFor(data)(new Request(url), { next: async () => new Response(html, { headers: { 'Content-Type': 'text/html' } }) });
     }
   });
   const response = await router(new Request('https://alek.example' + pathname), {
@@ -183,8 +184,8 @@ test('custom-domain assets pass through and unrelated profile paths do not imper
   assert.equal(unrelated.upstreamRequests.length, 0);
 });
 
-function browserContext(url, ownerId = '', runtime = {}) {
-  const { document } = parseHTML(template);
+function browserContext(url, ownerId = '', runtime = {}, html = template) {
+  const { document } = parseHTML(html);
   const loadCallbacks = [];
   document.addEventListener = (event, callback) => {
     if (event === 'DOMContentLoaded') loadCallbacks.push(callback);
@@ -199,7 +200,7 @@ function browserContext(url, ownerId = '', runtime = {}) {
     window: { location: new URL(url) }, document, URL, URLSearchParams,
     localStorage: { getItem: () => null }, console, ...runtime
   });
-  for (const match of template.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+  for (const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
     if (!/src=|application\/ld\+json/.test(match[1])) vm.runInContext(match[2], context);
   }
   context.loadCallbacks = loadCallbacks;
@@ -279,6 +280,7 @@ async function loadedFeed(hash = '', withObserver = false, overrides = {}) {
     fetch: async url => ({ ok: true, json: async () => url.includes('/.netlify/') ? { profile: fixture, subscriptions: {} } : fixture }),
     localStorage: { getItem: key => stored.get(key) || null, setItem: (key, value) => stored.set(key, value) }
   });
+  Object.defineProperty(context, 'openSubscribeModal', { get: () => context.window.openSubscribeModal });
   if (withObserver) {
     const Observer = class {
       constructor(callback) { this.callback = callback; this.disconnected = false; observers.push(this); }
@@ -293,14 +295,14 @@ async function loadedFeed(hash = '', withObserver = false, overrides = {}) {
   return { context, document: context.document, observers };
 }
 
-test('public blog renders five cards at a time and Load More appends without resetting likes', async () => {
+test('public blog renders five cards at a time and Load More preserves existing cards without local likes', async () => {
   const { context, document } = await loadedFeed();
   assert.equal(document.querySelectorAll('.blog-feed-card').length, 5);
   const first = document.querySelector('.blog-feed-card');
   document.getElementById('blog-load-more').click();
   assert.equal(document.querySelectorAll('.blog-feed-card').length, 10);
-  context.window.toggleBlogLike(document.getElementById('blog-like-btn-0').getAttribute('data-key'), 0);
-  assert.equal(document.getElementById('blog-like-count-0').textContent, '1 Likes');
+  assert.equal(document.getElementById('blog-like-btn-0'), null);
+  assert.equal(context.window.toggleBlogLike, undefined);
   assert.equal(document.querySelector('.blog-feed-card'), first);
   assert.equal(document.querySelectorAll('.blog-feed-card').length, 10);
   context.window.switchProfileTab('ratecard');
@@ -470,4 +472,105 @@ test('live settings remove disabled tabs from older prebuilt article HTML', asyn
   assert.equal(document.querySelector('[data-profile-tab="gallery"]'), null);
   assert.ok(document.querySelector('[data-profile-tab="ratecard"]'));
   assert.ok(document.querySelector('[data-profile-tab="blog"]'));
+});
+
+test('custom-domain articles use the same creator hero as the main profile', () => {
+  const context = browserContext('https://alek.example/blog/post/', 'alek-zane');
+  const data = { ...profile, role: 'Companion', status: 'Busy', banner_image: '/banner.jpg', tagline: 'Creator tagline', is_vip: true };
+  context.renderProfileHero(data);
+  const hero = context.document.getElementById('profile-hero-header');
+  const original = context.document.getElementById('profile-hero-content').innerHTML;
+  const originalStyle = hero.getAttribute('style');
+  context.renderDynamicArticleView(data, data.blog_posts[0], []);
+  assert.equal(context.document.getElementById('profile-hero-content').innerHTML, original);
+  assert.equal(hero.getAttribute('style'), originalStyle);
+  assert.notEqual(hero.style.display, 'none');
+  assert.equal(context.document.querySelector('.article-profile-tabs').parentElement.className, 'container');
+  const normal = browserContext(articleUrl);
+  normal.renderDynamicArticleView(data, data.blog_posts[0], []);
+  assert.notEqual(normal.document.getElementById('profile-hero-header').style.display, 'none');
+  assert.equal(normal.document.getElementById('profile-hero-content').innerHTML, original);
+  assert.equal(normal.document.querySelector('.article-profile-tabs').parentElement.className, 'container');
+  assert.ok(!normal.document.querySelector('.article-profile-tabs').classList.contains('container'));
+});
+
+test('prebuilt custom-domain articles include the profile hero and shared hydration engine', async () => {
+  const { generateCompanionBlogPostHtml } = require('../build-profiles.js');
+  const data = { ...profile, slug: 'alek-zane', is_vip: true, custom_domain: 'alek.example' };
+  const post = { ...profile.blog_posts[0], slug: 'i-just-wanna-se-if-batman-exists' };
+  const html = generateCompanionBlogPostHtml(data, post, []);
+  const { document, upstreamRequests } = await mirrorResponse('/blog/i-just-wanna-se-if-batman-exists/', data, html);
+  assert.equal(upstreamRequests.length, 1);
+  assert.ok(document.getElementById('profile-hero-header'));
+  assert.ok(document.getElementById('profile-hero-content'));
+  assert.ok([...document.querySelectorAll('script:not([src])')].some(script => script.textContent.includes('function renderProfileHero')));
+  assert.ok(document.querySelector('.article-profile-tabs').parentElement.classList.contains('container'));
+  assert.ok(document.querySelector('site-footer'));
+  const css = document.getElementById('cc-whitelabel-standalone-mode').textContent;
+  assert.match(css, /site-footer\s*\{\s*display:\s*block/);
+  assert.match(css, /site-footer \.footer-grid\s*\{\s*display:\s*none/);
+  assert.match(css, /site-footer \.footer-bottom/);
+  assert.match(css, /padding:\s*60px 0/);
+});
+
+test('primary C&C requests retain their original normal header and footer response', async () => {
+  const original = new Response('<html><body><site-navbar></site-navbar><main>Normal view</main><site-footer></site-footer></body></html>');
+  const router = vm.runInNewContext(`${routerSource}\nhandler;`, { URL, Request, Response, parseHTML, console });
+  const response = await router(new Request('https://controlandchaos.co.uk/profile/alek-zane/'), { next: async () => original });
+  assert.equal(response, original);
+  assert.ok((await response.text()).includes('<site-navbar>'));
+});
+
+test('normal prebuilt articles include the shared hero, profile styles, engine, and correctly wrapped tabs', () => {
+  const { generateCompanionBlogPostHtml } = require('../build-profiles.js');
+  const data = { ...profile, slug: 'alek-zane', is_vip: true };
+  const html = generateCompanionBlogPostHtml(data, { ...data.blog_posts[0], slug: 'post' }, []);
+  const { document } = parseHTML(html);
+  assert.ok(document.getElementById('profile-hero-header'));
+  assert.ok(document.getElementById('profile-hero-content'));
+  assert.ok(document.querySelector('main.profile-article-page'));
+  assert.equal(document.querySelector('.article-profile-tabs').parentElement.className, 'container');
+  assert.ok(!document.querySelector('.article-profile-tabs').classList.contains('container'));
+  assert.ok(document.querySelector('site-navbar'));
+  assert.ok(document.querySelector('site-footer'));
+  assert.ok([...document.querySelectorAll('script:not([src])')].some(script => script.textContent.includes('function renderProfileHero')));
+});
+
+test('an older prebuilt post keeps its article body when live profile data no longer contains that post', async () => {
+  const { generateCompanionBlogPostHtml } = require('../build-profiles.js');
+  const data = { ...profile, slug: 'alek-zane', is_vip: true };
+  const post = { ...data.blog_posts[0], slug: 'older-post' };
+  const html = generateCompanionBlogPostHtml(data, post, []);
+  const liveProfile = { ...data, blog_posts: [] };
+  const context = browserContext('https://controlandchaos.co.uk/profile/alek-zane/blog/older-post/', '', {
+    setTimeout() {}, fetch: async url => ({ ok: true, json: async () => url.includes('/.netlify/') ? { profile: liveProfile } : liveProfile })
+  }, html);
+  context.document.defaultView.HTMLElement.prototype.focus = function() {};
+  for (const callback of context.loadCallbacks) await callback();
+  assert.ok(context.document.querySelector('.article-content').textContent.includes('Full article'));
+  assert.ok(context.document.getElementById('profile-hero-content').textContent.includes('Alek Zane'));
+  assert.equal(context.document.querySelectorAll('#profile-tabs-nav').length, 1);
+});
+
+test('live and generated articles have no local like controls but retain sharing', () => {
+  const context = browserContext(articleUrl);
+  context.renderDynamicArticleView(profile, profile.blog_posts[0], []);
+  assert.equal(context.document.getElementById('dyn-like-btn'), null);
+  assert.equal(context.window.toggleDynArticleLike, undefined);
+  assert.ok(context.document.querySelector('.article-content'));
+  assert.ok(context.document.querySelector('main').textContent.includes('Share Article'));
+  const { generateCompanionBlogPostHtml } = require('../build-profiles.js');
+  const html = generateCompanionBlogPostHtml({ ...profile, slug: 'alek-zane' }, { ...profile.blog_posts[0], slug: 'post' }, []);
+  const { document } = parseHTML(html);
+  assert.equal(document.getElementById('blog-like-btn'), null);
+  assert.ok(!html.includes('cc_blog_liked_'));
+  assert.ok(document.body.textContent.includes('Share Article'));
+});
+
+test('VIP feed no longer displays browser-local likes', async () => {
+  const { context, document } = await loadedFeed('', false, { is_vip: true, plan: 'vip', posts: [{ id: 'vip-post', title: 'VIP update', content: 'Update text', type: 'text', is_locked: false, likes: 99 }] });
+  context.window.switchProfileTab('feed');
+  assert.equal(document.querySelectorAll('.feed-like-btn').length, 0);
+  assert.equal(context.window.togglePostLike, undefined);
+  assert.ok(document.getElementById('feed-posts-stream').textContent.includes('VIP update'));
 });

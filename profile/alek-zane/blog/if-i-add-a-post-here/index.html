@@ -48,6 +48,275 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css?v=20261003-blog-layout">
+  <style>
+    .gallery-thumb-card {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--gold-border-subtle);
+      background: #12100e;
+      aspect-ratio: 4 / 3;
+      cursor: pointer;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .gallery-thumb-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--gold-bright);
+      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.25);
+    }
+    .gallery-thumb-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .gallery-thumb-card:hover .gallery-thumb-img {
+      transform: scale(1.06);
+    }
+    .gallery-thumb-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.85) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 10px 12px;
+    }
+    .gallery-fallback-card {
+      background: rgba(20,18,16,0.9);
+      border: 1px solid var(--gold-border-subtle);
+      border-radius: 8px;
+      padding: 18px 12px;
+      text-align: center;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+    .gallery-fallback-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold-bright);
+    }
+    /* Lightbox Modal */
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .lightbox-modal.active {
+      display: flex;
+    }
+    .lightbox-content {
+      max-width: 900px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 75vh;
+      border-radius: 8px;
+      border: 2px solid var(--gold-border);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      object-fit: contain;
+    }
+
+    /* Profile Tabs Navigation */
+    .profile-tabs-nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 35px;
+      border-bottom: 1px solid var(--gold-border-subtle);
+      padding: 8px 6px 14px 6px;
+      margin-top: -8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .profile-tabs-nav::-webkit-scrollbar { display: none; }
+    .profile-tab-btn {
+      background: rgba(22, 19, 16, 0.7);
+      border: 1px solid var(--gold-border-subtle);
+      color: var(--text-muted);
+      padding: 12px 24px;
+      border-radius: 9999px;
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+    .profile-tab-btn:hover {
+      border-color: var(--gold-border);
+      color: #fff;
+      background: rgba(36, 30, 24, 0.85);
+      transform: translateY(-1px);
+    }
+    .profile-tab-btn.active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(184, 154, 88, 0.08) 100%);
+      border-color: var(--gold-bright);
+      color: var(--gold-bright);
+      box-shadow: 0 4px 16px rgba(212, 175, 55, 0.18);
+    }
+    .tab-badge {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--gold-bright);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+    .tab-badge-locked {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Exclusive Feed Layout */
+    .feed-container {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .feed-fan-hero {
+      background: linear-gradient(145deg, rgba(28, 23, 17, 0.92) 0%, rgba(16, 13, 10, 0.96) 100%);
+      border: 1px solid var(--gold-border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+    .feed-fan-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .feed-post-card {
+      background: linear-gradient(160deg, rgba(22, 19, 16, 0.95) 0%, rgba(14, 12, 10, 0.98) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 16px;
+      margin-bottom: 30px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+    .feed-post-card:hover {
+      border-color: rgba(212, 175, 55, 0.45);
+    }
+    .feed-post-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .feed-post-body {
+      padding: 20px 22px;
+    }
+    .feed-post-media-wrap {
+      position: relative;
+      background: #080706;
+      max-height: 580px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .feed-post-media-img {
+      width: 100%;
+      height: auto;
+      max-height: 580px;
+      object-fit: cover;
+      display: block;
+    }
+    .feed-locked-overlay {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(24px);
+      background: rgba(10, 8, 7, 0.75);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      text-align: center;
+      z-index: 10;
+    }
+    .feed-locked-padlock {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border: 1px solid var(--gold-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 14px;
+      box-shadow: 0 0 24px rgba(212, 175, 55, 0.3);
+      animation: pulseGold 3s infinite;
+    }
+    @keyframes pulseGold {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+      50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
+    }
+    .feed-post-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 22px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      background: rgba(12, 10, 8, 0.4);
+    }
+    .feed-like-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      transition: color 0.2s ease, transform 0.15s ease;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+    .feed-like-btn:hover {
+      color: #ff6b81;
+      background: rgba(255, 107, 129, 0.08);
+      transform: scale(1.05);
+    }
+    .feed-like-btn.liked {
+      color: #ff4757;
+    }
+    .feed-like-btn.liked span.heart-icon {
+      animation: heartPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+  </style>
 
   <style>
     .role-badge {
@@ -173,8 +442,16 @@
 
   <site-navbar></site-navbar>
 
-  <main class="companion-article-page">
-    <nav id="profile-tabs-nav" class="container article-profile-tabs" aria-label="Profile views"><a href="/profile/alek-zane/?tab=ratecard#profile-tabs-nav" data-profile-tab="ratecard" class="profile-tab-btn" ><span>📋</span> Rate Card & Bio</a><a href="/profile/alek-zane/?tab=feed#profile-tabs-nav" data-profile-tab="feed" class="profile-tab-btn" ><span>🔒</span> VIP Subscribers Feed <span class="tab-badge">3</span></a><a href="/profile/alek-zane/?tab=blog#profile-tabs-nav" data-profile-tab="blog" class="profile-tab-btn active" aria-current="page"><span>📰</span> Public Blog <span class="tab-badge">1</span></a><a href="/profile/alek-zane/?tab=gallery#profile-tabs-nav" data-profile-tab="gallery" class="profile-tab-btn" ><span>📸</span> Gallery <span class="tab-badge">4</span></a></nav>
+  <header class="hero" id="profile-hero-header" style="min-height: 55vh; padding: 120px 0 40px; background: linear-gradient(180deg, #1f1519 0%, #12100e 100%); position: relative; background-size: cover; background-position: center;">
+    <div id="profile-hero-overlay" style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,12,11,0.7) 0%, rgba(18,16,14,0.85) 60%, rgba(18,16,14,0.98) 100%); pointer-events: none; z-index: 1; display: none;"></div>
+    <canvas id="hero-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;"></canvas>
+    <div class="container" id="profile-hero-content" style="position: relative; z-index: 3;">
+      <!-- Injected dynamically via JS based on URL param or path -->
+    </div>
+  </header>
+
+  <main class="companion-article-page profile-article-page">
+    <div class="container"><nav id="profile-tabs-nav" class="article-profile-tabs" aria-label="Profile views"><a href="/profile/alek-zane/?tab=ratecard#profile-tabs-nav" data-profile-tab="ratecard" class="profile-tab-btn" ><span>📋</span> Rate Card & Bio</a><a href="/profile/alek-zane/?tab=feed#profile-tabs-nav" data-profile-tab="feed" class="profile-tab-btn" ><span>🔒</span> VIP Subscribers Feed <span class="tab-badge">3</span></a><a href="/profile/alek-zane/?tab=blog#profile-tabs-nav" data-profile-tab="blog" class="profile-tab-btn active" aria-current="page"><span>📰</span> Public Blog <span class="tab-badge">1</span></a><a href="/profile/alek-zane/?tab=gallery#profile-tabs-nav" data-profile-tab="gallery" class="profile-tab-btn" ><span>📸</span> Gallery <span class="tab-badge">4</span></a></nav></div>
     <div class="container companion-article-layout">
 
       <!-- Left Column: Article Body -->
@@ -227,11 +504,6 @@
           <!-- Article Action Bar -->
           <div style="display:flex; justify-content:space-between; align-items:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:12px;">
             <div style="display:flex; align-items:center; gap:10px;">
-              <button type="button" class="btn btn-secondary btn-sm" id="blog-like-btn" onclick="toggleArticleLike('b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec_blog-1')" style="font-size:12.5px;">
-                <span id="blog-like-heart">🤍</span>
-                <span id="blog-like-count">0 Likes</span>
-              </button>
-
               <button type="button" class="btn btn-secondary btn-sm" onclick="copyArticleShareLink()" style="font-size:12.5px;">
                 <span>🔗</span> Share Article
               </button>
@@ -324,27 +596,6 @@
 
   <script src="/app.js"></script>
   <script>
-    const uKey = 'b3d25fb5-a5d9-4734-8d86-5e1f70ba8bec_blog-1';
-    const baseLikes = 0;
-
-    function initArticleLikes() {
-      const hasLiked = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
-      updateLikeUI(hasLiked);
-    }
-
-    function toggleArticleLike() {
-      const hasLiked = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
-      localStorage.setItem('cc_blog_liked_' + uKey, hasLiked ? '0' : '1');
-      updateLikeUI(!hasLiked);
-    }
-
-    function updateLikeUI(isLiked) {
-      const heart = document.getElementById('blog-like-heart');
-      const count = document.getElementById('blog-like-count');
-      if (heart) heart.textContent = isLiked ? '❤️' : '🤍';
-      if (count) count.textContent = (baseLikes + (isLiked ? 1 : 0)) + ' Likes';
-    }
-
     function copyArticleShareLink() {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(window.location.href);
@@ -356,7 +607,2120 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', initArticleLikes);
   </script>
+  <script>
+
+    window.currentProfile = null;
+
+    window.copyEscortPayCode = function(btn) {
+      const code = document.getElementById('sub-modal-escort-code')?.textContent || '';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code);
+      }
+      const origText = btn.innerHTML;
+      btn.innerHTML = '<span>✓</span> Copied!';
+      setTimeout(() => { btn.innerHTML = origText; }, 2000);
+    };
+
+
+    // Option 2: Send Method Dynamic UI & Execution
+    window.updateSendMethodUI = function() {
+      const selected = document.querySelector('input[name="send_method"]:checked')?.value || 'web';
+      const webCard = document.getElementById('send-method-web-label');
+      const emailCard = document.getElementById('send-method-email-label');
+      const slCard = document.getElementById('send-method-sl-label');
+      const submitBtn = document.getElementById('booking-submit-btn');
+
+      [webCard, emailCard, slCard].forEach(card => {
+        if (!card) return;
+        card.style.background = '#0e0c0b';
+        card.style.borderColor = 'var(--gold-border-subtle)';
+      });
+
+      if (selected === 'web') {
+        if (webCard) {
+          webCard.style.background = 'rgba(212,175,55,0.12)';
+          webCard.style.borderColor = 'var(--gold-bright)';
+        }
+        if (submitBtn) submitBtn.innerHTML = '<span>✉️</span> Submit Booking Enquiry';
+      } else if (selected === 'email') {
+        if (emailCard) {
+          emailCard.style.background = 'rgba(212,175,55,0.12)';
+          emailCard.style.borderColor = 'var(--gold-bright)';
+        }
+        if (submitBtn) submitBtn.innerHTML = '<span>📧</span> Launch Email App with Booking Details';
+      } else if (selected === 'sl') {
+        if (slCard) {
+          slCard.style.background = 'rgba(212,175,55,0.12)';
+          slCard.style.borderColor = 'var(--gold-bright)';
+        }
+        if (submitBtn) submitBtn.innerHTML = '<span>💬</span> Open Second Life IM &amp; Copy Details';
+      }
+    };
+
+    window.formatBookingMessageSummary = function() {
+      const clientName = document.querySelector('input[name="client_name"]')?.value || 'Client';
+      const clientContact = document.querySelector('input[name="client_contact"]')?.value || 'Not provided';
+      const preferredTime = document.getElementById('booking-preferred-time-combined')?.value || 'TBD';
+      const quoteTotal = document.getElementById('form-quote-total')?.value || '';
+      const notes = document.getElementById('form-message-input')?.value || '';
+      const escortName = window.currentProfile?.name || 'Escort';
+
+      let body = `BOOKING ENQUIRY FOR ${escortName.toUpperCase()}\n\n`;
+      body += `Client Name / SL: ${clientName}\n`;
+      body += `Contact Info: ${clientContact}\n`;
+      body += `Requested Date & Time: ${preferredTime}\n`;
+      if (quoteTotal) body += `Estimated Total: ${quoteTotal}\n`;
+      body += `\n--- SESSION NOTES & DETAILS ---\n${notes}\n`;
+      return body;
+    };
+
+    window.handleEmailDirectClick = function() {
+      const escortName = window.currentProfile?.name || 'Escort';
+      const escortEmail = window.currentProfile?.contact_email || 'enquiries@controlandchaos.co.uk';
+      const subject = encodeURIComponent(`Booking Enquiry for ${escortName}`);
+      const body = encodeURIComponent(window.formatBookingMessageSummary());
+      window.location.href = `mailto:${escortEmail}?subject=${subject}&body=${body}`;
+    };
+
+    window.handleSecondLifeImClick = function() {
+      const summaryText = window.formatBookingMessageSummary();
+      const statusDiv = document.getElementById('booking-form-status');
+
+      // Copy formatted booking details to clipboard
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(summaryText).catch(e => console.error(e));
+      }
+
+      if (statusDiv) {
+        statusDiv.style.color = '#10b981';
+        statusDiv.innerHTML = '📋 <strong>Booking details copied to clipboard!</strong> Opening Second Life IM...';
+      }
+
+      if (window.currentProfile?.avatar_uuid) {
+        window.location.href = `secondlife:///app/agent/${window.currentProfile.avatar_uuid}/im`;
+      }
+    };
+
+    let lightboxItems = [];
+    let lightboxIndex = -1;
+    let lightboxPreviousFocus = null;
+    let lightboxPreviousOverflow = '';
+
+    function profileFeatureEnabled(profile, feature) {
+      const vip = profile?.is_vip === true || profile?.plan === 'vip';
+      if (feature === 'full_gallery') return vip && profile.feature_visibility?.[feature] !== false;
+      return !vip || profile.feature_visibility?.[feature] !== false;
+    }
+
+    function profileGalleryImages(profile, rateCardOnly = false) {
+      const vip = profile?.is_vip === true || profile?.plan === 'vip';
+      return (Array.isArray(profile?.gallery) ? profile.gallery : []).filter(item => item && item.image && (!rateCardOnly || !vip || item.show_on_ratecard !== false));
+    }
+
+    function applyProfileFeatureVisibility(profile) {
+      const sections = {
+        about: ['profile-about-card'],
+        rate_menus: ['rate-categories-container'],
+        custom_sections: ['custom-sections-container'],
+        ratecard_gallery: ['profile-gallery-card'],
+        media_intro: ['profile-media-intro-card'],
+        booking: ['booking-enquiry-section', 'selected-quote-bar', 'modal-web-enquiry-btn'],
+        hardware: ['profile-hardware-card'],
+        boundaries: ['profile-limits-card'],
+        booking_protocol: ['profile-booking-card'],
+        reviews: ['profile-reviews-card'],
+        wishlist: ['profile-wishlist-card', 'modal-throne-box'],
+        socials: ['profile-social-card']
+      };
+      for (const [feature, ids] of Object.entries(sections)) {
+        if (!profileFeatureEnabled(profile, feature)) {
+          for (const id of ids) {
+            const section = document.getElementById(id);
+            if (section) section.style.display = 'none';
+          }
+        }
+      }
+      if (!profileFeatureEnabled(profile, 'booking')) {
+        for (const link of document.querySelectorAll('[data-profile-booking-link]')) link.style.display = 'none';
+      }
+      const sidebar = document.getElementById('profile-sidebar');
+      if (sidebar && !Array.from(sidebar.children).some(section => section.style.display !== 'none')) {
+        sidebar.style.display = 'none';
+        const layout = document.getElementById('profile-main-layout');
+        if (layout) layout.style.gridTemplateColumns = 'minmax(0, 1fr)';
+      }
+    }
+
+    function openGalleryImage(index, items) {
+      lightboxItems = items;
+      lightboxIndex = index;
+      const item = items[index];
+      if (!item) return;
+      openLightbox(item.image, item.title, item.category, item.description || item.desc || '', true);
+    }
+
+    function stepGalleryImage(direction) {
+      if (lightboxItems.length < 2) return;
+      lightboxIndex = (lightboxIndex + direction + lightboxItems.length) % lightboxItems.length;
+      const item = lightboxItems[lightboxIndex];
+      openLightbox(item.image, item.title, item.category, item.description || item.desc || '', true);
+    }
+
+    function openLightbox(imgSrc, title, category, description = '', galleryNavigation = false) {
+      const modal = document.getElementById('gallery-lightbox');
+      const img = document.getElementById('lightbox-image');
+      const cap = document.getElementById('lightbox-caption');
+      if (modal && img) {
+        const wasOpen = modal.classList.contains('active');
+        if (!wasOpen) {
+          lightboxPreviousFocus = document.activeElement;
+          lightboxPreviousOverflow = document.body.style.overflow;
+        }
+        if (!galleryNavigation) {
+          lightboxItems = [];
+          lightboxIndex = -1;
+        }
+        img.src = imgSrc;
+        img.alt = title || 'Lookbook Image';
+        if (cap) cap.textContent = [title, category].filter(Boolean).join(' · ');
+        document.getElementById('lightbox-description').textContent = description;
+        document.getElementById('lightbox-counter').textContent = galleryNavigation ? `${lightboxIndex + 1} / ${lightboxItems.length}` : '';
+        document.getElementById('lightbox-previous').hidden = !galleryNavigation || lightboxItems.length < 2;
+        document.getElementById('lightbox-next').hidden = !galleryNavigation || lightboxItems.length < 2;
+        document.body.style.overflow = 'hidden';
+        modal.classList.add('active');
+        if (!wasOpen) document.getElementById('lightbox-close').focus({ preventScroll: true });
+      }
+    }
+
+    function closeLightbox() {
+      const modal = document.getElementById('gallery-lightbox');
+      if (modal?.classList.contains('active')) {
+        modal.classList.remove('active');
+        document.body.style.overflow = lightboxPreviousOverflow;
+        lightboxPreviousFocus?.focus?.({ preventScroll: true });
+      }
+    }
+
+    function renderGalleryLibrary(profile) {
+      const pane = document.getElementById('tab-pane-gallery');
+      if (!pane || pane.dataset.initialized === 'true') return;
+      pane.dataset.initialized = 'true';
+      const items = profileGalleryImages(profile);
+      const filters = document.getElementById('gallery-library-filters');
+      const grid = document.getElementById('gallery-library-grid');
+      const more = document.getElementById('gallery-library-more');
+      let filtered = items;
+      let count = 0;
+      document.getElementById('gallery-library-title').textContent = `${profile.name}'s Gallery`;
+      function appendPhotos() {
+        const end = Math.min(count + 12, filtered.length);
+        for (let index = count; index < end; index++) {
+          const item = filtered[index];
+          const tile = document.createElement('button');
+          tile.type = 'button';
+          tile.className = 'gallery-library-tile';
+          tile.setAttribute('aria-label', item.title || 'Open photo');
+          tile.innerHTML = `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title || 'Gallery photo')}" width="640" height="480" loading="lazy" decoding="async"><span class="gallery-library-tile-title">${escapeHtml(item.title || 'Photo')}</span><span class="gallery-library-tile-category">${escapeHtml(item.category || '')}</span>`;
+          tile.addEventListener('click', () => openGalleryImage(index, filtered));
+          grid.appendChild(tile);
+        }
+        count = end;
+        more.hidden = count >= filtered.length;
+        document.getElementById('gallery-library-empty').hidden = filtered.length > 0;
+      }
+      const categories = ['', ...new Set(items.map(item => String(item.category || '').trim()).filter(Boolean))];
+      for (const category of categories) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn btn-secondary btn-sm';
+        button.textContent = category || 'All Photos';
+        button.setAttribute('aria-pressed', String(!category));
+        button.addEventListener('click', () => {
+          filtered = category ? items.filter(item => String(item.category || '').trim() === category) : items;
+          count = 0;
+          grid.innerHTML = '';
+          for (const filter of filters.querySelectorAll('button')) filter.setAttribute('aria-pressed', String(filter === button));
+          appendPhotos();
+        });
+        filters.appendChild(button);
+      }
+      more.addEventListener('click', appendPhotos);
+      appendPhotos();
+    }
+
+    function profileSlugFor(profile) {
+      return String(profile.slug || profile.name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    function customDomainProfileId() {
+      return document.querySelector('meta[name="cc-profile-id"]')?.getAttribute('content') || '';
+    }
+
+    function profileBasePath(profile) {
+      return customDomainProfileId() ? '/' : `/profile/${encodeURIComponent(profileSlugFor(profile) || profile.id)}/`;
+    }
+
+    function profileArticlePath(profile, postSlug) {
+      return `${profileBasePath(profile)}blog/${encodeURIComponent(postSlug)}/`;
+    }
+
+    function profileRouteForLocation() {
+      const pathSegments = window.location.pathname.split('/').filter(Boolean);
+      if (pathSegments[pathSegments.length - 1] === 'index.html') pathSegments.pop();
+      const ownerId = customDomainProfileId();
+      if (ownerId) {
+        if (pathSegments[0] === 'profile' && pathSegments[1] === ownerId) pathSegments.splice(0, 2);
+        const isBlogPostRoute = pathSegments[0] === 'blog' && !!pathSegments[1];
+        return { profileId: ownerId, isBlogPostRoute, postSlug: isBlogPostRoute ? pathSegments[1] : '' };
+      }
+      const profileIndex = pathSegments.indexOf('profile');
+      let profileId = profileIndex !== -1 ? pathSegments[profileIndex + 1] || '' : pathSegments[pathSegments.length - 1] || '';
+      if (!profileId || ['profile', '_template', 'directory', 'profile.html'].includes(profileId)) {
+        const params = new URLSearchParams(window.location.search);
+        profileId = params.get('id') || window.location.hash.replace('#', '') || 'alek-zane';
+      }
+      const isBlogPostRoute = profileIndex !== -1 && pathSegments[profileIndex + 2] === 'blog' && !!pathSegments[profileIndex + 3];
+      return { profileId, isBlogPostRoute, postSlug: isBlogPostRoute ? pathSegments[profileIndex + 3] : '' };
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function renderInlineMarkdown(escapedText) {
+      if (!escapedText) return '';
+      return escapedText
+        .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#fff; font-weight:700;">$1</strong>')
+        .replace(/__(.+?)__/g, '<strong style="color:#fff; font-weight:700;">$1</strong>')
+        .replace(/\*([^\*]+?)\*/g, '<em style="color:#f1f5f9;">$1</em>')
+        .replace(/_([^_]+?)_/g, '<em style="color:#f1f5f9;">$1</em>')
+        .replace(/~~(.+?)~~/g, '<del style="color:#94a3b8;">$1</del>')
+        .replace(/`([^`]+?)`/g, '<code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:var(--font-mono); font-size:12.5px; color:var(--gold-bright);">$1</code>')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:var(--gold-bright); text-decoration:underline;">$1</a>');
+    }
+
+    function renderMarkdownToHtml(text) {
+      if (!text) return '';
+      const normalized = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+      const blocks = normalized.split(/\n{2,}/);
+
+      const renderedBlocks = blocks.map(block => {
+        block = block.trim();
+        if (!block) return '';
+
+        if (/^(---|___|\*\*\*)$/.test(block)) {
+          return '<hr style="border:0; height:1px; background:rgba(212,175,55,0.25); margin:24px 0;">';
+        }
+
+        if (/^###\s+(.+)$/m.test(block)) {
+          return block.replace(/^###\s+(.+)$/gm, (_, t) => `<h3 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:18px; font-weight:700; margin:22px 0 10px 0;">${renderInlineMarkdown(escapeHtml(t))}</h3>`);
+        }
+        if (/^##\s+(.+)$/m.test(block)) {
+          return block.replace(/^##\s+(.+)$/gm, (_, t) => `<h2 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:22px; font-weight:800; margin:26px 0 12px 0;">${renderInlineMarkdown(escapeHtml(t))}</h2>`);
+        }
+        if (/^#\s+(.+)$/m.test(block)) {
+          return block.replace(/^#\s+(.+)$/gm, (_, t) => `<h1 style="font-family:var(--font-heading); color:var(--gold-bright); font-size:26px; font-weight:900; margin:28px 0 14px 0;">${renderInlineMarkdown(escapeHtml(t))}</h1>`);
+        }
+
+        if (/^>\s+/m.test(block)) {
+          const quoteContent = block.replace(/^>\s?/gm, '');
+          const inner = renderInlineMarkdown(escapeHtml(quoteContent)).replace(/\n/g, '<br>');
+          return `<blockquote style="border-left: 3px solid var(--gold-primary); background: rgba(212,175,55,0.06); padding: 14px 18px; margin: 18px 0; border-radius: 0 8px 8px 0; font-style: italic; color: #cbd5e1;">${inner}</blockquote>`;
+        }
+
+        if (/^[-*+]\s+/m.test(block)) {
+          const items = block.split('\n').filter(l => l.trim()).map(line => {
+            const itemText = line.replace(/^[-*+]\s+/, '');
+            return `<li style="margin-bottom: 8px; line-height: 1.7;">${renderInlineMarkdown(escapeHtml(itemText))}</li>`;
+          }).join('');
+          return `<ul style="padding-left: 22px; margin: 16px 0; color: #e2e8f0;">${items}</ul>`;
+        }
+
+        if (/^\d+\.\s+/m.test(block)) {
+          const items = block.split('\n').filter(l => l.trim()).map(line => {
+            const itemText = line.replace(/^\d+\.\s+/, '');
+            return `<li style="margin-bottom: 8px; line-height: 1.7;">${renderInlineMarkdown(escapeHtml(itemText))}</li>`;
+          }).join('');
+          return `<ol style="padding-left: 22px; margin: 16px 0; color: #e2e8f0;">${items}</ol>`;
+        }
+
+        const inline = renderInlineMarkdown(escapeHtml(block)).replace(/\n/g, '<br>');
+        return `<p style="margin: 0 0 18px 0; line-height: 1.8; color: #e2e8f0;">${inline}</p>`;
+      });
+
+      return renderedBlocks.filter(Boolean).join('\n');
+    }
+
+    function stripMarkdown(md) {
+      if (!md) return '';
+      return String(md)
+        .replace(/#+\s+/g, '')
+        .replace(/(\*\*|__)(.*?)\1/g, '$2')
+        .replace(/(\*|_)(.*?)\1/g, '$2')
+        .replace(/~~(.*?)~~/g, '$1')
+        .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
+        .replace(/`{1,3}(.*?)`{1,3}/g, '$1')
+        .replace(/^>\s+/gm, '')
+        .replace(/^[-*+]\s+/gm, '')
+        .replace(/^\d+\.\s+/gm, '')
+        .replace(/\r\n|\n|\r/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function publicBlogExcerpt(post, limit = 260) {
+      const text = stripMarkdown(post.excerpt || post.summary || post.content || '');
+      if (text.length <= limit) return text;
+      const snippet = text.substring(0, limit);
+      const lastSpace = snippet.lastIndexOf(' ');
+      return (lastSpace > limit / 2 ? snippet.substring(0, lastSpace) : snippet).trimEnd() + '...';
+    }
+
+    function publicBlogPostSlug(post, index) {
+      return post.slug || (post.title ? profileSlugFor({ name: post.title }) : `entry-${index + 1}`);
+    }
+
+    function renderPublicBlogCard(profile, post, index) {
+      const postSlug = publicBlogPostSlug(post, index);
+      const articleUrl = profileArticlePath(profile, postSlug);
+      const isDomme = profile.role_type === 'domme' || profile.role_type === 'dom';
+      const avatar = profile.avatar_image || profile.avatar || '';
+      const excerpt = publicBlogExcerpt(post);
+      return `
+        <article id="post-${escapeHtml(postSlug)}" class="feed-post-card blog-feed-card">
+          ${post.media_url ? `
+            <a href="${escapeHtml(articleUrl)}" class="blog-feed-image-link" aria-label="${escapeHtml(post.title || 'Read article')}">
+              <img src="${escapeHtml(post.media_url)}" alt="${escapeHtml(post.title || 'Post image')}" loading="lazy" decoding="async" width="1200" height="675">
+            </a>
+          ` : ''}
+          <div class="blog-feed-details">
+            <div class="blog-feed-author">
+              <div class="blog-feed-avatar">
+                ${avatar ? `<img src="${escapeHtml(avatar)}" alt="${escapeHtml(profile.name)}" loading="lazy" decoding="async" width="42" height="42">` : (isDomme ? '👑' : '🩷')}
+              </div>
+              <div class="blog-feed-author-info">
+                <strong>${escapeHtml(profile.name)}</strong> <span class="role-badge">${isDomme ? 'DOM' : 'SUB'}</span>
+                <div class="blog-feed-meta">@${escapeHtml(profile.sl_username || profile.id)} &bull; ${escapeHtml(post.timestamp || 'Recent')}</div>
+              </div>
+              <span class="tag-pill-badge">${escapeHtml(post.tag || '💬 Update')}</span>
+            </div>
+            <h3 class="blog-feed-title"><a href="${escapeHtml(articleUrl)}">${escapeHtml(post.title || 'Journal Entry')}</a></h3>
+            ${excerpt ? `<p class="blog-feed-excerpt">${escapeHtml(excerpt)}</p>` : ''}
+            <div class="blog-feed-actions">
+              <button type="button" class="btn btn-secondary btn-sm" data-slug="${escapeHtml(postSlug)}" onclick="shareBlogPost('', this.dataset.slug, '')"><span>🔗</span> Share Link</button>
+              <a href="${escapeHtml(articleUrl)}" class="btn btn-secondary btn-sm blog-feed-read"><span>📖</span> Read Full Article &rarr;</a>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function getStatusBadgeHtml(rawStatus) {
+      const status = (rawStatus || 'Offline').toLowerCase();
+      if (['busy', 'session', 'booked', 'dnd', 'do not disturb'].some(value => status.includes(value))) return '<span id="profile-live-badge" class="traffic-status traffic-busy"><span class="traffic-dot"></span> Busy</span>';
+      if (['away', 'afk', 'brb'].some(value => status.includes(value))) return '<span id="profile-live-badge" class="traffic-status traffic-away"><span class="traffic-dot"></span> Away</span>';
+      if (['live', 'avail', 'online', 'in-world', 'ready'].some(value => status.includes(value))) return '<span id="profile-live-badge" class="traffic-status traffic-live"><span class="traffic-dot"></span> Live</span>';
+      return '<span id="profile-live-badge" class="traffic-status traffic-offline"><span class="traffic-dot"></span> Offline</span>';
+    }
+
+    function renderProfileHero(profile) {
+      const hero = document.getElementById('profile-hero-header');
+      const overlay = document.getElementById('profile-hero-overlay');
+      const content = document.getElementById('profile-hero-content');
+      if (!hero || !content) return;
+      hero.style.display = '';
+      const banner = profile.banner_image || profile.cover_image || profile.banner || '';
+      if (banner) {
+        hero.style.backgroundImage = `url("${banner}")`;
+        hero.style.backgroundPosition = 'center center';
+        hero.style.backgroundSize = 'cover';
+        hero.style.backgroundRepeat = 'no-repeat';
+        if (overlay) overlay.style.display = 'block';
+      } else {
+        hero.style.background = 'linear-gradient(180deg, #1f1519 0%, #12100e 100%)';
+        if (overlay) overlay.style.display = 'none';
+      }
+      const dominant = profile.role_type === 'domme' || profile.role_type === 'dom';
+      const avatar = profile.avatar_image || profile.avatar || '';
+      const textShadow = banner ? 'text-shadow:0 2px 8px rgba(0,0,0,0.9),0 4px 20px rgba(0,0,0,0.85);' : '';
+      content.innerHTML = `
+        <div style="display:flex; gap:28px; align-items:center; flex-wrap:wrap;">
+          <div style="width:110px; height:110px; border-radius:50%; background:#12100e; border:3px solid var(--gold-bright); display:flex; align-items:center; justify-content:center; font-size:52px; box-shadow:0 0 25px var(--gold-glow),0 4px 15px rgba(0,0,0,0.8); flex-shrink:0; overflow:hidden;">
+            ${avatar ? `<img src="${escapeHtml(avatar)}" alt="${escapeHtml(profile.name)}" style="width:100%; height:100%; object-fit:cover;">` : (dominant ? '👑' : '🩷')}
+          </div>
+          <div style="flex:1; min-width:280px; ${textShadow}">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <h1 style="font-family:var(--font-heading); font-size:38px; font-weight:900; color:var(--gold-bright); margin:0; text-shadow:0 2px 10px rgba(0,0,0,0.9);">${escapeHtml(profile.name)}</h1>
+              <span class="role-badge" style="background:${dominant ? 'rgba(139,30,45,0.6)' : 'rgba(184,154,88,0.35)'}; border:1px solid ${dominant ? 'var(--burgundy-light)' : 'var(--gold-border)'}; color:${dominant ? '#ffb8c2' : 'var(--gold-bright)'}; font-size:11px; backdrop-filter:blur(4px);">VERIFIED ${dominant ? 'DOMINANT' : 'SUBMISSIVE'}</span>
+              ${getStatusBadgeHtml(profile.status)}
+            </div>
+            ${profile.role ? `<div style="font-size:16px; font-weight:700; color:var(--gold-bright); margin-top:8px; letter-spacing:0.3px; text-shadow:0 1px 6px rgba(0,0,0,0.9);">${escapeHtml(profile.role)}</div>` : ''}
+            <div style="font-family:var(--font-mono); font-size:13px; color:var(--gold-muted); margin-top:6px; text-shadow:0 1px 4px rgba(0,0,0,0.8);">Second Life Username: <strong>${escapeHtml(profile.sl_username || profile.id)}</strong> ${profile.level ? `&bull; Level ${escapeHtml(profile.level)} (${escapeHtml(profile.rank || '')})` : ''}</div>
+            <p style="font-size:18px; color:var(--text-primary); margin-top:10px; font-style:italic; max-width:750px; line-height:1.5; text-shadow:0 2px 8px rgba(0,0,0,0.9);">"${escapeHtml(profile.tagline || '')}"</p>
+          </div>
+        </div>`;
+    }
+
+    function renderArticleProfileTabs(profile) {
+      const basePath = profileBasePath(profile);
+      const vip = profile.is_vip === true || profile.plan === 'vip';
+      const tabs = [
+        ['ratecard', '📋', 'Rate Card & Bio', null, true],
+        ['feed', '🔒', 'VIP Subscribers Feed', (profile.posts || []).length, vip && profileFeatureEnabled(profile, 'vip_feed')],
+        ['blog', '📰', 'Public Blog', (profile.blog_posts || profile.blog || []).length, profileFeatureEnabled(profile, 'public_blog')],
+        ['gallery', '📸', 'Gallery', profileGalleryImages(profile).length, profileFeatureEnabled(profile, 'full_gallery')]
+      ];
+      return `<div class="container"><nav id="profile-tabs-nav" class="article-profile-tabs" aria-label="Profile views">${tabs.filter(tab => tab[4]).map(([name, icon, label, count]) => `
+        <a href="${basePath}?tab=${name}#profile-tabs-nav" data-profile-tab="${name}" class="profile-tab-btn${name === 'blog' ? ' active' : ''}" ${name === 'blog' ? 'aria-current="page"' : ''}><span>${icon}</span> ${label}${count !== null ? ` <span class="tab-badge">${count}</span>` : ''}</a>
+      `).join('')}</nav></div>`;
+    }
+
+    function renderDynamicArticleView(profile, post, allBlogPosts) {
+      const profilePath = profileBasePath(profile);
+      const isDomme = (profile.role_type === 'domme' || profile.role_type === 'dom');
+      const roleLabel = isDomme ? 'DOM' : 'SUB';
+      const roleTitle = profile.role || (isDomme ? 'Verified Dominant Companion' : 'Verified Submissive Companion');
+      const startingRate = profile.starting_rate || 'From L$3,000 / hr';
+      const avatarImg = profile.avatar_image || '';
+      renderProfileHero(profile);
+
+      const otherPosts = (allBlogPosts || []).filter(p => p !== post).slice(0, 3);
+      const morePostsHtml = otherPosts.map(op => {
+        const opSlug = op.slug || (op.title ? op.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : op.id);
+        return `
+          <a href="${profileArticlePath(profile, opSlug)}" style="display:block; padding:12px 14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:10px; text-decoration:none; margin-bottom:10px; transition:all 0.2s ease;">
+            <div style="font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); margin-bottom:4px;">${escapeHtml(op.timestamp || 'Recent')} &bull; ${escapeHtml(op.tag || 'Update')}</div>
+            <div style="font-size:13.5px; font-weight:700; color:#fff; line-height:1.4;">${escapeHtml(op.title || 'Journal Entry')}</div>
+          </a>
+        `;
+      }).join('');
+
+      const hardwareBadges = (profile.hardware_compat || []).slice(0, 3).map(h => `
+        <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-family:var(--font-mono); background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.3); color:var(--gold-bright); padding:3px 8px; border-radius:6px;">
+          <span>${escapeHtml(h.icon || '🔌')}</span> ${escapeHtml(h.name || 'Lovense')}
+        </span>
+      `).join('');
+
+      const wordCount = (post.content || '').split(/\s+/).length;
+      const readMinutes = Math.max(1, Math.round(wordCount / 180));
+
+      const canonicalSlug = profileSlugFor(profile) || profile.id;
+      const postSlug = post.slug || (post.title ? profileSlugFor({ name: post.title }) : 'entry');
+      const pageUrl = `https://controlandchaos.co.uk/profile/${encodeURIComponent(canonicalSlug)}/blog/${encodeURIComponent(postSlug)}/`;
+
+      const defaultSeoTitle = `${post.title || 'Blog Post'} — ${profile.name}'s Blog | Control & Chaos`;
+      const finalSeoTitle = post.seo_title || defaultSeoTitle;
+
+      const plainSnippet = post.content ? stripMarkdown(post.content) : '';
+      const defaultSeoDesc = plainSnippet ? (plainSnippet.substring(0, 157) + (plainSnippet.length > 157 ? '...' : '')) : `Read this free public journal update from ${profile.name} on Control & Chaos.`;
+      const finalSeoDesc = post.seo_description || defaultSeoDesc;
+
+      let finalSeoImg = post.seo_image || post.media_url || profile.seo_image || profile.banner_image || profile.avatar_image || '';
+      if (finalSeoImg && !finalSeoImg.startsWith('http') && !finalSeoImg.startsWith('//')) {
+        finalSeoImg = `https://controlandchaos.co.uk${finalSeoImg.startsWith('/') ? '' : '/'}${finalSeoImg}`;
+      }
+      if (!finalSeoImg) {
+        finalSeoImg = 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80';
+      }
+
+      document.title = finalSeoTitle;
+      const metaDesc = document.getElementById('meta-description');
+      if (metaDesc) metaDesc.setAttribute('content', finalSeoDesc);
+      const metaCanon = document.getElementById('meta-canonical');
+      if (metaCanon) metaCanon.setAttribute('href', pageUrl);
+
+      const ogTitle = document.getElementById('og-title');
+      if (ogTitle) ogTitle.setAttribute('content', finalSeoTitle);
+      const ogDesc = document.getElementById('og-desc');
+      if (ogDesc) ogDesc.setAttribute('content', finalSeoDesc);
+      const ogImg = document.getElementById('og-image');
+      if (ogImg) ogImg.setAttribute('content', finalSeoImg);
+      const ogUrl = document.getElementById('og-url');
+      if (ogUrl) ogUrl.setAttribute('content', pageUrl);
+
+      const twTitle = document.getElementById('twitter-title');
+      if (twTitle) twTitle.setAttribute('content', finalSeoTitle);
+      const twDesc = document.getElementById('twitter-desc');
+      if (twDesc) twDesc.setAttribute('content', finalSeoDesc);
+      const twImg = document.getElementById('twitter-image');
+      if (twImg) twImg.setAttribute('content', finalSeoImg);
+
+      const mainEl = document.querySelector('main.section') || document.querySelector('main');
+      if (!mainEl) return;
+      mainEl.classList.add('companion-article-page', 'profile-article-page');
+      mainEl.style.removeProperty('padding');
+
+      mainEl.innerHTML = `
+        ${renderArticleProfileTabs(profile)}
+        <div class="container companion-article-layout" id="dynamic-article-wrap">
+          <!-- Left Column: Article Body -->
+          <div>
+            <article class="companion-article-body">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                <span class="role-badge" style="background:rgba(212,175,55,0.12); color:var(--gold-bright); font-size:11px; padding:3px 10px;">
+                  ${escapeHtml(post.tag || '💬 Update')}
+                </span>
+                <span style="font-family:var(--font-mono); font-size:11.5px; color:var(--gold-muted);">
+                  ${escapeHtml(post.timestamp || 'Recent')} &bull; ${readMinutes} min read
+                </span>
+              </div>
+
+              <h1 class="companion-article-title">
+                ${escapeHtml(post.title || 'Journal Entry')}
+              </h1>
+
+              <div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div style="width:46px; height:46px; border-radius:50%; overflow:hidden; border:1.5px solid var(--gold-border); background:#14110e; flex-shrink:0;">
+                  ${avatarImg ? `<img src="${avatarImg}" alt="${profile.name}" style="width:100%; height:100%; object-fit:cover;">` : (isDomme ? '👑' : '🩷')}
+                </div>
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <a href="${profilePath}" style="font-family:var(--font-heading); font-size:16px; font-weight:800; color:var(--gold-bright); text-decoration:none;">
+                      ${escapeHtml(profile.name)}
+                    </a>
+                    <span class="role-badge">${roleLabel}</span>
+                  </div>
+                  <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--gold-muted);">
+                    @${escapeHtml(profile.sl_username || profile.id)} &bull; ${escapeHtml(profile.location || 'Control & Chaos')}
+                  </div>
+                </div>
+              </div>
+
+              ${post.media_url ? `
+                <img src="${escapeHtml(post.media_url)}" alt="${escapeHtml(post.title)}" style="width:100%; max-height:480px; border-radius:14px; object-fit:cover; border:1px solid var(--gold-border-subtle); margin:20px 0; display:block;">
+              ` : ''}
+
+              <div class="article-content" style="font-size: 16px; line-height: 1.8; color: #e2e8f0; margin: 24px 0 32px; word-break: break-word;">
+                ${renderMarkdownToHtml(post.content || '')}
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:12px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard?.writeText(window.location.href); alert('🔗 Article link copied to clipboard!');">
+                    <span>🔗</span> Share Article
+                  </button>
+                </div>
+
+                <a href="${profilePath}?tab=blog" class="btn btn-secondary btn-sm">
+                  <span>←</span> All ${escapeHtml(profile.name)}'s Posts
+                </a>
+              </div>
+            </article>
+
+            ${morePostsHtml ? `
+              <div style="margin-top: 30px;">
+                <h3 style="font-family:var(--font-heading); font-size:18px; color:var(--gold-bright); margin-bottom:14px;">
+                  More from ${escapeHtml(profile.name)}
+                </h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px;">
+                  ${morePostsHtml}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Right Column: Sticky Creator Profile & Booking Card -->
+          <div>
+            <aside class="card companion-article-creator">
+              <div style="text-align:center; margin-bottom:18px;">
+                <div style="width:84px; height:84px; border-radius:50%; overflow:hidden; border:2px solid var(--gold-bright); margin:0 auto 12px; box-shadow:0 0 20px rgba(212,175,55,0.35);">
+                  ${avatarImg ? `<img src="${avatarImg}" alt="${profile.name}" style="width:100%; height:100%; object-fit:cover;">` : (isDomme ? '👑' : '🩷')}
+                </div>
+                <h2 style="font-family:var(--font-heading); font-size:20px; font-weight:800; color:#fff; margin:0 0 4px 0;">
+                  ${escapeHtml(profile.name)}
+                </h2>
+                <div style="font-size:12px; color:var(--gold-muted); margin-bottom:8px;">
+                  ${escapeHtml(roleTitle)}
+                </div>
+                <div style="display:inline-block; background:rgba(212,175,55,0.12); border:1px solid var(--gold-border); color:var(--gold-bright); font-family:var(--font-heading); font-weight:800; font-size:13px; padding:4px 12px; border-radius:20px;">
+                  ⚡ Starting at ${escapeHtml(startingRate)}
+                </div>
+              </div>
+
+              ${profile.tagline ? `
+                <p style="font-size:12.5px; color:#cbd5e1; line-height:1.55; text-align:center; margin-bottom:18px; font-style:italic;">
+                  "${escapeHtml(profile.tagline)}"
+                </p>
+              ` : ''}
+
+              ${hardwareBadges ? `
+                <div style="margin-bottom:18px; text-align:center; display:flex; flex-wrap:wrap; justify-content:center; gap:6px;">
+                  ${hardwareBadges}
+                </div>
+              ` : ''}
+
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <a href="${profilePath}#profile-tabs-nav" class="btn btn-gold" style="width:100%; box-sizing:border-box; justify-content:center;">
+                  <span>📋</span> View Full Rate Card &amp; Menus
+                </a>
+                <a href="${profilePath}?tab=ratecard#booking-enquiry-section" data-profile-booking-link class="btn btn-secondary" style="width:100%; box-sizing:border-box; justify-content:center;">
+                  <span>✉️</span> Submit Booking Enquiry
+                </a>
+                <a href="${escapeHtml(profile.slurl || 'secondlife://Chaos%20Manor/128/142/23')}" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%; box-sizing:border-box; justify-content:center;">
+                  <span>📍</span> Teleport In-World (SL) ↗
+                </a>
+              </div>
+            </aside>
+          </div>
+        </div>
+      `;
+
+      applyProfileFeatureVisibility(profile);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+      const modal = document.getElementById('gallery-lightbox');
+      if (!modal?.classList.contains('active')) return;
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        stepGalleryImage(e.key === 'ArrowLeft' ? -1 : 1);
+      }
+      if (e.key === 'Tab') {
+        const controls = Array.from(modal.querySelectorAll('button')).filter(button => !button.hidden);
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const { profileId, isBlogPostRoute, postSlug } = profileRouteForLocation();
+
+      let profileData = null;
+
+      // 0. Check localStorage (instant client-side session cache for recently edited profiles)
+      try {
+        const localCached = localStorage.getItem('cc_profile_edit_' + profileId) ||
+                            localStorage.getItem('cc_profile_edit_' + profileId.toLowerCase().replace(/[^a-z0-9]/g, '-'));
+        if (localCached) {
+          const parsed = JSON.parse(localCached);
+          if (parsed && (parsed.id === profileId || parsed.avatar_uuid === profileId || parsed.sl_username === profileId || profileSlugFor(parsed) === profileId)) {
+            profileData = parsed;
+          }
+        }
+      } catch(e) {}
+
+      // 1. Fetch individual profile JSON first (instant live Decap CMS sync)
+      const candidateUrls = [
+        `/directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `../../directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `../../../directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `../directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `directory/profiles/${profileId}.json?v=${Date.now()}`,
+        `/directory/profiles.json?v=${Date.now()}`
+      ];
+
+      for (const url of candidateUrls) {
+        try {
+          const res = await fetch(url, { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data)) {
+              const matched = data.find(p => p.id === profileId || p.avatar_uuid === profileId || p.sl_username === profileId || profileSlugFor(p) === profileId);
+              if (!matched) continue;
+              profileData = profileData ? { ...matched, ...profileData } : matched;
+            } else {
+              profileData = profileData ? { ...data, ...profileData } : data;
+            }
+            if (profileData) break;
+          }
+        } catch(e) {}
+      }
+
+      // 2. Fetch live dynamic published profile from Netlify serverless function
+      try {
+        const netlifyRes = await fetch(`/.netlify/functions/update-profile?id=${encodeURIComponent(profileId)}&v=${Date.now()}`, { cache: 'no-store' });
+        if (netlifyRes.ok) {
+          const netData = await netlifyRes.json();
+          if (netData.profile) {
+            profileData = { ...(profileData || {}), ...netData.profile };
+          } else if (netData.profiles) {
+            const pFromMap = netData.profiles[profileId.toLowerCase()] ||
+              Object.values(netData.profiles).find(p => profileSlugFor(p) === profileId.toLowerCase()) ||
+              (profileData && profileData.avatar_uuid && netData.profiles[profileData.avatar_uuid.toLowerCase()]) ||
+              (profileData && profileData.sl_username && netData.profiles[profileData.sl_username.toLowerCase()]);
+            if (pFromMap) {
+              profileData = { ...(profileData || {}), ...pFromMap };
+            }
+          }
+        }
+      } catch(e) {}
+
+      if (!profileData) return;
+      window.currentProfile = profileData;
+
+      // Handle direct blog post URL route (/profile/:id/blog/:postSlug/)
+      if (isBlogPostRoute && postSlug) {
+        const blogList = profileData.blog_posts || profileData.blog || [];
+        const cleanSlug = decodeURIComponent(postSlug).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const matchedPost = blogList.find(p => {
+          const s = (p.slug || (p.title ? p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : '')).toLowerCase();
+          const id = String(p.id || '').toLowerCase();
+          return s === cleanSlug || id === cleanSlug || (cleanSlug && s && cleanSlug.includes(s)) || (cleanSlug && s && s.includes(cleanSlug));
+        });
+
+        if (matchedPost) {
+          renderDynamicArticleView(profileData, matchedPost, blogList);
+          return;
+        } else if (document.querySelector('main.profile-article-page .article-content')) {
+          renderProfileHero(profileData);
+          const tabs = document.getElementById('profile-tabs-nav');
+          if (tabs) tabs.parentElement.outerHTML = renderArticleProfileTabs(profileData);
+          applyProfileFeatureVisibility(profileData);
+          return;
+        } else {
+          window.defaultToBlogTab = true;
+        }
+      }
+
+      const liveResponse = await fetch(`/.netlify/functions/update-profile?v=${Date.now()}`, { cache: 'no-store' }).catch(() => null);
+      const liveData = liveResponse && liveResponse.ok ? await liveResponse.json().catch(() => null) : null;
+      const entitlement = liveData && liveData.subscriptions && (
+        (profileData.avatar_uuid && liveData.subscriptions[profileData.avatar_uuid.toLowerCase()]) ||
+        (profileData.id && liveData.subscriptions[profileData.id.toLowerCase()]) ||
+        (profileData.sl_username && liveData.subscriptions[profileData.sl_username.toLowerCase()])
+      );
+      const isProfileVip = !!(profileData.is_vip || (entitlement && entitlement.is_vip));
+      const profileExpiry = profileData.expires_at ? new Date(profileData.expires_at).getTime() : 0;
+      const isExplicitlyUnpublished = profileData.published === false || (entitlement && entitlement.published === false);
+      const isPastExpiry = (entitlement && entitlement.expires_at && new Date(entitlement.expires_at).getTime() <= Date.now()) ||
+                           (!entitlement && profileExpiry > 0 && profileExpiry <= Date.now());
+
+      const subscriptionExpired = !isProfileVip && (isExplicitlyUnpublished || isPastExpiry);
+      if (subscriptionExpired) {
+        const banner = document.getElementById('profile-renewal-banner');
+        const link = document.getElementById('profile-renewal-link');
+        const main = document.querySelector('main.section');
+        if (main) main.style.display = 'none';
+        if (banner) banner.style.display = 'block';
+        if (link) link.href = `/directory/checkout/?uuid=${encodeURIComponent(profileData.avatar_uuid || profileData.id)}&name=${encodeURIComponent(profileData.name || '')}`;
+        return;
+      }
+
+      const canonicalSlug = profileSlugFor(profileData) || profileId;
+      if (!customDomainProfileId() && canonicalSlug !== profileId) {
+        window.history.replaceState(null, '', `/profile/${encodeURIComponent(canonicalSlug)}/${window.location.search}${window.location.hash}`);
+      }
+
+      const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
+
+      // Populate SEO Metadata & Social Card Previews (Discord, Twitter/X, OpenGraph)
+      const defaultSeoTitle = `${profileData.name} — Luxury Rate Card & Services | Control & Chaos`;
+      const finalSeoTitle = profileData.seo_title || defaultSeoTitle;
+      const finalSeoDesc = profileData.seo_description || profileData.tagline || (profileData.about ? profileData.about.substring(0, 160).replace(/(\r\n|\n|\r)/gm, " ") + '...' : `Verified Second Life companion and escort rate card for ${profileData.name}. View interactive booking quotes, Lovense toy syncing, and direct IM.`);
+
+      let finalSeoImg = profileData.seo_image || profileData.banner_image || profileData.avatar_image || '';
+      if (finalSeoImg && !finalSeoImg.startsWith('http') && !finalSeoImg.startsWith('//')) {
+        finalSeoImg = `https://controlandchaos.co.uk${finalSeoImg.startsWith('/') ? '' : '/'}${finalSeoImg}`;
+      }
+      if (!finalSeoImg) {
+        finalSeoImg = 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80';
+      }
+      const pageUrl = `https://controlandchaos.co.uk/profile/${encodeURIComponent(canonicalSlug)}/`;
+
+      document.title = finalSeoTitle;
+      const metaDesc = document.getElementById('meta-description');
+      if (metaDesc) metaDesc.setAttribute('content', finalSeoDesc);
+      const metaCanon = document.getElementById('meta-canonical');
+      if (metaCanon) metaCanon.setAttribute('href', pageUrl);
+
+      const ogTitle = document.getElementById('og-title');
+      if (ogTitle) ogTitle.setAttribute('content', finalSeoTitle);
+      const ogDesc = document.getElementById('og-desc');
+      if (ogDesc) ogDesc.setAttribute('content', finalSeoDesc);
+      const ogImg = document.getElementById('og-image');
+      if (ogImg) ogImg.setAttribute('content', finalSeoImg);
+      const ogUrl = document.getElementById('og-url');
+      if (ogUrl) ogUrl.setAttribute('content', pageUrl);
+
+      const twTitle = document.getElementById('twitter-title');
+      if (twTitle) twTitle.setAttribute('content', finalSeoTitle);
+      const twDesc = document.getElementById('twitter-desc');
+      if (twDesc) twDesc.setAttribute('content', finalSeoDesc);
+      const twImg = document.getElementById('twitter-image');
+      if (twImg) twImg.setAttribute('content', finalSeoImg);
+
+      const jsonLd = document.getElementById('jsonld-schema');
+      if (jsonLd) {
+        jsonLd.textContent = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": profileData.name,
+          "url": pageUrl,
+          "jobTitle": profileData.role || (isDomme ? "Dominant Companion" : "Submissive Companion"),
+          "description": finalSeoDesc,
+          "image": finalSeoImg
+        });
+      }
+
+      renderProfileHero(profileData);
+
+      // Background live status & subscription sync
+      fetch(`/.netlify/functions/update-profile?v=${Date.now()}`, { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+          if (d) {
+            if (d.statuses) {
+              const entry = (profileData.avatar_uuid && d.statuses[profileData.avatar_uuid.toLowerCase()]) ||
+                            (profileData.id && d.statuses[profileData.id.toLowerCase()]) ||
+                            (profileData.sl_username && d.statuses[profileData.sl_username.toLowerCase()]) ||
+                            (profileData.name && d.statuses[profileData.name.toLowerCase()]) ||
+                            (profileData.name && d.statuses[profileData.name.toLowerCase().replace(/\s+/g, '-')]);
+              if (entry && entry.status) {
+                const badgeEl = document.getElementById('profile-live-badge');
+                if (badgeEl) {
+                  badgeEl.outerHTML = getStatusBadgeHtml(entry.status);
+                }
+              }
+            }
+            if (d.subscriptions) {
+              const sub = (profileData.avatar_uuid && d.subscriptions[profileData.avatar_uuid.toLowerCase()]) ||
+                          (profileData.id && d.subscriptions[profileData.id.toLowerCase()]) ||
+                          (profileData.sl_username && d.subscriptions[profileData.sl_username.toLowerCase()]);
+              if (sub) {
+                const isVip = sub.is_vip || profileData.is_vip;
+                const isPublished = sub.published !== false;
+                const isExpired = sub.expires_at && new Date(sub.expires_at).getTime() < Date.now();
+
+                if ((!isPublished || isExpired) && !isVip) {
+                  const banner = document.getElementById('profile-renewal-banner');
+                  const link = document.getElementById('profile-renewal-link');
+                  if (banner) banner.style.display = 'block';
+                  if (link) {
+                    link.href = `/directory/checkout/?uuid=${profileData.avatar_uuid || profileData.id}&name=${encodeURIComponent(profileData.name)}`;
+                  }
+                }
+              }
+            }
+          }
+        })
+        .catch(() => {});
+
+      // Helper to normalize hardware features array or legacy object
+      function normalizeHardwareFeatures(data) {
+        if (!data) return [];
+        if (Array.isArray(data.hardware_compat)) {
+          return data.hardware_compat.map(item => {
+            if (typeof item === 'string') return { name: item, desc: '', icon: '🔌', badge_text: 'Supported' };
+            return {
+              name: item.name || item.title || item.toy || item.feature || '',
+              desc: item.desc || item.description || item.subtext || item.details || item.subtitle || '',
+              icon: item.icon || '🔌',
+              badge_text: item.badge_text || item.badge || item.status || ''
+            };
+          }).filter(item => item.name);
+        }
+        if (data.hardware_compat && typeof data.hardware_compat === 'object') {
+          const list = [];
+          if (data.hardware_compat.vow_collar) list.push({ name: 'Vow Collar Certified', desc: 'Secure collar & leash lockable protocol', icon: '⛓️', badge_text: 'Certified' });
+          if (data.hardware_compat.lovense) list.push({ name: 'Lovense Toy Control', desc: 'Interactive Bluetooth remote syncing', icon: '🔌', badge_text: 'Synced' });
+          if (data.hardware_compat.rlv) list.push({ name: 'Firestorm RLV Restraints', desc: 'Relay commands & viewer integration', icon: '🔒', badge_text: 'Ready' });
+          if (data.hardware_compat.experience) list.push({ name: 'Experience Enabled', desc: 'Grid instant teleport & interaction', icon: '⚡', badge_text: 'Enabled' });
+          return list;
+        }
+        return [];
+      }
+
+      const hwList = normalizeHardwareFeatures(profileData);
+
+      // 2. Render Toolbar (SL IM Link, Teleport, Tribute Location)
+      const toolbar = document.getElementById('profile-toolbar');
+      if (toolbar) {
+        toolbar.innerHTML = `
+          <div style="background:rgba(28,25,22,0.9); border:1px solid var(--gold-border); border-radius:8px; padding:18px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap;">
+              <div>
+                <span style="font-size:11px; color:var(--text-muted); display:block;">Location on Sim:</span>
+                <span style="font-family:var(--font-mono); font-size:13px; color:var(--gold-bright);">${profileData.location || 'Control & Chaos'}</span>
+              </div>
+              <div style="border-left:1px solid var(--gold-border-subtle); padding-left:18px;">
+                <span style="font-size:11px; color:var(--text-muted); display:block;">Starting Rate:</span>
+                <span style="font-family:var(--font-heading); font-size:15px; font-weight:800; color:var(--gold-bright);">${profileData.starting_rate || 'L$1,000 / hr'}</span>
+              </div>
+              ${hwList.length > 0 ? `
+              <div style="border-left:1px solid var(--gold-border-subtle); padding-left:18px;">
+                <span style="font-size:11px; color:var(--text-muted); display:block;">${profileData.hardware_title || 'Hardware & Tech'}:</span>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:3px;">
+                  ${hwList.map(h => `<span class="role-badge" style="background:rgba(212,175,55,0.12); border:1px solid var(--gold-border-subtle); color:var(--gold-bright); font-size:10px; padding:2px 7px;" title="${h.name} (${h.badge_text || 'Supported'})">${h.icon} ${h.name}</span>`).join('')}
+                </div>
+              </div>
+              ` : ''}
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <a href="secondlife:///app/agent/${profileData.avatar_uuid}/im" class="btn btn-gold btn-sm">
+                💬 Message in SL IM
+              </a>
+              <a href="${profileData.slurl || 'secondlife://Chaos%20Manor/128/128/23'}" class="btn btn-secondary btn-sm">
+                📍 Teleport to Skybox
+              </a>
+              <a href="#booking-enquiry-section" data-profile-booking-link class="btn btn-secondary btn-sm" style="border-color:var(--gold-border);">
+                ✉️ Book Session
+              </a>
+            </div>
+          </div>
+        `;
+      }
+
+      // 3. Render About Section (Dynamic Title + Preserved Paragraph Line Breaks)
+      const aboutTitle = document.getElementById('profile-about-title');
+      if (aboutTitle) {
+        aboutTitle.textContent = profileData.about_title || 'About & Philosophy';
+      }
+      const aboutText = document.getElementById('profile-about-text');
+      if (aboutText) {
+        aboutText.textContent = profileData.about || '';
+      }
+
+      // 3.5 Render Voice Clip & Video Introduction Card (Conditionally Rendered)
+      const mediaCard = document.getElementById('profile-media-intro-card');
+      const voiceContainer = document.getElementById('voice-clip-container');
+      const voiceAudio = document.getElementById('profile-voice-audio');
+      const voiceTitle = document.getElementById('voice-clip-title');
+      const voiceSubtitle = document.getElementById('voice-clip-subtitle');
+
+      const videoContainer = document.getElementById('video-intro-container');
+      const videoTitle = document.getElementById('video-intro-title');
+      const videoWrapper = document.getElementById('video-embed-wrapper');
+      const mediaHeaderText = document.getElementById('media-intro-header-text');
+
+      let hasVoice = false;
+      let hasVideo = false;
+
+      const voiceUrl = profileData.voice_clip || profileData.voice_audio || profileData.audio_sample || '';
+      if (voiceUrl && voiceContainer && voiceAudio) {
+        voiceAudio.src = voiceUrl;
+        if (voiceTitle) voiceTitle.textContent = profileData.voice_title || `${profileData.name}'s Voice Sample`;
+        if (voiceSubtitle) voiceSubtitle.textContent = profileData.voice_subtitle || 'Verified voice sample & accent';
+        voiceContainer.style.display = 'block';
+        hasVoice = true;
+      }
+
+      const videoUrl = profileData.video_intro || profileData.intro_video || profileData.video || '';
+      if (videoUrl && videoContainer && videoWrapper) {
+        if (videoTitle) videoTitle.textContent = profileData.video_title || 'Virtual Intro & Avatar Motion';
+
+        let embedHtml = '';
+        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+          let ytId = '';
+          if (videoUrl.includes('youtu.be/')) {
+            ytId = videoUrl.split('youtu.be/')[1].split(/[?&]/)[0];
+          } else if (videoUrl.includes('v=')) {
+            ytId = videoUrl.split('v=')[1].split('&')[0];
+          } else if (videoUrl.includes('embed/')) {
+            ytId = videoUrl.split('embed/')[1].split(/[?&]/)[0];
+          }
+          if (ytId) {
+            embedHtml = `<iframe src="https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1" title="Video Intro" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
+          }
+        } else if (videoUrl.includes('vimeo.com')) {
+          const vimeoId = videoUrl.split('vimeo.com/')[1].split(/[?&]/)[0];
+          if (vimeoId) {
+            embedHtml = `<iframe src="https://player.vimeo.com/video/${vimeoId}" title="Video Intro" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position: absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`;
+          }
+        } else {
+          embedHtml = `<video src="${videoUrl}" controls playsinline style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;"></video>`;
+        }
+
+        if (embedHtml) {
+          videoWrapper.innerHTML = embedHtml;
+          videoContainer.style.display = 'block';
+          hasVideo = true;
+        }
+      }
+
+      if (mediaCard) {
+        if (hasVoice && hasVideo) {
+          if (mediaHeaderText) mediaHeaderText.textContent = 'Voice & Video Introduction';
+          mediaCard.style.display = 'block';
+        } else if (hasVoice) {
+          if (mediaHeaderText) mediaHeaderText.textContent = 'Voice Sample & Audio Intro';
+          mediaCard.style.display = 'block';
+        } else if (hasVideo) {
+          if (mediaHeaderText) mediaHeaderText.textContent = 'Video & Virtual Introduction';
+          mediaCard.style.display = 'block';
+        } else {
+          mediaCard.style.display = 'none';
+        }
+      }
+
+            // 4. Render Categorized Interactive Rate Cards (Direct Selection)
+      const ratesContainer = document.getElementById('rate-categories-container');
+      const selectedQuoteBar = document.getElementById('selected-quote-bar');
+      const liveQuoteTotal = document.getElementById('live-quote-total');
+      const liveQuoteCount = document.getElementById('live-quote-count');
+
+      window.selectedServicesMap = new Map();
+
+      window.toggleRateService = function(cardEl) {
+        const name = cardEl.getAttribute('data-name');
+        const price = parseInt(cardEl.getAttribute('data-price'), 10) || 0;
+        const category = cardEl.getAttribute('data-category') || '';
+        const checkMark = cardEl.querySelector('.service-check-mark');
+        const checkBox = cardEl.querySelector('.service-check-box');
+
+        if (window.selectedServicesMap.has(name)) {
+          window.selectedServicesMap.delete(name);
+          cardEl.style.background = 'rgba(20,18,16,0.85)';
+          cardEl.style.borderColor = 'var(--gold-border-subtle)';
+          cardEl.style.boxShadow = 'none';
+          if (checkBox) {
+            checkBox.style.borderColor = 'var(--gold-border-subtle)';
+            checkBox.style.background = '#0e0c0b';
+          }
+          if (checkMark) checkMark.style.display = 'none';
+        } else {
+          window.selectedServicesMap.set(name, { name, price, category });
+          cardEl.style.background = 'rgba(212,175,55,0.12)';
+          cardEl.style.borderColor = 'var(--gold-bright)';
+          cardEl.style.boxShadow = '0 0 16px rgba(212,175,55,0.2)';
+          if (checkBox) {
+            checkBox.style.borderColor = 'var(--gold-bright)';
+            checkBox.style.background = 'rgba(212,175,55,0.3)';
+          }
+          if (checkMark) checkMark.style.display = 'block';
+        }
+
+        window.updateLiveRateSelection();
+      };
+
+      window.updateLiveRateSelection = function() {
+        let total = 0;
+        const selectedItems = Array.from(window.selectedServicesMap.values());
+        selectedItems.forEach(item => { total += item.price; });
+
+        if (selectedQuoteBar) {
+          if (selectedItems.length > 0 && profileFeatureEnabled(profileData, 'booking')) {
+            selectedQuoteBar.style.display = 'flex';
+            if (liveQuoteTotal) liveQuoteTotal.textContent = `L${total.toLocaleString()}`;
+            if (liveQuoteCount) liveQuoteCount.textContent = `(${selectedItems.length} selected)`;
+          } else {
+            selectedQuoteBar.style.display = 'none';
+          }
+        }
+
+        // Sync hidden form inputs and pre-fill message textarea
+        const quoteTotalInput = document.getElementById('form-quote-total');
+        const quoteServicesInput = document.getElementById('form-selected-services');
+        const messageField = document.getElementById('form-message-input');
+
+        if (quoteTotalInput) quoteTotalInput.value = total > 0 ? `L${total.toLocaleString()}` : '';
+        if (quoteServicesInput) quoteServicesInput.value = selectedItems.map(s => s.name).join(', ');
+
+        if (selectedItems.length > 0) {
+          if (messageField) {
+            const servicesBreakdown = selectedItems.map(s => `  • ${s.name} (${s.category ? `${s.category} — ` : ''}L${s.price.toLocaleString()})`).join('\n');
+            messageField.value = `Hello ${profileData.name},\n\nI would like to request a booking/session for the following services:\n${servicesBreakdown}\n\nEstimated Total: L${total.toLocaleString()} (~${Math.round(total / 250)})\n\nSession Preferences & Notes:\n[Please specify any Lovense/RLV preferences, scenario ideas, or timing details here]`;
+          }
+        } else {
+          if (messageField && messageField.value.startsWith(`Hello ${profileData.name}`)) {
+            messageField.value = '';
+          }
+        }
+      };
+
+      if (ratesContainer && profileData.rate_categories && profileData.rate_categories.length > 0) {
+        ratesContainer.innerHTML = '';
+
+        profileData.rate_categories.forEach((cat) => {
+          const catBox = document.createElement('div');
+          catBox.className = 'card';
+          catBox.style.padding = '24px 22px';
+
+          const services = cat.services || [];
+          catBox.innerHTML = `
+            <div style="border-bottom:1px solid var(--gold-border); padding-bottom:10px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:8px;">
+              <div>
+                <h3 style="font-family:var(--font-heading); font-size:20px; font-weight:800; color:var(--gold-bright); margin:0;">${cat.category_name}</h3>
+                ${cat.category_desc ? `<p style="font-size:13px; color:var(--text-muted); margin-top:4px;">${cat.category_desc}</p>` : ''}
+              </div>
+              <span style="font-size:11px; font-family:var(--font-mono); color:var(--gold-muted); text-transform:uppercase;">Click to select</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              ${services.map((s) => {
+                const numPrice = parseInt((s.price || '0').replace(/[^0-9]/g, ''), 10) || 0;
+                return `
+                  <div class="service-select-card" onclick="toggleRateService(this)" data-name="${s.name.replace(/"/g, '&quot;')}" data-price="${numPrice}" data-category="${(cat.category_name || '').replace(/"/g, '&quot;')}" style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:8px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; gap:16px; cursor:pointer; transition:all 0.2s ease;">
+                    <div style="display:flex; align-items:flex-start; gap:14px;">
+                      <div class="service-check-box" style="width:20px; height:20px; border-radius:4px; border:2px solid var(--gold-border-subtle); background:#0e0c0b; display:flex; align-items:center; justify-content:center; margin-top:2px; flex-shrink:0; transition:all 0.2s;">
+                        <span class="service-check-mark" style="display:none; color:var(--gold-bright); font-size:13px; font-weight:900;">✓</span>
+                      </div>
+                      <div>
+                        <div style="font-family:var(--font-heading); font-size:16px; font-weight:800; color:var(--text-primary);">${s.name}</div>
+                        ${s.desc ? `<div style="font-size:13.5px; color:var(--text-muted); margin-top:3px; line-height:1.5;">${s.desc}</div>` : ''}
+                      </div>
+                    </div>
+                    <div style="text-align:right; flex-shrink:0;">
+                      <div style="font-family:var(--font-mono); font-size:16px; font-weight:800; color:var(--gold-bright);">${s.price}</div>
+                      <div style="font-size:11px; color:var(--gold-muted);">${s.unit || 'per session'}</div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+
+          ratesContainer.appendChild(catBox);
+        });
+      }
+
+
+      // 5. Render Custom Sections (Repeater)
+      const customContainer = document.getElementById('custom-sections-container');
+      const validCustomSections = (Array.isArray(profileData.custom_sections) ? profileData.custom_sections : []).filter(sec => sec && (sec.title || sec.content));
+      if (customContainer) {
+        if (validCustomSections.length > 0) {
+          customContainer.innerHTML = '';
+          validCustomSections.forEach(sec => {
+            const secCard = document.createElement('div');
+            secCard.className = 'card';
+            secCard.style.padding = '24px 22px';
+            secCard.innerHTML = `
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                <span style="font-size:20px;">${sec.icon || '📌'}</span>
+                <h3 class="card-title" style="font-size:20px; color:var(--gold-bright); margin:0;">${sec.title || 'Information'}</h3>
+              </div>
+              <div style="font-size:14.5px; color:var(--text-primary); line-height:1.7; white-space:pre-line;">
+                ${sec.content || ''}
+              </div>
+            `;
+            customContainer.appendChild(secCard);
+          });
+          customContainer.style.display = 'flex';
+        } else {
+          customContainer.style.display = 'none';
+        }
+      }
+
+      // Setup Interactive Tribute Links & Modals
+      const tributeModal = document.getElementById('tribute-modal');
+      const openTributeBtn = document.getElementById('open-tribute-modal-btn');
+      const closeTributeBtn = document.getElementById('tribute-modal-close');
+      const modalName = document.getElementById('tribute-modal-name');
+      const modalSlUsername = document.getElementById('modal-sl-username');
+      const copySlBtn = document.getElementById('copy-sl-username-btn');
+      const modalSlProfileBtn = document.getElementById('modal-sl-profile-btn');
+      const modalWebEnquiryBtn = document.getElementById('modal-web-enquiry-btn');
+
+      const modalThroneBox = document.getElementById('modal-throne-box');
+      const modalThroneLink = document.getElementById('modal-throne-link');
+
+      if (modalName) modalName.textContent = `Send Tribute to ${profileData.name}`;
+      if (modalSlUsername) modalSlUsername.textContent = `@${profileData.sl_username || profileData.id}`;
+
+      const cleanSlUser = (profileData.sl_username || profileData.id || '').replace(/\s+/g, '.').toLowerCase();
+      if (modalSlProfileBtn) {
+        modalSlProfileBtn.href = `https://my.secondlife.com/${cleanSlUser}`;
+      }
+
+      if (modalWebEnquiryBtn) {
+        modalWebEnquiryBtn.addEventListener('click', () => {
+          if (tributeModal) tributeModal.style.display = 'none';
+          const formSection = document.getElementById('booking-enquiry-section');
+          if (formSection) {
+            formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => {
+              const nameInput = document.querySelector('input[name="client_name"]');
+              if (nameInput) nameInput.focus();
+            }, 400);
+          }
+        });
+      }
+
+      if (copySlBtn) {
+        copySlBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(profileData.sl_username || profileData.id);
+          copySlBtn.textContent = '✓ Copied!';
+          setTimeout(() => { copySlBtn.textContent = '📋 Copy'; }, 2000);
+        });
+      }
+
+      // 100% Anonymous Throne Wishlist & Direct Cash Tributes
+      const throneWishlist = Array.isArray(profileData.wishlist) ? profileData.wishlist.find(w => (w.url && w.url.includes('throne.com')) || (typeof w === 'string' && w.includes('throne.com'))) : null;
+      const throneUrl = (profileData.throne_url && profileData.throne_url.trim()) ? profileData.throne_url.trim() : (throneWishlist ? (typeof throneWishlist === 'object' ? throneWishlist.url : throneWishlist) : null);
+      if (modalThroneBox) {
+        if (throneUrl && modalThroneLink) {
+          modalThroneLink.href = throneUrl;
+          modalThroneBox.style.display = 'block';
+        } else {
+          modalThroneBox.style.display = 'none';
+        }
+      }
+
+      if (openTributeBtn && tributeModal) {
+        openTributeBtn.addEventListener('click', () => {
+          tributeModal.style.display = 'flex';
+        });
+      }
+      if (closeTributeBtn && tributeModal) {
+        closeTributeBtn.addEventListener('click', () => {
+          tributeModal.style.display = 'none';
+        });
+      }
+      if (tributeModal) {
+        tributeModal.addEventListener('click', (e) => {
+          if (e.target === tributeModal) tributeModal.style.display = 'none';
+        });
+      }
+
+
+      // Smart Availability Time Slot Generator
+      function setupBookingAvailability(profileData) {
+        const dateInput = document.getElementById('booking-date-input');
+        const timeSelect = document.getElementById('booking-time-select');
+        const combinedInput = document.getElementById('booking-preferred-time-combined');
+        const hoursTxt = document.getElementById('booking-schedule-hours-txt');
+        const daysTxt = document.getElementById('booking-schedule-days-txt');
+
+        if (!dateInput || !timeSelect) return;
+
+        // Set minimum date to today
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.min = `${yyyy}-${mm}-${dd}`;
+
+        const avail = profileData.booking_availability || {};
+        const tz = avail.timezone || 'SLT';
+        const startStr = avail.start_hour || '12:00 PM';
+        const endStr = avail.end_hour || '10:00 PM';
+        const slotStep = parseInt(avail.slot_duration || '60', 10);
+        const activeDays = Array.isArray(avail.days) && avail.days.length > 0
+          ? avail.days
+          : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+        if (hoursTxt) {
+          hoursTxt.textContent = `🕒 Active Booking Hours: ${startStr} – ${endStr} ${tz}`;
+        }
+        if (daysTxt) {
+          const shortDays = activeDays.map(d => d.slice(0, 3)).join(', ');
+          daysTxt.textContent = `Days: ${shortDays}`;
+        }
+
+        function parseHourToMinutes(timeStr) {
+          const m = timeStr.match(/(\d+)(?::(\d+))?\s*(AM|PM)/i);
+          if (!m) return 12 * 60;
+          let h = parseInt(m[1], 10);
+          let mins = parseInt(m[2] || '0', 10);
+          const ampm = m[3].toUpperCase();
+          if (ampm === 'PM' && h < 12) h += 12;
+          if (ampm === 'AM' && h === 12) h = 0;
+          return h * 60 + mins;
+        }
+
+        function formatMinutesToTime(totalMins) {
+          let h = Math.floor(totalMins / 60) % 24;
+          let m = totalMins % 60;
+          const ampm = h >= 12 ? 'PM' : 'AM';
+          let displayH = h % 12;
+          if (displayH === 0) displayH = 12;
+          const displayM = m === 0 ? ':00' : ':' + String(m).padStart(2, '0');
+          return `${displayH}${displayM} ${ampm}`;
+        }
+
+        function generateSlots() {
+          const startMins = parseHourToMinutes(startStr);
+          let endMins = parseHourToMinutes(endStr);
+          if (endMins <= startMins) {
+            endMins += 24 * 60; // Over midnight
+          }
+
+          const slots = [];
+          for (let cur = startMins; cur <= endMins; cur += slotStep) {
+            slots.push(formatMinutesToTime(cur) + ' ' + tz);
+          }
+          return slots;
+        }
+
+        function updateSlotsForDate() {
+          const val = dateInput.value;
+          if (!val) {
+            timeSelect.innerHTML = '<option value="">Select a date first...</option>';
+            if (combinedInput) combinedInput.value = '';
+            return;
+          }
+
+          const selectedDate = new Date(val + 'T12:00:00');
+          const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+          const dayName = dayNames[selectedDate.getDay()];
+
+          if (!activeDays.includes(dayName)) {
+            timeSelect.innerHTML = `<option value="">⚠️ Offline / Unavailable on ${dayName}s</option>`;
+            if (combinedInput) combinedInput.value = '';
+            return;
+          }
+
+          const slots = generateSlots();
+          timeSelect.innerHTML = '<option value="">-- Choose an available time slot --</option>' +
+            slots.map(s => `<option value="${s}">${s}</option>`).join('');
+
+          updateCombined();
+        }
+
+        function updateCombined() {
+          if (dateInput.value && timeSelect.value) {
+            const selectedDate = new Date(dateInput.value + 'T12:00:00');
+            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const dayName = dayNames[selectedDate.getDay()];
+            const formatted = `${dateInput.value} (${dayName}) at ${timeSelect.value}`;
+            if (combinedInput) combinedInput.value = formatted;
+          } else {
+            if (combinedInput) combinedInput.value = '';
+          }
+        }
+
+        dateInput.addEventListener('change', updateSlotsForDate);
+        timeSelect.addEventListener('change', updateCombined);
+      }
+
+      setupBookingAvailability(profileData);
+
+      // Dynamic Email Direct (Populates email client with notes and details)
+      window.handleEmailDirectClick = function() {
+        const clientName = document.querySelector('input[name="client_name"]')?.value || '';
+        const clientContact = document.querySelector('input[name="client_contact"]')?.value || '';
+        const prefTime = document.getElementById('booking-preferred-time-combined')?.value || '';
+        const messageNotes = document.getElementById('form-message-input')?.value || '';
+        const quoteTotal = document.getElementById('form-quote-total')?.value || '';
+
+        let bodyText = '';
+        if (clientName) bodyText += `Client Name / SL: ${clientName}\n`;
+        if (clientContact) bodyText += `Contact Info: ${clientContact}\n`;
+        if (prefTime) bodyText += `Preferred Date & Time: ${prefTime}\n`;
+        if (quoteTotal) bodyText += `Estimated Total: L${quoteTotal}\n`;
+        if (bodyText) bodyText += `\n=========================\n\n`;
+        bodyText += (messageNotes || `Hello ${profileData.name},\n\nI would like to enquire about booking a session with you.`);
+
+        const subject = `Booking Enquiry for ${profileData.name}${clientName ? ` — from ${clientName}` : ''}`;
+        window.location.href = `mailto:${profileData.contact_email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      };
+
+
+      // 6. Render Gallery / Visual Lookbook (Dynamic Title & Locked VIP Support)
+      const galleryTitleEl = document.getElementById('profile-gallery-title');
+      if (galleryTitleEl) {
+        let rawTitle = (profileData.gallery_title || 'Gallery').trim();
+        const cleanTitle = rawTitle.replace(/^([\u{1F4F8}\u{1F4F7}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        galleryTitleEl.innerHTML = `<span style="font-size:20px; margin-right:8px;">📸</span> ${cleanTitle || 'Gallery'}`;
+      }
+
+      const galleryGrid = document.getElementById('gallery-grid');
+      const rateCardImages = profileGalleryImages(profileData, true);
+      if (galleryGrid && rateCardImages.length > 0) {
+        galleryGrid.innerHTML = '';
+        rateCardImages.forEach((g, index) => {
+          const item = document.createElement('button');
+          item.type = 'button';
+          const hasImage = !!g.image;
+          const isLocked = g.is_locked || g.vip || g.locked;
+
+          if (hasImage) {
+            item.className = 'gallery-thumb-card';
+            item.onclick = () => openGalleryImage(index, rateCardImages);
+            item.innerHTML = `
+              <img src="${escapeHtml(g.image)}" alt="${escapeHtml(g.title || 'Gallery Photo')}" class="gallery-thumb-img" loading="lazy" decoding="async">
+              <div class="gallery-thumb-overlay">
+                <div style="font-family:var(--font-heading); font-size:12.5px; font-weight:800; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.8);">${escapeHtml(g.title || 'Photo')}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                  <span style="font-size:9.5px; color:var(--gold-bright); font-family:var(--font-mono);">${escapeHtml(g.category || '')}</span>
+                  <span style="font-size:11px;">🔍</span>
+                </div>
+              </div>
+            `;
+          } else {
+            item.className = 'gallery-fallback-card';
+            item.innerHTML = `
+              <div style="font-size:32px; margin-bottom:8px;">${g.icon || '👗'}</div>
+              <div style="font-family:var(--font-heading); font-size:13px; font-weight:700; color:var(--gold-bright);">${g.title || 'Style'}</div>
+              <span style="font-size:10px; color:var(--gold-muted); font-family:var(--font-mono);">${g.category || 'Lookbook'}</span>
+            `;
+          }
+          galleryGrid.appendChild(item);
+        });
+      } else {
+        const galleryCard = document.getElementById('profile-gallery-card');
+        if (galleryCard && rateCardImages.length === 0) {
+          galleryCard.style.display = 'none';
+        }
+      }
+
+      // 7. Render Hardware & Features Card (Repeater & Dynamic Title)
+      const hwCard = document.getElementById('profile-hardware-card');
+      const hwTitle = document.getElementById('profile-hardware-title');
+      const hwContainer = document.getElementById('hardware-features-container');
+
+      if (hwTitle) {
+        let rawTitle = (profileData.hardware_title || 'Hardware & Tech Compatibility').trim();
+        const cleanTitle = rawTitle.replace(/^([\u26A1\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        hwTitle.innerHTML = `<span style="font-size:20px;">⚡</span> ${cleanTitle || 'Hardware & Tech Compatibility'}`;
+      }
+
+      if (hwCard && hwContainer) {
+        if (hwList.length > 0) {
+          hwContainer.innerHTML = hwList.map(item => `
+            <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:8px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px;">
+              <div style="display:flex; align-items:flex-start; gap:12px;">
+                <span style="font-size:20px; line-height:1.2; margin-top:1px; flex-shrink:0;">${item.icon || '🔌'}</span>
+                <div>
+                  <div style="font-family:var(--font-heading); font-size:14px; font-weight:800; color:var(--text-primary); letter-spacing:0.01em;">${item.name}</div>
+                  ${item.desc ? `<div style="font-size:12px; color:var(--text-muted); margin-top:3px; line-height:1.4;">${item.desc}</div>` : ''}
+                </div>
+              </div>
+              ${item.badge_text ? `<span style="font-size:10.5px; font-family:var(--font-mono); color:#10b981; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); border-radius:12px; padding:2px 8px; font-weight:700; flex-shrink:0;">● ${item.badge_text}</span>` : ''}
+            </div>
+          `).join('');
+          hwCard.style.display = 'block';
+        } else {
+          hwCard.style.display = 'none';
+        }
+      }
+
+      // 8. Render Hard Limits (Dynamic Title & Conditional)
+      const limitsCard = document.getElementById('profile-limits-card');
+      const limitsTitleEl = document.getElementById('profile-limits-title');
+      const limitsList = document.getElementById('hard-limits-list');
+      const validLimits = Array.isArray(profileData.hard_limits) ? profileData.hard_limits.filter(l => l && (typeof l === 'string' ? l.trim() : (l.limit && l.limit.trim()))) : [];
+
+      if (limitsCard && limitsList) {
+        if (validLimits.length > 0) {
+          if (limitsTitleEl) {
+            let rawTitle = (profileData.limits_title || 'Hard Limits & Boundaries').trim();
+            const cleanTitle = rawTitle.replace(/^([\u{1F6AB}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+            limitsTitleEl.innerHTML = `<span style="font-size:20px;">🚫</span> ${cleanTitle || 'Hard Limits & Boundaries'}`;
+          }
+          limitsList.innerHTML = validLimits.map(l => `<li style="margin-bottom:6px;">${typeof l === 'string' ? l : l.limit}</li>`).join('');
+          limitsCard.style.display = 'block';
+        } else {
+          limitsCard.style.display = 'none';
+        }
+      }
+
+      // 9. Render How to Book / Protocol (Dynamic Title & Conditional)
+      const bookingCard = document.getElementById('profile-booking-card');
+      const bookingTitleEl = document.getElementById('profile-booking-title');
+      const protocolBox = document.getElementById('booking-protocol-steps');
+      const validSteps = Array.isArray(profileData.booking_protocol) ? profileData.booking_protocol.filter(s => s && (typeof s === 'string' ? s.trim() : (s.step && s.step.trim()))) : [];
+
+      if (bookingCard && protocolBox) {
+        if (validSteps.length > 0) {
+          if (bookingTitleEl) {
+            let rawTitle = (profileData.booking_title || 'How to Book').trim();
+            const cleanTitle = rawTitle.replace(/^([\u{1F4DC}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+            bookingTitleEl.innerHTML = `<span style="font-size:20px;">📜</span> ${cleanTitle || 'How to Book'}`;
+          }
+          protocolBox.innerHTML = validSteps.map(step => `
+            <div style="margin-bottom:8px; display:flex; gap:8px;">
+              <span style="color:var(--gold-primary);">◆</span>
+              <span>${typeof step === 'string' ? step : step.step}</span>
+            </div>
+          `).join('');
+          bookingCard.style.display = 'block';
+        } else {
+          bookingCard.style.display = 'none';
+        }
+      }
+
+      // 10. Render Reviews (Dynamic Title & Conditional)
+      const reviewsCard = document.getElementById('profile-reviews-card');
+      const reviewsTitleEl = document.getElementById('profile-reviews-title');
+      const reviewsContainer = document.getElementById('reviews-container');
+      const validReviews = Array.isArray(profileData.reviews) ? profileData.reviews.filter(r => r && (r.client || r.comment)) : [];
+
+      if (reviewsCard && reviewsContainer) {
+        if (validReviews.length > 0) {
+          if (reviewsTitleEl) {
+            let rawTitle = (profileData.reviews_title || 'Verified Client Reviews').trim();
+            const cleanTitle = rawTitle.replace(/^([\u2B50\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+            reviewsTitleEl.innerHTML = `<span style="font-size:20px; margin-right:8px;">⭐</span> ${cleanTitle || 'Verified Client Reviews'}`;
+          }
+          reviewsContainer.innerHTML = validReviews.map(r => `
+            <div style="background:rgba(20,18,16,0.8); border:1px solid var(--gold-border-subtle); border-radius:6px; padding:12px 14px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <strong style="font-size:13px; color:var(--gold-bright);">${r.client || 'Verified Client'}</strong>
+                <span style="color:#f59e0b; font-size:12px;">${r.stars || '★★★★★'}</span>
+              </div>
+              <p style="font-size:13px; color:var(--text-muted); font-style:italic; line-height:1.45; margin:0;">
+                "${r.comment || ''}"
+              </p>
+            </div>
+          `).join('');
+          reviewsCard.style.display = 'block';
+        } else {
+          reviewsCard.style.display = 'none';
+        }
+      }
+
+      // 11. Render Wishlist (Dynamic Title & Conditional)
+      const wishlistTitleEl = document.getElementById('profile-wishlist-title');
+      if (wishlistTitleEl) {
+        let rawTitle = (profileData.wishlist_title || 'Wishlist & Tributes').trim();
+        const cleanTitle = rawTitle.replace(/^([\u{1F381}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        wishlistTitleEl.innerHTML = `<span style="font-size:20px;">🎁</span> ${cleanTitle || 'Wishlist & Tributes'}`;
+      }
+      const wishlistCard = document.getElementById('profile-wishlist-card');
+      const wishlistContainer = document.getElementById('wishlist-container');
+      const wishlistItems = Array.isArray(profileData.wishlist) ? profileData.wishlist.filter(w => w && (w.title || w.url || typeof w === 'string')) : [];
+
+      if (wishlistCard && wishlistContainer) {
+        if (wishlistItems.length > 0) {
+          wishlistContainer.innerHTML = wishlistItems.map(item => {
+            const title = typeof item === 'string' ? item : (item.title || 'Wishlist Item');
+            const url = typeof item === 'object' && item.url ? item.url : '';
+            const note = typeof item === 'object' && item.note ? item.note : '';
+            const isClickable = !!url && url !== '#';
+
+            return `
+              <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:8px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                <div style="flex:1;">
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="color:var(--gold-bright); font-size:14px;">🛍️</span>
+                    <strong style="font-family:var(--font-heading); font-size:14px; color:var(--text-primary);">${title}</strong>
+                  </div>
+                  ${note ? `<div style="font-size:12px; color:var(--text-muted); margin-top:3px; line-height:1.4;">${note}</div>` : ''}
+                </div>
+                ${isClickable ? `
+                  <a href="${url}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="font-size:11px; padding:6px 12px; flex-shrink:0;">
+                    View ↗
+                  </a>
+                ` : ''}
+              </div>
+            `;
+          }).join('');
+          wishlistCard.style.display = 'block';
+        } else {
+          wishlistCard.style.display = 'none';
+        }
+      }
+
+      // 12. Render Social Links (Dynamic Title & Conditional)
+      const socialTitleEl = document.getElementById('profile-social-title');
+      if (socialTitleEl) {
+        let rawTitle = (profileData.social_title || 'Socials & Media').trim();
+        const cleanTitle = rawTitle.replace(/^([\u{1F310}\uFE0F\s]|\p{Extended_Pictographic}|\p{Emoji})+/u, '').trim();
+        socialTitleEl.innerHTML = `<span style="font-size:20px;">🌐</span> ${cleanTitle || 'Socials & Media'}`;
+      }
+      const socialCard = document.getElementById('profile-social-card');
+      const socialContainer = document.getElementById('social-links-container');
+      const socialItems = Array.isArray(profileData.social_links) ? profileData.social_links.filter(s => s && (s.platform || s.handle || s.url || typeof s === 'string')) : [];
+
+      if (socialCard && socialContainer) {
+        if (socialItems.length > 0) {
+          const platformIcons = {
+            'discord': '💬',
+            'flickr': '📸',
+            'twitter': '🐦',
+            'twitter / x': '🐦',
+            'x': '🐦',
+            'instagram': '📷',
+            'tiktok': '🎵',
+            'telegram': '✈️',
+            'website': '🔗',
+            'other': '🌐'
+          };
+
+          socialContainer.innerHTML = socialItems.map(item => {
+            const platform = typeof item === 'string' ? 'Social' : (item.platform || 'Social');
+            const handle = typeof item === 'string' ? item : (item.handle || item.url || platform);
+            const url = typeof item === 'object' && item.url ? item.url : '';
+            const key = platform.toLowerCase();
+            const icon = platformIcons[key] || (key.includes('flickr') ? '📸' : key.includes('discord') ? '💬' : key.includes('twitter') || key.includes('x') ? '🐦' : key.includes('insta') ? '📷' : '🌐');
+
+            return `
+              <div style="background:rgba(20,18,16,0.85); border:1px solid var(--gold-border-subtle); border-radius:8px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
+                  <span style="font-size:16px;">${icon}</span>
+                  <div style="overflow:hidden;">
+                    <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.8px; color:var(--gold-muted); font-family:var(--font-mono);">${platform}</div>
+                    <div style="font-family:var(--font-heading); font-size:13.5px; font-weight:700; color:var(--text-primary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${handle}</div>
+                  </div>
+                </div>
+                ${url ? `
+                  <a href="${url}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="font-size:11px; padding:6px 12px; flex-shrink:0;">
+                    Visit ↗
+                  </a>
+                ` : ''}
+              </div>
+            `;
+          }).join('');
+          socialCard.style.display = 'block';
+        } else {
+          socialCard.style.display = 'none';
+        }
+      }
+
+      // 13. Setup Direct Booking Form & Quick Contact Shortcuts
+      const formEscortName = document.getElementById('form-escort-name');
+      const formEscortId = document.getElementById('form-escort-id');
+      const formEscortEmail = document.getElementById('form-escort-email');
+      const inquiryHeader = document.getElementById('enquiry-header-title');
+      const inquiryLinks = document.getElementById('enquiry-quick-links');
+
+      if (formEscortName) formEscortName.value = profileData.name;
+      if (formEscortId) formEscortId.value = profileData.id;
+      if (formEscortEmail && profileData.contact_email) formEscortEmail.value = profileData.contact_email;
+      if (inquiryHeader) inquiryHeader.textContent = `Request a Session with ${profileData.name}`;
+
+      if (inquiryLinks) {
+        let linksHtml = `
+          <a href="secondlife:///app/agent/${profileData.avatar_uuid}/im" class="btn btn-gold btn-sm">
+            <span>💬</span> Message in SL
+          </a>
+        `;
+        if (profileData.contact_email) {
+          linksHtml += `
+            <button type="button" id="email-direct-btn" class="btn btn-secondary btn-sm" onclick="handleEmailDirectClick()" style="cursor:pointer;">
+              <span>📧</span> Email Direct
+            </button>
+          `;
+        }
+        inquiryLinks.innerHTML = linksHtml;
+      }
+
+      // Handle Option 2 Unified Booking Submission
+      const bookingForm = document.getElementById('booking-form');
+      const formStatus = document.getElementById('booking-form-status');
+      const submitBtn = document.getElementById('booking-submit-btn');
+
+      if (bookingForm) {
+        bookingForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const selectedMethod = document.querySelector('input[name="send_method"]:checked')?.value || 'web';
+
+          if (selectedMethod === 'email') {
+            if (formStatus) {
+              formStatus.style.color = 'var(--gold-bright)';
+              formStatus.innerHTML = '📧 <strong>Opening Email App...</strong> Please send the pre-filled email from your client.';
+            }
+            window.handleEmailDirectClick();
+            return;
+          }
+
+          if (selectedMethod === 'sl') {
+            window.handleSecondLifeImClick();
+            return;
+          }
+
+          // Direct Web Send (Netlify Form POST -> triggers submission-created event)
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳</span> Sending Enquiry...';
+          }
+          if (formStatus) formStatus.textContent = '';
+
+          const formData = new FormData(bookingForm);
+
+          try {
+            const response = await fetch('/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams(formData).toString()
+            });
+
+            if (response.ok) {
+              if (formStatus) {
+                formStatus.style.color = '#10b981';
+                formStatus.innerHTML = `✅ <strong>Enquiry Sent Successfully!</strong> ${profileData.name} will review your session notes and get in touch.`;
+              }
+              bookingForm.reset();
+              if (submitBtn) submitBtn.innerHTML = '<span>✅</span> Enquiry Received';
+            } else {
+              throw new Error('Network response not ok');
+            }
+          } catch (err) {
+            if (formStatus) {
+              formStatus.style.color = 'var(--gold-bright)';
+              formStatus.innerHTML = `✨ <strong>Enquiry Logged!</strong> If preferred, you can also reach out via Second Life IM to <strong>${profileData.sl_username || profileData.name}</strong>.`;
+            }
+          } finally {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              if (submitBtn.innerHTML.includes('Sending')) submitBtn.innerHTML = '<span>✉️</span> Submit Booking Enquiry';
+            }
+          }
+        });
+      }
+
+      // 14. Creator Fan Club & Exclusive Posts Wall Renderer
+      const defaultSamplePosts = [
+        {
+          id: "post_sample_1",
+          tag: "📸 Exclusive Lookbook",
+          type: "photo",
+          title: "Latex High-Society Gala — Private Set",
+          content: "A few unreleased frames from last night's private ballroom shoot. Full 4K set and session rules unlocked below.",
+          media_url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80",
+          is_locked: true,
+          likes: 28,
+          timestamp: "2 hours ago"
+        },
+        {
+          id: "post_sample_2",
+          tag: "🎙️ Audio Note",
+          type: "audio",
+          title: "Evening Calibration & Posture Check",
+          content: "Listen to tonight's voice instruction. All owned subs are expected to maintain formal posture during your evening duties.",
+          media_url: "",
+          is_locked: true,
+          likes: 19,
+          timestamp: "Yesterday"
+        },
+        {
+          id: "post_sample_3",
+          tag: "📜 Daily Protocol",
+          type: "task",
+          title: "Daily Tithe & Kneeling Discipline",
+          content: "1. 20 minutes upright kneeling upon waking.\n2. Inspection of collar lock.\n3. Complete submission of morning reflection.",
+          media_url: "",
+          is_locked: false,
+          likes: 34,
+          timestamp: "3 days ago"
+        }
+      ];
+
+      function isFanUnlocked() {
+        const uId = (profileData.avatar_uuid || profileData.id || '').toLowerCase();
+        return localStorage.getItem('cc_fan_unlocked_' + uId) === '1';
+      }
+
+      window.switchProfileTab = function(tabName, allowHidden = false) {
+        const isVipCreator = profileData.is_vip === true || profileData.plan === 'vip';
+        if (tabName === 'feed' && (!isVipCreator || (!allowHidden && !profileFeatureEnabled(profileData, 'vip_feed')))) tabName = 'ratecard';
+        if (tabName === 'blog' && !allowHidden && !profileFeatureEnabled(profileData, 'public_blog')) tabName = 'ratecard';
+        if (tabName === 'gallery' && (!isVipCreator || (!allowHidden && !profileFeatureEnabled(profileData, 'full_gallery')))) tabName = 'ratecard';
+
+        const btnRatecard = document.getElementById('tab-btn-ratecard');
+        const btnFeed = document.getElementById('tab-btn-feed');
+        const btnBlog = document.getElementById('tab-btn-blog');
+        const btnGallery = document.getElementById('tab-btn-gallery');
+        const paneRatecard = document.getElementById('tab-pane-ratecard');
+        const paneFeed = document.getElementById('tab-pane-feed');
+        const paneBlog = document.getElementById('tab-pane-blog');
+        const paneGallery = document.getElementById('tab-pane-gallery');
+
+        [btnRatecard, btnFeed, btnBlog, btnGallery].forEach(b => b && b.classList.remove('active'));
+        [paneRatecard, paneFeed, paneBlog, paneGallery].forEach(p => p && (p.style.display = 'none'));
+
+        if (tabName === 'feed') {
+          if (btnFeed) btnFeed.classList.add('active');
+          if (paneFeed) paneFeed.style.display = 'block';
+          renderFeed();
+        } else if (tabName === 'blog') {
+          if (btnBlog) btnBlog.classList.add('active');
+          if (paneBlog) paneBlog.style.display = 'block';
+          renderBlog();
+        } else if (tabName === 'gallery') {
+          if (btnGallery) btnGallery.classList.add('active');
+          if (paneGallery) paneGallery.style.display = 'block';
+          renderGalleryLibrary(profileData);
+        } else {
+          if (btnRatecard) btnRatecard.classList.add('active');
+          if (paneRatecard) paneRatecard.style.display = 'block';
+        }
+      };
+
+      window.openSubscribeModal = function() {
+        const modal = document.getElementById('feed-subscribe-modal');
+        if (modal) {
+          modal.style.display = 'flex';
+          const title = document.getElementById('sub-modal-domme-title');
+          const user = document.getElementById('sub-modal-username');
+          const price = document.getElementById('sub-modal-price-badge');
+          const slurlBtn = document.getElementById('sub-modal-slurl-btn');
+          const imLink = document.getElementById('sub-modal-im-link');
+
+          if (title) title.textContent = `Unlock ${profileData.name}'s Inner Circle`;
+          if (user) user.textContent = `@${profileData.sl_username || profileData.id}`;
+          if (price) price.textContent = `${profileData.fan_tier_price || 'L$1,500'} / 30d`;
+          if (slurlBtn) slurlBtn.href = profileData.slurl || 'http://maps.secondlife.com/secondlife/Los%20Pengos/97/181/3000';
+          if (imLink) imLink.href = `secondlife:///app/agent/${profileData.avatar_uuid}/im`;
+        }
+      };
+
+      window.closeSubscribeModal = function() {
+        const modal = document.getElementById('feed-subscribe-modal');
+        if (modal) modal.style.display = 'none';
+      };
+
+      window.simulateFanUnlock = function() {
+        const uId = (profileData.avatar_uuid || profileData.id || '').toLowerCase();
+        const cur = localStorage.getItem('cc_fan_unlocked_' + uId) === '1';
+        localStorage.setItem('cc_fan_unlocked_' + uId, cur ? '0' : '1');
+        closeSubscribeModal();
+        renderFeed();
+        alert(cur ? '🔒 Switched to Unsubscribed Preview (Locked View)' : '👑 Unlocked Inner Circle Preview (All media visible)!');
+      };
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function renderFeed() {
+        if (!profileData) return;
+        const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
+        const posts = (Array.isArray(profileData.posts) && profileData.posts.length > 0) ? profileData.posts : defaultSamplePosts;
+        const feedStream = document.getElementById('feed-posts-stream');
+        const feedBadge = document.getElementById('tab-feed-badge');
+        const heroDomme = document.getElementById('feed-hero-domme-name');
+        const heroPrice = document.getElementById('feed-hero-price');
+        const heroSubBtn = document.getElementById('feed-hero-sub-btn');
+
+        if (feedBadge) feedBadge.textContent = posts.length;
+        if (heroDomme) heroDomme.textContent = `${profileData.name}'s Inner Circle`;
+        if (heroPrice) heroPrice.innerHTML = `${profileData.fan_tier_price || 'L$1,500'} <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); font-weight: 400;">/ month</span>`;
+
+        const unlocked = isFanUnlocked();
+        if (heroSubBtn) {
+          if (unlocked) {
+            heroSubBtn.className = 'btn btn-secondary btn-sm';
+            heroSubBtn.innerHTML = '<span>🟢</span> Active Member Pass';
+            heroSubBtn.onclick = () => alert('You have active VIP member access to this creator.');
+          } else {
+            heroSubBtn.className = 'btn btn-gold btn-sm';
+            heroSubBtn.innerHTML = '<span>🔒</span> Unlock Inner Circle';
+            heroSubBtn.onclick = openSubscribeModal;
+          }
+        }
+
+        if (!feedStream) return;
+        feedStream.innerHTML = '';
+
+        posts.forEach((post, pIdx) => {
+          const card = document.createElement('div');
+          card.className = 'feed-post-card';
+
+          const isLocked = post.is_locked && !unlocked;
+
+          let bodyAndMediaHtml = '';
+
+          if (isLocked) {
+            // LOCKED CONTENT: Hide private message/decrees and media behind subscriber paywall
+            bodyAndMediaHtml = `
+              <div class="feed-post-body">
+                ${post.title ? `<h4 style="font-family: var(--font-heading); font-size: 17px; color: var(--gold-bright); margin: 0 0 10px;">${escapeHtml(post.title)}</h4>` : ''}
+
+                <div style="background: radial-gradient(ellipse at center, rgba(212,175,55,0.12) 0%, rgba(18,15,24,0.98) 80%); border: 1px solid rgba(212,175,55,0.4); border-radius: 12px; padding: 28px 20px; text-align: center; margin: 10px 0 14px; box-shadow: inset 0 0 30px rgba(0,0,0,0.6);">
+                  <div style="font-size: 34px; margin-bottom: 8px;">🔒</div>
+                  <div style="font-family: var(--font-heading); font-size: 16px; font-weight: 800; color: var(--gold-bright); margin-bottom: 6px; letter-spacing: 0.04em;">
+                    SUBSCRIBER EXCLUSIVE CONTENT
+                  </div>
+                  <p style="font-size: 13px; color: #d6d3d1; max-width: 440px; margin: 0 auto 16px; line-height: 1.55;">
+                    This post, lookbook archive, uncensored audio decree, or private instructions are locked for active <strong>${escapeHtml(profileData.name)}</strong> fan tier subscribers.
+                  </p>
+                  <button class="btn btn-gold btn-sm" onclick="openSubscribeModal()" style="font-weight: 700; padding: 9px 20px; box-shadow: 0 0 15px rgba(212,175,55,0.35);">
+                    <span>💎</span> Unlock for ${escapeHtml(profileData.fan_tier_price || 'L$1,500')} ↗
+                  </button>
+                </div>
+
+                ${(post.media_url && post.type !== 'text') ? `
+                  <div class="feed-post-media-wrap" style="position: relative; overflow: hidden; border-radius: 10px; height: 160px; margin-bottom: 12px; border: 1px solid rgba(212,175,55,0.25);">
+                    <img src="${escapeHtml(post.media_url)}" alt="Locked Media Preview" class="feed-post-media-img" style="filter: blur(28px) brightness(0.4); transform: scale(1.15); width: 100%; height: 100%; object-fit: cover;">
+                    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); color: #ffd700; font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.05em;">
+                      🔒 ${post.type === 'audio' ? 'AUDIO DECREE LOCKED' : (post.type === 'video' ? 'VIDEO CLIP LOCKED' : 'LOOKBOOK PHOTO SET LOCKED')}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          } else {
+            // UNLOCKED OR PUBLIC CONTENT: Show complete unblurred content & media
+            let mediaContent = '';
+            if (post.media_url) {
+              if (post.type === 'audio' || post.media_url.endsWith('.mp3') || post.media_url.endsWith('.wav') || post.media_url.endsWith('.ogg')) {
+                mediaContent = `
+                  <div style="padding: 0 22px 18px;">
+                    <div style="background: rgba(14,12,10,0.9); border: 1px solid var(--gold-border-subtle); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 14px;">
+                      <span style="font-size: 24px;">🎙️</span>
+                      <audio controls src="${escapeHtml(post.media_url)}" style="width: 100%; height: 36px; filter: invert(0.9) hue-rotate(180deg) contrast(1.2);"></audio>
+                    </div>
+                  </div>
+                `;
+              } else if (post.type === 'video' || post.media_url.endsWith('.mp4') || post.media_url.endsWith('.webm')) {
+                mediaContent = `
+                  <div style="padding: 0 22px 18px;">
+                    <video controls src="${escapeHtml(post.media_url)}" style="width: 100%; border-radius: 10px; max-height: 480px; background: #000; border: 1px solid rgba(212,175,55,0.3);"></video>
+                  </div>
+                `;
+              } else {
+                mediaContent = `
+                  <div class="feed-post-media-wrap" style="cursor: pointer;" onclick="openLightbox('${escapeHtml(post.media_url)}', '${encodeURIComponent(post.title || '')}', '${escapeHtml(post.tag || 'Lookbook')}')">
+                    <img src="${escapeHtml(post.media_url)}" alt="${escapeHtml(post.title || 'Feed Image')}" class="feed-post-media-img">
+                  </div>
+                `;
+              }
+            }
+
+            bodyAndMediaHtml = `
+              <div class="feed-post-body">
+                ${post.title ? `<h4 style="font-family: var(--font-heading); font-size: 17px; color: var(--gold-bright); margin: 0 0 8px;">${escapeHtml(post.title)}</h4>` : ''}
+                ${post.content ? `
+                  <div style="font-size: 14px; color: var(--text-primary); line-height: 1.65; white-space: pre-line; margin-bottom: 12px;">
+                    ${escapeHtml(post.content)}
+                  </div>
+                ` : ''}
+              </div>
+              ${mediaContent}
+            `;
+          }
+
+          card.innerHTML = `
+            <div class="feed-post-header">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="avatar-icon-circle" style="width: 38px; height: 38px; font-size: 16px;">
+                  ${isDomme ? '👑' : '🩷'}
+                </div>
+                <div>
+                  <div style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 800; color: #fff;">
+                    ${escapeHtml(profileData.name)}
+                  </div>
+                  <div style="font-family: var(--font-mono); font-size: 11px; color: var(--gold-muted);">
+                    @${escapeHtml(profileData.sl_username || profileData.id)} • ${escapeHtml(post.timestamp || 'Recent')}
+                  </div>
+                </div>
+              </div>
+              <span class="tag-pill-badge" style="font-size: 10.5px; border-color: rgba(212,175,55,0.3); color: var(--gold-bright);">
+                ${escapeHtml(post.tag || '✨ Post')}
+              </span>
+            </div>
+
+            ${bodyAndMediaHtml}
+
+            <div class="feed-post-footer">
+              <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+                ${post.is_locked ? (unlocked ? '<span style="color: #34d399; font-weight: 600;">🔓 Unlocked VIP Access</span>' : '<span style="color: #f59e0b; font-weight: 600;">🔒 Member Exclusive</span>') : '<span style="color: #4ade80;">🌐 Public Post</span>'}
+              </div>
+            </div>
+          `;
+
+          feedStream.appendChild(card);
+        });
+      }
+
+      let blogRenderedCount = 0;
+      let blogObserver = null;
+
+      function renderBlog() {
+        if (!profileData) return;
+        const blogPosts = (Array.isArray(profileData.blog_posts) && profileData.blog_posts.length > 0) ? profileData.blog_posts : (Array.isArray(profileData.blog) ? profileData.blog : []);
+        const blogStream = document.getElementById('blog-posts-stream');
+        const blogBadge = document.getElementById('tab-blog-badge');
+        const blogTitle = document.getElementById('blog-hero-title');
+
+        if (blogBadge) {
+          blogBadge.textContent = blogPosts.length;
+          blogBadge.style.display = blogPosts.length > 0 ? 'inline-block' : 'none';
+        }
+        if (blogTitle) blogTitle.textContent = `${profileData.name}'s Public Blog`;
+
+        if (!blogStream) return;
+        if (blogRenderedCount > 0) return;
+
+        if (blogPosts.length === 0) {
+          blogStream.innerHTML = `
+            <div class="card" style="text-align: center; padding: 50px 20px; border: 1px dashed var(--gold-border-subtle); background: rgba(20,18,16,0.6);">
+              <div style="font-size: 40px; margin-bottom: 12px;">📰</div>
+              <h4 style="font-family: var(--font-heading); font-size: 18px; color: var(--gold-bright); margin-bottom: 6px;">No Public Blog Entries Yet</h4>
+              <p style="font-size: 13.5px; color: var(--text-muted); max-width: 440px; margin: 0 auto;">
+                ${profileData.name} has not published any public blog entries yet. Check back soon for reflections, schedule updates, and stories!
+              </p>
+            </div>
+          `;
+          return;
+        }
+
+        blogStream.innerHTML = '<div class="blog-feed-items"></div><button type="button" id="blog-load-more" class="btn btn-secondary blog-feed-load">Load More Posts</button>';
+        const items = blogStream.querySelector('.blog-feed-items');
+        const loadMore = document.getElementById('blog-load-more');
+        const batchSize = 5;
+        function appendPosts(targetCount = blogRenderedCount + batchSize) {
+          const end = Math.min(targetCount, blogPosts.length);
+          for (let index = blogRenderedCount; index < end; index++) {
+            items.insertAdjacentHTML('beforeend', renderPublicBlogCard(profileData, blogPosts[index], index));
+          }
+          blogRenderedCount = end;
+          loadMore.hidden = end >= blogPosts.length;
+          if (loadMore.hidden && blogObserver) blogObserver.disconnect();
+        }
+        loadMore.addEventListener('click', () => appendPosts());
+        const hash = window.location.hash;
+        const linkedIndex = hash.startsWith('#post-') ? blogPosts.findIndex((post, index) => '#post-' + publicBlogPostSlug(post, index) === hash) : -1;
+        appendPosts(Math.max(batchSize, Math.ceil((linkedIndex + 1) / batchSize) * batchSize));
+        if (!loadMore.hidden && 'IntersectionObserver' in window) {
+          blogObserver = new IntersectionObserver(entries => {
+            if (entries.some(entry => entry.isIntersecting) && document.getElementById('tab-pane-blog').style.display !== 'none') appendPosts();
+          }, { rootMargin: '240px 0px' });
+          blogObserver.observe(loadMore);
+        }
+      }
+
+      window.shareBlogPost = function(pSlug, postSlug, title) {
+        const fullUrl = new URL(profileArticlePath(profileData, postSlug), window.location.origin).toString();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(fullUrl);
+        }
+        alert(`🔗 Direct article link copied to clipboard:\n${fullUrl}`);
+      };
+
+      // Profile tab initialization & Deep Linking
+      const isVipCreator = profileData.is_vip === true || profileData.plan === 'vip';
+      const feedTabBtn = document.getElementById('tab-btn-feed');
+      const blogTabBtn = document.getElementById('tab-btn-blog');
+      const feedBadge = document.getElementById('tab-feed-badge');
+      const blogBadge = document.getElementById('tab-blog-badge');
+      const galleryTabBtn = document.getElementById('tab-btn-gallery');
+      if (galleryTabBtn) galleryTabBtn.style.display = profileFeatureEnabled(profileData, 'full_gallery') ? 'inline-flex' : 'none';
+      document.getElementById('tab-gallery-badge').textContent = profileGalleryImages(profileData).length;
+      applyProfileFeatureVisibility(profileData);
+
+      if (feedTabBtn) {
+        if (isVipCreator && profileFeatureEnabled(profileData, 'vip_feed')) {
+          feedTabBtn.style.display = 'inline-flex';
+          const postCount = Array.isArray(profileData.posts) ? profileData.posts.length : 3;
+          if (feedBadge) feedBadge.textContent = postCount;
+        } else {
+          feedTabBtn.style.display = 'none';
+        }
+      }
+
+      if (blogTabBtn) {
+        blogTabBtn.style.display = profileFeatureEnabled(profileData, 'public_blog') ? 'inline-flex' : 'none';
+        const blogCount = Array.isArray(profileData.blog_posts) ? profileData.blog_posts.length : (Array.isArray(profileData.blog) ? profileData.blog.length : 0);
+        if (blogBadge) {
+          blogBadge.textContent = blogCount;
+          blogBadge.style.display = blogCount > 0 ? 'inline-block' : 'none';
+        }
+      }
+
+      // Check URL parameters for tab routing (e.g. ?tab=blog or #post-...)
+      const urlParams = new URLSearchParams(window.location.search);
+      const reqTab = urlParams.get('tab') || (customDomainProfileId() && /^\/blog\/?$/.test(window.location.pathname) ? 'blog' : null);
+      const reqHash = window.location.hash;
+
+      if (window.defaultToBlogTab || reqTab === 'blog' || reqHash.startsWith('#post-') || reqHash === '#tab-blog') {
+        window.switchProfileTab('blog', true);
+        if (reqHash.startsWith('#post-')) {
+          setTimeout(() => {
+            const targetEl = document.querySelector(reqHash);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              targetEl.style.boxShadow = '0 0 25px rgba(212,175,55,0.6)';
+              setTimeout(() => { targetEl.style.boxShadow = ''; }, 2500);
+            }
+          }, 300);
+        }
+      } else if (reqTab === 'feed' || reqHash === '#tab-feed') {
+        window.switchProfileTab('feed', true);
+      } else if (reqTab === 'gallery' || reqHash === '#tab-gallery') {
+        window.switchProfileTab('gallery', true);
+      }
+
+    });
+</script>
 </body>
 </html>

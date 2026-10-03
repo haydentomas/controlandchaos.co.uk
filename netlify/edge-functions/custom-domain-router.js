@@ -170,6 +170,20 @@ export default async function handler(request, context) {
         ownerMarker.setAttribute('name', 'cc-profile-id');
         ownerMarker.setAttribute('content', targetSlug);
         document.head.appendChild(ownerMarker);
+        if (isBlogArticle && !document.getElementById('profile-hero-header')) {
+          const creatorResponse = await fetch(new URL(profilePath, profileUrl.origin));
+          if (creatorResponse.ok) {
+            const creatorDocument = parseProfilePage(await creatorResponse.text());
+            const hero = creatorDocument.getElementById('profile-hero-header');
+            const engine = Array.from(creatorDocument.querySelectorAll('script:not([src])')).find(script => script.textContent.includes('function renderDynamicArticleView'));
+            if (hero && engine) {
+              document.querySelector('main').before(document.importNode(hero, true));
+              const hydration = document.createElement('script');
+              hydration.textContent = engine.textContent;
+              document.body.appendChild(hydration);
+            }
+          }
+        }
 
         for (const anchor of document.querySelectorAll('a[href]')) {
           const href = anchor.getAttribute('href');
@@ -193,7 +207,6 @@ export default async function handler(request, context) {
           const whitelabelCss = `
           <style id="cc-whitelabel-standalone-mode">
             site-navbar, 
-            site-footer, 
             .site-header, 
             header.hero site-navbar,
             footer.site-footer, 
@@ -213,13 +226,50 @@ export default async function handler(request, context) {
               padding-top: 50px !important;
             }
             main.companion-article-page {
-              padding-top: 40px;
+              padding: 60px 0 !important;
             }
+            .article-profile-tabs {
+              width: 100%;
+              margin: -8px 0 35px;
+              padding: 8px 6px 14px;
+              gap: 12px;
+            }
+            .profile-tab-btn {
+              padding: 12px 24px !important;
+              font-size: 14px !important;
+              letter-spacing: 0.05em !important;
+              line-height: 1.4 !important;
+              background: rgba(22,19,16,0.7) !important;
+              color: var(--text-muted) !important;
+              border: 1px solid var(--gold-border-subtle) !important;
+            }
+            .profile-tab-btn .tab-badge {
+              background: rgba(212,175,55,0.2) !important;
+              color: var(--gold-bright) !important;
+            }
+            .profile-tab-btn.active {
+              color: var(--gold-bright) !important;
+              border-color: var(--gold-bright) !important;
+              background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(184,154,88,0.08)) !important;
+              box-shadow: 0 4px 16px rgba(212,175,55,0.18) !important;
+            }
+            site-footer { display: block !important; }
+            site-footer .footer-grid { display: none !important; }
+            site-footer .footer { padding: 0 !important; }
+            site-footer .footer-bottom { display: block !important; margin: 0 !important; padding: 24px 0 !important; text-align: center; }
           </style>
           `;
 
           document.head.insertAdjacentHTML('beforeend', whitelabelCss);
           document.body.classList.add('is-whitelabel-custom-domain');
+          const articleTabs = document.querySelector('.article-profile-tabs');
+          if (articleTabs && articleTabs.classList.contains('container')) {
+            articleTabs.classList.remove('container');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'container';
+            articleTabs.before(wrapper);
+            wrapper.appendChild(articleTabs);
+          }
         }
 
         return new Response(document.toString(), {
