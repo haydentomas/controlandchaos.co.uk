@@ -10,6 +10,26 @@ function slugifyProfileName(name) {
     .replace(/^-+|-+$/g, '');
 }
 
+function parseProfilePage(html) {
+  const { document } = parseHTML(html);
+  const nodes = Array.from(document.documentElement.childNodes);
+  const head = document.head;
+  const body = document.body;
+  const headTags = new Set(['META', 'TITLE', 'LINK', 'STYLE', 'BASE', 'SCRIPT']);
+  let bodyStarted = false;
+  for (const node of nodes) {
+    if (node === head) continue;
+    if (node === body) { bodyStarted = true; continue; }
+    if (!bodyStarted && ((node.nodeType === 1 && headTags.has(node.tagName)) || (node.nodeType === 3 && !node.textContent.trim()) || node.nodeType === 8)) {
+      head.appendChild(node);
+    } else {
+      bodyStarted = true;
+      body.appendChild(node);
+    }
+  }
+  return document;
+}
+
 export default async function handler(request, context) {
   const url = new URL(request.url);
   const hostname = url.hostname.toLowerCase();
@@ -145,7 +165,7 @@ export default async function handler(request, context) {
       const profileResponse = await fetch(profileUrl.toString());
       if (!profileResponse.ok) return profileResponse;
       if (profileResponse.ok) {
-        const { document } = parseHTML(await profileResponse.text());
+        const document = parseProfilePage(await profileResponse.text());
         const ownerMarker = document.createElement('meta');
         ownerMarker.setAttribute('name', 'cc-profile-id');
         ownerMarker.setAttribute('content', targetSlug);
@@ -198,15 +218,8 @@ export default async function handler(request, context) {
           </style>
           `;
 
-          const creatorFooter = `
-          <footer class="creator-standalone-footer" style="padding: 36px 20px; text-align: center; font-size: 11.5px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 40px; letter-spacing: 0.04em;">
-            &copy; ${new Date().getFullYear()} <strong style="color: #cbd5e1;">${escapeHtml(customProfile.name || 'Verified Creator')}</strong>. All Rights Reserved. Private Concierge &amp; Official Rate Card.
-          </footer>
-          `;
-
           document.head.insertAdjacentHTML('beforeend', whitelabelCss);
           document.body.classList.add('is-whitelabel-custom-domain');
-          document.body.insertAdjacentHTML('beforeend', creatorFooter);
         }
 
         return new Response(document.toString(), {
@@ -225,11 +238,4 @@ export default async function handler(request, context) {
   }
 
   return context.next();
-}
-
-function escapeHtml(value) {
-  const { document } = parseHTML('<html><body></body></html>');
-  const element = document.createElement('span');
-  element.textContent = String(value);
-  return element.innerHTML;
 }

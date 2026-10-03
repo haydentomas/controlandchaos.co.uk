@@ -353,6 +353,17 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
   const roleTitle = profile.role || (isDomme ? 'Verified Dominant Companion' : 'Verified Submissive Companion');
   const startingRate = profile.starting_rate || 'From L$3,000 / hr';
   const avatarImg = profile.avatar_image || '';
+  const isVip = profile.is_vip === true || profile.plan === 'vip';
+  const enabled = feature => !isVip || profile.feature_visibility?.[feature] !== false;
+  const tabs = [
+    ['ratecard', '📋', 'Rate Card & Bio', null, true],
+    ['feed', '🔒', 'VIP Subscribers Feed', (profile.posts || []).length, isVip && enabled('vip_feed')],
+    ['blog', '📰', 'Public Blog', (profile.blog_posts || profile.blog || []).length, enabled('public_blog')],
+    ['gallery', '📸', 'Gallery', (profile.gallery || []).filter(item => item && item.image).length, isVip && enabled('full_gallery')]
+  ];
+  const profileTabsHtml = `<nav id="profile-tabs-nav" class="container article-profile-tabs" aria-label="Profile views">${tabs.filter(tab => tab[4]).map(([name, icon, label, count]) => `
+    <a href="/profile/${encodeURIComponent(profileSlug)}/?tab=${name}#profile-tabs-nav" data-profile-tab="${name}" class="profile-tab-btn${name === 'blog' ? ' active' : ''}" ${name === 'blog' ? 'aria-current="page"' : ''}><span>${icon}</span> ${label}${count !== null ? ` <span class="tab-badge">${count}</span>` : ''}</a>
+  `.trim()).join('')}</nav>`;
   
   // Dynamic SEO & OG Image (Attached photo -> profile banner -> avatar -> luxury fallback)
   let postImg = post.seo_image || post.media_url || profile.banner_image || profile.avatar_image || '';
@@ -566,6 +577,7 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
   <site-navbar></site-navbar>
 
   <main class="companion-article-page">
+    ${profileTabsHtml}
     <div class="container companion-article-layout">
 
       <!-- Left Column: Article Body -->
@@ -753,4 +765,4 @@ if (require.main === module) {
   buildProfiles();
 }
 
-module.exports = { buildProfiles };
+module.exports = { buildProfiles, generateCompanionBlogPostHtml };

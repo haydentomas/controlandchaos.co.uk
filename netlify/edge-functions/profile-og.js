@@ -161,6 +161,18 @@ export default async function handler(request, context) {
     canonical.setAttribute('href', pageUrl);
 
     if (articlePost) {
+      const vip = customProfile.is_vip === true || customProfile.plan === 'vip';
+      const tabFeatures = { feed: 'vip_feed', blog: 'public_blog', gallery: 'full_gallery' };
+      for (const tab of document.querySelectorAll('[data-profile-tab]')) {
+        const name = tab.getAttribute('data-profile-tab');
+        const disabled = ((name === 'feed' || name === 'gallery') && !vip) || (vip && customProfile.feature_visibility?.[tabFeatures[name]] === false);
+        if (disabled) { tab.remove(); continue; }
+        const badge = tab.querySelector('.tab-badge');
+        if (badge) {
+          const count = name === 'feed' ? (customProfile.posts || []).length : name === 'gallery' ? (customProfile.gallery || []).filter(item => item && item.image).length : (customProfile.blog_posts || customProfile.blog || []).length;
+          badge.textContent = String(count);
+        }
+      }
       let schema = document.querySelector('script[type="application/ld+json"]');
       if (!schema) {
         schema = document.createElement('script');

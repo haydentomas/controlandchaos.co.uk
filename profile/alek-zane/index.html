@@ -1232,6 +1232,20 @@
       `;
     }
 
+    function renderArticleProfileTabs(profile) {
+      const basePath = profileBasePath(profile);
+      const vip = profile.is_vip === true || profile.plan === 'vip';
+      const tabs = [
+        ['ratecard', '📋', 'Rate Card & Bio', null, true],
+        ['feed', '🔒', 'VIP Subscribers Feed', (profile.posts || []).length, vip && profileFeatureEnabled(profile, 'vip_feed')],
+        ['blog', '📰', 'Public Blog', (profile.blog_posts || profile.blog || []).length, profileFeatureEnabled(profile, 'public_blog')],
+        ['gallery', '📸', 'Gallery', profileGalleryImages(profile).length, profileFeatureEnabled(profile, 'full_gallery')]
+      ];
+      return `<nav id="profile-tabs-nav" class="container article-profile-tabs" aria-label="Profile views">${tabs.filter(tab => tab[4]).map(([name, icon, label, count]) => `
+        <a href="${basePath}?tab=${name}#profile-tabs-nav" data-profile-tab="${name}" class="profile-tab-btn${name === 'blog' ? ' active' : ''}" ${name === 'blog' ? 'aria-current="page"' : ''}><span>${icon}</span> ${label}${count !== null ? ` <span class="tab-badge">${count}</span>` : ''}</a>
+      `).join('')}</nav>`;
+    }
+
     function renderDynamicArticleView(profile, post, allBlogPosts) {
       const profilePath = profileBasePath(profile);
       const isDomme = (profile.role_type === 'domme' || profile.role_type === 'dom');
@@ -1312,6 +1326,7 @@
       mainEl.style.removeProperty('padding');
 
       mainEl.innerHTML = `
+        ${renderArticleProfileTabs(profile)}
         <div class="container companion-article-layout" id="dynamic-article-wrap">
           <!-- Left Column: Article Body -->
           <div>

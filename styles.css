@@ -78,6 +78,49 @@ main.companion-article-page {
   padding: 124px 0 80px;
 }
 
+.article-profile-tabs {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--gold-border-subtle);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.article-profile-tabs .profile-tab-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid var(--gold-border-subtle);
+  border-radius: 9999px;
+  background: var(--bg-glass);
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.article-profile-tabs .profile-tab-btn:hover,
+.article-profile-tabs .profile-tab-btn.active {
+  color: var(--gold-bright);
+  border-color: var(--gold-bright);
+  background: var(--gold-glow);
+}
+
+.article-profile-tabs .tab-badge {
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: var(--gold-glow);
+  color: var(--gold-bright);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
 .companion-article-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);

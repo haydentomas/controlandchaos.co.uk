@@ -319,3 +319,26 @@ test('saving a VIP profile includes gallery descriptions, rate-card choices, and
   assert.equal(vm.runInContext('currentProfile.is_vip', context), true);
   assert.equal(context.collectProfileFeatureVisibility().public_blog, false);
 });
+
+test('custom-domain instructions require administrator registration and show correct root and www DNS records', () => {
+  const { document } = setup();
+  const guide = document.getElementById('custom-domain-setup-guide');
+  const text = guide.textContent.replace(/\s+/g, ' ');
+  assert.match(text, /does not automatically register the domain with Netlify/);
+  assert.match(text, /add your domain as an alias/);
+  assert.ok(guide.querySelector('a[href="/contact/"]'));
+  const rows = [...guide.querySelectorAll('tbody tr')].map(row => [...row.querySelectorAll('td')].map(cell => cell.textContent.trim()));
+  assert.equal(rows[0][0], 'A');
+  assert.equal(rows[0][1], '@');
+  assert.match(rows[0][2], /75\.2\.60\.5/);
+  assert.equal(rows[1][0], 'CNAME');
+  assert.equal(rows[1][1], 'www');
+  assert.match(rows[1][2], /heartfelt-centaur-ab06af\.netlify\.app/);
+  assert.match(text, /Subdomain only/);
+  assert.match(text, /HTTPS certificate activation/);
+  assert.ok(!text.includes('5 to 30 minutes'));
+  for (const detail of guide.querySelectorAll('details')) {
+    assert.match(detail.textContent, /75\.2\.60\.5/);
+    assert.match(detail.textContent, /heartfelt-centaur-ab06af\.netlify\.app/);
+  }
+});

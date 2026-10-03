@@ -119,14 +119,14 @@ const routerSource = fs.readFileSync(path.join(root, 'netlify/edge-functions/cus
   .replace(/^import .*;\r?\n/gm, '')
   .replace('export default async function handler', 'async function handler');
 
-async function mirrorResponse(pathname, data = { ...profile, is_vip: true, custom_domain: 'alek.example' }) {
+async function mirrorResponse(pathname, data = { ...profile, is_vip: true, custom_domain: 'alek.example' }, originHtml = template) {
   const upstreamRequests = [];
   const router = vm.runInNewContext(`${routerSource}\nhandler;`, {
     URL, Request, Response, parseHTML, console,
     getStore: () => ({ get: async key => key === 'domain_alek.example' ? data : null }),
     fetch: async url => {
       upstreamRequests.push(new URL(url));
-      return handlerFor(data)(new Request(url), { next: async () => new Response(template, { headers: { 'Content-Type': 'text/html' } }) });
+      return handlerFor(data)(new Request(url), { next: async () => new Response(originHtml, { headers: { 'Content-Type': 'text/html' } }) });
     }
   });
   const response = await router(new Request('https://alek.example' + pathname), {
@@ -142,6 +142,21 @@ test('custom-domain profile keeps C&C canonical and identifies its owner', async
   assert.equal(document.querySelector('meta[name="cc-profile-id"]').getAttribute('content'), 'alek-zane');
   assert.equal(document.querySelector('link[rel="canonical"]').getAttribute('href'), 'https://controlandchaos.co.uk/profile/alek-zane/');
   assert.ok(document.body.classList.contains('is-whitelabel-custom-domain'));
+  assert.equal(document.querySelector('.creator-standalone-footer'), null);
+  assert.ok(!document.body.textContent.includes('Private Concierge & Official Rate Card.'));
+});
+
+test('white-label pages retain correct head/body structure when deployed HTML omits optional tags', async () => {
+  const minimized = await minify(template, { collapseWhitespace: true, removeAttributeQuotes: true, removeOptionalTags: true });
+  const { document } = await mirrorResponse('/', undefined, minimized);
+  assert.ok(document.head.querySelector('meta[charset]'));
+  assert.ok(document.head.querySelector('link[rel="canonical"]'));
+  assert.ok(document.head.querySelector('meta[name="cc-profile-id"]'));
+  assert.ok(document.head.querySelector('#cc-whitelabel-standalone-mode'));
+  assert.ok(document.body.querySelector('#profile-hero-header'));
+  assert.ok(document.body.querySelector('main'));
+  assert.equal(document.body.querySelector('link[rel="canonical"]'), null);
+  assert.equal(document.querySelector('.creator-standalone-footer'), null);
 });
 
 test('custom-domain article fetches the article and preserves its C&C metadata', async () => {
@@ -405,4 +420,54 @@ test('server accepts only boolean VIP preferences and preserves gallery content'
   assert.equal(basic.gallery[0].image, '/photo.jpg');
   assert.equal(basic.gallery[0].description, 'Caption');
   assert.equal(basic.gallery[0].show_on_ratecard, undefined);
+});
+
+test('live articles retain profile tabs on C&C and custom domains', () => {
+  const vipProfile = { ...profile, is_vip: true, gallery: [{ image: '/photo.jpg' }], posts: [{}] };
+  for (const custom of [false, true]) {
+    const context = browserContext(custom ? 'https://alek.example/blog/post/' : articleUrl, custom ? 'alek-zane' : '');
+    context.renderDynamicArticleView(vipProfile, profile.blog_posts[0], []);
+    const tabs = context.document.querySelector('.article-profile-tabs');
+    assert.equal(tabs.querySelectorAll('a').length, 4);
+    const base = custom ? '/' : '/profile/alek-zane/';
+    for (const name of ['ratecard', 'feed', 'blog', 'gallery']) {
+      assert.equal(tabs.querySelector(`[data-profile-tab="${name}"]`).getAttribute('href'), `${base}?tab=${name}#profile-tabs-nav`);
+    }
+    assert.equal(tabs.querySelector('[data-profile-tab="blog"]').getAttribute('aria-current'), 'page');
+  }
+});
+
+test('article tabs respect disabled features without blocking the article itself', () => {
+  const context = browserContext(articleUrl);
+  context.renderDynamicArticleView({ ...profile, is_vip: true, feature_visibility: { public_blog: false, vip_feed: false, full_gallery: false } }, profile.blog_posts[0], []);
+  assert.equal(context.document.querySelectorAll('.article-profile-tabs a').length, 1);
+  assert.ok(context.document.querySelector('[data-profile-tab="ratecard"]'));
+  assert.ok(context.document.querySelector('#dynamic-article-wrap'));
+});
+
+test('prebuilt articles retain same-domain profile tabs after white-label rewriting', async () => {
+  const { generateCompanionBlogPostHtml } = require('../build-profiles.js');
+  const data = { ...profile, slug: 'alek-zane', is_vip: true, custom_domain: 'alek.example' };
+  const post = { ...profile.blog_posts[0], slug: 'i-just-wanna-se-if-batman-exists' };
+  const html = generateCompanionBlogPostHtml(data, post, []);
+  const result = await mirrorResponse('/blog/i-just-wanna-se-if-batman-exists/', data, html);
+  const tabs = result.document.querySelector('.article-profile-tabs');
+  assert.equal(tabs.querySelectorAll('a').length, 4);
+  assert.equal(tabs.querySelector('[data-profile-tab="ratecard"]').getAttribute('href'), '/?tab=ratecard#profile-tabs-nav');
+  assert.equal(tabs.querySelector('[data-profile-tab="blog"]').getAttribute('href'), '/?tab=blog#profile-tabs-nav');
+  assert.ok(result.document.body.querySelector('.article-profile-tabs'));
+  assert.ok(result.document.querySelector('#cc-whitelabel-standalone-mode'));
+});
+
+test('live settings remove disabled tabs from older prebuilt article HTML', async () => {
+  const { generateCompanionBlogPostHtml } = require('../build-profiles.js');
+  const builtProfile = { ...profile, slug: 'alek-zane', is_vip: true };
+  const post = { ...profile.blog_posts[0], slug: 'i-just-wanna-se-if-batman-exists' };
+  const html = generateCompanionBlogPostHtml(builtProfile, post, []);
+  const liveProfile = { ...builtProfile, feature_visibility: { vip_feed: false, full_gallery: false } };
+  const { document } = await rewrite(html, liveProfile);
+  assert.equal(document.querySelector('[data-profile-tab="feed"]'), null);
+  assert.equal(document.querySelector('[data-profile-tab="gallery"]'), null);
+  assert.ok(document.querySelector('[data-profile-tab="ratecard"]'));
+  assert.ok(document.querySelector('[data-profile-tab="blog"]'));
 });
