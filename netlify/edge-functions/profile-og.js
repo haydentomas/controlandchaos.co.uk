@@ -1,4 +1,5 @@
 import { getStore } from "@netlify/blobs";
+import { parseHTML } from "linkedom";
 
 export default async function handler(request, context) {
   const url = new URL(request.url);
@@ -73,13 +74,14 @@ export default async function handler(request, context) {
       return response;
     }
 
-    let text = await response.text();
+    const { document } = parseHTML(await response.clone().text());
 
     let finalTitle = '';
     let finalDesc = '';
     let finalImg = '';
     let pageUrl = `https://controlandchaos.co.uk/profile/${profileId}/`;
     let ogType = 'profile';
+    let articlePost = null;
 
     // If requesting an individual blog article
     if (postSlug) {
@@ -92,6 +94,7 @@ export default async function handler(request, context) {
       });
 
       if (matchedPost) {
+        articlePost = matchedPost;
         ogType = 'article';
         pageUrl = `https://controlandchaos.co.uk/profile/${profileId}/blog/${matchedPost.slug || cleanPostSlug}/`;
         
@@ -119,26 +122,79 @@ export default async function handler(request, context) {
       finalImg = 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1200&q=80';
     }
 
-    // Replace Title
-    text = text.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title id="page-title">${escapeHtml(finalTitle)}</title>`);
-    text = text.replace(/<meta name="description"[^>]*content="[^"]*"/i, `<meta name="description" id="meta-description" content="${escapeHtml(finalDesc)}"`);
-    text = text.replace(/<link rel="canonical"[^>]*href="[^"]*"/i, `<link rel="canonical" id="meta-canonical" href="${pageUrl}">`);
-    
-    // Replace OpenGraph Meta Tags (Discord, Facebook, LinkedIn, iMessage)
-    text = text.replace(/<meta property="og:title"[^>]*content="[^"]*"/i, `<meta property="og:title" id="og-title" content="${escapeHtml(finalTitle)}"`);
-    text = text.replace(/<meta property="og:description"[^>]*content="[^"]*"/i, `<meta property="og:description" id="og-desc" content="${escapeHtml(finalDesc)}"`);
-    text = text.replace(/<meta property="og:image"[^>]*content="[^"]*"/i, `<meta property="og:image" id="og-image" content="${escapeHtml(finalImg)}"`);
-    text = text.replace(/<meta property="og:url"[^>]*content="[^"]*"/i, `<meta property="og:url" id="og-url" content="${pageUrl}"`);
-    text = text.replace(/<meta property="og:type"[^>]*content="[^"]*"/i, `<meta property="og:type" content="${ogType}"`);
-    
-    // Replace Twitter Meta Tags
-    text = text.replace(/<meta name="twitter:title"[^>]*content="[^"]*"/i, `<meta name="twitter:title" id="twitter-title" content="${escapeHtml(finalTitle)}"`);
-    text = text.replace(/<meta name="twitter:description"[^>]*content="[^"]*"/i, `<meta name="twitter:description" id="twitter-desc" content="${escapeHtml(finalDesc)}"`);
-    text = text.replace(/<meta name="twitter:image"[^>]*content="[^"]*"/i, `<meta name="twitter:image" id="twitter-image" content="${escapeHtml(finalImg)}"`);
+    let title = document.querySelector('title');
+    if (!title) {
+      title = document.createElement('title');
+      document.head.appendChild(title);
+    }
+    title.textContent = finalTitle;
 
-    return new Response(text, {
+    const metadata = [
+      ['name', 'description', finalDesc],
+      ['property', 'og:title', finalTitle],
+      ['property', 'og:description', finalDesc],
+      ['property', 'og:image', finalImg],
+      ['property', 'og:url', pageUrl],
+      ['property', 'og:type', ogType],
+      ['name', 'twitter:card', 'summary_large_image'],
+      ['name', 'twitter:title', finalTitle],
+      ['name', 'twitter:description', finalDesc],
+      ['name', 'twitter:image', finalImg]
+    ];
+    for (const [attribute, name, content] of metadata) {
+      let tags = Array.from(document.querySelectorAll(`meta[${attribute}="${name}"]`));
+      if (!tags.length) {
+        const tag = document.createElement('meta');
+        tag.setAttribute(attribute, name);
+        document.head.appendChild(tag);
+        tags = [tag];
+      }
+      for (const tag of tags) tag.setAttribute('content', content);
+    }
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', pageUrl);
+
+    if (articlePost) {
+      let schema = document.querySelector('script[type="application/ld+json"]');
+      if (!schema) {
+        schema = document.createElement('script');
+        schema.setAttribute('type', 'application/ld+json');
+        document.head.appendChild(schema);
+      }
+      schema.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: articlePost.title || 'Journal Entry',
+        description: finalDesc,
+        image: finalImg,
+        url: pageUrl,
+        author: {
+          '@type': 'Person',
+          name: customProfile.name || profileId,
+          url: `https://controlandchaos.co.uk/profile/${profileId}/`
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Control & Chaos',
+          url: 'https://controlandchaos.co.uk/'
+        }
+      }).replace(/</g, '\\u003c');
+    }
+
+    const headers = new Headers(response.headers);
+    headers.delete('content-length');
+    headers.delete('etag');
+    headers.set('Cache-Control', 'no-store');
+
+    return new Response(document.toString(), {
       status: response.status,
-      headers: response.headers
+      headers
     });
   } catch (err) {
     return response;
