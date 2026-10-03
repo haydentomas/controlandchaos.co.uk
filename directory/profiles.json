@@ -48,21 +48,13 @@
     "blog_posts": [
       {
         "id": "blog-1",
-        "tag": "💬 General Update",
-        "title": "Welcome to My Official Companion Profile & Rate Card",
-        "content": "Welcome to my verified space on the Control & Chaos Portal. Here you can explore all my active rate packages, check out my Lovense hardware sync details, listen to my voice note samples, and send direct booking enquiries.\n\nI am currently accepting evening session bookings across SLT timezones. Looking forward to serving and entertaining you.",
-        "media_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
-        "likes": 38,
-        "timestamp": "Today"
-      },
-      {
-        "id": "blog-2",
-        "tag": "⚡ Schedule & Availability",
-        "title": "Upcoming Weekend Gala & Booking Slots Open",
-        "content": "Booking slots for this Friday and Saturday night are now officially open. If you are planning to attend the Control & Chaos Grand Ballroom or host a private skybox protocol evening, please send your booking requests early through the inquiry form below.",
+        "slug": "if-i-add-a-post-here",
+        "tag": "💬 Update",
+        "title": "If i add a post here",
+        "content": "What would happen?\n\nDo i get spaces?\nit seems this editor is a bit weird",
         "media_url": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
-        "likes": 52,
-        "timestamp": "2 days ago"
+        "likes": 0,
+        "timestamp": "Oct 3, 2026"
       }
     ],
     "wishlist": [

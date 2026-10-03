@@ -216,11 +216,13 @@ function buildProfiles() {
     fs.writeFileSync(destFile, bakedHtml, 'utf8');
     console.log(`✨ Built pre-rendered SEO static profile for [${id}] -> profile/${id}/index.html`);
 
-    // ================= DEDICATED BLOG POST PAGES GENERATION =================
     const blogPosts = Array.isArray(profile.blog_posts) ? profile.blog_posts : (Array.isArray(profile.blog) ? profile.blog : []);
+    const blogDir = path.join(outFolder, 'blog');
+    if (fs.existsSync(blogDir)) {
+      fs.rmSync(blogDir, { recursive: true, force: true });
+    }
     if (blogPosts.length > 0) {
-      const blogDir = path.join(outFolder, 'blog');
-      if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true });
+      fs.mkdirSync(blogDir, { recursive: true });
 
       const usedPostSlugs = new Set();
       // Pre-pass: Assign slugs to ALL blog posts first so otherPosts has valid slugs
