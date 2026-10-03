@@ -1032,7 +1032,7 @@ function openLightbox(imgSrc, title, category) {
       const likeCount = (post.likes || 0) + (hasLiked ? 1 : 0);
 
       const canonicalSlug = profileSlugFor(profile) || profile.id;
-      const postSlug = post.slug || (post.title ? slugifyProfileName(post.title) : 'entry');
+      const postSlug = post.slug || (post.title ? profileSlugFor({ name: post.title }) : 'entry');
       const pageUrl = `https://controlandchaos.co.uk/profile/${encodeURIComponent(canonicalSlug)}/blog/${encodeURIComponent(postSlug)}/`;
       
       const defaultSeoTitle = `${post.title || 'Blog Post'} — ${profile.name}'s Blog | Control & Chaos`;
@@ -1074,20 +1074,14 @@ function openLightbox(imgSrc, title, category) {
 
       const mainEl = document.querySelector('main.section') || document.querySelector('main');
       if (!mainEl) return;
+      mainEl.classList.add('companion-article-page');
+      mainEl.style.removeProperty('padding');
 
       mainEl.innerHTML = `
-        <div style="max-width: 1200px; margin: 0 auto; padding: 30px 20px 80px; display: grid; grid-template-columns: 1.45fr 0.85fr; gap: 40px; align-items: start;" id="dynamic-article-wrap">
+        <div class="container companion-article-layout" id="dynamic-article-wrap">
           <!-- Left Column: Article Body -->
           <div>
-            <nav style="font-family: var(--font-mono); font-size: 11.5px; color: var(--gold-muted); margin-bottom: 24px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-              <a href="/" style="color: var(--gold-muted); text-decoration: none;">Home</a> <span>/</span>
-              <a href="/directory/" style="color: var(--gold-muted); text-decoration: none;">Service Providers</a> <span>/</span>
-              <a href="../../" style="color: var(--gold-muted); text-decoration: none;">${escapeHtml(profile.name)}</a> <span>/</span>
-              <a href="../../?tab=blog" style="color: var(--gold-muted); text-decoration: none;">Public Blog</a> <span>/</span>
-              <span style="color:#fff;">${escapeHtml(post.title || 'Journal Entry')}</span>
-            </nav>
-
-            <article style="background: linear-gradient(165deg, #181512 0%, #100e0c 100%); border: 1px solid var(--gold-border-subtle); border-radius: 18px; padding: 36px 38px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);">
+            <article class="companion-article-body">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
                 <span class="role-badge" style="background:rgba(212,175,55,0.12); color:var(--gold-bright); font-size:11px; padding:3px 10px;">
                   ${escapeHtml(post.tag || '💬 Update')}
@@ -1097,7 +1091,7 @@ function openLightbox(imgSrc, title, category) {
                 </span>
               </div>
 
-              <h1 style="font-family:var(--font-heading); font-size:28px; font-weight:900; color:#fff; line-height:1.25; margin:0 0 18px 0;">
+              <h1 class="companion-article-title">
                 ${escapeHtml(post.title || 'Journal Entry')}
               </h1>
 
@@ -1158,7 +1152,7 @@ function openLightbox(imgSrc, title, category) {
 
           <!-- Right Column: Sticky Creator Profile & Booking Card -->
           <div>
-            <aside style="position: sticky; top: 100px; background: linear-gradient(165deg, #181512 0%, #100e0c 100%); border: 1px solid var(--gold-border); border-radius: 18px; padding: 28px 24px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);">
+            <aside class="card companion-article-creator">
               <div style="text-align:center; margin-bottom:18px;">
                 <div style="width:84px; height:84px; border-radius:50%; overflow:hidden; border:2px solid var(--gold-bright); margin:0 auto 12px; box-shadow:0 0 20px rgba(212,175,55,0.35);">
                   ${avatarImg ? `<img src="${avatarImg}" alt="${profile.name}" style="width:100%; height:100%; object-fit:cover;">` : (isDomme ? '👑' : '🩷')}

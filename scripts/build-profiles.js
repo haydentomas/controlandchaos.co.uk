@@ -438,94 +438,10 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
 
   <style>
-    :root {
-      --gold-primary: #d4af37;
-      --gold-bright: #ffd700;
-      --gold-muted: #e7c96a;
-      --gold-border: rgba(212, 175, 55, 0.4);
-      --gold-border-subtle: rgba(212, 175, 55, 0.15);
-      --bg-dark: #0a0908;
-      --bg-card: #14110e;
-      --font-heading: 'Cinzel', serif;
-      --font-body: 'Plus Jakarta Sans', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-
-    body {
-      background-color: var(--bg-dark);
-      color: #e5e5e5;
-      font-family: var(--font-body);
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
-    }
-
-    .article-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
-      display: grid;
-      grid-template-columns: 1.45fr 0.85fr;
-      gap: 40px;
-      align-items: start;
-    }
-
-    @media (max-width: 900px) {
-      .article-container {
-        grid-template-columns: 1fr;
-        gap: 30px;
-      }
-    }
-
-    .article-box {
-      background: linear-gradient(165deg, #181512 0%, #100e0c 100%);
-      border: 1px solid var(--gold-border-subtle);
-      border-radius: 18px;
-      padding: 36px 38px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    }
-
-    @media (max-width: 600px) {
-      .article-box {
-        padding: 24px 20px;
-      }
-    }
-
-    .creator-sticky-box {
-      position: sticky;
-      top: 100px;
-      background: linear-gradient(165deg, #181512 0%, #100e0c 100%);
-      border: 1px solid var(--gold-border);
-      border-radius: 18px;
-      padding: 28px 24px;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
-    }
-
-    .breadcrumbs {
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: var(--gold-muted);
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .breadcrumbs a {
-      color: var(--gold-muted);
-      text-decoration: none;
-    }
-
-    .breadcrumbs a:hover {
-      color: var(--gold-bright);
-      text-decoration: underline;
-    }
-
     .role-badge {
       font-family: var(--font-mono);
       font-size: 10px;
@@ -619,60 +535,13 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
       display: block;
     }
 
-    .btn-gold {
-      background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
-      color: #000;
-      font-weight: 800;
-      padding: 12px 20px;
-      border-radius: 8px;
-      border: 1px solid var(--gold-bright);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 13.5px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 0 15px rgba(212,175,55,0.25);
-    }
-
-    .btn-gold:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 22px rgba(212,175,55,0.45);
-      color: #000;
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      color: #cbd5e1;
-      font-weight: 600;
-      padding: 10px 18px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--gold-border);
-      color: #fff;
-      background: rgba(212,175,55,0.1);
-    }
-
     #share-toast {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: #181512;
+      background: var(--bg-card);
       border: 1px solid var(--gold-bright);
-      color: #ffd700;
+      color: var(--gold-bright);
       padding: 12px 20px;
       border-radius: 8px;
       font-size: 13px;
@@ -696,20 +565,12 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
 
   <site-navbar></site-navbar>
 
-  <main style="padding-top: 100px;">
-    <div class="article-container">
+  <main class="companion-article-page">
+    <div class="container companion-article-layout">
 
       <!-- Left Column: Article Body -->
       <div>
-        <nav class="breadcrumbs" aria-label="Breadcrumb">
-          <a href="/">Home</a> <span>/</span>
-          <a href="/directory/">Service Providers</a> <span>/</span>
-          <a href="../../">${escapeHtml(profile.name)}</a> <span>/</span>
-          <a href="../../?tab=blog">Public Blog</a> <span>/</span>
-          <span style="color:#fff;">${escapeHtml(postTitle)}</span>
-        </nav>
-
-        <article class="article-box">
+        <article class="companion-article-body">
           <!-- Tag & Read Time -->
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
             <span class="role-badge" style="background:rgba(212,175,55,0.12); color:var(--gold-bright); font-size:11px; padding:3px 10px;">
@@ -721,7 +582,7 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
           </div>
 
           <!-- Main Article Title -->
-          <h1 style="font-family:var(--font-heading); font-size:28px; font-weight:900; color:#fff; line-height:1.25; margin:0 0 18px 0; text-shadow:0 2px 10px rgba(0,0,0,0.5);">
+          <h1 class="companion-article-title">
             ${escapeHtml(postTitle)}
           </h1>
 
@@ -756,17 +617,17 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
           <!-- Article Action Bar -->
           <div style="display:flex; justify-content:space-between; align-items:center; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:12px;">
             <div style="display:flex; align-items:center; gap:10px;">
-              <button type="button" class="btn-secondary" id="blog-like-btn" onclick="toggleArticleLike('${uKey}')" style="font-size:12.5px;">
+              <button type="button" class="btn btn-secondary btn-sm" id="blog-like-btn" onclick="toggleArticleLike('${uKey}')" style="font-size:12.5px;">
                 <span id="blog-like-heart">🤍</span>
                 <span id="blog-like-count">${post.likes || 0} Likes</span>
               </button>
 
-              <button type="button" class="btn-secondary" onclick="copyArticleShareLink()" style="font-size:12.5px;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="copyArticleShareLink()" style="font-size:12.5px;">
                 <span>🔗</span> Share Article
               </button>
             </div>
 
-            <a href="../../?tab=blog" class="btn-secondary" style="font-size:12.5px;">
+            <a href="../../?tab=blog" class="btn btn-secondary btn-sm" style="font-size:12.5px;">
               <span>←</span> More Entries
             </a>
           </div>
@@ -789,7 +650,7 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
 
       <!-- Right Column: Sticky Creator Profile & Booking Card -->
       <div>
-        <aside class="creator-sticky-box">
+        <aside class="card companion-article-creator">
           <div style="text-align:center; margin-bottom:18px;">
             <div style="width:84px; height:84px; border-radius:50%; overflow:hidden; border:2px solid var(--gold-bright); margin:0 auto 12px; box-shadow:0 0 20px rgba(212,175,55,0.35);">
               ${avatarImg ? `<img src="${avatarImg}" alt="${profile.name}" style="width:100%; height:100%; object-fit:cover;">` : (isDomme ? '👑' : '🩷')}
@@ -820,13 +681,13 @@ function generateCompanionBlogPostHtml(profile, post, otherPosts) {
 
           <!-- Direct Calls to Action -->
           <div style="display:flex; flex-direction:column; gap:10px;">
-            <a href="../../#profile-tabs-nav" class="btn-gold" style="width:100%; box-sizing:border-box;">
+            <a href="../../#profile-tabs-nav" class="btn btn-gold" style="width:100%; box-sizing:border-box;">
               <span>📋</span> View Full Rate Card &amp; Menus
             </a>
-            <a href="../../?tab=ratecard#booking-calc" class="btn-secondary" style="width:100%; box-sizing:border-box;">
+            <a href="../../?tab=ratecard#booking-calc" class="btn btn-secondary" style="width:100%; box-sizing:border-box;">
               <span>✉️</span> Submit Booking Enquiry
             </a>
-            <a href="${escapeHtml(profile.slurl || 'secondlife://Chaos%20Manor/128/142/23')}" target="_blank" rel="noopener" class="btn-secondary" style="width:100%; box-sizing:border-box;">
+            <a href="${escapeHtml(profile.slurl || 'secondlife://Chaos%20Manor/128/142/23')}" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%; box-sizing:border-box;">
               <span>📍</span> Teleport In-World (SL) ↗
             </a>
           </div>

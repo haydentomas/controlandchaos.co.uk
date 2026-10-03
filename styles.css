@@ -3,6 +3,68 @@
    Official Brand Suite // Obsidian Velvet & Warm Champagne Gold
    ========================================================================== */
 
+main.companion-article-page {
+  padding: 124px 0 80px;
+}
+
+.companion-article-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.companion-article-layout > div {
+  min-width: 0;
+}
+
+.companion-article-body {
+  overflow-wrap: anywhere;
+}
+
+.companion-article-title {
+  font-family: var(--font-heading);
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--gold-bright);
+  line-height: 1.25;
+  letter-spacing: 0;
+  margin: 0 0 24px;
+}
+
+.card.companion-article-creator {
+  position: sticky;
+  top: 100px;
+  padding: 28px 24px;
+  border-radius: 8px;
+}
+
+.companion-article-layout .btn {
+  white-space: normal;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .companion-article-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .card.companion-article-creator {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  main.companion-article-page {
+    padding-top: 100px;
+  }
+
+  .companion-article-title {
+    font-size: 26px;
+  }
+}
+
 /* --- CSS Variables & Design System --- */
 :root {
   /* Obsidian & Deep Charcoal Backgrounds */
