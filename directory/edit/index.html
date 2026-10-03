@@ -590,7 +590,7 @@
           <div class="sidebar-nav-card">
             <div class="sidebar-nav-header">
               <span class="font-2xs uppercase tracking-wider font-mono text-gold font-bold">Studio Sections</span>
-              <span class="font-2xs text-muted font-mono">7 TABS</span>
+              <span class="font-2xs text-muted font-mono">8 TABS</span>
             </div>
             <nav class="editor-sidebar-tabs">
               <button type="button" class="sidebar-tab-btn active" onclick="switchTab('tab-identity')">
@@ -616,6 +616,10 @@
               <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-socials')">
                 <span class="tab-icon">🎁</span>
                 <span class="tab-label">Wishlists &amp; Reviews</span>
+              </button>
+              <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-seo')">
+                <span class="tab-icon">🔍</span>
+                <span class="tab-label">SEO &amp; Domains</span>
               </button>
               <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-feed')">
                 <span class="tab-icon">📱</span>
@@ -1132,11 +1136,19 @@
               </div>
             </div>
 
+          </div>
+
+          <!-- ================= TAB 7: SEO & CUSTOM VANITY DOMAIN ================= -->
+          <div id="tab-seo" class="tab-content">
+
             <!-- SEO & Discord Card Meta -->
             <div class="editor-card">
               <div class="editor-card-header">
                 <h3 class="editor-card-title"><span class="icon">🔍</span> SEO &amp; Discord / Twitter Share Card</h3>
               </div>
+              <p class="font-xs text-muted mb-16">
+                Customize how your profile appears on Google Search results, Discord link previews, Twitter/X summary cards, Telegram, and iMessage.
+              </p>
               <div class="form-group">
                 <label class="form-label" for="edit-seo-title">Custom Social Card Title</label>
                 <input type="text" id="edit-seo-title" class="form-input"
@@ -1167,9 +1179,54 @@
               </div>
             </div>
 
+            <!-- VIP Custom Vanity Domain (Shown for VIP Tier Creators) -->
+            <div id="seo-domain-unlocked-card" class="editor-card" style="border-color: rgba(212,175,55,0.45); background: linear-gradient(180deg, #14111d 0%, #0d0b13 100%);">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">🌐</span> Custom Vanity Domain (VIP Perk)</h3>
+                <span class="section-tag tag-gold font-2xs m-0">WHITE-LABEL URL</span>
+              </div>
+              <p class="font-xs text-muted mb-14">
+                Connect your own private domain (e.g. <code>alekzane.com</code> or <code>vip.mistressvane.com</code>) to point directly to your Control &amp; Chaos profile while keeping your standard directory URL active.
+              </p>
+              
+              <div class="form-group mb-12">
+                <label class="form-label font-2xs" for="edit-custom-domain">Your Custom Domain</label>
+                <input type="text" id="edit-custom-domain" class="form-input font-xs" placeholder="e.g. alekzane.com or vip.yourbrand.com">
+              </div>
+
+              <div class="form-group mb-12" style="background: rgba(212,175,55,0.06); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 12px 14px;">
+                <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin: 0;">
+                  <input type="checkbox" id="edit-whitelabel-mode" checked style="margin-top: 3px; accent-color: #ffd700; width: 16px; height: 16px;">
+                  <div>
+                    <strong class="text-gold font-xs block" style="color: #ffd700;">✨ 100% Standalone White-Label Mode</strong>
+                    <span class="font-2xs text-muted block mt-2" style="line-height: 1.4;">
+                      Hides the Control &amp; Chaos global header and platform footer when clients visit your profile via your custom domain. Your rate card appears as your own private bespoke web app. (Visitors from the C&amp;C Directory still see the standard directory navigation).
+                    </span>
+                  </div>
+                </label>
+              </div>
+
+              <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(212,175,55,0.3); border-radius: 8px; padding: 12px 14px; font-size: 0.78rem; color: #cbd5e1; line-height: 1.6;">
+                <strong class="text-gold">⚡ 1-Minute DNS Setup at your Domain Registrar (GoDaddy, Namecheap, Cloudflare):</strong><br>
+                Add a <strong>CNAME Record</strong>: Host <code>@</code> (or your subdomain) &rarr; Target / Value: <code style="color:#ffd700; background:rgba(212,175,55,0.15); padding:2px 6px; border-radius:4px;">controlandchaos.co.uk</code>
+              </div>
+            </div>
+
+            <!-- VIP Locked Custom Domain Banner (Shown for Standard/Free Tier creators) -->
+            <div id="seo-domain-locked-card" class="editor-card" style="display:none; text-align:center; padding:36px 20px; border:1px solid rgba(212,175,55,0.4); background:radial-gradient(ellipse at center, rgba(212,175,55,0.12) 0%, rgba(17,15,21,0.95) 70%);">
+              <div style="font-size:36px; margin-bottom:10px;">🌐 👑</div>
+              <h3 style="font-family:var(--font-heading); font-size:20px; color:var(--gold-bright); margin-bottom:8px;">Custom Vanity Domain &amp; White-Label Mode</h3>
+              <p class="font-xs text-muted" style="max-width:500px; margin:0 auto 18px; line-height:1.6;">
+                Connecting your own standalone domain name (e.g. <code>yourbrand.com</code>) and enabling 100% white-label mode to hide platform branding is an exclusive <strong>VIP Tier</strong> feature.
+              </p>
+              <a id="seo-domain-upgrade-link" href="/directory/checkout/" class="btn btn-gold btn-md" style="font-weight:700;">
+                👑 Upgrade to VIP for Custom Domain &rarr;
+              </a>
+            </div>
+
           </div>
 
-          <!-- ================= TAB 7: EXCLUSIVE FEED & FAN CLUB (VIP ONLY) ================= -->
+          <!-- ================= TAB 8: EXCLUSIVE FEED & FAN CLUB (VIP ONLY) ================= -->
           <div id="tab-feed" class="tab-content">
             <!-- VIP Locked Upgrade Banner (Shown for Basic Plan creators) -->
             <div id="feed-vip-locked-banner" class="editor-card" style="display:none; text-align:center; padding:36px 20px; border:1px solid rgba(212,175,55,0.4); background:radial-gradient(ellipse at center, rgba(212,175,55,0.12) 0%, rgba(17,15,21,0.95) 70%);">
@@ -1223,39 +1280,6 @@
                 </p>
                 <div id="feed-posts-repeater-container">
                   <!-- Dynamically populated posts -->
-                </div>
-              </div>
-
-              <!-- VIP Custom Vanity Domain Manager -->
-              <div class="editor-card" style="border-color: rgba(212,175,55,0.45); background: linear-gradient(180deg, #14111d 0%, #0d0b13 100%);">
-                <div class="editor-card-header">
-                  <h3 class="editor-card-title"><span class="icon">🌐</span> Custom Vanity Domain (VIP Perk)</h3>
-                  <span class="section-tag tag-gold font-2xs m-0">WHITE-LABEL URL</span>
-                </div>
-                <p class="font-xs text-muted mb-14">
-                  Connect your own private domain (e.g. <code>alekzane.com</code> or <code>vip.mistressvane.com</code>) to point directly to your Control &amp; Chaos profile while keeping your standard directory URL active.
-                </p>
-                
-                <div class="form-group mb-12">
-                  <label class="form-label font-2xs" for="edit-custom-domain">Your Custom Domain</label>
-                  <input type="text" id="edit-custom-domain" class="form-input font-xs" placeholder="e.g. alekzane.com or vip.yourbrand.com">
-                </div>
-
-                <div class="form-group mb-12" style="background: rgba(212,175,55,0.06); border: 1px solid rgba(212,175,55,0.25); border-radius: 8px; padding: 12px 14px;">
-                  <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin: 0;">
-                    <input type="checkbox" id="edit-whitelabel-mode" checked style="margin-top: 3px; accent-color: #ffd700; width: 16px; height: 16px;">
-                    <div>
-                      <strong class="text-gold font-xs block" style="color: #ffd700;">✨ 100% Standalone White-Label Mode</strong>
-                      <span class="font-2xs text-muted block mt-2" style="line-height: 1.4;">
-                        Hides the Control &amp; Chaos global header and platform footer when clients visit your profile via your custom domain. Your rate card appears as your own private bespoke web app. (Visitors from the C&amp;C Directory still see the standard directory navigation).
-                      </span>
-                    </div>
-                  </label>
-                </div>
-
-                <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(212,175,55,0.3); border-radius: 8px; padding: 12px 14px; font-size: 0.78rem; color: #cbd5e1; line-height: 1.6;">
-                  <strong class="text-gold">⚡ 1-Minute DNS Setup at your Domain Registrar (GoDaddy, Namecheap, Cloudflare):</strong><br>
-                  Add a <strong>CNAME Record</strong>: Host <code>@</code> (or your subdomain) &rarr; Target / Value: <code style="color:#ffd700; background:rgba(212,175,55,0.15); padding:2px 6px; border-radius:4px;">controlandchaos.co.uk</code>
                 </div>
               </div>
             </div>
@@ -1796,15 +1820,18 @@
         whitelabelCheckbox.checked = p.whitelabel_mode !== false;
       }
 
-      // VIP Lock Check for Exclusive Feed
+      // VIP Lock Check for Exclusive Feed & Custom Domain
       const isVipTier = isAdminMode || p.is_vip === true || p.plan === 'vip';
       const vipLockedBanner = document.getElementById('feed-vip-locked-banner');
       const vipUnlockedContent = document.getElementById('feed-vip-unlocked-content');
       const feedUpgradeLink = document.getElementById('feed-upgrade-link');
+      const seoDomainLockedCard = document.getElementById('seo-domain-locked-card');
+      const seoDomainUnlockedCard = document.getElementById('seo-domain-unlocked-card');
+      const seoDomainUpgradeLink = document.getElementById('seo-domain-upgrade-link');
 
-      if (feedUpgradeLink) {
-        feedUpgradeLink.href = `/directory/checkout/?uuid=${encodeURIComponent(p.avatar_uuid || authUUID || p.id)}&name=${encodeURIComponent(p.name || '')}&tier=vip`;
-      }
+      const checkoutUrl = `/directory/checkout/?uuid=${encodeURIComponent(p.avatar_uuid || authUUID || p.id)}&name=${encodeURIComponent(p.name || '')}&tier=vip`;
+      if (feedUpgradeLink) feedUpgradeLink.href = checkoutUrl;
+      if (seoDomainUpgradeLink) seoDomainUpgradeLink.href = checkoutUrl;
 
       if (vipLockedBanner && vipUnlockedContent) {
         if (isVipTier) {
@@ -1813,6 +1840,16 @@
         } else {
           vipLockedBanner.style.display = 'block';
           vipUnlockedContent.style.display = 'none';
+        }
+      }
+
+      if (seoDomainLockedCard && seoDomainUnlockedCard) {
+        if (isVipTier) {
+          seoDomainLockedCard.style.display = 'none';
+          seoDomainUnlockedCard.style.display = 'block';
+        } else {
+          seoDomainLockedCard.style.display = 'block';
+          seoDomainUnlockedCard.style.display = 'none';
         }
       }
 
