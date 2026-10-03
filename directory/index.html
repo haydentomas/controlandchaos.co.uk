@@ -304,38 +304,27 @@
           return;
         }
 
-        filtered.sort((a, b) => {
-          if (b.is_vip && !a.is_vip) return 1;
-          if (!b.is_vip && a.is_vip) return -1;
-          return 0;
-        });
-
         filtered.forEach(p => {
           const card = document.createElement('div');
-          card.className = `dom-rate-card ${p.is_vip ? 'vip-card' : ''}`;
+          card.className = 'dom-rate-card';
 
           const isDomme = (p.role_type === 'domme' || p.role_type === 'DOMINANT' || p.role_type === 'dom');
-          const avatarImg = p.avatar_image || p.avatar || p.seo_image || (p.gallery && p.gallery.find(g => g.image)?.image) || '';
-          const profileSlug = p.slug || String(p.name || p.id || 'profile').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
           card.innerHTML = `
             <div>
-              <!-- Top Row: Circular Avatar + Name/Handle/Status + Role/VIP Badge -->
               <div class="flex-between align-start mb-16">
-                <div class="flex-row gap-14 align-start">
-                  <div class="avatar-photo-circle ${p.is_vip ? 'avatar-vip' : ''}">
-                    ${avatarImg ? `<img src="${avatarImg}" alt="${p.name}" class="avatar-photo-img" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'avatar-icon-fallback\\'>${isDomme ? '👑' : '🩷'}</span>';">` : `<span class="avatar-icon-fallback">${isDomme ? '👑' : '🩷'}</span>`}
+                <div class="flex-row gap-12 align-start">
+                  <div class="avatar-icon-circle">
+                    ${isDomme ? '👑' : '🩷'}
                   </div>
                   <div>
-                    <h3 class="dom-name font-md m-0" style="font-size: 1.15rem; font-weight: 800;">${p.name}</h3>
+                    <h3 class="dom-name font-md m-0">${p.name}</h3>
                     <div class="font-mono font-xs text-gold">@${p.sl_username}</div>
-                    <div style="margin-top: 4px;">
-                      ${getStatusBadgeHtml(p.status)}
-                    </div>
+                    ${getStatusBadgeHtml(p.status)}
                   </div>
                 </div>
-                <span class="${p.is_vip ? 'tag-vip-badge' : (isDomme ? 'dom-role-badge' : 'sub-role-badge')}">
-                  ${p.is_vip ? '👑 VIP ' : ''}${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
+                <span class="${isDomme ? 'dom-role-badge' : 'section-tag font-2xs m-0'}">
+                  ${isDomme ? 'DOMINANT' : 'SUBMISSIVE'}
                 </span>
               </div>
 
@@ -357,7 +346,7 @@
                 <span class="font-2xs text-muted block">Rates From:</span>
                 <span class="dom-rate-price">${p.starting_rate || 'From L$2,000 / hr'}</span>
               </div>
-              <a href="/profile/${profileSlug}/" class="dom-rate-pill">
+              <a href="/profile/${p.slug || String(p.name || p.id || 'profile').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}/" class="dom-rate-pill">
                 RATE CARD &rarr;
               </a>
             </div>
