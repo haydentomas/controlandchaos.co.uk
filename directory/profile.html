@@ -466,7 +466,10 @@
           <span>📋</span> Rate Card &amp; Bio
         </button>
         <button class="profile-tab-btn" id="tab-btn-feed" onclick="switchProfileTab('feed')">
-          <span>🔒</span> Exclusive Feed <span class="tab-badge" id="tab-feed-badge">3</span>
+          <span>🔒</span> VIP Subscribers Feed <span class="tab-badge" id="tab-feed-badge">0</span>
+        </button>
+        <button class="profile-tab-btn" id="tab-btn-blog" onclick="switchProfileTab('blog')">
+          <span>📰</span> Public Blog <span class="tab-badge" id="tab-blog-badge" style="display: none;">0</span>
         </button>
       </div>
 
@@ -765,7 +768,34 @@
 
         </div>
       </div>
-      <!-- End Tab Pane 2 -->
+      <!-- Tab Pane 3: Public Blog / Journal Stream -->
+      <div id="tab-pane-blog" style="display: none;">
+        <div class="feed-container">
+          
+          <!-- Blog Header Banner -->
+          <div class="card mb-30" style="background: linear-gradient(165deg, #1a1612 0%, #100e0c 100%); border: 1px solid var(--gold-border); border-radius: 16px; padding: 26px 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+              <div>
+                <div class="font-xs text-gold font-mono" style="letter-spacing: 0.1em; text-transform: uppercase;">📰 COMPANION JOURNAL &amp; UPDATES</div>
+                <h3 style="font-family: var(--font-heading); font-size: 24px; color: var(--gold-bright); margin: 4px 0 8px;" id="blog-hero-title">Public Blog</h3>
+                <p style="font-size: 14px; color: var(--text-muted); margin: 0; max-width: 600px;" id="blog-hero-desc">
+                  Free public updates, session reflections, schedule announcements, and thoughts.
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="section-tag tag-emerald font-2xs m-0">🌍 100% UNLOCKED / FREE TO READ</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Public Blog Stream -->
+          <div id="blog-posts-stream">
+            <!-- Rendered dynamically via JS -->
+          </div>
+
+        </div>
+      </div>
+      <!-- End Tab Pane 3 -->
 
     </div>
   </main>
@@ -2120,19 +2150,24 @@ function openLightbox(imgSrc, title, category) {
 
         const btnRatecard = document.getElementById('tab-btn-ratecard');
         const btnFeed = document.getElementById('tab-btn-feed');
+        const btnBlog = document.getElementById('tab-btn-blog');
         const paneRatecard = document.getElementById('tab-pane-ratecard');
         const paneFeed = document.getElementById('tab-pane-feed');
+        const paneBlog = document.getElementById('tab-pane-blog');
+
+        [btnRatecard, btnFeed, btnBlog].forEach(b => b && b.classList.remove('active'));
+        [paneRatecard, paneFeed, paneBlog].forEach(p => p && (p.style.display = 'none'));
 
         if (tabName === 'feed') {
-          if (btnRatecard) btnRatecard.classList.remove('active');
           if (btnFeed) btnFeed.classList.add('active');
-          if (paneRatecard) paneRatecard.style.display = 'none';
           if (paneFeed) paneFeed.style.display = 'block';
           renderFeed();
+        } else if (tabName === 'blog') {
+          if (btnBlog) btnBlog.classList.add('active');
+          if (paneBlog) paneBlog.style.display = 'block';
+          renderBlog();
         } else {
-          if (btnFeed) btnFeed.classList.remove('active');
           if (btnRatecard) btnRatecard.classList.add('active');
-          if (paneFeed) paneFeed.style.display = 'none';
           if (paneRatecard) paneRatecard.style.display = 'block';
         }
       };
@@ -2342,16 +2377,139 @@ function openLightbox(imgSrc, title, category) {
         }
       };
 
-      // Conditional VIP tab display
-      const isVipCreator = profileData.is_vip === true || profileData.plan === 'vip';
-      const tabsNav = document.getElementById('profile-tabs-nav');
-      if (tabsNav) {
-        tabsNav.style.display = isVipCreator ? 'flex' : 'none';
+      function renderBlog() {
+        if (!profileData) return;
+        const blogPosts = (Array.isArray(profileData.blog_posts) && profileData.blog_posts.length > 0) ? profileData.blog_posts : (Array.isArray(profileData.blog) ? profileData.blog : []);
+        const blogStream = document.getElementById('blog-posts-stream');
+        const blogBadge = document.getElementById('tab-blog-badge');
+        const blogTitle = document.getElementById('blog-hero-title');
+
+        if (blogBadge) {
+          blogBadge.textContent = blogPosts.length;
+          blogBadge.style.display = blogPosts.length > 0 ? 'inline-block' : 'none';
+        }
+        if (blogTitle) blogTitle.textContent = `${profileData.name}'s Public Blog`;
+
+        if (!blogStream) return;
+
+        if (blogPosts.length === 0) {
+          blogStream.innerHTML = `
+            <div class="card" style="text-align: center; padding: 50px 20px; border: 1px dashed var(--gold-border-subtle); background: rgba(20,18,16,0.6);">
+              <div style="font-size: 40px; margin-bottom: 12px;">📰</div>
+              <h4 style="font-family: var(--font-heading); font-size: 18px; color: var(--gold-bright); margin-bottom: 6px;">No Public Blog Entries Yet</h4>
+              <p style="font-size: 13.5px; color: var(--text-muted); max-width: 440px; margin: 0 auto;">
+                ${profileData.name} has not published any public blog entries yet. Check back soon for reflections, schedule updates, and stories!
+              </p>
+            </div>
+          `;
+          return;
+        }
+
+        const avatarImg = profileData.avatar_image || profileData.avatar || '';
+        const isDomme = (profileData.role_type === 'domme' || profileData.role_type === 'dom');
+
+        blogStream.innerHTML = blogPosts.map((post, pIdx) => {
+          const uKey = (profileData.avatar_uuid || profileData.id || '') + '_' + (post.id || pIdx);
+          const hasLiked = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
+          const likeCount = (post.likes || 0) + (hasLiked ? 1 : 0);
+
+          return `
+            <article class="feed-post-card" style="background: linear-gradient(165deg, #181512 0%, #100e0c 100%); border: 1px solid var(--gold-border-subtle); border-radius: 16px; padding: 26px 28px; margin-bottom: 24px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);">
+              
+              <!-- Post Author & Tag Header -->
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 42px; height: 42px; border-radius: 50%; overflow: hidden; border: 1.5px solid var(--gold-border); background: #14110e; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                    ${avatarImg ? `<img src="${avatarImg}" alt="${profileData.name}" style="width:100%; height:100%; object-fit:cover;">` : (isDomme ? '👑' : '🩷')}
+                  </div>
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <span style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: var(--gold-bright);">${profileData.name}</span>
+                      <span class="role-badge" style="font-size: 9px; padding: 1px 6px;">${isDomme ? 'DOM' : 'SUB'}</span>
+                    </div>
+                    <div style="font-family: var(--font-mono); font-size: 11px; color: var(--gold-muted);">
+                      @${profileData.sl_username || profileData.id} &bull; ${post.timestamp || 'Recent'}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="tag-pill-badge" style="background: rgba(235, 220, 169, 0.08); border-color: var(--gold-border); color: var(--gold-bright); font-size: 11px;">
+                    ${escapeHtml(post.tag || '💬 Update')}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Post Title -->
+              <h3 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: #fff; margin: 0 0 12px 0; line-height: 1.3;">
+                ${escapeHtml(post.title || 'Journal Entry')}
+              </h3>
+
+              <!-- Post Body -->
+              <div style="font-size: 14.5px; color: var(--text-primary); line-height: 1.7; margin-bottom: 16px; white-space: pre-line;">
+                ${escapeHtml(post.content || '')}
+              </div>
+
+              <!-- Post Media (if any) -->
+              ${post.media_url ? `
+                <div style="margin-bottom: 18px; border-radius: 12px; overflow: hidden; border: 1px solid var(--gold-border-subtle); max-height: 480px; background: #000; cursor: pointer;" onclick="openLightbox('${escapeHtml(post.media_url)}', '${encodeURIComponent(post.title || '')}', '${escapeHtml(post.tag || 'Blog Photo')}')">
+                  <img src="${post.media_url}" alt="${escapeHtml(post.title)}" style="width: 100%; height: 100%; object-fit: cover; display: block;" loading="lazy">
+                </div>
+              ` : ''}
+
+              <!-- Post Action Footer -->
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; margin-top: 10px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="toggleBlogLike('${uKey}', ${pIdx})" id="blog-like-btn-${pIdx}" style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+                  <span>${hasLiked ? '❤️' : '🤍'}</span>
+                  <span id="blog-like-count-${pIdx}">${likeCount} Likes</span>
+                </button>
+
+                <button type="button" class="btn btn-secondary btn-sm" onclick="shareBlogPost('${escapeHtml(post.title)}')" style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+                  <span>🔗</span> Share Link
+                </button>
+              </div>
+
+            </article>
+          `;
+        }).join('');
       }
 
-      // Initialize Feed if VIP
-      if (isVipCreator) {
-        renderFeed();
+      window.toggleBlogLike = function(uKey, pIdx) {
+        const cur = localStorage.getItem('cc_blog_liked_' + uKey) === '1';
+        localStorage.setItem('cc_blog_liked_' + uKey, cur ? '0' : '1');
+        renderBlog();
+      };
+
+      window.shareBlogPost = function(title) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(window.location.href);
+          alert(`Copied link to: ${title}`);
+        }
+      };
+
+      // Profile tab initialization
+      const isVipCreator = profileData.is_vip === true || profileData.plan === 'vip';
+      const feedTabBtn = document.getElementById('tab-btn-feed');
+      const blogTabBtn = document.getElementById('tab-btn-blog');
+      const feedBadge = document.getElementById('tab-feed-badge');
+      const blogBadge = document.getElementById('tab-blog-badge');
+
+      if (feedTabBtn) {
+        if (isVipCreator) {
+          feedTabBtn.style.display = 'inline-flex';
+          const postCount = Array.isArray(profileData.posts) ? profileData.posts.length : 3;
+          if (feedBadge) feedBadge.textContent = postCount;
+        } else {
+          feedTabBtn.style.display = 'none';
+        }
+      }
+
+      if (blogTabBtn) {
+        const blogCount = Array.isArray(profileData.blog_posts) ? profileData.blog_posts.length : (Array.isArray(profileData.blog) ? profileData.blog.length : 0);
+        if (blogBadge) {
+          blogBadge.textContent = blogCount;
+          blogBadge.style.display = blogCount > 0 ? 'inline-block' : 'none';
+        }
       }
 
     });

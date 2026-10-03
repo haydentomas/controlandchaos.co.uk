@@ -590,7 +590,7 @@
           <div class="sidebar-nav-card">
             <div class="sidebar-nav-header">
               <span class="font-2xs uppercase tracking-wider font-mono text-gold font-bold">Studio Sections</span>
-              <span class="font-2xs text-muted font-mono">8 TABS</span>
+              <span class="font-2xs text-muted font-mono">9 TABS</span>
             </div>
             <nav class="editor-sidebar-tabs">
               <button type="button" class="sidebar-tab-btn active" onclick="switchTab('tab-identity')">
@@ -621,9 +621,13 @@
                 <span class="tab-icon">🔍</span>
                 <span class="tab-label">SEO &amp; Domains</span>
               </button>
+              <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-blog')">
+                <span class="tab-icon">📰</span>
+                <span class="tab-label">Public Blog</span>
+              </button>
               <button type="button" class="sidebar-tab-btn" onclick="switchTab('tab-feed')">
-                <span class="tab-icon">📱</span>
-                <span class="tab-label">Exclusive Feed</span>
+                <span class="tab-icon">🔒</span>
+                <span class="tab-label">Subscribers Feed</span>
                 <span class="vip-pill-badge">VIP</span>
               </button>
             </nav>
@@ -1312,12 +1316,30 @@
 
           </div>
 
-          <!-- ================= TAB 8: EXCLUSIVE FEED & FAN CLUB (VIP ONLY) ================= -->
+          <!-- ================= TAB 8: PUBLIC BLOG & JOURNAL ================= -->
+          <div id="tab-blog" class="tab-content">
+            <div class="editor-card">
+              <div class="editor-card-header">
+                <h3 class="editor-card-title"><span class="icon">📰</span> Public Blog &amp; Journal Posts</h3>
+                <button type="button" onclick="openCreateBlogPostModal()" class="btn btn-gold btn-sm" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 700; box-shadow: 0 0 12px rgba(212,175,55,0.3);">
+                  <span>➕</span> Create Blog Post
+                </button>
+              </div>
+              <p class="font-xs text-muted mb-16">
+                Publish free public posts, thought pieces, schedule updates, and photos that anyone visiting your profile can read without a subscription.
+              </p>
+              <div id="blog-posts-repeater-container">
+                <!-- Dynamically populated blog posts -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= TAB 9: VIP SUBSCRIBERS FEED & FAN CLUB (VIP ONLY) ================= -->
           <div id="tab-feed" class="tab-content">
             <!-- VIP Locked Upgrade Banner (Shown for Basic Plan creators) -->
             <div id="feed-vip-locked-banner" class="editor-card" style="display:none; text-align:center; padding:36px 20px; border:1px solid rgba(212,175,55,0.4); background:radial-gradient(ellipse at center, rgba(212,175,55,0.12) 0%, rgba(17,15,21,0.95) 70%);">
               <div style="font-size:44px; margin-bottom:12px;">👑</div>
-              <h3 style="font-family:var(--font-heading); font-size:22px; color:var(--gold-bright); margin-bottom:8px;">VIP Exclusive Feed &amp; Lookbooks</h3>
+              <h3 style="font-family:var(--font-heading); font-size:22px; color:var(--gold-bright); margin-bottom:8px;">VIP Subscribers Feed &amp; Lookbooks</h3>
               <p class="font-xs text-muted" style="max-width:520px; margin:0 auto 20px; line-height:1.6;">
                 Publishing restricted lookbooks, uncensored audio decrees, private task assignments, and collecting monthly L$ tribute passes from your subscribers is exclusively available to <strong>VIP Tier Listings</strong>.
               </p>
@@ -1441,6 +1463,52 @@
         </button>
       </div>
     </div>
+  <!-- Blog Post Composer Modal Popup -->
+  <div id="blog-post-modal" class="editor-modal-backdrop" onclick="if(event.target===this) closeBlogPostModal()">
+    <div class="editor-modal-box">
+      <div class="editor-modal-header">
+        <h3 id="modal-blog-title-header" class="editor-card-title m-0">
+          <span class="icon">📰</span> Create Public Blog Post
+        </h3>
+        <button type="button" onclick="closeBlogPostModal()" style="background:transparent; border:none; color:#cbd5e1; font-size:1.4rem; cursor:pointer; padding:4px 8px;">✕</button>
+      </div>
+
+      <input type="hidden" id="modal-blog-index" value="-1">
+
+      <div class="form-group">
+        <label class="form-label" for="modal-blog-title">Blog Title *</label>
+        <input type="text" id="modal-blog-title" class="form-input" placeholder="e.g. Schedule Update, Session Reflections, Gala Announcement" required>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label" for="modal-blog-tag">Category / Topic Tag</label>
+          <input type="text" id="modal-blog-tag" class="form-input" placeholder="e.g. 💬 Update, ⚡ Availability, 📸 Behind The Scenes">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="modal-blog-media-url">Attached Photo URL (Optional)</label>
+          <input type="text" id="modal-blog-media-url" class="form-input" placeholder="https://images.unsplash.com/... or /assets/photo.jpg" oninput="updateModalBlogThumb(this.value)">
+        </div>
+      </div>
+
+      <div id="modal-blog-preview-box" style="display:none; margin-bottom:16px;">
+        <img id="modal-blog-thumb" class="img-preview-thumb" style="height:140px; width:100%; border-radius:8px; object-fit:cover;" src="" alt="Blog Preview" onerror="this.style.display='none'">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="modal-blog-content">Blog Post Content *</label>
+        <textarea id="modal-blog-content" class="form-textarea" rows="6" placeholder="Write your free public blog entry, story, thoughts, or announcement for everyone visiting your rate card..."></textarea>
+      </div>
+
+      <div class="flex-between align-center gap-12 mt-20 pt-16" style="border-top: 1px solid rgba(255,255,255,0.08);">
+        <button type="button" onclick="closeBlogPostModal()" class="btn btn-secondary btn-sm" style="padding: 10px 18px;">
+          ✕ Cancel
+        </button>
+        <button type="button" onclick="saveBlogPostModal()" class="btn btn-gold btn-md" style="font-weight: 700; padding: 10px 24px; box-shadow: 0 0 15px rgba(212,175,55,0.3);">
+          <span>💾</span> Save Blog Post
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Global Floating Save Toast -->
@@ -1469,6 +1537,7 @@
     let socialLinksList = [];
     let reviewsList = [];
     let postsList = [];
+    let blogPostsList = [];
 
     function toggleAvailDay(btn) {
       btn.classList.toggle('active');
@@ -1895,6 +1964,7 @@
       socialLinksList = p.social_links || [];
       reviewsList = p.reviews || [];
       postsList = p.posts || [];
+      blogPostsList = p.blog_posts || p.blog || [];
 
       // Fan Club / Subscription Tier
       document.getElementById('edit-fan-tier-price').value = p.fan_tier_price || 'L$1,500 / month';
@@ -2016,6 +2086,7 @@
       renderWishlist();
       renderSocials();
       renderReviews();
+      renderBlogPosts();
       renderFeedPosts();
     }
 
@@ -2362,6 +2433,162 @@
       renderReviews();
     }
 
+    // Blog Posts & Modal
+    function openCreateBlogPostModal() {
+      document.getElementById('modal-blog-title-header').innerHTML = '<span class="icon">📰</span> Create Public Blog Post';
+      document.getElementById('modal-blog-index').value = '-1';
+      document.getElementById('modal-blog-title').value = '';
+      document.getElementById('modal-blog-tag').value = '💬 Update';
+      document.getElementById('modal-blog-media-url').value = '';
+      document.getElementById('modal-blog-content').value = '';
+      updateModalBlogThumb('');
+      
+      const modal = document.getElementById('blog-post-modal');
+      if (modal) modal.classList.add('open');
+      setTimeout(() => document.getElementById('modal-blog-title')?.focus(), 100);
+    }
+
+    function openEditBlogPostModal(idx) {
+      const p = blogPostsList[idx];
+      if (!p) return;
+      document.getElementById('modal-blog-title-header').innerHTML = '<span class="icon">✏️</span> Edit Blog Post';
+      document.getElementById('modal-blog-index').value = String(idx);
+      document.getElementById('modal-blog-title').value = p.title || '';
+      document.getElementById('modal-blog-tag').value = p.tag || '💬 Update';
+      document.getElementById('modal-blog-media-url').value = p.media_url || '';
+      document.getElementById('modal-blog-content').value = p.content || '';
+      updateModalBlogThumb(p.media_url || '');
+
+      const modal = document.getElementById('blog-post-modal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeBlogPostModal() {
+      const modal = document.getElementById('blog-post-modal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function updateModalBlogThumb(url) {
+      const box = document.getElementById('modal-blog-preview-box');
+      const thumb = document.getElementById('modal-blog-thumb');
+      if (url && url.trim().startsWith('http')) {
+        thumb.src = url.trim();
+        thumb.style.display = 'block';
+        box.style.display = 'block';
+      } else {
+        if (box) box.style.display = 'none';
+        if (thumb) thumb.style.display = 'none';
+      }
+    }
+
+    function saveBlogPostModal() {
+      const title = (document.getElementById('modal-blog-title').value || '').trim();
+      if (!title) {
+        alert("Please provide a title for this blog post.");
+        document.getElementById('modal-blog-title')?.focus();
+        return;
+      }
+      const idxStr = document.getElementById('modal-blog-index').value;
+      const idx = parseInt(idxStr);
+      const tag = (document.getElementById('modal-blog-tag').value || '').trim() || '💬 Update';
+      const mediaUrl = (document.getElementById('modal-blog-media-url').value || '').trim();
+      const content = (document.getElementById('modal-blog-content').value || '').trim();
+
+      if (!content) {
+        alert("Please provide some text content for your blog post.");
+        document.getElementById('modal-blog-content')?.focus();
+        return;
+      }
+
+      if (idx >= 0 && idx < blogPostsList.length) {
+        // Edit existing
+        blogPostsList[idx].title = title;
+        blogPostsList[idx].tag = tag;
+        blogPostsList[idx].media_url = mediaUrl;
+        blogPostsList[idx].content = content;
+      } else {
+        // Create new
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        blogPostsList.unshift({
+          id: 'blog-' + Date.now(),
+          title: title,
+          tag: tag,
+          media_url: mediaUrl,
+          content: content,
+          likes: 0,
+          timestamp: dateStr
+        });
+      }
+
+      closeBlogPostModal();
+      renderBlogPosts();
+      showToast('Blog post saved! Click 💾 Save Profile to publish live.');
+    }
+
+    function removeBlogPost(idx) {
+      if (confirm("Delete this blog post?")) {
+        blogPostsList.splice(idx, 1);
+        renderBlogPosts();
+        showToast('Blog post removed.');
+      }
+    }
+
+    function renderBlogPosts() {
+      const container = document.getElementById('blog-posts-repeater-container');
+      if (!container) return;
+      if (!blogPostsList.length) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 36px 20px; border: 1px dashed rgba(212,175,55,0.25); border-radius: 10px; background: rgba(0,0,0,0.25);">
+            <div style="font-size: 2.2rem; margin-bottom: 10px;">📰</div>
+            <h4 class="text-gold font-sm mb-6">No Public Blog Posts Published Yet</h4>
+            <p class="font-xs text-muted max-w-500 mx-auto mb-16">
+              Write free public journal entries, session debriefs, thought pieces, and announcements for everyone visiting your profile.
+            </p>
+            <button type="button" onclick="openCreateBlogPostModal()" class="btn btn-gold btn-sm" style="font-weight: 700;">
+              <span>➕</span> Create First Blog Post
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = blogPostsList.map((post, idx) => `
+        <div class="repeater-item-box" style="border: 1px solid rgba(255,255,255,0.12); background: #110f15; margin-bottom: 14px; padding: 16px 18px; border-radius: 10px;">
+          <div class="flex-between align-center flex-wrap gap-10 mb-10">
+            <div class="flex-row align-center gap-8 flex-wrap">
+              <span class="section-tag tag-emerald font-2xs m-0">
+                🌍 PUBLIC BLOG
+              </span>
+              <span class="section-tag tag-secondary font-2xs m-0" style="background:rgba(255,255,255,0.05); color:#cbd5e1;">
+                ${escapeHtml(post.tag || '💬 Update')}
+              </span>
+              <span class="font-2xs text-muted font-mono">${post.timestamp || 'Recent'}</span>
+            </div>
+
+            <div class="flex-row align-center gap-8 ml-auto">
+              <button type="button" onclick="openEditBlogPostModal(${idx})" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.75rem;">
+                ✏️ Edit
+              </button>
+              <button type="button" onclick="removeBlogPost(${idx})" class="btn-delete-item" style="position:static; padding: 4px 8px; font-size: 0.75rem;" title="Delete Blog Post">
+                ✕ Delete
+              </button>
+            </div>
+          </div>
+
+          <h4 class="font-sm font-bold text-white mb-6" style="margin: 0 0 6px 0;">${escapeHtml(post.title || 'Untitled Entry')}</h4>
+          
+          ${post.content ? `<p class="font-xs text-muted mb-10" style="line-height: 1.5; margin-bottom: 8px; white-space: pre-line;">${escapeHtml(post.content.length > 250 ? post.content.substring(0, 250) + '...' : post.content)}</p>` : ''}
+
+          ${post.media_url ? `
+            <div style="margin-top: 8px; max-width: 260px;">
+              <img src="${escapeHtml(post.media_url)}" alt="Post Media" style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(212,175,55,0.25);">
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
     // Exclusive Feed Posts & Modal
     function openCreatePostModal() {
       document.getElementById('modal-post-title-header').innerHTML = '<span class="icon">✨</span> Create Exclusive Feed Post';
@@ -2690,6 +2917,7 @@
         custom_domain: (document.getElementById('edit-custom-domain')?.value || '').toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/+$/, ''),
         whitelabel_mode: document.getElementById('edit-whitelabel-mode')?.checked !== false,
         posts: postsList,
+        blog_posts: blogPostsList,
         
         booking_availability: {
           timezone: document.getElementById('edit-avail-tz')?.value || 'SLT',
