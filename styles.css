@@ -1440,89 +1440,19 @@ body {
   background: linear-gradient(165deg, #181512 0%, #100e0c 100%);
   border: 1px solid var(--gold-border);
   border-radius: 18px;
-  padding: 30px 26px;
+  padding: 32px 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 280px;
   transition: all 0.3s ease;
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-  position: relative;
 }
 .dom-rate-card:hover {
   border-color: var(--gold-bright);
   transform: translateY(-4px);
   box-shadow: 0 16px 40px rgba(0,0,0,0.75);
 }
-
-.dom-rate-card.vip-card {
-  border: 1.5px solid rgba(212, 175, 55, 0.55);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.6), 0 0 20px rgba(212,175,55,0.12);
-}
-.dom-rate-card.vip-card:hover {
-  border-color: #ffd700;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 28px rgba(212,175,55,0.25);
-}
-
-/* Squircle Avatar Photo Box */
-.avatar-photo-box {
-  width: 76px;
-  height: 76px;
-  border-radius: 14px;
-  background: rgba(36, 32, 28, 0.95);
-  border: 1px solid var(--gold-border);
-  position: relative;
-  flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-}
-.avatar-box-img {
-  width: 100%;
-  height: 100%;
-  border-radius: 13px;
-  object-fit: cover;
-  display: block;
-}
-.avatar-box-fallback {
-  width: 100%;
-  height: 100%;
-  border-radius: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-}
-
-/* Floating Gold (VIP) Medallion */
-.avatar-vip-medallion {
-  position: absolute;
-  top: -9px;
-  right: -9px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2b2214 0%, #120f0a 100%);
-  border: 1.5px solid #ffd700;
-  color: #ffd700;
-  font-family: var(--font-heading);
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.8), 0 0 12px rgba(212,175,55,0.4);
-  z-index: 2;
-}
-
-.vip-listing-text {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--gold-muted);
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  margin-bottom: 2px;
-}
-
 .avatar-icon-circle {
   width: 44px;
   height: 44px;
@@ -1557,30 +1487,6 @@ body {
   border-radius: 6px;
   letter-spacing: 0.5px;
   font-family: var(--font-mono);
-}
-.sub-role-badge {
-  background: rgba(236, 72, 153, 0.2);
-  border: 1px solid rgba(236, 72, 153, 0.4);
-  color: #f472b6;
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 6px;
-  letter-spacing: 0.5px;
-  font-family: var(--font-mono);
-}
-.vip-role-badge {
-  background: rgba(212, 175, 55, 0.12) !important;
-  border: 1px solid rgba(212, 175, 55, 0.75) !important;
-  color: #ffd700 !important;
-  font-size: 10.5px !important;
-  font-weight: 800 !important;
-  padding: 4px 10px !important;
-  border-radius: 6px !important;
-  letter-spacing: 0.5px !important;
-  font-family: var(--font-mono) !important;
-  box-shadow: 0 0 10px rgba(212,175,55,0.2) !important;
-  white-space: nowrap !important;
 }
 
 /* --- Traffic Light Live Status Indicators --- */
