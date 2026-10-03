@@ -1435,24 +1435,100 @@ body {
   margin-bottom: 70px;
 }
 
-/* --- Registered Dominants Rate Cards --- */
+/* --- Registered Dominants Rate Cards (Luxury Cover & Avatar Edition) --- */
 .dom-rate-card {
   background: linear-gradient(165deg, #181512 0%, #100e0c 100%);
   border: 1px solid var(--gold-border);
-  border-radius: 18px;
-  padding: 32px 28px;
+  border-radius: 20px;
+  padding: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+.dom-rate-card:not(:has(.dom-card-cover)) {
+  padding: 32px 28px;
   justify-content: space-between;
   min-height: 280px;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 .dom-rate-card:hover {
   border-color: var(--gold-bright);
-  transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.75);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 30px rgba(212,175,55,0.2);
 }
+
+.dom-card-cover {
+  height: 140px;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  background-color: #1a1622;
+}
+.dom-card-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(16, 14, 12, 0.95) 100%);
+}
+.dom-card-top-badges {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+}
+
+.dom-card-body {
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+  position: relative;
+}
+
+.dom-avatar-wrapper {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: -38px;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 3;
+}
+.dom-avatar-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px solid #ffd700;
+  background: #181512;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.8), 0 0 15px rgba(212,175,55,0.3);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.dom-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.dom-rate-card:hover .dom-avatar-img {
+  transform: scale(1.08);
+}
+.dom-avatar-placeholder {
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .avatar-icon-circle {
   width: 44px;
   height: 44px;
@@ -1478,15 +1554,37 @@ body {
   letter-spacing: 0.3px;
 }
 .dom-role-badge {
-  background: rgba(139,30,45,0.45);
-  border: 1px solid rgba(244,114,182,0.3);
+  background: rgba(139,30,45,0.75);
+  border: 1px solid rgba(244,114,182,0.4);
   color: #ffb8c2;
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
   border-radius: 6px;
   letter-spacing: 0.5px;
   font-family: var(--font-mono);
+}
+.sub-role-badge {
+  background: rgba(236, 72, 153, 0.25);
+  border: 1px solid rgba(236, 72, 153, 0.5);
+  color: #f472b6;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  font-family: var(--font-mono);
+}
+.tag-gold-vip {
+  background: linear-gradient(135deg, #ffd700, #b8860b);
+  color: #000;
+  font-weight: 900;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(212,175,55,0.4);
 }
 
 /* --- Traffic Light Live Status Indicators --- */
